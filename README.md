@@ -1,4 +1,4 @@
-# DevFlow-Core DevFlow Core
+# DevFlow-Core
 
 DevFlow-Core is a practical AI development workflow framework. It turns the strongest usable methods from Ponytail, Agent Skills, Superpowers, PUA-Driven Spec Engineering, and PUA into one native, lightweight flow developers can install and use every day.
 
