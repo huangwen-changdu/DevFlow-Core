@@ -1,0 +1,30 @@
+description = "Run DevFlow PUA pressure recovery when a result is wrong, challenged, or repeatedly misses the user's target."
+prompt = '''
+Run DevFlow PUA.
+
+Use this when the user says wrong, not like that, changed wrong, your code is wrong, you wrote it wrong, has a problem, not right, quality complaint, user dissatisfied, 有问题, 不对, 写错了, 改歪了, 没改对, 不是我要的, 理解错了, 改了几次, or when repeated fixes miss the target.
+
+Stop the current approach before more edits. Re-read the request, correction, relevant files, and proof output.
+
+For repeated challenge or explicit wrong-code signals, set `Restart Brainstorm: yes`, quarantine the previous wrong assumption/path/proof claim, keep only verified facts, and hand off to `devflow-brainstorm` before more edits. Ask where it is wrong, what result the user wants, what must stay unchanged, and how to verify it when those answers are not inferable.
+
+Output:
+Pressure check:
+Restart Brainstorm:
+Discarded context:
+Keep only verified facts:
+User goal restated:
+Desired result:
+Blocking questions:
+Hypotheses: 1 / 2 / 3
+Changed approach:
+Verification:
+Learning closure:
+
+Ask 2-4 pointed questions only when the desired result cannot be inferred from facts. If the result is inferable, state the evidence and continue through `devflow-brainstorm`, then the needed DevFlow skill.
+
+Completion still requires:
+Command:
+Result:
+Judgment: PASS / FAIL / BLOCKED
+'''

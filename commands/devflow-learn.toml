@@ -1,0 +1,20 @@
+description = "Capture or verify a reusable correction, pitfall, or project convention with DevFlow Learn."
+prompt = '''
+Run DevFlow Learn.
+
+Use this when the user says wrong, not like that, changed wrong, remember, learn, next time don't, wrong place, misplaced content, repeated correction, repeated user challenge, skipped validation, repeated failure, or project convention.
+
+Process:
+1. Detect the learning signal and decide whether it is reusable.
+2. Read `.copilot/LEARNING_INDEX.md` if it exists.
+3. Read only matched cards; do not load all cards.
+4. Create or update one focused card when the correction is likely to repeat, costly, counterintuitive, or project-wide.
+5. Update `.copilot/LEARNING_INDEX.md` when a card is created, renamed, or its trigger changes.
+6. Report the learning closure before claiming completion.
+
+Learning closure:
+- Learning signal: none / present
+- Recalled record: none / index / card
+- Added memory: none / learning card / rule / skill
+- Next intercept: Next time encountering <X>, first do <Y>, not <Z>.
+'''

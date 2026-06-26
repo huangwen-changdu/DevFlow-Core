@@ -1,0 +1,17 @@
+{
+  "name": "DevFlow-Core-devflow",
+  "version": "0.2.0",
+  "description": "DevFlow Core rules and skills for practical AI-assisted development.",
+  "contextFileName": "AGENTS.md",
+  "skills": [
+    "skills/devflow-core/SKILL.md",
+    "skills/devflow-brainstorm/SKILL.md",
+    "skills/devflow-spec/SKILL.md",
+    "skills/devflow-cut/SKILL.md",
+    "skills/devflow-build/SKILL.md",
+    "skills/devflow-prove/SKILL.md",
+    "skills/devflow-pua/SKILL.md",
+    "skills/devflow-learn/SKILL.md",
+    "skills/devflow-audit/SKILL.md"
+  ]
+}

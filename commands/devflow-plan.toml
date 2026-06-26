@@ -1,0 +1,47 @@
+description = "Create the smallest usable implementation plan from a DevFlow spec or approved design."
+prompt = '''
+Create a DevFlow Plan Pack from a saved spec or approved design.
+
+Default landing for saved implementation plans is:
+
+```text
+docs/plans/<short-kebab-name>.md
+```
+
+Use an existing project plan directory only when the target project already documents that convention. Do not put implementation plans in `docs/features/`; that directory is for feature ledgers. Do not put implementation plans in `docs/specs/`; that directory is for requirements specs.
+
+When `scripts/devflow-plan.js` exists and the plan is in a file, run:
+
+```bash
+node scripts/devflow-plan.js <plan-file>
+```
+
+If only user-level DevFlow is installed, run the user script instead:
+
+```bash
+node ~/.codex/scripts/devflow-plan.js <plan-file>
+# or, for Claude Code user-level install:
+node ~/.claude/scripts/devflow-plan.js <plan-file>
+```
+
+Use the script output as the executable task-field and plan-landing check before implementation.
+
+First confirm the goal, not-doing list, impact area, and verification.
+Apply the Ponytail Ladder and Overbuild Check before adding tasks.
+For bug fixes, include Root-Cause Check before choosing the fix location.
+For deliberate simplifications, require a `devflow: <ceiling>, revisit when <trigger>` marker.
+Split work into small verifiable slices.
+
+The plan must include:
+Source: <docs/specs/<name>.md or approved design>
+Spec coverage: <which requirements map to which tasks, or design-only>
+
+Each task must include:
+Task: <short title>
+Files: <exact files likely touched>
+Acceptance: <specific condition>
+Verify: <exact command or manual scenario>
+Not doing: <scope removed>
+
+No unresolved markers, vague edge cases, speculative abstractions, or unverified assumptions.
+'''

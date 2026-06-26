@@ -1,0 +1,42 @@
+description = "Harvest devflow: simplification markers into a debt ledger report."
+prompt = '''
+Harvest every `devflow:` intentional-simplification marker in this repository.
+
+When `scripts/devflow-debt.js` exists, run:
+
+```bash
+node scripts/devflow-debt.js .
+```
+
+If only user-level DevFlow is installed, run the user script instead:
+
+```bash
+node ~/.codex/scripts/devflow-debt.js .
+# or, for Claude Code user-level install:
+node ~/.claude/scripts/devflow-debt.js .
+```
+
+Use the script output as the debt ledger report.
+
+Search the tree for comment or prose markers such as:
+- `// devflow:`
+- `# devflow:`
+- `<!-- devflow:`
+- `devflow:`
+
+Skip generated output, build folders, dependency folders, and VCS metadata.
+
+For each marker, report:
+<file>:<line> - <what was simplified>. ceiling: <ceiling>. revisit: <trigger>.
+
+Rules:
+- A valid marker names both the ceiling and the revisit trigger.
+- Tag missing trigger/ceiling as `no-trigger`.
+- Do not change files unless the user explicitly asks to persist the ledger.
+
+End with:
+<N> markers, <M> no-trigger.
+
+If none exist, say:
+No devflow debt markers found.
+'''

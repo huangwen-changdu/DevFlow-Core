@@ -1,0 +1,44 @@
+{
+  "name": "DevFlow-Core-devflow",
+  "version": "0.2.0",
+  "description": "Lightweight practical development workflow skills for AI coding agents.",
+  "license": "MIT",
+  "scripts": {
+    "test": "node scripts/validate-devflow.js",
+    "learn:verify": "node scripts/validate-learning-loop.js",
+    "scenario:coverage": "node scripts/report-scenario-coverage.js",
+    "trigger:verify": "node scripts/validate-skill-triggers.js",
+    "host:verify": "node scripts/validate-host-adapters.js",
+    "install:verify": "node scripts/validate-installer.js",
+    "user:verify": "node scripts/validate-user-installer.js",
+    "debt:verify": "node scripts/devflow-debt.js --self-test",
+    "review:verify": "node scripts/devflow-review.js --self-test",
+    "spec:verify": "node scripts/devflow-spec.js --self-test",
+    "plan:verify": "node scripts/devflow-plan.js --self-test",
+    "audit:verify": "node scripts/devflow-audit.js --self-test",
+    "verify:all": "npm test && npm run learn:verify && npm run scenario:coverage && npm run trigger:verify && npm run host:verify && npm run install:verify && npm run user:verify && npm run debt:verify && npm run review:verify && npm run spec:verify && npm run plan:verify && npm run audit:verify",
+    "install:target": "node scripts/install-devflow.js",
+    "install:user": "node scripts/install-devflow-user.js"
+  },
+  "files": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    ".github/",
+    ".codebuddy/",
+    ".claude/",
+    "hooks/",
+    "docs/",
+    "commands/",
+    "skills/",
+    "scripts/",
+    "plugin.json",
+    "gemini-extension.json"
+  ],
+  "keywords": [
+    "agent-skills",
+    "devflow",
+    "ai-coding",
+    "minimal-change",
+    "verification"
+  ]
+}

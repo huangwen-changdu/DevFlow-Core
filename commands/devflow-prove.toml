@@ -1,0 +1,17 @@
+description = "Verify a DevFlow change before claiming completion."
+prompt = '''
+Run DevFlow Prove.
+
+Identify the narrowest sufficient command, test, build, lint, validation script, or manual scenario.
+Run it now if tools are available.
+Read the real output and exit status.
+Report only:
+
+Command: <actual command run>
+Result: <key output summary>
+Judgment: PASS / FAIL / BLOCKED
+
+If the check is partial, include coverage and explicit gaps.
+If it fails, route back to Recovery: re-read facts, list 3 hypotheses, try a materially different approach.
+If the failure includes user challenge, changed-wrong result, repeated miss, or quality complaint, load `devflow-pua` before more edits.
+'''

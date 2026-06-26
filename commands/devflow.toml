@@ -1,0 +1,29 @@
+description = "Route a task through DevFlow Core."
+prompt = '''
+Use DevFlow Core for this request.
+
+Route the work as Fast, Design-lite, Design, Build, or Recovery.
+If the user reports a problem without explicitly asking for a fix, use Problem: Sense -> Prove facts, then re-route only if a change is needed.
+If the user challenges the result, says changed wrong, says your code is wrong/you wrote it wrong/has a problem/not right/有问题/不对/写错了, reports a quality complaint, or repeated edits miss, use Recovery through devflow-pua before more edits. For repeated challenge or explicit wrong-code signals, restart devflow-brainstorm, quarantine the old wrong context, ask what is wrong and what result is wanted, then switch approach.
+Use Fast only for clear, low-risk, local-impact work with quick proof.
+Use Design-lite for a small feature with clear behavior, one plausible path, low risk, local impact, and quick proof.
+If the boundary is unclear, ask the user to choose Fast, Design-lite, or full Design instead of guessing.
+Run Sense first by reading or citing relevant project facts.
+For requirements or ambiguity, run Brainstorm with 2-3 approaches.
+Before implementation, run Cut with Reuse, Native, Overbuild, Diff, and Scope checks.
+For bug fixes, include Root-Cause Check: searched callers/references; shared vs narrow fix; reason.
+For deliberate simplifications, add or report `devflow: <ceiling>, revisit when <trigger>`.
+If implementation is requested, continue through Build and Prove.
+
+Design output:
+Goal:
+Smallest useful plan:
+Not doing:
+Impact:
+Verification:
+
+Completion proof:
+Command:
+Result:
+Judgment: PASS / FAIL / BLOCKED
+'''

@@ -1,0 +1,74 @@
+---
+name: devflow-spec
+description: "Use when writing a requirements/spec document, turning an approved design into a saved spec, planning from specs, or creating docs/specs artifacts before implementation."
+---
+
+# DevFlow Spec
+
+Write the smallest useful spec document before implementation when the request needs more than a short design contract.
+
+This is Superpowers-style spec discipline adapted to DevFlow: write specs only when they reduce ambiguity, review them before planning, and keep plans traceable to specs or approved designs.
+
+## When To Write A Spec
+
+Use a saved spec when any of these are true:
+
+- The user asks for a spec, specs doc, design doc, or requirements document.
+- The work crosses modules, roles, persistence, APIs, release flow, or user-visible workflows.
+- Several requirements must stay aligned across implementation tasks.
+- The plan would be hard to review without a written source of truth.
+
+Do not force a spec for Design-lite work where a short design contract and quick proof are enough.
+
+## Process
+
+1. Read the relevant project facts, existing docs, feature ledger, and current behavior.
+2. Confirm the goal, constraints, success criteria, and not-doing list.
+3. Compare 2-3 approaches when more than one path is plausible.
+4. Write the spec under `docs/specs/<short-kebab-name>.md` unless the target project already documents another specs path.
+5. Include the required sections:
+   - Goal
+   - Context
+   - Requirements
+   - Non-goals
+   - Approach
+   - Impact
+   - Acceptance
+   - Verification
+   - Open Questions
+6. Run the spec self-review:
+   - Unresolved-marker scan: no draft markers, unresolved question marks, or unresolved angle values.
+   - Consistency: requirements, approach, impact, acceptance, and verification do not contradict.
+   - Scope: if multiple independent subsystems appear, split into separate specs.
+   - Ambiguity: pick an explicit interpretation or mark the open question before planning.
+7. Run `node scripts/devflow-spec.js <spec-file>` when the script exists.
+8. Handoff to `/devflow-plan` only after the spec is valid or the user explicitly accepts a design-only plan.
+
+## Output
+
+```text
+Spec: docs/specs/<short-kebab-name>.md
+Source: <user request / approved design / existing issue>
+Review: unresolved-marker scan <pass/fail>; consistency <pass/fail>; scope <pass/fail>; ambiguity <pass/fail>
+Next: /devflow-plan with Source and Spec coverage
+```
+
+## Anti-Rationalization
+
+| Excuse | Reality |
+|---|---|
+| "A plan is enough." | If requirements can drift across tasks, write the spec first. |
+| "The spec can be vague; the plan will decide." | Vague specs create wrong plans. Resolve or mark the question before planning. |
+| "This belongs in docs/features." | `docs/features/` is product ledger memory, not a generated implementation spec. |
+| "The user said implement, so skip approval." | Implementation requests still need the lightest useful design/spec source before Build. |
+
+## Verification
+
+Before leaving this skill, confirm:
+
+- [ ] Spec scope was named.
+- [ ] Required sections exist.
+- [ ] Spec landed under `docs/specs/` or a documented target-project specs path.
+- [ ] Unresolved-marker, consistency, scope, and ambiguity checks ran.
+- [ ] `scripts/devflow-spec.js` ran when available.
+- [ ] The next plan will cite the spec or approved design as `Source`.

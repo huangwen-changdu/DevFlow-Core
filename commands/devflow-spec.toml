@@ -1,0 +1,43 @@
+description = "Create and validate a DevFlow spec document before implementation planning."
+prompt = '''
+Create a DevFlow spec from the current request or approved design.
+
+Default landing for saved specs is:
+
+```text
+docs/specs/<short-kebab-name>.md
+```
+
+Use an existing project specs directory only when the target project already documents that convention. Do not put implementation specs in `docs/features/`; that directory is for feature ledgers. Do not put specs in `docs/plans/`; that directory is for implementation plans.
+
+When `scripts/devflow-spec.js` exists and the spec is in a file, run:
+
+```bash
+node scripts/devflow-spec.js <spec-file>
+```
+
+If only user-level DevFlow is installed, run the user script instead:
+
+```bash
+node ~/.codex/scripts/devflow-spec.js <spec-file>
+# or, for Claude Code user-level install:
+node ~/.claude/scripts/devflow-spec.js <spec-file>
+```
+
+Use the script output as the required-section, unresolved-marker, and spec-landing check before `/devflow-plan`.
+
+Required sections:
+Goal:
+Context:
+Requirements:
+Non-goals:
+Approach:
+Impact:
+Acceptance:
+Verification:
+Open Questions:
+
+After the spec passes, create the plan with:
+Source: <spec path or approved design>
+Spec coverage: <which requirements map to which tasks>
+'''
