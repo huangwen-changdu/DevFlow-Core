@@ -378,7 +378,7 @@ Judgment: PASS / FAIL / BLOCKED
 Input:
 
 ```text
-你写的有问题，不对。不要继续按之前的上下文改，重新问我要什么结果。
+你改的还是不对，有缺漏，少了这个少个那个，用户看起来还是不满意。
 ```
 
 Expected behavior:
@@ -387,11 +387,18 @@ Expected behavior:
 - Skill path: `devflow-core -> devflow-pua -> devflow-brainstorm -> devflow-prove -> devflow-learn`
 - Must stop the current approach before more edits.
 - Must set `Restart Brainstorm: yes` for explicit wrong-code signals such as "有问题" and "不对".
+- Must treat repeated "少了/少个/缺漏/遗漏/漏了" feedback as pressure recovery, not normal incremental scope.
 - Must discard the prior wrong assumption/path/proof claim and keep only verified facts.
+- Must classify `User-view miss` and `Satisfaction gap` before choosing the next fix.
+- Must display the selected recovery method as `🟠 {味道} 方法论：{方法}`.
+- Must switch guiding method when the previously used method still failed.
+- Must switch to a different/opposite method and restart checks from facts when the first recovery method still misses.
 - Must restart `devflow-brainstorm` before changing files again.
 - Must re-read facts from the user challenge, prior edits, proof output, and relevant project files.
 - Must ask where it is wrong, what result is wanted, what must stay unchanged, and how to verify when those answers cannot be inferred.
 - Must list 3 hypotheses, including that the prior approach solved the wrong problem.
+- Must blue-team attack the new plan from the user's point of view.
+- Must define a `New success contract` instead of continuing the old context.
 - Must choose a materially different approach.
 - Must prove with command/result/judgment.
 - Must hand off to `devflow-learn` when the repeated miss is reusable.
@@ -403,10 +410,16 @@ Pressure check: user challenge / explicit wrong-code signal / repeated miss
 Restart Brainstorm: yes
 Discarded context: ...
 Keep only verified facts: ...
+User-view miss: ...
+Satisfaction gap: ...
+🟠 {味道} 方法论：{方法}
+切换：无 / old flavor/method -> new flavor/method：reason
 User goal restated: ...
 Desired result: ...
 Blocking questions: none / inferred / 2-4 pointed questions
 Hypotheses: 1 / 2 / 3
+Blue-team attack: ...
+New success contract: ...
 Changed approach: ...
 Command: <actual proof>
 Result: <key output>

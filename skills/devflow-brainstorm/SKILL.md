@@ -40,24 +40,29 @@ If one answer is missing but can be inferred from project facts, state the infer
 
 ## Re-Ask After Challenge
 
-When `devflow-pua` hands off after user challenge, changed-wrong result, or repeated miss:
+When `devflow-pua` hands off after user challenge, changed-wrong result, repeated missing-piece feedback, or repeated miss:
 
 1. Restate the current understanding of the user's goal.
 2. Treat the prior approach as failure evidence only; do not reuse the old plan, target, or proof claim unless the user or fresh facts explicitly confirm it.
 3. Name what was likely misread: target, artifact, behavior, UI distinction, file placement, or proof.
-4. Ask where the result is wrong, what result is wanted, what must stay unchanged, and what proof would count as corrected when those answers cannot be inferred from facts.
-5. Compare a corrected direct approach with at least one materially different approach or no-change/reuse option.
+4. Carry forward the compact methodology line `🟠 {味道} 方法论：{方法}`, any `切换：` line, `User-view miss`, `Satisfaction gap`, and `New success contract` from `devflow-pua`.
+5. Ask where the result is wrong, what result is wanted, what must stay unchanged, and what proof would count as corrected when those answers cannot be inferred from facts.
+6. If the user repeatedly says pieces are missing, build a Coverage Map of required surfaces before proposing changes.
+7. If the prior guiding method failed, use the switched different/opposite method from `devflow-pua` and do not propose another variation of the old method.
+8. Compare a corrected direct approach with at least one materially different approach or no-change/reuse option.
 
 Question shapes:
 
 ```text
 What exact result should the user see?
 What is wrong with the current output?
+What is missing or incomplete?
+Which expected surface is missing: file, command, skill, docs, install sync, UI, backend behavior, or proof?
 What must stay unchanged?
 What proof would count as corrected?
 ```
 
-Do not ask vague batches. Do not keep the previous plan unless facts prove it still matches the user's desired result.
+Do not ask vague batches. Do not keep the previous plan unless facts prove it still matches the user's desired result. Do not treat repeated "missing this/missing that" or "少了这个/少个那个" as normal incremental scope until `devflow-pua` has classified whether it is a coverage gap or a new requirement.
 
 ## Small Request Boundary
 

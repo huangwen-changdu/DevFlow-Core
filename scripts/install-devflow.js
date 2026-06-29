@@ -40,6 +40,9 @@ const runtimeEntries = [
   "skills/devflow-prove/SKILL.md",
   "skills/devflow-prove/references/flow-self-test.md",
   "skills/devflow-pua/SKILL.md",
+  "skills/devflow-pua/references/methodology-router.md",
+  "skills/devflow-pua/references/methodology-library.md",
+  "skills/devflow-pua/references/flavor-display.md",
   "skills/devflow-learn/SKILL.md",
   "skills/devflow-audit/SKILL.md",
   "skills/skill-call-diagram.md"

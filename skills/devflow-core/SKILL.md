@@ -50,7 +50,7 @@ Do not claim understanding without facts.
 | Design-lite | Small feature with clear behavior, one plausible path, low risk, local impact, and quick proof. | Short goal -> acceptance -> not-doing -> Cut -> Build/Prove if requested |
 | Design | Requirement, behavior change, feature, architecture change, ambiguity, multi-solution decision, or unclear small-feature boundary. | Sense -> Brainstorm -> Cut -> Shape |
 | Build | User asks to implement, fix, land, or execute an approved change. | Sense -> Brainstorm -> Cut -> Shape -> Build -> Prove |
-| Recovery | Repeated failure, user correction, user challenge, quality complaint, changed-wrong result, unexpected verification failure, or giving-up impulse. | Load `devflow-pua` when pressure recovery is needed; re-read facts -> 3 hypotheses -> different approach -> Prove |
+| Recovery | Repeated failure, user correction, user challenge, missing-piece complaint, repeated "少了这个/少个那个" feedback, quality complaint, changed-wrong result, unexpected verification failure, or giving-up impulse. | Load `devflow-pua` when pressure recovery is needed; diagnose user-view miss -> re-read facts -> 3 hypotheses -> different/opposite method -> changed approach -> Prove |
 
 If the user asks to implement, build, fix, or land a change, do not stop at Shape. Continue through Build and Prove.
 
@@ -76,7 +76,7 @@ Before routing, classify the incoming work:
 | "problem report", "check what is wrong", "why broken", "investigate" | Problem investigation | `devflow-core -> devflow-prove` for facts; if a change is needed, re-route to Design or Build. |
 | "requirement", "feature request", "add support", "implement" | Requirement | `devflow-core -> devflow-brainstorm -> devflow-cut`, or Design-lite when the Small Request Boundary passes; continue to Build only when implementation is requested. |
 | "bug report", "error", "failing test", "fix bug", "broken" | Bug fix | `devflow-core -> devflow-brainstorm -> devflow-cut -> devflow-build -> devflow-prove`, with Root-Cause Check before editing. |
-| "wrong", "not like that", "changed wrong", "your code is wrong", "you wrote it wrong", "has a problem", "not right", "quality complaint", "user dissatisfied", "有问题", "不对", "写错了", "改歪了", "没改对", "不是我要的", "理解错了", "改了几次" | Pressure recovery | `devflow-core -> devflow-pua -> devflow-brainstorm`; quarantine prior wrong assumptions, ask what is wrong and what result is wanted, then switch approach before more edits. |
+| "wrong", "not like that", "changed wrong", "your code is wrong", "you wrote it wrong", "has a problem", "not right", "missing", "incomplete", "still missing", "quality complaint", "user dissatisfied", "有问题", "不对", "写错了", "改歪了", "没改对", "不是我要的", "理解错了", "改了几次", "少了", "少个", "缺少", "缺漏", "遗漏", "漏了" | Pressure recovery | `devflow-core -> devflow-pua -> devflow-brainstorm`; quarantine prior wrong assumptions, diagnose user-view miss, ask what is wrong and what result is wanted, then switch method/approach before more edits. |
 
 Problem investigation must not silently become implementation. First prove what is wrong, what is unknown, and whether a change is actually needed.
 
@@ -93,7 +93,7 @@ Problem investigation must not silently become implementation. First prove what 
 | problem report without explicit fix request | Issue Triage | Prove the symptom or absence of evidence first; do not edit until the needed change is clear. |
 | bug report or failing verification | Root-Cause Fix Check | Load `devflow-cut`; search callers/references and choose shared vs narrow fix. |
 | repeated failure or user correction | Recovery Switch | Re-read facts, list 3 hypotheses, pick a materially different approach, then Prove. |
-| user challenge, changed wrong, explicit wrong-code signal, repeated miss, quality complaint | Pressure Recovery Gate | Load `devflow-pua`; stop editing, quarantine previous wrong assumptions, restart `devflow-brainstorm`, ask what is wrong and what result is wanted when not inferable, change approach, then Prove. |
+| user challenge, changed wrong, explicit wrong-code signal, repeated miss, missing-piece complaint, repeated "少了这个/少个那个" feedback, quality complaint | Pressure Recovery Gate | Load `devflow-pua`; stop editing, quarantine previous wrong assumptions, diagnose user-view miss, restart `devflow-brainstorm`, ask what is wrong and what result is wanted when not inferable, switch to a different/opposite method when the prior method failed, then Prove. |
 | reusable correction, repeated pitfall, project convention | Learning Capture | Load `devflow-learn`; update `.copilot/LEARNING_INDEX.md` and one focused card. |
 | existing target-project capability iteration with a feature ledger | Feature Ledger Recall | When present, read the matched `docs/features/*.md` ledger before planning and update it after a validated capability change. |
 
@@ -146,12 +146,18 @@ Pressure check: <none or user challenge / changed wrong / repeated miss>
 Restart Brainstorm: <yes for repeated challenge or explicit wrong-code signal>
 Discarded context: <old assumption/path/proof claim not reused>
 Keep only verified facts: <facts retained>
+User-view miss: <why the user would still say this is wrong or incomplete>
+Satisfaction gap: <goal/artifact/behavior/coverage/proof/UX gap>
+🟠 {味道} 方法论：{方法}
+切换：<无 or old flavor/method -> new flavor/method：reason>
 Facts reread: ...
 User goal restated: ...
 Desired result: ...
 Blocking questions: <none, inferred, or 2-4 pointed questions>
 Method Lens: primary <lens>; secondary <lens/none>; why <risk or decision it handles>
 Hypotheses: 1 / 2 / 3
+Blue-team attack: ...
+New success contract: ...
 Changed approach: ...
 Verification: ...
 ```
@@ -172,7 +178,7 @@ Verification: ...
 - Before adding structure -> `devflow-cut`
 - Approved work -> `devflow-build`
 - Before completion -> `devflow-prove`
-- User challenge, explicit wrong-code signal, changed-wrong result, repeated miss, or quality complaint -> `devflow-pua -> devflow-brainstorm`
+- User challenge, explicit wrong-code signal, changed-wrong result, repeated miss, repeated "少了这个/少个那个" feedback, missing-piece complaint, or quality complaint -> `devflow-pua -> devflow-brainstorm`
 - User correction or reusable pitfall -> `devflow-learn`
 
 ## Verification

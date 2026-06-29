@@ -21,7 +21,7 @@ Use the lightest safe route:
 - Design-lite: small feature with clear behavior, one plausible path, low risk, local impact, and quick proof. Use short goal, acceptance, not-doing, Cut, then Build/Prove if implementation is requested.
 - Design: requirement, feature request, behavior change, architecture change, ambiguity, multi-solution decision, or unclear small-feature boundary. Run Sense -> Brainstorm -> Cut -> Shape.
 - Build: implement, fix, land, execute an approved change, bug report with fix request, failing test, or broken behavior. Run Sense -> Brainstorm -> Cut -> Shape -> Build -> Prove.
-- Recovery: repeated failure, user correction, user challenge, quality complaint, changed-wrong result, explicit wrong-code signal, unexpected verification failure, or giving-up impulse. Stop the current path, quarantine wrong assumptions, restart Brainstorm when challenged hard, list 3 hypotheses, switch approach, then Prove.
+- Recovery: repeated failure, user correction, user challenge, missing-piece complaint, repeated `少了这个/少个那个`, quality complaint, changed-wrong result, explicit wrong-code signal, unexpected verification failure, or giving-up impulse. Stop the current path, quarantine wrong assumptions, diagnose user-view miss, restart Brainstorm when challenged hard, switch to a different/opposite method after method failure, then Prove.
 
 If a request might be either Fast, Design-lite, or full Design and facts do not decide it, ask the user to choose the route instead of guessing.
 
@@ -36,7 +36,7 @@ Codex may only reliably see this file plus skill descriptions. Use these ASCII t
 - `problem report`, `investigate`, `check what is wrong`, `why broken` -> Problem -> Sense -> Prove facts.
 - `requirement`, `feature request`, `add support`, `implement` -> Design or Build.
 - `bug report`, `error`, `failing test`, `fix bug`, `broken` -> Build with Root-Cause Check.
-- `wrong`, `not like that`, `changed wrong`, `your code is wrong`, `you wrote it wrong`, `has a problem`, `not right`, `quality complaint`, `user dissatisfied`, `有问题`, `不对`, `写错了`, `改歪了`, `没改对`, `不是我要的`, `理解错了`, `改了几次` -> Recovery -> devflow-pua -> restart devflow-brainstorm.
+- `wrong`, `not like that`, `changed wrong`, `your code is wrong`, `you wrote it wrong`, `has a problem`, `not right`, `missing`, `incomplete`, `still missing`, `quality complaint`, `user dissatisfied`, `有问题`, `不对`, `写错了`, `改歪了`, `没改对`, `不是我要的`, `理解错了`, `改了几次`, `少了`, `少个`, `缺少`, `缺漏`, `遗漏`, `漏了` -> Recovery -> devflow-pua -> restart devflow-brainstorm.
 - `done`, `fixed`, `complete`, `ready`, `passed` -> Prove before any completion claim.
 
 ## Skills
@@ -47,7 +47,7 @@ When the platform supports skills, start normal development work with `devflow-c
 - `devflow-cut`: before new code, dependencies, abstractions, config, folders, framework layers, generic capabilities, or overengineering review.
 - `devflow-build`: approved implementation, fixes, narrow refactors, and implementation slices.
 - `devflow-prove`: before saying done, fixed, complete, working, passed, ready, or candidate_pass.
-- `devflow-pua`: user challenge, explicit wrong-code signal, changed-wrong result, repeated miss, quality complaint, or pressure recovery before more edits; for repeated challenge or "有问题/不对/写错了", quarantine old context and restart `devflow-brainstorm`.
+- `devflow-pua`: user challenge, explicit wrong-code signal, missing-piece complaint, changed-wrong result, repeated miss, quality complaint, or pressure recovery before more edits; classify `User-view miss`, `Satisfaction gap`, display `🟠 {味道} 方法论：{方法}`, and switch to a different/opposite method if the prior method still failed.
 - `devflow-learn`: user correction, repeated user correction, misplaced content, wrong place, repeated failure, reusable pitfall, skipped validation, or project convention.
 
 ## Cut Before Code

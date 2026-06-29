@@ -145,7 +145,7 @@ Method Lens: primary <lens>; secondary <lens/none>; why <risk or decision it han
 Rules:
 
 - The lens changes how the existing DevFlow route is executed; it does not replace Sense, Brainstorm, Cut, Build, or Prove.
-- Do not add PUA flavor, pressure rhetoric, leaderboard, hook lifecycle, or default full OpenSpec to use a lens.
+- Do not add PUA flavor, pressure rhetoric, leaderboard, hook lifecycle, or default full OpenSpec to use a normal Method Lens. Pressure recovery is the exception: `devflow-pua` may use its local methodology router/library/display references to show flavor-method routing.
 - If no lens changes the decision, say `Method Lens: none; why standard route is enough`.
 
 ## Method 5: Minimal Solution Ladder
@@ -392,7 +392,7 @@ Purpose: avoid looping on the same failed move.
 
 Trigger when verification fails unexpectedly, the user says the result is wrong or vague, the same command/fix fails twice, or the agent is about to give up.
 
-Use `devflow-pua` when the signal is user challenge, changed-wrong result, repeated miss, quality complaint, or two failed/corrected attempts in one task lifecycle.
+Use `devflow-pua` when the signal is user challenge, changed-wrong result, repeated miss, quality complaint, or two failed/corrected attempts in one task lifecycle. `devflow-pua` must read its local methodology router/library/display references and display the selected method as `🟠 {味道} 方法论：{方法}` before another patch. If the method changed, add one `切换：` line.
 
 Actions:
 

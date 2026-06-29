@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current Version: v23
+- Current Version: v26
 - Status: active
-- Last Change: spec-document-validation
+- Last Change: pua-compact-method-display-validation
 - Product Area: local validation, evidence commands, coverage reports
 
 ## Feature Background
@@ -24,8 +24,8 @@ This ledger exists because validation behavior now changes independently from th
 - Scenario self-tests include new reusable pitfall card coverage for memory/learning validation.
 - Scenario self-tests include target project install check coverage for onboarding and post-install proof.
 - `npm run trigger:verify` validates sample prompt-to-route, skill-path, and direct command trigger evidence.
-- `npm run trigger:verify` validates `devflow-pua` pressure recovery, hard Brainstorm restart fields, explicit wrong-code signal triggers, and `/devflow-pua` command trigger evidence.
-- `npm run host:verify` validates cross-host adapter consistency for shared prompt, platform rules, plugin metadata, and Gemini metadata.
+- `npm run trigger:verify` validates `devflow-pua` pressure recovery, local methodology references, compact `🟠 {味道} 方法论：{方法}` output, hard Brainstorm restart fields, explicit wrong-code signal triggers, repeated missing-piece triggers, opposite-method switching, and `/devflow-pua` command trigger evidence.
+- `npm run host:verify` validates cross-host adapter consistency for shared prompt, pressure recovery triggers, local methodology references, compact methodology display, opposite-method switching, platform rules, plugin metadata, and Gemini metadata.
 - `npm run host:verify` validates Claude Code hook config and the SessionStart hook payload.
 - `npm run host:verify` validates the Claude Code `/devflow-core` command trigger bridge.
 - `npm run install:verify` validates installer dry-run, create, target runtime check, skip-existing, force-overwrite, manifest coverage, and installed runtime self-containment against temporary target projects.
@@ -50,6 +50,9 @@ This ledger exists because validation behavior now changes independently from th
 
 | Version | Change | Type | Date | Status | Summary |
 |---|---|---|---|---|---|
+| v26 | pua-compact-method-display-validation | trigger hardening | 2026-06-27 | active | Updated trigger, host, and package validation to require the compact `🟠 {味道} 方法论：{方法}` contract instead of verbose methodology output fields. |
+| v25 | pua-methodology-assets-validation | trigger hardening | 2026-06-27 | active | Added validation that `devflow-pua` ships local methodology router/library/display references and requires visible method output. |
+| v24 | pua-repeated-missing-validation | trigger hardening | 2026-06-27 | active | Added validation coverage for "少个" missing-piece triggers and different/opposite method switching across trigger and host surfaces. |
 | v23 | spec-document-validation | command hardening | 2026-06-26 | active | Added validation coverage for `devflow-spec`, `/devflow-spec`, `scripts/devflow-spec.js`, `spec:verify`, manifests, installers, and trigger/host checks. |
 | v22 | activation-chain-and-reuse-validation | proof hardening | 2026-06-26 | active | Added validation for Skill Activation Chain Check wording and `reuse` audit scanner detection. |
 | v21 | pua-hard-restart-validation | trigger hardening | 2026-06-26 | active | Added trigger and host-adapter validation for explicit wrong-code signals, `Restart Brainstorm`, discarded context, and verified-facts output fields. |
@@ -101,6 +104,8 @@ This ledger exists because validation behavior now changes independently from th
 - 2026-06-26: Validate explicit wrong-code recovery through trigger and host-adapter checks. Reason: the rule must be visible from `AGENTS.md`, skill descriptions, commands, and host prompts, not only remembered inside one skill body.
 - 2026-06-26: Validate Skill Activation Chain Check and `reuse` detection through existing package and audit self-tests. Reason: the behavior must be visible in the runtime skill and executable in the scanner without adding a broad code-quality harness.
 - 2026-06-26: Add `npm run spec:verify` and manifest/installer/trigger coverage for `devflow-spec` instead of leaving specs as prompt-only guidance. Reason: Superpowers-style spec discipline must be reachable and locally provable after target install.
+- 2026-06-27: Validate repeated missing-piece recovery and opposite-method switching through trigger and host checks. Reason: the behavior is only useful if Codex, Claude, Copilot, and CodeBuddy entry surfaces all make the same recovery path visible.
+- 2026-06-27: Validate local methodology assets and compact display output. Reason: naming methods is not enough; the runtime must prove it ships the method files and forces agents to show `🟠 {味道} 方法论：{方法}` plus a switch line when the method changes.
 
 ## Known Constraints
 
@@ -125,6 +130,9 @@ This ledger exists because validation behavior now changes independently from th
 - Learning-loop validation: `scripts/validate-learning-loop.js`
 - Scenario coverage: `scripts/report-scenario-coverage.js`
 - Trigger validation: `scripts/validate-skill-triggers.js`
+- PUA methodology router: `skills/devflow-pua/references/methodology-router.md`
+- PUA methodology library: `skills/devflow-pua/references/methodology-library.md`
+- PUA flavor display: `skills/devflow-pua/references/flavor-display.md`
 - Host adapter validation: `scripts/validate-host-adapters.js`
 - Installer validation: `scripts/validate-installer.js`
 - Claude hook config: `hooks/hooks.json`

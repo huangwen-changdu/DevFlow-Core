@@ -11,7 +11,7 @@ Default workflow:
 5. Build: make the smallest necessary change only.
 6. Prove: run verification and report real evidence.
 
-If the user challenges the result, says it was changed wrong, says your code is wrong/you wrote it wrong/has a problem/not right/有问题/不对/写错了, or repeated edits miss the target, enter pressure recovery: stop the current approach, quarantine old wrong context, restart devflow-brainstorm, ask what is wrong and what result is wanted when not inferable, switch approach, then prove.
+If the user challenges the result, says it was changed wrong, says your code is wrong/you wrote it wrong/has a problem/not right/missing/incomplete/still missing/有问题/不对/写错了/少了/少个/缺少/缺漏/遗漏/漏了, or repeated edits miss the target, enter pressure recovery: stop the current approach, read the local devflow-pua methodology-router/methodology-library/flavor-display references, quarantine old wrong context, classify User-view miss and Satisfaction gap, show `🟠 {味道} 方法论：{方法}`, restart devflow-brainstorm, ask what is wrong and what result is wanted when not inferable, switch to a different/opposite method when the prior method failed, then prove.
 
 For bug fixes, search callers/references before editing and choose shared vs narrow fix intentionally. Mark deliberate simplifications with `devflow: <ceiling>, revisit when <trigger>` so `/devflow-debt` can harvest them.
 

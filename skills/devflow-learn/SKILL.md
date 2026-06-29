@@ -1,6 +1,6 @@
 ---
 name: devflow-learn
-description: "Use when the user says wrong, not like that, changed wrong, remember, learn, 沉淀, 下次不要, 放错位置, 改歪了, 没改对, 不是我要的, or when a repeated user correction, repeated user challenge, misplaced content, reusable pitfall, wrong assumption, skipped validation, project convention, or .copilot learning-card update appears."
+description: "Use when the user says wrong, not like that, changed wrong, remember, learn, 沉淀, 下次不要, 放错位置, 改歪了, 没改对, 不是我要的, 少了, 少个, 缺漏, 遗漏, or when a repeated user correction, repeated user challenge, repeated missing-piece complaint, misplaced content, reusable pitfall, wrong assumption, skipped validation, project convention, or .copilot learning-card update appears."
 ---
 
 # DevFlow Learn
@@ -10,7 +10,7 @@ Turn corrections and pitfalls into reusable intercept rules without bloating con
 ## Process
 
 1. Detect the learning signal:
-   - user correction, repeated user correction, repeated user challenge, changed-wrong result, wrong assumption, repeated failure, skipped validation, missed project convention, misplaced content, or non-obvious pitfall
+   - user correction, repeated user correction, repeated user challenge, repeated missing-piece complaint, changed-wrong result, wrong assumption, repeated failure, skipped validation, missed project convention, misplaced content, or non-obvious pitfall
 2. Read `.copilot/LEARNING_INDEX.md` if it exists.
 3. Read only matched cards; do not load all `.copilot/cards/**`.
 4. Decide whether to record:
@@ -24,14 +24,16 @@ Turn corrections and pitfalls into reusable intercept rules without bloating con
 
 Repeated correction is not optional learning. If the user corrects the same boundary, placement, workflow, or wording rule twice in one task lifecycle, create or update a learning card before claiming completion.
 
-Repeated challenge is also not optional learning. If the user says the result was wrong, changed wrong, missed the target, or not what they wanted twice in one task lifecycle, record the next-time intercept after `devflow-pua` identifies the reusable mistake pattern.
+Repeated challenge is also not optional learning. If the user says the result was wrong, changed wrong, missed the target, missing pieces, or not what they wanted twice in one task lifecycle, record the next-time intercept after `devflow-pua` identifies the reusable mistake pattern.
+
+Repeated missing-piece feedback is also not optional learning when the same task already went through recovery. If the user says "少了这个/少个那个/缺漏/遗漏/漏了" after a prior attempt or after a method switch, record the missing coverage pattern and the next method switch rule.
 
 Required pressure-recovery card action:
 
 ```text
-- Trigger: <task signal>, user challenge, changed wrong, repeated miss
+- Trigger: <task signal>, user challenge, changed wrong, repeated miss, repeated missing-piece complaint
 - Lesson: <what goal/result was misunderstood>
-- Next action: Next time encountering <X>, first stop the current path, restate the desired result, ask or infer the pointed result questions, then switch approach.
+- Next action: Next time encountering <X>, first stop the current path, classify the user-view miss, build a Coverage Map for missing pieces, restate the desired result, ask or infer the pointed result questions, then switch to a different/opposite method before editing.
 ```
 
 Misplaced content counts as a reusable pitfall when a rule, prompt, method detail, plan, or explanation was put in the wrong artifact, such as:

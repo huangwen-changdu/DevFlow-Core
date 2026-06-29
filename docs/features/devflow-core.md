@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current Version: v24
+- Current Version: v28
 - Status: active
-- Last Change: spec-document-runtime
+- Last Change: pua-compact-method-display
 - Product Area: runtime flow, skill routing, validation, learning loop
 
 ## Feature Background
@@ -25,7 +25,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - Claude Code `SessionStart` hook artifacts for project-level and plugin-style activation reminders.
 - Claude Code `/devflow-core` command under `.claude/commands/` that explicitly bridges requirements, UI/page ambiguity, prompt distinction issues, and server-backed implementation requests to `devflow-brainstorm`.
 - `devflow-core` route selection for Fast, Problem, Design-lite, Design, Build, and Recovery.
-- `devflow-pua` pressure recovery for user challenge, explicit wrong-code signals, changed-wrong results, repeated misses, quality complaints, hard `devflow-brainstorm` restart, wrong-context quarantine, pointed goal/result questions, changed approach, proof, and learning handoff.
+- `devflow-pua` pressure recovery for user challenge, explicit wrong-code signals, repeated missing-piece complaints such as "少了这个/少个那个", changed-wrong results, repeated misses, quality complaints, local PUA methodology assets, compact `🟠 {味道} 方法论：{方法}` display, concise method switch line, hard `devflow-brainstorm` restart, user-view miss diagnosis, method switching after failed methods, opposite-method recovery when a method still misses, wrong-context quarantine, pointed goal/result questions, changed approach, proof, and learning handoff.
 - `devflow-prove` Skill Activation Chain Check for rule, command, prompt, entry, and skill changes.
 - Small Request Boundary gates for Fast and Design-lite: impact, risk, uncertainty, and proof.
 - Method Lens selection for Design, Recovery, and high-risk proof: Root Cause, Working Backwards, First Principles Cut, Data/Proof, and Operational Owner.
@@ -54,6 +54,10 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 
 | Version | Change | Type | Date | Status | Summary |
 |---|---|---|---|---|---|
+| v28 | pua-compact-method-display | recovery usability | 2026-06-27 | active | Simplified visible PUA methodology output to `🟠 {味道} 方法论：{方法}` plus a concise switch line while keeping local methodology assets as the runtime source. |
+| v27 | pua-local-methodology-assets | recovery hardening | 2026-06-27 | active | Added local `devflow-pua` methodology router, method library, flavor display protocol, and required method display output. |
+| v26 | pua-repeated-missing-opposite-method | recovery hardening | 2026-06-27 | active | Added repeated "少了这个/少个那个" trigger handling and opposite-method recovery when a prior guiding method still fails. |
+| v25 | pua-user-view-method-switch | recovery hardening | 2026-06-27 | active | Added user-view miss taxonomy, satisfaction-gap output, missing-piece complaint triggers, and method switching when a prior recovery method still fails. |
 | v24 | spec-document-runtime | Superpowers absorption | 2026-06-26 | active | Added `devflow-spec`, `/devflow-spec`, a spec checker, default `docs/specs/` landing, and plan `Source` / `Spec coverage` tracing without requiring full specs for every task. |
 | v23 | code-quality-activation-chain | proof hardening | 2026-06-26 | active | Absorbed the useful parts of `code-quality-check-pua`: lightweight completion quality gate, Skill Activation Chain Check, and a `reuse` overengineering tag without adding a large quality-check skill. |
 | v22 | devflow-pua-hard-brainstorm-restart | recovery hardening | 2026-06-26 | active | Made repeated challenges and explicit wrong-code signals restart `devflow-brainstorm`, quarantine old wrong context, and ask what is wrong and what result is wanted before more edits. |
@@ -109,6 +113,9 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - 2026-06-26: Absorb `code-quality-check-pua` as targeted gates instead of a monolithic code-quality skill. Reason: DevFlow-Core already has Build, Cut, Audit, and Prove; the missing value was skill activation proof and missed-reuse reporting, not another broad review layer.
 - 2026-06-26: Add `devflow-spec` as the Superpowers-style requirements source instead of forcing every task through a full design document. Reason: larger work needs a traceable spec before planning, while Design-lite should remain lightweight.
 - 2026-06-26: Require `Source:` and `Spec coverage:` in Plan Pack instead of relying on plan text alone. Reason: implementation tasks should prove which spec requirements or approved design decisions they cover.
+- 2026-06-27: Treat repeated "missing this/missing that" feedback as pressure recovery instead of ordinary incremental scope. Reason: repeated missing-piece feedback usually means the agent failed coverage, success-contract, or user-view diagnosis, so continuing the old method repeats the miss.
+- 2026-06-27: Switch to a different/opposite recovery method when the first method still fails. Reason: after a user says the fix is still wrong or still missing pieces, another tweak with the same method usually repeats the failure pattern; the runtime must restart checks from facts with a different lens.
+- 2026-06-27: Add local PUA methodology assets instead of only naming methods. Reason: pressure recovery must expose which method is active, why it was chosen, what flavor is displayed, and what method steps will be executed without requiring runtime links to another project.
 
 ## Known Constraints
 
@@ -145,6 +152,9 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - Router skill: `skills/devflow-core/SKILL.md`
 - Spec skill: `skills/devflow-spec/SKILL.md`
 - Pressure recovery skill: `skills/devflow-pua/SKILL.md`
+- PUA methodology router: `skills/devflow-pua/references/methodology-router.md`
+- PUA methodology library: `skills/devflow-pua/references/methodology-library.md`
+- PUA flavor display: `skills/devflow-pua/references/flavor-display.md`
 - Repo audit skill: `skills/devflow-audit/SKILL.md`
 - Proof skill: `skills/devflow-prove/SKILL.md`
 - Self-tests: `skills/devflow-prove/references/flow-self-test.md`

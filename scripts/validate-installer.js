@@ -144,6 +144,9 @@ assert(fs.existsSync(path.join(createTarget, "AGENTS.md")), "Write mode must cre
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-core/SKILL.md")), "Write mode must create core skill");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-spec/SKILL.md")), "Write mode must create spec skill");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-pua/SKILL.md")), "Write mode must create pua skill");
+assert(fs.existsSync(path.join(createTarget, "skills/devflow-pua/references/methodology-router.md")), "Write mode must create pua methodology router");
+assert(fs.existsSync(path.join(createTarget, "skills/devflow-pua/references/methodology-library.md")), "Write mode must create pua methodology library");
+assert(fs.existsSync(path.join(createTarget, "skills/devflow-pua/references/flavor-display.md")), "Write mode must create pua flavor display");
 assert(fs.existsSync(path.join(createTarget, "commands/devflow.toml")), "Write mode must create command files");
 assert(fs.existsSync(path.join(createTarget, "commands/devflow-spec.toml")), "Write mode must create spec command");
 assert(fs.existsSync(path.join(createTarget, "commands/devflow-pua.toml")), "Write mode must create pua command");

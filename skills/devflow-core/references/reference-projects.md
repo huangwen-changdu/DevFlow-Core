@@ -88,7 +88,8 @@ What it does:
 Absorbed into DevFlow-Core:
 
 - `devflow-core` now includes Fast / Design / Recovery routing.
-- `skills/devflow-core/references/core-methods.md` includes Method Lens so Design, Recovery, and high-risk proof can choose a task-specific working strategy without loading the old PUA methodology stack.
+- `skills/devflow-core/references/core-methods.md` includes Method Lens so Design, Recovery, and high-risk proof can choose a task-specific working strategy.
+- `devflow-pua` now owns a local pressure-recovery methodology stack under `skills/devflow-pua/references/`: router, method library, and flavor display protocol.
 - `devflow-brainstorm` now requires Method Lens selection or an explicit "standard route is enough" decision before the design contract.
 - `devflow-learn` preserves the learning/pitfall card loop with `.copilot/LEARNING_INDEX.md` and matched cards.
 - `AGENTS.md`, `.github/copilot-instructions.md`, and CodeBuddy rules stay semantically aligned.
@@ -112,13 +113,14 @@ What it does:
 Absorbed into DevFlow-Core:
 
 - `plugin.json`, `gemini-extension.json`, commands, Copilot, and CodeBuddy entries make the framework installable/adaptable.
-- Method Lens absorbs PUA method routing as native DevFlow behavior: Root Cause, Working Backwards, First Principles Cut, Data/Proof, and Operational Owner are selectable lenses, not separate flavor personas.
+- Method Lens absorbs PUA method routing as native DevFlow behavior for normal work: Root Cause, Working Backwards, First Principles Cut, Data/Proof, and Operational Owner are selectable lenses.
+- `devflow-pua/references/methodology-router.md`, `methodology-library.md`, and `flavor-display.md` absorb the practical PUA flavor-method routing for pressure recovery, including the compact visible output `🟠 {味道} 方法论：{方法}` plus a concise `切换：` line when the method changes.
 - `devflow-prove` includes a verifier lens and forbids self-certifying final status when an external verifier is required.
 - `devflow-core` includes Recovery route and 3-hypothesis approach switching.
 
 Not absorbed:
 
-- PUA flavor system, pressure rhetoric, leaderboard, network feedback, agent lifecycle accounting, hook automation, and default full OpenSpec. They are outside the first practical DevFlow-Core scope.
+- Full PUA persona theater, pressure rhetoric, leaderboard, network feedback, agent lifecycle accounting, hook automation, and default full OpenSpec. DevFlow-Core only keeps the lightweight flavor-method display needed for pressure recovery.
 
 ## Resulting Product Shape
 

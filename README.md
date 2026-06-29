@@ -366,7 +366,7 @@ If verification is partial, say what is not covered. If verification cannot run,
 | Agent Skills | Skill anatomy, lifecycle commands, anti-rationalization tables, context/source discipline. |
 | Superpowers | Brainstorm-to-spec-to-plan-to-build handoff, `devflow-spec`, `docs/specs/<short-kebab-name>.md`, bite-sized tasks, `Source` / `Spec coverage` tracing, and verification-before-completion gate. |
 | PUA-Driven Spec Engineering | Fast/Design/Recovery gating, project memory checks, skill activation evidence, Codex proof contract, and Method Lens routing. |
-| PUA | `devflow-pua` pressure recovery, verifier role, multi-platform packaging, explicit command routing, and lightweight method selection without flavor personas. |
+| PUA | `devflow-pua` pressure recovery, verifier role, multi-platform packaging, explicit command routing, and lightweight local flavor-method routing without full persona theater. |
 
 ## Product Direction
 
