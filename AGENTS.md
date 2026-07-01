@@ -47,7 +47,7 @@ When the platform supports skills, start normal development work with `devflow-c
 - `devflow-cut`: before new code, dependencies, abstractions, config, folders, framework layers, generic capabilities, or overengineering review.
 - `devflow-build`: approved implementation, fixes, narrow refactors, and implementation slices.
 - `devflow-prove`: before saying done, fixed, complete, working, passed, ready, or candidate_pass.
-- `devflow-pua`: user challenge, explicit wrong-code signal, missing-piece complaint, changed-wrong result, repeated miss, quality complaint, or pressure recovery before more edits; classify `User-view miss`, `Satisfaction gap`, display `🟠 {味道} 方法论：{方法}`, and switch to a different/opposite method if the prior method still failed.
+- `devflow-pua`: user challenge, explicit wrong-code signal, missing-piece complaint, changed-wrong result, repeated miss, quality complaint, or pressure recovery before more edits; classify `User-view miss`, `Satisfaction gap`, display `METHOD: {flavor} / {method}`, and switch to a different/opposite method if the prior method still failed.
 - `devflow-learn`: user correction, repeated user correction, misplaced content, wrong place, repeated failure, reusable pitfall, skipped validation, or project convention.
 
 ## Cut Before Code

@@ -24,7 +24,7 @@ These files are the runtime method source. Do not link out to the original PUA p
 3. **Quarantine wrong context**: keep only verified facts and user-stated constraints; discard the previous solution hypothesis, implementation path, and "almost fixed" assumptions.
 4. **Load methodology**: read `references/methodology-router.md`, `references/methodology-library.md`, and `references/flavor-display.md`.
 5. **Route flavor/method**: choose the starting or switched flavor from the pressure signal and failure pattern.
-6. **Display method**: output one compact visible line: `🟠 {味道} 方法论：{方法}`. If the method changed, add one `切换：` line.
+6. **Display method**: output one compact visible line: `METHOD: {flavor} / {method}`. If the method changed, add one `SWITCH:` line.
 7. **Diagnose the user-view miss**: classify why the user would still feel unsatisfied before proposing another patch.
 8. **Restart `devflow-brainstorm`**: for multiple challenges, repeated missing-piece complaints, or explicit "you wrote it wrong / 有问题 / 不对", do not continue editing before a fresh Brainstorm pass.
 9. **Ask what is wrong and what result is wanted**: ask the smallest concrete set when the answer is not already explicit.
@@ -94,7 +94,7 @@ Opposite method switching:
 Before visible output, decide whether the prior method is still valid or must switch to Customer Backwards, Coverage Map, Owner-RCA, or Blue-Team Opposite Hypothesis. Do not expose that decision as extra output fields unless the user asks for full diagnostics. When the method changes, use only this visible line:
 
 ```text
-切换：<旧味道>/<旧方法> -> <新味道>/<新方法>：<原因>
+SWITCH: <old flavor>/<old method> -> <new flavor>/<new method>: <reason>
 ```
 
 If the switched method also fails once, stop editing and ask the user to confirm the new success contract before another patch. If it fails twice, record the reusable miss through `devflow-learn`.
@@ -143,8 +143,8 @@ Pressure check: <signal and why normal Recovery is not enough>
 Restart Brainstorm: <yes/no; yes for repeated challenge or explicit wrong-code signal>
 Discarded context: <old assumption/path not reused>
 Keep only verified facts: <facts retained from prior work>
-🟠 {味道} 方法论：{方法}
-切换：<无 or old flavor/method -> new flavor/method：reason>
+METHOD: {flavor} / {method}
+SWITCH: <none or old flavor/method -> new flavor/method: reason>
 User-view miss: <Goal mismatch / Artifact mismatch / Behavior gap / Missing coverage / Proof gap / UX-result gap>
 Satisfaction gap: <why the user would still say this is not enough>
 User goal restated: <current understanding>
@@ -198,8 +198,8 @@ Before leaving this skill, confirm:
 - [ ] Repeated challenge or explicit wrong-code signal restarted `devflow-brainstorm`.
 - [ ] Previous erroneous context was quarantined and not reused as the next solution basis.
 - [ ] Local methodology references were read before selecting method.
-- [ ] The compact methodology line `🟠 {味道} 方法论：{方法}` was output.
-- [ ] A concise `切换：` line was output when the method changed.
+- [ ] The compact methodology line `METHOD: {flavor} / {method}` was output.
+- [ ] A concise `SWITCH:` line was output when the method changed.
 - [ ] User-view miss and satisfaction gap were classified.
 - [ ] A guiding method was selected, or switched if the prior method failed.
 - [ ] Missing-piece feedback triggered coverage mapping.

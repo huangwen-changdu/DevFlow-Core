@@ -392,7 +392,7 @@ Purpose: avoid looping on the same failed move.
 
 Trigger when verification fails unexpectedly, the user says the result is wrong or vague, the same command/fix fails twice, or the agent is about to give up.
 
-Use `devflow-pua` when the signal is user challenge, changed-wrong result, repeated miss, quality complaint, or two failed/corrected attempts in one task lifecycle. `devflow-pua` must read its local methodology router/library/display references and display the selected method as `🟠 {味道} 方法论：{方法}` before another patch. If the method changed, add one `切换：` line.
+Use `devflow-pua` when the signal is user challenge, changed-wrong result, repeated miss, quality complaint, or two failed/corrected attempts in one task lifecycle. `devflow-pua` must read its local methodology router/library/display references and display the selected method as `METHOD: {flavor} / {method}` before another patch. If the method changed, add one `SWITCH:` line.
 
 Actions:
 

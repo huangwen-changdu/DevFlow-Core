@@ -148,8 +148,8 @@ Discarded context: <old assumption/path/proof claim not reused>
 Keep only verified facts: <facts retained>
 User-view miss: <why the user would still say this is wrong or incomplete>
 Satisfaction gap: <goal/artifact/behavior/coverage/proof/UX gap>
-🟠 {味道} 方法论：{方法}
-切换：<无 or old flavor/method -> new flavor/method：reason>
+METHOD: {flavor} / {method}
+SWITCH: <none or old flavor/method -> new flavor/method: reason>
 Facts reread: ...
 User goal restated: ...
 Desired result: ...

@@ -11,13 +11,13 @@ A flavor is not decoration. It is the active problem-solving method plus a short
 Always display the selected method with this compact user-facing line:
 
 ```text
-🟠 {味道} 方法论：{方法}
+METHOD: {flavor} / {method}
 ```
 
 If switching away from a failed method, add:
 
 ```text
-切换：<旧味道>/<旧方法> -> <新味道>/<新方法>：<原因>
+SWITCH: <old flavor>/<old method> -> <new flavor>/<new method>: <reason>
 ```
 
 The route, switch reason, and evidence still matter, but they are internal selection checks unless the user asks for full diagnostics.

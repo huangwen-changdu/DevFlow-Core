@@ -390,7 +390,7 @@ Expected behavior:
 - Must treat repeated "少了/少个/缺漏/遗漏/漏了" feedback as pressure recovery, not normal incremental scope.
 - Must discard the prior wrong assumption/path/proof claim and keep only verified facts.
 - Must classify `User-view miss` and `Satisfaction gap` before choosing the next fix.
-- Must display the selected recovery method as `🟠 {味道} 方法论：{方法}`.
+- Must display the selected recovery method as `METHOD: {flavor} / {method}`.
 - Must switch guiding method when the previously used method still failed.
 - Must switch to a different/opposite method and restart checks from facts when the first recovery method still misses.
 - Must restart `devflow-brainstorm` before changing files again.
@@ -412,8 +412,8 @@ Discarded context: ...
 Keep only verified facts: ...
 User-view miss: ...
 Satisfaction gap: ...
-🟠 {味道} 方法论：{方法}
-切换：无 / old flavor/method -> new flavor/method：reason
+METHOD: {flavor} / {method}
+SWITCH: none / old flavor/method -> new flavor/method: reason
 User goal restated: ...
 Desired result: ...
 Blocking questions: none / inferred / 2-4 pointed questions

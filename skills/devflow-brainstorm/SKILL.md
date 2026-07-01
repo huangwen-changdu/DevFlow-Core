@@ -45,7 +45,7 @@ When `devflow-pua` hands off after user challenge, changed-wrong result, repeate
 1. Restate the current understanding of the user's goal.
 2. Treat the prior approach as failure evidence only; do not reuse the old plan, target, or proof claim unless the user or fresh facts explicitly confirm it.
 3. Name what was likely misread: target, artifact, behavior, UI distinction, file placement, or proof.
-4. Carry forward the compact methodology line `🟠 {味道} 方法论：{方法}`, any `切换：` line, `User-view miss`, `Satisfaction gap`, and `New success contract` from `devflow-pua`.
+4. Carry forward the compact methodology line `METHOD: {flavor} / {method}`, any `SWITCH:` line, `User-view miss`, `Satisfaction gap`, and `New success contract` from `devflow-pua`.
 5. Ask where the result is wrong, what result is wanted, what must stay unchanged, and what proof would count as corrected when those answers cannot be inferred from facts.
 6. If the user repeatedly says pieces are missing, build a Coverage Map of required surfaces before proposing changes.
 7. If the prior guiding method failed, use the switched different/opposite method from `devflow-pua` and do not propose another variation of the old method.

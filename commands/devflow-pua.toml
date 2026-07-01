@@ -10,15 +10,15 @@ Read `skills/devflow-pua/references/methodology-router.md`, `skills/devflow-pua/
 
 For repeated challenge, explicit wrong-code signals, or repeated missing-piece complaints such as 少了这个/少个那个, set `Restart Brainstorm: yes`, quarantine the previous wrong assumption/path/proof claim, keep only verified facts, diagnose why the user thinks it is still wrong, and hand off to `devflow-brainstorm` before more edits. Ask where it is wrong, what result the user wants, what is missing, what must stay unchanged, and how to verify it when those answers are not inferable.
 
-This command is not permission to continue the old patch. First classify the user-view miss, display the active flavor/method as `🟠 {味道} 方法论：{方法}`, then switch to a different/opposite method if the prior method failed.
+This command is not permission to continue the old patch. First classify the user-view miss, display the active flavor/method as `METHOD: {flavor} / {method}`, then switch to a different/opposite method if the prior method failed.
 
 Output:
 Pressure check:
 Restart Brainstorm:
 Discarded context:
 Keep only verified facts:
-🟠 {味道} 方法论：{方法}
-切换：
+METHOD: {flavor} / {method}
+SWITCH:
 User-view miss:
 Satisfaction gap:
 User goal restated:

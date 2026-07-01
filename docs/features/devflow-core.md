@@ -25,7 +25,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - Claude Code `SessionStart` hook artifacts for project-level and plugin-style activation reminders.
 - Claude Code `/devflow-core` command under `.claude/commands/` that explicitly bridges requirements, UI/page ambiguity, prompt distinction issues, and server-backed implementation requests to `devflow-brainstorm`.
 - `devflow-core` route selection for Fast, Problem, Design-lite, Design, Build, and Recovery.
-- `devflow-pua` pressure recovery for user challenge, explicit wrong-code signals, repeated missing-piece complaints such as "少了这个/少个那个", changed-wrong results, repeated misses, quality complaints, local PUA methodology assets, compact `🟠 {味道} 方法论：{方法}` display, concise method switch line, hard `devflow-brainstorm` restart, user-view miss diagnosis, method switching after failed methods, opposite-method recovery when a method still misses, wrong-context quarantine, pointed goal/result questions, changed approach, proof, and learning handoff.
+- `devflow-pua` pressure recovery for user challenge, explicit wrong-code signals, repeated missing-piece complaints such as "少了这个/少个那个", changed-wrong results, repeated misses, quality complaints, local PUA methodology assets, compact `METHOD: {flavor} / {method}` display, concise method switch line, hard `devflow-brainstorm` restart, user-view miss diagnosis, method switching after failed methods, opposite-method recovery when a method still misses, wrong-context quarantine, pointed goal/result questions, changed approach, proof, and learning handoff.
 - `devflow-prove` Skill Activation Chain Check for rule, command, prompt, entry, and skill changes.
 - Small Request Boundary gates for Fast and Design-lite: impact, risk, uncertainty, and proof.
 - Method Lens selection for Design, Recovery, and high-risk proof: Root Cause, Working Backwards, First Principles Cut, Data/Proof, and Operational Owner.
@@ -54,7 +54,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 
 | Version | Change | Type | Date | Status | Summary |
 |---|---|---|---|---|---|
-| v28 | pua-compact-method-display | recovery usability | 2026-06-27 | active | Simplified visible PUA methodology output to `🟠 {味道} 方法论：{方法}` plus a concise switch line while keeping local methodology assets as the runtime source. |
+| v28 | pua-compact-method-display | recovery usability | 2026-06-27 | active | Simplified visible PUA methodology output to `METHOD: {flavor} / {method}` plus a concise switch line while keeping local methodology assets as the runtime source. |
 | v27 | pua-local-methodology-assets | recovery hardening | 2026-06-27 | active | Added local `devflow-pua` methodology router, method library, flavor display protocol, and required method display output. |
 | v26 | pua-repeated-missing-opposite-method | recovery hardening | 2026-06-27 | active | Added repeated "少了这个/少个那个" trigger handling and opposite-method recovery when a prior guiding method still fails. |
 | v25 | pua-user-view-method-switch | recovery hardening | 2026-06-27 | active | Added user-view miss taxonomy, satisfaction-gap output, missing-piece complaint triggers, and method switching when a prior recovery method still fails. |

@@ -98,8 +98,8 @@ const requiredTerms = [
   "Guiding Principles",
   "Blue-team attack",
   "New success contract",
-  "🟠 {味道} 方法论：{方法}",
-  "切换：",
+  "METHOD: {flavor} / {method}",
+  "SWITCH:",
   "methodology-router.md",
   "methodology-library.md",
   "flavor-display.md",
@@ -530,10 +530,10 @@ const codexTriggerChecks = [
   ["skills/devflow-pua/SKILL.md", "Guiding Principles"],
   ["skills/devflow-pua/SKILL.md", "Blue-team attack"],
   ["skills/devflow-pua/SKILL.md", "New success contract"],
-  ["skills/devflow-pua/SKILL.md", "切换："],
+  ["skills/devflow-pua/SKILL.md", "SWITCH:"],
   ["skills/devflow-pua/SKILL.md", "Methodology Assets"],
-  ["skills/devflow-pua/SKILL.md", "🟠 {味道} 方法论：{方法}"],
-  ["skills/devflow-pua/SKILL.md", "切换："],
+  ["skills/devflow-pua/SKILL.md", "METHOD: {flavor} / {method}"],
+  ["skills/devflow-pua/SKILL.md", "SWITCH:"],
   ["skills/devflow-pua/references/methodology-router.md", "Starting Route"],
   ["skills/devflow-pua/references/methodology-router.md", "Failure Switch"],
   ["skills/devflow-pua/references/methodology-router.md", "Huawei"],
@@ -543,14 +543,14 @@ const codexTriggerChecks = [
   ["skills/devflow-pua/references/methodology-library.md", "Amazon: Customer Backwards"],
   ["skills/devflow-pua/references/methodology-library.md", "Microsoft: Learning Loop"],
   ["skills/devflow-pua/references/flavor-display.md", "Required Lines"],
-  ["skills/devflow-pua/references/flavor-display.md", "🟠 {味道} 方法论：{方法}"],
-  ["skills/devflow-pua/references/flavor-display.md", "切换："],
+  ["skills/devflow-pua/references/flavor-display.md", "METHOD: {flavor} / {method}"],
+  ["skills/devflow-pua/references/flavor-display.md", "SWITCH:"],
   ["skills/devflow-pua/SKILL.md", "Repeated Missing-Piece Trigger"],
   ["skills/devflow-pua/SKILL.md", "Opposite method switching"],
   ["skills/devflow-pua/SKILL.md", "different or opposite method"],
   ["skills/devflow-pua/SKILL.md", "少个"],
   ["skills/devflow-brainstorm/SKILL.md", "Coverage Map"],
-  ["skills/devflow-brainstorm/SKILL.md", "🟠 {味道} 方法论：{方法}"],
+  ["skills/devflow-brainstorm/SKILL.md", "METHOD: {flavor} / {method}"],
   ["skills/devflow-learn/SKILL.md", "repeated missing-piece complaint"],
   ["skills/devflow-learn/SKILL.md", "different/opposite method"],
   ["skills/devflow-audit/SKILL.md", "overengineering"],
@@ -656,6 +656,23 @@ const mojibakeHits = textFiles.flatMap((file) => {
 });
 
 assert(mojibakeHits.length === 0, `Mojibake characters found:\n${mojibakeHits.join("\n")}`);
+
+const emojiMojibakeHits = textFiles.flatMap((file) => {
+  const matches = read(file).match(/🟠|馃煚/g);
+  return matches ? [`${file}: ${[...new Set(matches)].join(",")}`] : [];
+});
+
+assert(emojiMojibakeHits.length === 0, `Emoji/mojibake-prone method markers found:\n${emojiMojibakeHits.join("\n")}`);
+
+const nonAsciiMethodLabelHits = textFiles.flatMap((file) => {
+  const matches = read(file).match(/方法论：|切换：|鏂规硶|鍛抽亾|鍒囨崲/g);
+  return matches ? [`${file}: ${[...new Set(matches)].join(",")}`] : [];
+});
+
+assert(
+  nonAsciiMethodLabelHits.length === 0,
+  `Non-ASCII or mojibake-prone PUA method labels found:\n${nonAsciiMethodLabelHits.join("\n")}`
+);
 
 const staleDocsHits = textFiles.flatMap((file) => {
   const matches = read(file).match(/docs\/(?:CORE-METHODS|DECISION-TREE|FLOW-SELF-TEST|NATIVE-CAPABILITY-CHECKLIST|REFERENCE-PROJECTS|SKILL-GUIDE|PROJECT-STRUCTURE)\.md/g);

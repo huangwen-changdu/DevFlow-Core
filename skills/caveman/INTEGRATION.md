@@ -16,7 +16,7 @@
 ```markdown
 - **核心技能**：
   - `using-superpowers-pua` - 主入口，任务路由
-  - `pua` - 方法论智能路由引擎
+  - `pua` - methodology routing engine
   - `pua-gate` - 自适应门禁
   - `pua-escalation` - 压力升级引擎
   - `caveman` - Token 压缩优化，减少 ~75% 输出 token（`skills/caveman/SKILL.md`）
@@ -26,7 +26,7 @@
 ```
 using-superpowers-pua（入口）
 ├── pua-gate（门禁）
-├── pua（方法论路由）→ references/methodology-{company}.md（方法论全文，G1+ 必读）
+├── pua（methodology routing）→ references/methodology-{company}.md（full methodology，G1+ 必读）
 ├── pua-escalation（压力升级）
 ├── caveman（Token 压缩）→ 减少 ~75% 输出 token
 ├── brainstorming-pua（设计）
@@ -41,7 +41,7 @@ using-superpowers-pua（入口）
 #### 2.3 职责划分声明
 ```markdown
 **职责划分**：
-- `pua` - 方法论路由索引，路由后必须 read_file 读完 `references/methodology-{company}.md` 全文才算方法论激活
+- `pua` - methodology routing索引，路由后必须 read_file 读完 `references/methodology-{company}.md` 全文才算methodology activation
 - `pua-gate` - 自适应门禁，专注于门禁判断、需求成熟度评估和风险评估
 - `pua-escalation` - 压力升级引擎，专注于压力升级、失控处理和失败模式切换
 - `caveman` - Token 压缩优化，专注于输出 token 减少，支持 lite/full/ultra/wenyan 四个强度级别
@@ -54,17 +54,17 @@ using-superpowers-pua（入口）
 **调用规则**（v2 更新：入口压缩后）：
 - [REQUIRED] 新任务开始、阶段交接、风险升级、恢复执行或最终交付前加载 `using-superpowers-pua` skill；仅当平台不支持 skill 加载且对应用户级 skills 目录（如 `~/.codebuddy/skills/using-superpowers-pua/SKILL.md` 或平台约定的 `~/.skills/using-superpowers-pua/SKILL.md`）存在时，才读取该用户目录文件
 - [REQUIRED] 入口文件已内联门禁+快慢三轨路由，无需额外 read_file pua-gate；Design Path / Escalate Path 优先加载 `pua` skill
-- [REQUIRED] Design Path / Escalate Path 先由 `pua` skill 激活主方法论 + 辅助方法论组合；Fast Path 不强制读取方法论全文
+- [REQUIRED] Design Path / Escalate Path 先由 `pua` skill 激活primary + secondary methodology combination；Fast Path 不强制读取full methodology
 - [REQUIRED] 门禁结果为 `ESCALATE` 时，必须加载 `pua-escalation` skill
 - [REQUIRED] caveman 每轮默认静默生效，默认 full 强度
 ```
 
 #### 2.5 微标格式声明
 ```markdown
-**微标格式**（默认不输出；仅在用户要求展示状态、调试压缩行为或说明模式切换时输出，G1+ 含方法论字段）：
+**微标格式**（默认不输出；仅在用户要求展示状态、调试压缩行为或说明模式切换时输出，G1+ 含method field）：
 ```
-🟠 PUA · {味道} · G{档位} · {约束}                    ← G0
-🟠 PUA · {主味道} · G{档位} · {约束} · 方法论：{主方法} + 辅助:{辅助方法/无}  ← 值必须来自真实组合匹配结果
+PUA · {味道} · G{档位} · {约束}                    ← G0
+PUA · {主味道} · G{档位} · {约束} · METHOD: {primary method} + assistant:{secondary method/none}  ← 值必须来自真实组合匹配结果
 🪨 CAVEMAN · {强度级别} · Token 压缩已启用            ← caveman 模式
 ```
 ```

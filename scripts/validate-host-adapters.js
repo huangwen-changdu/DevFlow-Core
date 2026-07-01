@@ -75,27 +75,27 @@ const adapters = [
   {
     name: "Claude DevFlow command",
     file: ".claude/commands/devflow-core.md",
-    terms: ["skills/devflow-core/SKILL.md", "skills/devflow-brainstorm/SKILL.md", "skills/devflow-pua/SKILL.md", "methodology-router.md", "methodology-library.md", "flavor-display.md", "restart `skills/devflow-brainstorm/SKILL.md`", "User-view miss", "Satisfaction gap", "🟠 {味道} 方法论：{方法}", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Ask exactly one smallest blocking question"]
+    terms: ["skills/devflow-core/SKILL.md", "skills/devflow-brainstorm/SKILL.md", "skills/devflow-pua/SKILL.md", "methodology-router.md", "methodology-library.md", "flavor-display.md", "restart `skills/devflow-brainstorm/SKILL.md`", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Ask exactly one smallest blocking question"]
   },
   {
     name: "GitHub Copilot",
     file: ".github/copilot-instructions.md",
-    terms: ["AGENTS.md", "Sense", "Brainstorm", "Cut", "Prove", "changed wrong", "restart devflow-brainstorm", "User-view miss", "Satisfaction gap", "🟠 {味道} 方法论：{方法}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Never claim done without proof"]
+    terms: ["AGENTS.md", "Sense", "Brainstorm", "Cut", "Prove", "changed wrong", "restart devflow-brainstorm", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Never claim done without proof"]
   },
   {
     name: "VS Code instruction",
     file: ".github/instructions/devflow.instructions.md",
-    terms: ["Every platform entry must preserve the same core contract", "Sense", "Brainstorm", "Cut", "Prove", "devflow-pua", "restart `devflow-brainstorm`", "User-view miss", "Satisfaction gap", "🟠 {味道} 方法论：{方法}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "npm test"]
+    terms: ["Every platform entry must preserve the same core contract", "Sense", "Brainstorm", "Cut", "Prove", "devflow-pua", "restart `devflow-brainstorm`", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "npm test"]
   },
   {
     name: "VS Code prompt",
     file: ".github/prompts/devflow.prompt.md",
-    terms: ["Select route: Fast, Design-lite, Design, Build, or Recovery", "Problem: Sense -> Prove facts", "devflow-pua", "restart `devflow-brainstorm`", "User-view miss", "Satisfaction gap", "🟠 {味道} 方法论：{方法}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Root-Cause Check"]
+    terms: ["Select route: Fast, Design-lite, Design, Build, or Recovery", "Problem: Sense -> Prove facts", "devflow-pua", "restart `devflow-brainstorm`", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Root-Cause Check"]
   },
   {
     name: "CodeBuddy",
     file: ".codebuddy/rules/devflow-core/RULE.mdc",
-    terms: ["Sense -> Brainstorm -> Cut -> Shape -> Build -> Prove", "devflow-pua", "restart `devflow-brainstorm`", "User-view miss", "Satisfaction gap", "🟠 {味道} 方法论：{方法}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Authoritative method source", "PASS / FAIL / BLOCKED"]
+    terms: ["Sense -> Brainstorm -> Cut -> Shape -> Build -> Prove", "devflow-pua", "restart `devflow-brainstorm`", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Authoritative method source", "PASS / FAIL / BLOCKED"]
   }
 ];
 

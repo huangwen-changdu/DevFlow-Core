@@ -114,7 +114,7 @@ Absorbed into DevFlow-Core:
 
 - `plugin.json`, `gemini-extension.json`, commands, Copilot, and CodeBuddy entries make the framework installable/adaptable.
 - Method Lens absorbs PUA method routing as native DevFlow behavior for normal work: Root Cause, Working Backwards, First Principles Cut, Data/Proof, and Operational Owner are selectable lenses.
-- `devflow-pua/references/methodology-router.md`, `methodology-library.md`, and `flavor-display.md` absorb the practical PUA flavor-method routing for pressure recovery, including the compact visible output `🟠 {味道} 方法论：{方法}` plus a concise `切换：` line when the method changes.
+- `devflow-pua/references/methodology-router.md`, `methodology-library.md`, and `flavor-display.md` absorb the practical PUA flavor-method routing for pressure recovery, including the compact visible output `METHOD: {flavor} / {method}` plus a concise `SWITCH:` line when the method changes.
 - `devflow-prove` includes a verifier lens and forbids self-certifying final status when an external verifier is required.
 - `devflow-core` includes Recovery route and 3-hypothesis approach switching.
 
