@@ -6,7 +6,7 @@ It is not a link collection. The useful parts are built into this repo as rules,
 
 ## What It Gives Developers
 
-- A default flow that stays light: `Sense -> Brainstorm -> Cut -> Shape -> Build -> Prove`
+- A default flow that stays light: `Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut -> Build -> Prove`
 - A Fast / Design-lite / Design / Build / Recovery router with clear small-request gates and user route choice when the boundary is unclear
 - A Method Lens selector for choosing Root Cause, Working Backwards, First Principles Cut, Data/Proof, or Operational Owner strategy when the route needs more than generic process
 - A Ponytail-style ladder that prefers no-change, reuse, standard library, native platform, installed dependency, one-line/config, then minimum new code
@@ -133,7 +133,8 @@ Installed file map:
 | `hooks/devflow-session-start.js` | Lightweight SessionStart hook that injects DevFlow routing reminders. |
 | `commands/devflow*.toml` | Slash-command entries for hosts that support command files. |
 | `skills/devflow-*/SKILL.md` | Skill definitions for skill-capable agents. |
-| `skills/devflow-*/references/*.md` | Runtime reference material used by the installed skills. |
+| `skills/devflow-brainstorm/references/interview-discipline.md` | Interview discipline reference used by DevFlow Brainstorm. |
+| `skills/*/references/*.md` or skill-local reference files | Runtime reference material used by the installed skills. |
 | `skills/skill-call-diagram.md` | Skill chain map for humans and agents. |
 | `scripts/devflow-spec.js`, `scripts/devflow-plan.js`, `scripts/devflow-review.js`, `scripts/devflow-debt.js`, `scripts/devflow-audit.js` | Target-runtime checkers available inside the target project. |
 
@@ -226,8 +227,9 @@ Installed Claude-relevant project files:
 | `.claude/commands/devflow-core.md` | Claude Code `/devflow-core` command and Brainstorm trigger bridge. |
 | `hooks/hooks.json` | Plugin-style Claude hook registration. |
 | `hooks/devflow-session-start.js` | SessionStart hook that injects a short DevFlow Core activation reminder. |
-| `skills/devflow-*/SKILL.md` | Skill-capable runtime workflows. | 
-| `skills/devflow-*/references/*.md` | Runtime reference material for the installed skills. |
+| `skills/devflow-*/SKILL.md` | Skill-capable runtime workflows. |
+| `skills/devflow-brainstorm/references/interview-discipline.md` | Interview discipline reference used by DevFlow Brainstorm. |
+| `skills/*/references/*.md` or skill-local reference files | Runtime reference material for the installed skills. |
 | `commands/devflow*.toml` | Command metadata for hosts that can use it. |
 | `scripts/devflow-spec.js`, `scripts/devflow-plan.js`, `scripts/devflow-review.js`, `scripts/devflow-debt.js`, `scripts/devflow-audit.js` | Local checkers Claude can run from the target project. |
 
@@ -246,9 +248,9 @@ Use user-level install only for personal global access to DevFlow skills, comman
 
 | Route | Use When | Flow |
 |---|---|---|
-| Fast | Pure Q&A, fact lookup, verification, or already-approved tiny execution | Sense -> Prove |
-| Design | Requirement, behavior change, feature, architecture change, unclear ask, or multi-solution decision | Sense -> Brainstorm -> Cut -> Shape |
-| Build | User asks to implement, fix, land, or execute an approved change | Sense -> Brainstorm -> Cut -> Shape -> Build -> Prove |
+| Fast | Pure Q&A, fact lookup, verification, or trivial code change (one line, no logic change, no risk). | Sense -> Prove |
+| Design | Requirement, behavior change, feature, architecture change, unclear ask, or multi-solution decision | Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut |
+| Build | User asks to implement, fix, land, or execute a change | Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut -> Build -> Prove (skip Brainstorm/Plan if already done) |
 | Recovery | Failure repeats, user corrects or challenges the result, tests fail unexpectedly, edits go wrong, or the agent is about to give up | devflow-pua when pressure recovery is needed -> re-read facts -> restate goal/result -> 3 hypotheses -> different approach -> Prove |
 
 ## Copyable Workflows
@@ -277,7 +279,7 @@ Use this when you want the agent to land a feature without skipping design or cu
 Requirement: implement CSV export for orders.
 ```
 
-Expected route: `Build -> Brainstorm -> Cut -> Shape -> Build -> Prove`.
+Expected route: `Build -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut -> Build -> Prove`.
 
 Local proof:
 
@@ -333,6 +335,16 @@ npm run install:verify
 | `devflow-pua` | Stop wrong-path recovery, re-ask or infer the desired result, switch approach, and hand back to Prove/Learn. |
 | `devflow-learn` | Capture reusable corrections and pitfalls into `.copilot` learning cards. |
 | `devflow-audit` | Run a repo-wide audit for overengineering candidates without applying fixes. |
+
+## DevFlow Brainstorm Interview Discipline
+
+Development requests still start at `devflow-core`. The one-question interview behavior is core `devflow-brainstorm`, not a separate concept.
+
+| Need | DevFlow behavior |
+|---|---|
+| Clarify a design | `devflow-brainstorm` asks one question at a time, includes a recommended answer, and ends with the normal design contract. |
+| Preserve requirements | Use `devflow-spec` when the approved design needs a saved requirements source before planning. |
+| Preserve decisions/history | Use feature ledgers for capability history or ADRs for hard-to-reverse trade-offs. |
 
 ## Design Output Contract
 

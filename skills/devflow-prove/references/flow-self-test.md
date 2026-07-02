@@ -18,7 +18,7 @@ Expected behavior:
 - Must ask or infer goal, constraints, and success criteria.
 - Must compare 2-3 approaches.
 - Must output the Design output contract.
-- Must not implement until shape is clear unless the user explicitly requested implementation and the smallest safe shape is known.
+- Must not implement until the design contract is approved unless the user explicitly requested implementation and the smallest safe plan is known.
 
 Pass check:
 
@@ -151,7 +151,7 @@ Expected behavior:
 - Route: Fast verification
 - Skill path: `devflow-core -> devflow-prove`
 - Must check `AGENTS.md`, `CLAUDE.md`, Copilot instructions, VS Code instruction/prompt, CodeBuddy rule, plugin metadata, and Gemini metadata.
-- Must confirm platform adapters preserve `Sense -> Brainstorm -> Cut -> Shape -> Build -> Prove`.
+- Must confirm platform adapters preserve `Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut -> Build -> Prove`.
 - Must confirm plugin metadata includes all shipped skills and commands.
 - Must not rewrite adapter rules unless drift is proven.
 

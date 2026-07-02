@@ -1,6 +1,6 @@
 ---
 name: devflow-pua
-description: "Use when the user challenges the result, says wrong/not like that/changed wrong/quality complaint/user dissatisfied/your code is wrong/you wrote it wrong/has a problem/not right/missing/incomplete/still missing/有问题/不对/写错了/改歪了/没改对/不是我要的/理解错了/改了几次/少了/少个/缺少/缺漏/遗漏/漏了, when repeated fixes miss the target, when the user keeps adding missing pieces, or when Recovery needs pressure to stop the current approach, restart devflow-brainstorm, diagnose the user-view miss, switch to a different/opposite method if needed, and realign before more edits."
+description: "Use when the user challenges the result, says wrong/not like that/changed wrong/quality complaint/user dissatisfied/your code is wrong/you wrote it wrong/has a problem/not right/missing/incomplete/still missing/有问题/不对/写错了/改歪了/没改对/不是我要的/理解错了/改了几次/少了/少个/缺少/缺漏/遗漏/漏了, when repeated fixes miss the target, when the user keeps adding missing pieces, or when Recovery needs pressure to stop the current approach, restart devflow-brainstorm, diagnose the user-view miss, switch to a different/opposite method if needed, and realign before more edits. Receives from devflow-prove (FAIL) or devflow-core (user challenge). Quarantines wrong assumptions, restarts devflow-brainstorm, then hands back to devflow-build -> devflow-prove."
 ---
 
 # DevFlow PUA

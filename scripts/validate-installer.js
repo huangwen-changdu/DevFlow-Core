@@ -85,7 +85,13 @@ function assertInstalledRuntimeIsSelfContained(targetRoot) {
         continue;
       }
 
-      if (referencedPath === "docs/plans/" || referencedPath === "docs/specs/" || referencedPath === "docs/features/") {
+      if (
+        referencedPath === "docs/plans/" ||
+        referencedPath === "docs/specs/" ||
+        referencedPath === "docs/features/" ||
+        referencedPath === "docs/features/*.md" ||
+        referencedPath === "docs/adr/"
+      ) {
         continue;
       }
 
@@ -148,6 +154,7 @@ assert(fs.existsSync(path.join(createTarget, "skills/devflow-pua/references/meth
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-pua/references/methodology-library.md")), "Write mode must create pua methodology library");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-pua/references/flavor-display.md")), "Write mode must create pua flavor display");
 assert(fs.existsSync(path.join(createTarget, "commands/devflow.toml")), "Write mode must create command files");
+assert(fs.existsSync(path.join(createTarget, "skills/devflow-brainstorm/references/interview-discipline.md")), "Write mode must create interview discipline reference");
 assert(fs.existsSync(path.join(createTarget, "commands/devflow-spec.toml")), "Write mode must create spec command");
 assert(fs.existsSync(path.join(createTarget, "commands/devflow-pua.toml")), "Write mode must create pua command");
 assert(fs.existsSync(path.join(createTarget, "commands/devflow-audit.toml")), "Write mode must create audit command");

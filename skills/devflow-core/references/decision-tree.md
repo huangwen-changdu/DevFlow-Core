@@ -10,17 +10,18 @@ User asks something
   |        If change is needed: -> Design or Build
   |
   +-- Bug report, failing test, error log, broken behavior, or fix request?
-  |     -> Build: Sense -> Brainstorm -> Cut with Root-Cause Check -> Shape -> Build -> Prove
+  |     -> Build: Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut with Root-Cause Check -> Build -> Prove
   |
-  +-- Pure Q&A, fact lookup, verification, approved tiny step?
+  +-- Pure Q&A, fact lookup, verification, or trivial code change (one line, no logic change, no risk)?
   |     -> Fast: Sense -> Prove
   |
   +-- Requirement, feature, behavior change, architecture, ambiguous ask?
-  |     -> Design: Sense -> Brainstorm -> Cut -> Shape
+  |     -> Design: Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut
   |        If implementation is requested: -> Build -> Prove
   |
-  +-- User asks to implement, fix, build, land, or execute an approved change?
-  |     -> Build: Sense -> Brainstorm -> Cut -> Shape -> Build -> Prove
+  +-- User asks to implement, fix, build, land, or execute a change?
+  |     -> Build: Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut -> Build -> Prove
+  |        (skip Brainstorm/Plan if already done)
   |
   +-- User challenge, changed-wrong result, repeated miss, quality complaint, repeated failure, unexpected test failure, giving up?
         -> Recovery: devflow-pua when pressure is needed -> Re-read facts -> restate goal/result -> 3 hypotheses -> new approach -> Prove
@@ -28,17 +29,19 @@ User asks something
 
 ## Design Depth
 
-| Situation | Depth |
-|---|---|
-| Small local behavior change | Short design contract only. |
-| Cross-module or public interface change | Add explicit impact and compatibility notes. |
-| Data, auth, payments, migrations, production risk | Use full spec documents before build. |
-| User asks only for design | Stop at Shape and name the verification plan. |
-| User asks to implement | Continue through Build and Prove. |
+The Depth Selection Gate in `devflow-brainstorm` lets the user choose:
+
+| Choice | Flow | Confirmations | Use when |
+|---|---|---|---|
+| A (Full Spec) | Feature Ledger → Design Contract → devflow-spec → /devflow-plan | 3 | Cross-module, new feature, architecture change |
+| B (Simplified Spec) | Feature Ledger → Design Contract → /devflow-plan | 2 | Clear-scope change, moderate complexity |
+| C (Dialogue Confirmation) | Core Clarification → Design Contract → devflow-cut | 1 | Single-file, low-risk, user-explicit |
+
+Selection constraints: new feature or architecture change → A only. Depth is user-chosen, not LLM-asserted.
 
 ## Delivery Rule
 
-If the user asks to implement, build, fix, or land a change, do not stop at Shape. Continue through Build and Prove. Stop at Shape only for design-only requests.
+If the user asks to implement, build, fix, or land a change, continue through Build and Prove. Steps scale to task size — Cut and Prove are never skipped, but Brainstorm/Plan may be skipped when already completed or when the task is trivial enough for Fast/Design-lite. Stop at the design contract only for design-only requests.
 
 ## Gates
 

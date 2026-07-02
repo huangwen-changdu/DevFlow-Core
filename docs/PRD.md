@@ -15,7 +15,7 @@ The product is not a theory collection and not a set of links to Ponytail, Agent
 One sentence:
 
 ```text
-DevFlow-Core helps coding agents turn problems and requirements into small verified changes through Sense, Brainstorm, Cut, Shape, Build, Prove, and Learn.
+DevFlow-Core helps coding agents turn problems and requirements into small verified changes through Sense, Brainstorm, [STOP: Depth A/B/C], (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct), Cut, Build, Prove, and Learn.
 ```
 
 ## 2. Target Users
@@ -58,7 +58,7 @@ flowchart TD
   U["Developer request"] --> P["Prompt Surface\nAGENTS.md, skill descriptions, commands"]
   P --> R["Router\nFast / Problem / Design / Build / Recovery"]
   R --> C["Context Layer\nproject files, rules, references, learning index"]
-  C --> B["Method Layer\nBrainstorm, Cut, Shape, Build"]
+  C --> B["Method Layer\nBrainstorm, /devflow-plan, Cut, Build"]
   B --> V["Verifier Layer\ncommands, self-tests, PASS/FAIL/BLOCKED"]
   V --> M["Memory Layer\n.copilot learning cards, future feature ledger"]
   M --> P
@@ -115,7 +115,7 @@ Acceptance:
 - Bug fixes run Root-Cause Check before edits.
 - Repeated failure, user challenge, changed-wrong result, or user correction enters Recovery; pressure cases load `devflow-pua` and Learn when reusable.
 
-### R3. Brainstorm And Shape
+### R3. Brainstorm And Plan
 
 The framework must make ambiguous work concrete without forcing full ceremony on small tasks.
 
@@ -123,8 +123,8 @@ Acceptance:
 
 - Brainstorm outputs goal, constraints, success criteria, assumptions, 2-3 approaches, and recommendation.
 - Larger or explicitly spec-requested work writes a saved spec under `docs/specs/<short-kebab-name>.md`.
-- Shape outputs smallest useful plan, not doing, impact, and verification.
-- For implementation requests, Shape must continue into Build and Prove.
+- /devflow-plan outputs smallest useful plan, not doing, impact, and verification.
+- For implementation requests, the plan must continue into Build and Prove.
 
 ### R4. Cut / Anti-Overengineering
 

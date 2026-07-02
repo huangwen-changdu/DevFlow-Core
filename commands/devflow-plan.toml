@@ -26,10 +26,6 @@ node ~/.claude/scripts/devflow-plan.js <plan-file>
 
 Use the script output as the executable task-field and plan-landing check before implementation.
 
-First confirm the goal, not-doing list, impact area, and verification.
-Apply the Ponytail Ladder and Overbuild Check before adding tasks.
-For bug fixes, include Root-Cause Check before choosing the fix location.
-For deliberate simplifications, require a `devflow: <ceiling>, revisit when <trigger>` marker.
 Split work into small verifiable slices.
 
 The plan must include:
@@ -44,4 +40,8 @@ Verify: <exact command or manual scenario>
 Not doing: <scope removed>
 
 No unresolved markers, vague edge cases, speculative abstractions, or unverified assumptions.
+
+STOP — After creating the plan, present it to the user for review. If the user requests changes, revise and re-run the plan checker. Only proceed once the user approves.
+
+Next: hand off to `devflow-cut` for reuse/overbuild/scope gates before `devflow-build`.
 '''

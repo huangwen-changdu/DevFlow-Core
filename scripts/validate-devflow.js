@@ -48,6 +48,7 @@ const requiredFiles = [
   "skills/devflow-pua/references/flavor-display.md",
   "skills/devflow-learn/SKILL.md",
   "skills/devflow-audit/SKILL.md",
+  "skills/devflow-brainstorm/references/interview-discipline.md",
   "skills/devflow-prove/references/flow-self-test.md",
   "skills/skill-call-diagram.md",
   "scripts/validate-learning-loop.js",
@@ -68,7 +69,8 @@ const requiredFiles = [
 ];
 
 const requiredTerms = [
-  "Sense -> Brainstorm -> Cut -> Shape -> Build -> Prove",
+  "Sense -> Brainstorm -> [STOP: Depth A/B/C]",
+  "Depth Selection Gate",
   "Ponytail",
   "Karpathy",
   "Proof Before Done",
@@ -178,6 +180,9 @@ const requiredTerms = [
   "Design-lite",
   "Route Choice Needed",
   "impact, risk, uncertainty, and proof",
+  "Interview Discipline",
+  "documentation capture",
+  "interview-discipline.md",
   "small-request-boundary-routing",
   "Method Lens",
   "Root Cause",
@@ -195,7 +200,11 @@ const requiredTerms = [
   "Smallest useful plan:",
   "Command:",
   "Result:",
-  "Judgment: PASS / FAIL / BLOCKED"
+  "Judgment: PASS / FAIL / BLOCKED",
+  "Skills enforce their own gates",
+  "Not for new requirements",
+  "Violating the letter of the rules is violating the spirit of the rules",
+  "Red Flags"
 ];
 
 const skillNames = [
@@ -310,12 +319,14 @@ for (const term of [
   "commands/devflow-pua.toml",
   "commands/devflow-audit.toml",
   "skills/devflow-core/SKILL.md",
+  "skills/devflow-brainstorm/references/interview-discipline.md",
   "skills/devflow-spec/SKILL.md",
   "skills/devflow-pua/SKILL.md",
   "skills/devflow-pua/references/methodology-router.md",
   "skills/devflow-pua/references/methodology-library.md",
   "skills/devflow-pua/references/flavor-display.md",
   "skills/devflow-audit/SKILL.md",
+  "skills/devflow-brainstorm/references/interview-discipline.md",
   "scripts/devflow-debt.js",
   "scripts/devflow-review.js",
   "scripts/devflow-spec.js",
@@ -414,6 +425,7 @@ for (const term of [
   "skills/devflow-pua/references/methodology-library.md",
   "skills/devflow-pua/references/flavor-display.md",
   "skills/devflow-audit/SKILL.md",
+  "skills/devflow-brainstorm/references/interview-discipline.md",
   "commands/devflow.toml",
   "commands/devflow-spec.toml",
   "commands/devflow-pua.toml",
@@ -501,7 +513,10 @@ const codexTriggerChecks = [
   ["plugin.json", "problem reports"],
   ["plugin.json", "requirements"],
   ["plugin.json", "bug reports"],
+  ["plugin.json", "skills/devflow-brainstorm/references/interview-discipline.md"],
+  ["gemini-extension.json", "skills/devflow-brainstorm/references/interview-discipline.md"],
   ["AGENTS.md", "requirement"],
+  ["AGENTS.md", "interview-discipline.md"],
   ["AGENTS.md", "bug report"],
   ["AGENTS.md", "changed wrong"],
   ["AGENTS.md", "有问题"],
@@ -514,7 +529,12 @@ const codexTriggerChecks = [
   ["AGENTS.md", "done"],
   ["skills/devflow-core/SKILL.md", "investigating issues"],
   ["skills/devflow-core/SKILL.md", "requirements or bugs"],
+  ["skills/devflow-core/SKILL.md", "Brainstorm Interview Discipline"],
   ["skills/devflow-brainstorm/SKILL.md", "requirement"],
+  ["skills/devflow-brainstorm/SKILL.md", "documentation capture"],
+  ["skills/devflow-brainstorm/SKILL.md", "interview-discipline.md"],
+  ["skills/devflow-brainstorm/references/interview-discipline.md", "one-question-at-a-time"],
+  ["skills/devflow-brainstorm/references/interview-discipline.md", "DevFlow design contract"],
   ["skills/devflow-spec/SKILL.md", "docs/specs"],
   ["commands/devflow-spec.toml", "Create a DevFlow spec"],
   ["commands/devflow-spec.toml", "scripts/devflow-spec.js"],
@@ -558,6 +578,8 @@ const codexTriggerChecks = [
   ["commands/devflow-audit.toml", "Audit the repository or named scope"],
   ["commands/devflow-learn.toml", "repeated correction"],
   ["commands/devflow-learn.toml", "Learning closure"],
+  ["commands/devflow.toml", "interview-discipline.md"],
+  [".claude/commands/devflow-core.md", "interview-discipline.md"],
   ["commands/devflow.toml", "problem without explicitly asking for a fix"],
   ["commands/devflow.toml", "Root-Cause Check"]
 ];

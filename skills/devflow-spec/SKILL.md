@@ -1,6 +1,6 @@
 ---
 name: devflow-spec
-description: "Use when writing a requirements/spec document, turning an approved design into a saved spec, planning from specs, or creating docs/specs artifacts before implementation."
+description: "Use when writing a requirements/spec document, turning an approved design into a saved spec, planning from specs, or creating docs/specs artifacts before implementation. Receives an approved design contract from devflow-brainstorm. Writes docs/specs/<name>.md, runs self-review and devflow-spec.js checker, gets user approval. Hands off to /devflow-plan for Plan Pack creation."
 ---
 
 # DevFlow Spec
@@ -22,11 +22,9 @@ Do not force a spec for Design-lite work where a short design contract and quick
 
 ## Process
 
-1. Read the relevant project facts, existing docs, feature ledger, and current behavior.
-2. Confirm the goal, constraints, success criteria, and not-doing list.
-3. Compare 2-3 approaches when more than one path is plausible.
-4. Write the spec under `docs/specs/<short-kebab-name>.md` unless the target project already documents another specs path.
-5. Include the required sections:
+1. Read the approved design contract from `devflow-brainstorm` and the relevant project facts. Do not re-confirm goal, constraints, or approaches — those were already settled and user-approved in Brainstorm.
+2. Write the spec under `docs/specs/<short-kebab-name>.md` unless the target project already documents another specs path.
+3. Include the required sections:
    - Goal
    - Context
    - Requirements
@@ -36,21 +34,21 @@ Do not force a spec for Design-lite work where a short design contract and quick
    - Acceptance
    - Verification
    - Open Questions
-6. Run the spec self-review:
+4. Run the spec self-review:
    - Unresolved-marker scan: no draft markers, unresolved question marks, or unresolved angle values.
    - Consistency: requirements, approach, impact, acceptance, and verification do not contradict.
    - Scope: if multiple independent subsystems appear, split into separate specs.
    - Ambiguity: pick an explicit interpretation or mark the open question before planning.
-7. Run `node scripts/devflow-spec.js <spec-file>` when the script exists.
-8. Handoff to `/devflow-plan` only after the spec is valid or the user explicitly accepts a design-only plan.
+5. Run `node scripts/devflow-spec.js <spec-file>` when the script exists.
+6. **STOP — Ask the user to review the spec**: Tell the user the spec file path and ask them to review it before proceeding. If they request changes, make them and re-run the spec self-review. Only proceed once the user approves.
 
 ## Output
 
 ```text
 Spec: docs/specs/<short-kebab-name>.md
-Source: <user request / approved design / existing issue>
+Source: <approved design from devflow-brainstorm>
 Review: unresolved-marker scan <pass/fail>; consistency <pass/fail>; scope <pass/fail>; ambiguity <pass/fail>
-Next: /devflow-plan with Source and Spec coverage
+Next: /devflow-plan with Source and Spec coverage, then devflow-cut -> devflow-build
 ```
 
 ## Anti-Rationalization
@@ -71,4 +69,6 @@ Before leaving this skill, confirm:
 - [ ] Spec landed under `docs/specs/` or a documented target-project specs path.
 - [ ] Unresolved-marker, consistency, scope, and ambiguity checks ran.
 - [ ] `scripts/devflow-spec.js` ran when available.
+- [ ] User reviewed the written spec and approved it.
 - [ ] The next plan will cite the spec or approved design as `Source`.
+- [ ] Handoff target is `/devflow-plan` (not directly to `devflow-build`).

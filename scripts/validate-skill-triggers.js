@@ -21,6 +21,7 @@ const files = {
   agents: read("AGENTS.md"),
   core: read("skills/devflow-core/SKILL.md"),
   brainstorm: read("skills/devflow-brainstorm/SKILL.md"),
+  interviewDiscipline: read("skills/devflow-brainstorm/references/interview-discipline.md"),
   spec: read("skills/devflow-spec/SKILL.md"),
   cut: read("skills/devflow-cut/SKILL.md"),
   build: read("skills/devflow-build/SKILL.md"),
@@ -80,6 +81,23 @@ const cases = [
       ["devflow-core", files.core, "Small Request Boundary"],
       ["devflow-core", files.core, "Route Choice Needed"],
       ["devflow command", files.devflowCommand, "ask the user to choose Fast, Design-lite, or full Design"]
+    ]
+  },
+  {
+    name: "interviewed build request with spec",
+    input: "Implement CSV export for orders; clarify the design and write a spec before implementation.",
+    route: "Build",
+    skillPath: "devflow-core -> devflow-brainstorm -> devflow-spec -> /devflow-plan -> devflow-cut -> devflow-build -> devflow-prove",
+    checks: [
+      ["AGENTS.md", files.agents, "interview-discipline.md"],
+      ["devflow-core", files.core, "Brainstorm Interview Discipline"],
+      ["devflow-brainstorm description", description(files.brainstorm), "documentation capture"],
+      ["devflow-brainstorm", files.brainstorm, "interview-discipline.md"],
+      ["interview discipline reference", files.interviewDiscipline, "one-question-at-a-time"],
+      ["interview discipline reference", files.interviewDiscipline, "DevFlow design contract"],
+      ["interview discipline reference", files.interviewDiscipline, "devflow-spec -> /devflow-plan"],
+      ["devflow-spec", files.spec, "docs/specs/<short-kebab-name>.md"],
+      ["devflow command", files.devflowCommand, "interview-discipline.md"]
     ]
   },
   {

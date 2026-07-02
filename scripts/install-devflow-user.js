@@ -36,6 +36,7 @@ const userEntries = [
   "skills/devflow-pua/references/flavor-display.md",
   "skills/devflow-learn/SKILL.md",
   "skills/devflow-audit/SKILL.md",
+  "skills/devflow-brainstorm/references/interview-discipline.md",
   "skills/skill-call-diagram.md"
 ];
 

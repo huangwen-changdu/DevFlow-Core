@@ -6,6 +6,7 @@
 devflow-core
   -> devflow-brainstorm
   -> devflow-spec (when saved requirements source is needed)
+  -> /devflow-plan (create Plan Pack from spec or approved design)
   -> devflow-cut
   -> devflow-build
   -> devflow-prove
@@ -21,6 +22,7 @@ devflow-core
 | `devflow-core` | Route the task and preserve the overall contract. |
 | `devflow-brainstorm` | Clarify intent and compare approaches. |
 | `devflow-spec` | Write and validate saved requirements specs under `docs/specs/` before implementation planning. |
+| `/devflow-plan` | Create a Plan Pack from a spec or approved design. |
 | `devflow-cut` | Prevent overengineering and force reuse checks. |
 | `devflow-build` | Implement the approved smallest useful change. |
 | `devflow-prove` | Verify and report evidence before completion. |
@@ -55,7 +57,7 @@ Every `SKILL.md` must include:
 |---|---|
 | `/devflow` | `devflow-core` |
 | `/devflow-spec` | `devflow-spec` |
-| `/devflow-plan` | `devflow-brainstorm` + `devflow-cut` |
+| `/devflow-plan` | Plan creation from spec or approved design |
 | `/devflow-review` | `devflow-cut` |
 | `/devflow-prove` | `devflow-prove` |
 | `/devflow-pua` | `devflow-pua` |

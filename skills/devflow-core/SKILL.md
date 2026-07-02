@@ -1,6 +1,6 @@
 ---
 name: devflow-core
-description: "Use when starting coding work, routing a request, choosing Problem/Fast/Design/Build/Recovery, investigating issues, handling requirements or bugs, applying Sense/Brainstorm/Cut/Shape/Build/Prove, implementing, fixing, debugging, reviewing plans, validating completion, handling user challenge or quality complaint recovery, or deciding which devflow skill should handle the task."
+description: "Use when starting coding work, routing a request, choosing Problem/Fast/Design/Build/Recovery, investigating issues, handling requirements or bugs, applying Sense/Brainstorm/Cut/Build/Prove, implementing, fixing, debugging, reviewing plans, validating completion, handling user challenge or quality complaint recovery, or deciding which devflow skill should handle the task. Entry point for the DevFlow skill chain: routes to devflow-brainstorm (design), devflow-spec (saved requirements), /devflow-plan (Plan Pack), devflow-cut (anti-overengineering), devflow-build (implementation), devflow-prove (verification), devflow-pua (recovery), devflow-learn (correction capture), and devflow-audit (repo audit)."
 ---
 
 # DevFlow Core
@@ -45,14 +45,14 @@ Do not claim understanding without facts.
 
 | Route | Use when | Do |
 |---|---|---|
-| Fast | Pure Q&A, fact lookup, verification, or approved tiny execution with clear goal, low risk, local impact, and quick proof. | Sense -> Prove |
+| Fast | Pure Q&A, fact lookup, verification, or trivial code change (one line, no logic change, no risk). | Sense -> Prove |
 | Problem | User reports "something is wrong" or asks to inspect without asking for a fix. | Sense -> Prove facts; re-route only after the needed change is known |
-| Design-lite | Small feature with clear behavior, one plausible path, low risk, local impact, and quick proof. | Short goal -> acceptance -> not-doing -> Cut -> Build/Prove if requested |
-| Design | Requirement, behavior change, feature, architecture change, ambiguity, multi-solution decision, or unclear small-feature boundary. | Sense -> Brainstorm -> Cut -> Shape |
-| Build | User asks to implement, fix, land, or execute an approved change. | Sense -> Brainstorm -> Cut -> Shape -> Build -> Prove |
+| Design-lite | Small change to an existing feature with clear behavior, one plausible path, low risk, local impact, and quick proof. Not for new requirements. | Short goal -> acceptance -> not-doing -> Cut -> Build/Prove if requested |
+| Design | Requirement, behavior change, feature, architecture change, ambiguity, multi-solution decision, or unclear small-feature boundary. | Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut |
+| Build | User asks to implement, fix, land, or execute a change. | Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut -> Build -> Prove. Skip Brainstorm/Plan if already completed. |
 | Recovery | Repeated failure, user correction, user challenge, missing-piece complaint, repeated "少了这个/少个那个" feedback, quality complaint, changed-wrong result, unexpected verification failure, or giving-up impulse. | Load `devflow-pua` when pressure recovery is needed; diagnose user-view miss -> re-read facts -> 3 hypotheses -> different/opposite method -> changed approach -> Prove |
 
-If the user asks to implement, build, fix, or land a change, do not stop at Shape. Continue through Build and Prove.
+If the user asks to implement, build, fix, or land a change, continue through Build and Prove. Steps scale to task size — Cut and Prove are never skipped, but Brainstorm/Plan may be skipped when already completed or when the task is trivial enough for Fast/Design-lite.
 
 After two corrected or failed attempts in one task lifecycle, stop editing and use `devflow-pua` to re-ask the goal/result unless the answer is directly inferable from facts.
 
@@ -65,7 +65,7 @@ Fast is allowed only when impact, risk, uncertainty, and proof are all small:
 - Uncertainty: goal, expected behavior, and acceptance proof are already clear.
 - Proof: a narrow command, search check, focused test, or manual scenario can verify it quickly.
 
-A small feature is still a requirement. Use Design-lite only when it passes the same four gates and has one plausible implementation path after facts are read. If any gate is uncertain, ask the user to choose Fast, Design-lite, or full Design.
+A small feature is still a requirement. Design-lite does not bypass Brainstorm for new requirements — it applies only to existing features. Use Design-lite only when it passes the same four gates and has one plausible implementation path after facts are read. If any gate is uncertain, ask the user to choose Fast, Design-lite, or full Design.
 
 ## Issue Triage
 
@@ -74,8 +74,8 @@ Before routing, classify the incoming work:
 | Incoming word shape | Treat as | Skill path |
 |---|---|---|
 | "problem report", "check what is wrong", "why broken", "investigate" | Problem investigation | `devflow-core -> devflow-prove` for facts; if a change is needed, re-route to Design or Build. |
-| "requirement", "feature request", "add support", "implement" | Requirement | `devflow-core -> devflow-brainstorm -> devflow-cut`, or Design-lite when the Small Request Boundary passes; continue to Build only when implementation is requested. |
-| "bug report", "error", "failing test", "fix bug", "broken" | Bug fix | `devflow-core -> devflow-brainstorm -> devflow-cut -> devflow-build -> devflow-prove`, with Root-Cause Check before editing. |
+| "requirement", "feature request", "add support", "implement" | Requirement | `devflow-core -> devflow-brainstorm -> devflow-cut`; continue to Build only when implementation is requested. |
+| "bug report", "error", "failing test", "fix bug", "broken" | Bug fix | Root-Cause Check first. If root cause is clear and fix is trivial → Fast or Design-lite. Otherwise `devflow-core -> devflow-brainstorm -> devflow-cut -> devflow-build -> devflow-prove`. |
 | "wrong", "not like that", "changed wrong", "your code is wrong", "you wrote it wrong", "has a problem", "not right", "missing", "incomplete", "still missing", "quality complaint", "user dissatisfied", "有问题", "不对", "写错了", "改歪了", "没改对", "不是我要的", "理解错了", "改了几次", "少了", "少个", "缺少", "缺漏", "遗漏", "漏了" | Pressure recovery | `devflow-core -> devflow-pua -> devflow-brainstorm`; quarantine prior wrong assumptions, diagnose user-view miss, ask what is wrong and what result is wanted, then switch method/approach before more edits. |
 
 Problem investigation must not silently become implementation. First prove what is wrong, what is unknown, and whether a change is actually needed.
@@ -84,18 +84,15 @@ Problem investigation must not silently become implementation. First prove what 
 
 | Signal | Capability | Required next action |
 |---|---|---|
-| unclear ask, behavior change, multiple possible paths | Brainstorm First | Load `devflow-brainstorm`; require goal, constraints, success criteria, assumptions, 2-3 approaches. |
-| unclear whether work is Fast, Design-lite, or full Design | Route Choice | Ask the user to choose the route; do not guess from line count or "sounds small". |
-| Design, Recovery, or high-risk proof needs a task-specific working strategy | Method Lens | Pick Root Cause, Working Backwards, First Principles Cut, Data/Proof, or Operational Owner before selecting artifacts. |
-| new code, dependency, abstraction, config, folder, framework layer | Minimal Solution Ladder + Anti-Overengineering Gate | Load `devflow-cut`; require Reuse, Native, Overbuild, Diff, Scope checks. |
-| approved implementation | Surgical Build Discipline | Load `devflow-build`; require touched files, slices, diff self-check. |
+| unclear ask, behavior change, multiple paths, or non-trivial design interview | Brainstorm First | Load `devflow-brainstorm`; require goal, constraints, 2-3 approaches. Depth Selection Gate (A/B/C) determines handoff: A → devflow-spec → /devflow-plan, B → /devflow-plan, C → devflow-cut. Use Brainstorm Interview Discipline (one question at a time with recommended answer). Pick Method Lens (Root Cause, Working Backwards, First Principles Cut, Data/Proof, Operational Owner) when risk is high. |
+| unclear whether work is Fast, Design-lite, or full Design | Route Choice | Ask the user to choose; do not guess from line count or "sounds small". |
+| new code, dependency, abstraction, config, folder, framework layer | Cut Gate | Load `devflow-cut`; require Reuse, Native, Overbuild, Diff, Scope checks. |
+| implementation ready | Build Discipline | Load `devflow-build`; require touched files, slices, diff self-check. |
 | done/fixed/passed/ready claim | Proof Before Done | Load `devflow-prove`; require command/result/PASS-FAIL-BLOCKED. |
-| problem report without explicit fix request | Issue Triage | Prove the symptom or absence of evidence first; do not edit until the needed change is clear. |
-| bug report or failing verification | Root-Cause Fix Check | Load `devflow-cut`; search callers/references and choose shared vs narrow fix. |
-| repeated failure or user correction | Recovery Switch | Re-read facts, list 3 hypotheses, pick a materially different approach, then Prove. |
-| user challenge, changed wrong, explicit wrong-code signal, repeated miss, missing-piece complaint, repeated "少了这个/少个那个" feedback, quality complaint | Pressure Recovery Gate | Load `devflow-pua`; stop editing, quarantine previous wrong assumptions, diagnose user-view miss, restart `devflow-brainstorm`, ask what is wrong and what result is wanted when not inferable, switch to a different/opposite method when the prior method failed, then Prove. |
+| problem report without explicit fix request, bug report, or failing verification | Issue Triage + Root-Cause Fix Check | Prove symptom first; search callers/references; do not edit until root cause is clear. If fix is trivial → Fast/Design-lite. |
+| repeated failure, user challenge, changed wrong, missing-piece complaint, quality complaint | Pressure Recovery Gate | Load `devflow-pua`; stop editing, quarantine previous wrong assumptions, list 3 hypotheses, switch method, then Prove. |
 | reusable correction, repeated pitfall, project convention | Learning Capture | Load `devflow-learn`; update `.copilot/LEARNING_INDEX.md` and one focused card. |
-| existing target-project capability iteration with a feature ledger | Feature Ledger Recall | When present, read the matched `docs/features/*.md` ledger before planning and update it after a validated capability change. |
+| existing capability with a feature ledger | Feature Ledger Recall | Read matched `docs/features/*.md` before planning; update after validated change. |
 
 ## Required Route Outputs
 
@@ -133,32 +130,22 @@ Route choice:
 
 ```text
 Route Choice Needed:
-- Fast: small factual/tiny execution; minimal design; quickest proof.
-- Design-lite: small feature; short goal/acceptance/not-doing; then build if requested.
-- Full Design: ambiguous or higher-risk feature; compare approaches before build.
+- Fast: pure Q&A, fact lookup, verification, or trivial code change; quickest proof.
+- Design-lite: small change to an existing feature; short goal/acceptance/not-doing; then build if requested.
+- Full Design: new requirement or higher-risk feature; compare approaches before build.
 ```
 
 Recovery:
 
 ```text
 Failure/correction: ...
-Pressure check: <none or user challenge / changed wrong / repeated miss>
-Restart Brainstorm: <yes for repeated challenge or explicit wrong-code signal>
-Discarded context: <old assumption/path/proof claim not reused>
-Keep only verified facts: <facts retained>
 User-view miss: <why the user would still say this is wrong or incomplete>
-Satisfaction gap: <goal/artifact/behavior/coverage/proof/UX gap>
 METHOD: {flavor} / {method}
-SWITCH: <none or old flavor/method -> new flavor/method: reason>
+SWITCH: <none or old method -> new method: reason>
+Discarded context: <old assumption/path not reused>
 Facts reread: ...
-User goal restated: ...
 Desired result: ...
-Blocking questions: <none, inferred, or 2-4 pointed questions>
-Method Lens: primary <lens>; secondary <lens/none>; why <risk or decision it handles>
-Hypotheses: 1 / 2 / 3
-Blue-team attack: ...
-New success contract: ...
-Changed approach: ...
+Changed approach: <3 hypotheses -> picked approach>
 Verification: ...
 ```
 
@@ -170,6 +157,7 @@ Verification: ...
 | "I know the project." | Read the actual files; memory is not evidence. |
 | "I'll verify later." | Later verification creates false completion now. |
 | "The user asked to implement, so skip design." | Implementation requests still need the shortest useful design and cut gate. |
+| "This is a new feature but it's small, so Design-lite." | New features go through Brainstorm. Design-lite is for existing features only. The brainstorming skill enforces its own HARD-GATE. |
 | "I used the skill because I named it." | Activation requires trigger, steps, artifact/check, and handoff. |
 
 ## Handoff

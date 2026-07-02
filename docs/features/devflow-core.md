@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current Version: v28
+- Current Version: v30
 - Status: active
-- Last Change: pua-compact-method-display
+- Last Change: brainstorm-depth-selection-gate
 - Product Area: runtime flow, skill routing, validation, learning loop
 
 ## Feature Background
@@ -12,7 +12,7 @@
 DevFlow Core Runtime is the central product capability of DevFlow-Core. It turns developer requests into a lightweight but verified agent workflow:
 
 ```text
-Sense -> Brainstorm -> Cut -> Shape -> Build -> Prove -> Learn when needed
+Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut -> Build -> Prove -> Learn when needed
 ```
 
 This ledger exists so future changes do not lose why the runtime is shaped this way, which reference-project ideas were absorbed, and which boundaries must not drift.
@@ -30,6 +30,8 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - Small Request Boundary gates for Fast and Design-lite: impact, risk, uncertainty, and proof.
 - Method Lens selection for Design, Recovery, and high-risk proof: Root Cause, Working Backwards, First Principles Cut, Data/Proof, and Operational Owner.
 - `devflow-brainstorm`, `devflow-spec`, `devflow-cut`, `devflow-build`, `devflow-prove`, `devflow-pua`, `devflow-learn`, and `devflow-audit` as focused runtime skills.
+- `devflow-brainstorm` interview discipline as core behavior: one question at a time, recommended answers, fact reads before asking, and documentation landing decisions through `devflow-spec`, feature ledgers, or ADRs when needed.
+- `devflow-brainstorm` Depth Selection Gate: three design depths (A: Full Spec with 3 confirmations, B: Simplified Spec with 2 confirmations, C: Dialogue Confirmation with 1 confirmation). Depth is user-chosen based on Small Request Boundary gates.
 - Commands for route, spec, plan, review, debt, prove, pua, learn, and audit; `/devflow-spec` can use the bundled `scripts/devflow-spec.js` checker, `/devflow-plan` can use the bundled `scripts/devflow-plan.js` plan-pack checker, `/devflow-review` can use the bundled `scripts/devflow-review.js` gate scanner, `/devflow-debt` can use the bundled `scripts/devflow-debt.js` scanner, and `/devflow-audit` can use the bundled `scripts/devflow-audit.js` repo-wide audit scanner.
 - Saved specs default to `docs/specs/<short-kebab-name>.md`; saved plans default to `docs/plans/<short-kebab-name>.md` and must cite `Source:` plus `Spec coverage:`.
 - `npm test` validation for required files, skills, commands, PRD, learning cards, and stale paths.
@@ -54,6 +56,8 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 
 | Version | Change | Type | Date | Status | Summary |
 |---|---|---|---|---|---|
+| v30 | brainstorm-depth-selection-gate | design flow | 2026-07-02 | active | Added Depth Selection Gate (A/B/C) to `devflow-brainstorm`: A (Full Spec: Feature Ledger → Design Contract → devflow-spec → /devflow-plan, 3 confirmations), B (Simplified Spec: Feature Ledger → Design Contract → /devflow-plan, 2 confirmations), C (Dialogue Confirmation: Core Clarification → devflow-cut, 1 confirmation). Depth is user-chosen, not LLM-asserted. |
+| v29 | brainstorm-interview-discipline | reference absorption | 2026-07-01 | active | Absorbed Matt Pocock's interview behavior into core `devflow-brainstorm` interview discipline and docs landing decisions instead of keeping separate runtime concepts. |
 | v28 | pua-compact-method-display | recovery usability | 2026-06-27 | active | Simplified visible PUA methodology output to `METHOD: {flavor} / {method}` plus a concise switch line while keeping local methodology assets as the runtime source. |
 | v27 | pua-local-methodology-assets | recovery hardening | 2026-06-27 | active | Added local `devflow-pua` methodology router, method library, flavor display protocol, and required method display output. |
 | v26 | pua-repeated-missing-opposite-method | recovery hardening | 2026-06-27 | active | Added repeated "少了这个/少个那个" trigger handling and opposite-method recovery when a prior guiding method still fails. |
@@ -116,6 +120,8 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - 2026-06-27: Treat repeated "missing this/missing that" feedback as pressure recovery instead of ordinary incremental scope. Reason: repeated missing-piece feedback usually means the agent failed coverage, success-contract, or user-view diagnosis, so continuing the old method repeats the miss.
 - 2026-06-27: Switch to a different/opposite recovery method when the first method still fails. Reason: after a user says the fix is still wrong or still missing pieces, another tweak with the same method usually repeats the failure pattern; the runtime must restart checks from facts with a different lens.
 - 2026-06-27: Add local PUA methodology assets instead of only naming methods. Reason: pressure recovery must expose which method is active, why it was chosen, what flavor is displayed, and what method steps will be executed without requiring runtime links to another project.
+- 2026-07-01: Absorb the source interview behavior into `devflow-brainstorm` instead of copying source skills or keeping separate runtime concepts. Reason: the useful behavior is one-question interview discipline plus docs landing decisions; `devflow-spec` remains the saved-requirements node before plan/cut/build when needed.
+- 2026-07-02: Add Depth Selection Gate (A/B/C) to `devflow-brainstorm` instead of only offering spec-vs-plan at the end. Reason: users need to choose design depth early so the flow and confirmation count are determined upfront; C path allows lightweight dialogue-only confirmation for small low-risk changes while still requiring Core Clarification.
 
 ## Known Constraints
 
@@ -156,6 +162,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - PUA methodology library: `skills/devflow-pua/references/methodology-library.md`
 - PUA flavor display: `skills/devflow-pua/references/flavor-display.md`
 - Repo audit skill: `skills/devflow-audit/SKILL.md`
+- Brainstorm interview discipline reference: `skills/devflow-brainstorm/references/interview-discipline.md`
 - Proof skill: `skills/devflow-prove/SKILL.md`
 - Self-tests: `skills/devflow-prove/references/flow-self-test.md`
 - Validation: `scripts/validate-devflow.js`

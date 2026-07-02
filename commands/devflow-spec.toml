@@ -40,4 +40,6 @@ Open Questions:
 After the spec passes, create the plan with:
 Source: <spec path or approved design>
 Spec coverage: <which requirements map to which tasks>
+
+Next: /devflow-plan with Source and Spec coverage, then devflow-cut -> devflow-build -> devflow-prove.
 '''

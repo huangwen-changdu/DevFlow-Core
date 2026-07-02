@@ -1,11 +1,25 @@
 ---
 name: devflow-cut
-description: "Use before adding code, dependencies, abstractions, configs, folders, framework layers, generic engines, reusable capabilities, or when checking YAGNI, Ponytail ladder reuse, root-cause fixes, platform-native options, scope creep, bloat, and simplification."
+description: "Use before adding code, dependencies, abstractions, configs, folders, framework layers, generic engines, reusable capabilities, or when checking YAGNI, Ponytail ladder reuse, root-cause fixes, platform-native options, scope creep, bloat, and simplification. Receives input from three depth paths: A (Plan Pack via /devflow-plan after devflow-spec), B (Plan Pack via /devflow-plan), C (approved design contract directly from devflow-brainstorm, no Plan Pack). Runs Required Gates (Reuse, Ponytail, Root-Cause, Native, Overbuild, Diff, Scope). CUT_PASS hands off to devflow-build; CUT_REDUCE/CUT_REUSE stops for user confirmation; CUT_BLOCKED returns to devflow-brainstorm."
 ---
 
 # DevFlow Cut
 
 Cut unnecessary work before writing it.
+
+**Violating the letter of the rules is violating the spirit of the rules.**
+
+## Input Sources
+
+This skill receives input from three depth paths (selected at `devflow-brainstorm` Depth Selection Gate):
+
+| Depth | Source | Input Type | Has Plan Pack? |
+|-------|--------|-----------|----------------|
+| A (Full Spec) | `devflow-spec` → `/devflow-plan` → here | Plan Pack with spec traceability | Yes (`docs/plans/<name>.md`) |
+| B (Simplified Spec) | `/devflow-plan` → here | Plan Pack | Yes (`docs/plans/<name>.md`) |
+| C (Dialogue Confirmation) | `devflow-brainstorm` → here | Approved design contract | No |
+
+**Depth C handling**: when receiving a design contract directly (no Plan Pack), treat the design contract as the plan. The Required Gates apply identically — the absence of a Plan Pack does not skip any gate. The design contract's Goal / Not doing / Impact / Verification fields serve as the plan fields for gate checks.
 
 ## Cut Intensity
 
@@ -134,7 +148,9 @@ CUT_REUSE: existing capability can be reused; do not write new implementation
 CUT_BLOCKED: missing facts or risk too high; cannot enter Build
 ```
 
-When `CUT_REDUCE` or `CUT_REUSE` happens, update the design contract before Build.
+When `CUT_REDUCE` or `CUT_REUSE` occurs, **STOP — present the reduction or reuse finding to the user**. Explain what was cut, what existing capability replaces it, and why the smaller option is sufficient. Wait for the user to confirm before updating the design contract and entering Build.
+
+When `CUT_BLOCKED` occurs, hand back to `devflow-brainstorm` to re-explore the goal and constraints with the user. Include the depth that was selected so brainstorm can resume at the right point.
 
 ## Anti-Rationalization
 
@@ -146,6 +162,17 @@ When `CUT_REDUCE` or `CUT_REUSE` happens, update the design contract before Buil
 | "Tests are bloat." | The smallest useful verification is not bloat. |
 | "This is only the ticketed path." | For bugs, check callers first; the shared root cause may be the smaller fix. |
 | "We can add the upgrade later." | If a shortcut has a known ceiling, record the trigger with `devflow:` now. |
+
+## Red Flags — STOP
+
+- About to write new code without running the ladder
+- "This abstraction will help later" without a second real use today
+- Adding a dependency when native/stdlib covers it
+- Skipping Root-Cause Check for a bug fix
+- Cutting trust-boundary validation, security, or data-loss protection
+- Proceeding to Build with `CUT_REDUCE` or `CUT_REUSE` without user confirmation
+
+**All of these mean: stop and run the gates.**
 
 ## Handoff
 
@@ -160,3 +187,4 @@ Before leaving this skill, confirm:
 - [ ] Removed scope is explicitly named.
 - [ ] Intentional simplifications have `devflow:` ceiling and revisit trigger markers.
 - [ ] Cut result is one of the four allowed statuses.
+- [ ] Input depth was identified (A: Plan Pack with spec, B: Plan Pack, C: design contract) and gates were run accordingly.

@@ -1,11 +1,13 @@
 ---
 name: devflow-prove
-description: "Use before saying done, fixed, complete, working, passed, resolved, ready, or candidate_pass; use after builds, bug fixes, rule/docs/skill changes, tests, validation, and any PASS/FAIL/BLOCKED evidence claim."
+description: "Use before saying done, fixed, complete, working, passed, resolved, ready, or candidate_pass; use after builds, bug fixes, rule/docs/skill changes, tests, validation, and any PASS/FAIL/BLOCKED evidence claim. Receives proof target from devflow-build. Runs the narrowest sufficient check, reports Command/Result/Judgment. PASS completes the chain; FAIL triggers devflow-pua recovery; BLOCKED names the missing condition."
 ---
 
 # DevFlow Prove
 
 No proof, no completion.
+
+**Violating the letter of the rules is violating the spirit of the rules.**
 
 ## Process
 
@@ -127,6 +129,17 @@ Recovery requires re-reading facts, listing 3 hypotheses, and trying a materiall
 | "A partial check is enough." | Partial proof must be labeled partial. |
 | "The tool said success." | Tool claims are data. Verify the actual artifact/output. |
 | "I am confident." | Confidence is not evidence. |
+
+## Red Flags — STOP
+
+- About to say "done", "fixed", "complete", or "passed" without running verification
+- Using "should work", "probably", or "seems to"
+- Trusting a delegated claim without independent verification
+- Reusing old output as proof
+- Expressing satisfaction before verification runs
+- Skipping the Skill Activation Chain Check after rule/skill/command changes
+
+**All of these mean: run the command, read the output, then claim.**
 
 ## Verification
 

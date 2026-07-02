@@ -29,7 +29,8 @@ const expectedSkills = [
   "skills/devflow-prove/SKILL.md",
   "skills/devflow-pua/SKILL.md",
   "skills/devflow-learn/SKILL.md",
-  "skills/devflow-audit/SKILL.md"
+  "skills/devflow-audit/SKILL.md",
+  "skills/devflow-brainstorm/references/interview-discipline.md"
 ];
 
 const expectedCommands = [
@@ -55,7 +56,7 @@ const adapters = [
   {
     name: "Codex / shared agents",
     file: "AGENTS.md",
-    terms: ["Sense -> Brainstorm -> Cut -> Shape -> Build -> Prove", "problem report", "devflow-pua", "Completion proof"]
+    terms: ["Sense -> Brainstorm -> [STOP: Depth A/B/C]", "problem report", "devflow-pua", "Completion proof", "STOP gates are mandatory", "Skills enforce their own gates"]
   },
   {
     name: "Claude Code",
@@ -95,13 +96,19 @@ const adapters = [
   {
     name: "CodeBuddy",
     file: ".codebuddy/rules/devflow-core/RULE.mdc",
-    terms: ["Sense -> Brainstorm -> Cut -> Shape -> Build -> Prove", "devflow-pua", "restart `devflow-brainstorm`", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Authoritative method source", "PASS / FAIL / BLOCKED"]
+    terms: ["Sense -> Brainstorm -> [STOP: Depth A/B/C]", "devflow-pua", "restart `devflow-brainstorm`", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Authoritative method source", "PASS / FAIL / BLOCKED", "STOP gates are mandatory"]
   }
 ];
 
 for (const adapter of adapters) {
   assertTerms(adapter.name, read(adapter.file), adapter.terms);
 }
+
+assert(read("AGENTS.md").includes("interview-discipline.md"), "AGENTS.md missing Brainstorm interview discipline surface");
+assert(
+  read(".claude/commands/devflow-core.md").includes("skills/devflow-brainstorm/references/interview-discipline.md"),
+  "Claude DevFlow command missing interview discipline reference"
+);
 
 const plugin = JSON.parse(read("plugin.json"));
 assert(plugin.entrypoints?.agents === "AGENTS.md", "plugin.json must expose AGENTS.md");

@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current Version: v26
+- Current Version: v27
 - Status: active
-- Last Change: pua-compact-method-display-validation
+- Last Change: brainstorm-interview-discipline-validation
 - Product Area: local validation, evidence commands, coverage reports
 
 ## Feature Background
@@ -38,6 +38,7 @@ This ledger exists because validation behavior now changes independently from th
 - `npm test` validates Skill Activation Check wording and `reuse` tag coverage in skills and scripts.
 - `npm run verify:all` runs the full local verification matrix in one command.
 - Package validation checks required files, skill anatomy, commands, package scripts, learning cards, feature ledgers, stale paths, and required method terms.
+- Package, trigger, host, and installer validation cover the Brainstorm interview discipline reference file, the optional `devflow-spec` branch, plugin and Gemini manifest entries, target installer entries, user installer entries, and installed-runtime self-containment.
 
 ### Non-Goals
 
@@ -50,6 +51,7 @@ This ledger exists because validation behavior now changes independently from th
 
 | Version | Change | Type | Date | Status | Summary |
 |---|---|---|---|---|---|
+| v27 | brainstorm-interview-discipline-validation | trigger and installer coverage | 2026-07-01 | active | Added package, trigger, host, target-installer, user-installer, plugin manifest, and Gemini manifest coverage proving `devflow-brainstorm` interview discipline and `devflow-spec` handoff are installed and reachable. |
 | v26 | pua-compact-method-display-validation | trigger hardening | 2026-06-27 | active | Updated trigger, host, and package validation to require the compact `METHOD: {flavor} / {method}` contract instead of verbose methodology output fields. |
 | v25 | pua-methodology-assets-validation | trigger hardening | 2026-06-27 | active | Added validation that `devflow-pua` ships local methodology router/library/display references and requires visible method output. |
 | v24 | pua-repeated-missing-validation | trigger hardening | 2026-06-27 | active | Added validation coverage for "少个" missing-piece triggers and different/opposite method switching across trigger and host surfaces. |
@@ -106,6 +108,7 @@ This ledger exists because validation behavior now changes independently from th
 - 2026-06-26: Add `npm run spec:verify` and manifest/installer/trigger coverage for `devflow-spec` instead of leaving specs as prompt-only guidance. Reason: Superpowers-style spec discipline must be reachable and locally provable after target install.
 - 2026-06-27: Validate repeated missing-piece recovery and opposite-method switching through trigger and host checks. Reason: the behavior is only useful if Codex, Claude, Copilot, and CodeBuddy entry surfaces all make the same recovery path visible.
 - 2026-06-27: Validate local methodology assets and compact display output. Reason: naming methods is not enough; the runtime must prove it ships the method files and forces agents to show `METHOD: {flavor} / {method}` plus a switch line when the method changes.
+- 2026-07-01: Validate Brainstorm interview discipline through existing trigger, host, manifest, and installer checks instead of adding a separate verifier. Reason: the risk is whether development requests reach `devflow-brainstorm`, preserve the spec handoff branch, and ship the local reference with the runtime.
 
 ## Known Constraints
 
@@ -141,5 +144,6 @@ This ledger exists because validation behavior now changes independently from th
 - User installer validation: `scripts/validate-user-installer.js`
 - Spec checker: `scripts/devflow-spec.js`
 - Audit scanner: `scripts/devflow-audit.js`
+- Brainstorm interview discipline reference: `skills/devflow-brainstorm/references/interview-discipline.md`
 - Scenario source: `skills/devflow-prove/references/flow-self-test.md`
 - Package scripts: `package.json`

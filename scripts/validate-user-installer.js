@@ -53,6 +53,7 @@ assert(userEntries.includes("skills/devflow-pua/references/methodology-router.md
 assert(userEntries.includes("skills/devflow-pua/references/methodology-library.md"), "User installer missing pua methodology library");
 assert(userEntries.includes("skills/devflow-pua/references/flavor-display.md"), "User installer missing pua flavor display");
 assert(userEntries.includes("skills/devflow-audit/SKILL.md"), "User installer missing audit skill");
+assert(userEntries.includes("skills/devflow-brainstorm/references/interview-discipline.md"), "User installer missing interview discipline reference");
 assert(userEntries.includes("commands/devflow.toml"), "User installer missing devflow command");
 assert(userEntries.includes("commands/devflow-spec.toml"), "User installer missing spec command");
 assert(userEntries.includes("commands/devflow-pua.toml"), "User installer missing pua command");
@@ -77,6 +78,7 @@ assert(fs.existsSync(path.join(createHome, "skills/devflow-pua/references/method
 assert(fs.existsSync(path.join(createHome, "skills/devflow-pua/references/methodology-library.md")), "Write mode must create pua methodology library");
 assert(fs.existsSync(path.join(createHome, "skills/devflow-pua/references/flavor-display.md")), "Write mode must create pua flavor display");
 assert(fs.existsSync(path.join(createHome, "skills/devflow-audit/SKILL.md")), "Write mode must create audit skill file");
+assert(fs.existsSync(path.join(createHome, "skills/devflow-brainstorm/references/interview-discipline.md")), "Write mode must create interview discipline reference");
 assert(fs.existsSync(path.join(createHome, "commands/devflow.toml")), "Write mode must create command file");
 assert(fs.existsSync(path.join(createHome, "commands/devflow-spec.toml")), "Write mode must create spec command file");
 assert(fs.existsSync(path.join(createHome, "commands/devflow-pua.toml")), "Write mode must create pua command file");
