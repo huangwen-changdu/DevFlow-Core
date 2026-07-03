@@ -1,6 +1,6 @@
 ---
 name: devflow-prove
-description: "Use before saying done, fixed, complete, working, passed, resolved, ready, or candidate_pass; use after builds, bug fixes, rule/docs/skill changes, tests, validation, and any PASS/FAIL/BLOCKED evidence claim. Receives proof target from devflow-build. Runs the narrowest sufficient check, reports Command/Result/Judgment. PASS completes the chain; FAIL triggers devflow-pua recovery; BLOCKED names the missing condition."
+description: "Use before saying done, fixed, complete, working, passed, resolved, ready, or candidate_pass; use after builds, bug fixes, rule/docs/skill changes, tests, validation, and any PASS/FAIL/BLOCKED evidence claim. Runs the narrowest sufficient check and reports Command/Result/Judgment."
 ---
 
 # DevFlow Prove

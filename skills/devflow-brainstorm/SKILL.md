@@ -1,6 +1,6 @@
 ---
 name: devflow-brainstorm
-description: "Use when a request is unclear, a requirement or feature idea appears, behavior/product/architecture may change, assumptions need challenging, documentation capture or spec handoff may be needed, 2-3 approaches are needed, implementation should be shaped before coding, or a user challenge requires re-asking the goal/result before rebuilding. Receives from devflow-core or devflow-pua. Supports three design depths: A (Full Spec: Feature Ledger -> Design Contract -> devflow-spec -> /devflow-plan), B (Simplified Spec: Feature Ledger -> Design Contract -> /devflow-plan), C (Dialogue Confirmation: Core Clarification -> devflow-cut). Hands off to devflow-spec, /devflow-plan, or devflow-cut based on selected depth."
+description: "Use when a request is unclear, a requirement or feature idea appears, behavior/product/architecture may change, assumptions need challenging, documentation capture or spec handoff may be needed, 2-3 approaches are needed, implementation should be shaped before coding, or a user challenge requires re-asking the goal/result before rebuilding. Turns a request into the smallest useful design through collaborative dialogue."
 ---
 
 # DevFlow Brainstorm

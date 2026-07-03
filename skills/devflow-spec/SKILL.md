@@ -1,6 +1,6 @@
 ---
 name: devflow-spec
-description: "Use when writing a requirements/spec document, turning an approved design into a saved spec, planning from specs, or creating docs/specs artifacts before implementation. Receives an approved design contract from devflow-brainstorm. Writes docs/specs/<name>.md, runs self-review and devflow-spec.js checker, gets user approval. Hands off to /devflow-plan for Plan Pack creation."
+description: "Use when writing a requirements/spec document, turning an approved design into a saved spec, planning from specs, or creating docs/specs artifacts before implementation."
 ---
 
 # DevFlow Spec

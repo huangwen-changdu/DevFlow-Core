@@ -1,23 +1,15 @@
 ---
 name: devflow-build
-description: "Use when implementing an approved plan, applying Karpathy-style minimal changes, fixing code, refactoring narrowly, creating implementation slices, touching files surgically, or keeping every diff tied to the user goal. Receives CUT_PASS from devflow-cut via three depth paths: A (Plan Pack with spec traceability), B (Plan Pack), C (approved design contract, no Plan Pack). Creates Build Contract and Implementation Slices, runs Diff Self-Check. Hands off to devflow-prove with proof target and suggested command."
+description: "Use when implementing an approved plan, applying Karpathy-style minimal changes, fixing code, refactoring narrowly, creating implementation slices, touching files surgically, or keeping every diff tied to the user goal. Implements only the selected smallest useful solution."
 ---
 
 # DevFlow Build
 
 Implement only the selected smallest useful solution.
 
-## Input Sources
+## Context
 
-This skill receives `CUT_PASS` from `devflow-cut` via three depth paths:
-
-| Depth | Input | Has Plan File? | Source Field |
-|-------|-------|----------------|-------------|
-| A (Full Spec) | Plan Pack with spec traceability | Yes (`docs/plans/<name>.md`) | `docs/specs/<name>.md` |
-| B (Simplified Spec) | Plan Pack | Yes (`docs/plans/<name>.md`) | approved design |
-| C (Dialogue Confirmation) | Approved design contract | No | approved design (design-only) |
-
-**Depth C handling**: when there is no Plan Pack file, the approved design contract is the plan. Use the design contract's Goal / Not doing / Impact / Verification fields as the Build Contract basis. The `Source:` field should reference "approved design" and `Spec coverage:` should say "design-only".
+Receives `CUT_PASS` from `devflow-cut`. Input may be a Plan Pack (Depth A/B: `docs/plans/<name>.md`) or an approved design contract (Depth C: no plan file). When no plan file exists, the design contract is the plan — skip `devflow-plan.js` check and use its fields as the Build Contract basis.
 
 ## Build Contract
 
@@ -35,8 +27,6 @@ If work touches more than one file or one logical step, create Implementation Sl
 ## Plan Pack
 
 When saving a plan file, use `docs/plans/<short-kebab-name>.md` by default unless the target project already documents another plan/spec path. Do not save implementation plans under `docs/features/`; that directory is for feature ledgers.
-
-**Depth C (no Plan Pack)**: if the input is an approved design contract without a plan file, skip the plan file check (`node scripts/devflow-plan.js`). The Build Contract section below serves as the implementation guide. If multi-step work is needed, create Implementation Slices directly from the design contract.
 
 For multi-step work, tasks must cite the approved source and be small and verifiable:
 
@@ -146,4 +136,3 @@ Before leaving this skill, confirm:
 - [ ] Slices exist when work is multi-step.
 - [ ] Diff self-check is complete.
 - [ ] Proof command/scenario is ready for `devflow-prove`.
-- [ ] Input depth was identified (A: Plan Pack with spec, B: Plan Pack, C: design contract) and plan file check was skipped for Depth C.

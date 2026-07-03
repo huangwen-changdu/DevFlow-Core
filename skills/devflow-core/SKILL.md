@@ -1,6 +1,6 @@
 ---
 name: devflow-core
-description: "Use when starting coding work, routing a request, choosing Problem/Fast/Design/Build/Recovery, investigating issues, handling requirements or bugs, applying Sense/Brainstorm/Cut/Build/Prove, implementing, fixing, debugging, reviewing plans, validating completion, handling user challenge or quality complaint recovery, or deciding which devflow skill should handle the task. Entry point for the DevFlow skill chain: routes to devflow-brainstorm (design), devflow-spec (saved requirements), /devflow-plan (Plan Pack), devflow-cut (anti-overengineering), devflow-build (implementation), devflow-prove (verification), devflow-pua (recovery), devflow-learn (correction capture), and devflow-audit (repo audit)."
+description: "Use when starting coding work, routing a request, choosing Problem/Fast/Design/Build/Recovery, investigating issues, handling requirements or bugs, applying Sense/Brainstorm/Cut/Build/Prove, implementing, fixing, debugging, reviewing plans, validating completion, handling user challenge or quality complaint recovery, or deciding which devflow skill should handle the task. Entry point for the DevFlow skill chain."
 ---
 
 # DevFlow Core

@@ -1,6 +1,6 @@
 ---
 name: devflow-cut
-description: "Use before adding code, dependencies, abstractions, configs, folders, framework layers, generic engines, reusable capabilities, or when checking YAGNI, Ponytail ladder reuse, root-cause fixes, platform-native options, scope creep, bloat, and simplification. Receives input from three depth paths: A (Plan Pack via /devflow-plan after devflow-spec), B (Plan Pack via /devflow-plan), C (approved design contract directly from devflow-brainstorm, no Plan Pack). Runs Required Gates (Reuse, Ponytail, Root-Cause, Native, Overbuild, Diff, Scope). CUT_PASS hands off to devflow-build; CUT_REDUCE/CUT_REUSE stops for user confirmation; CUT_BLOCKED returns to devflow-brainstorm."
+description: "Use before adding code, dependencies, abstractions, configs, folders, framework layers, generic engines, reusable capabilities, or when checking YAGNI, Ponytail ladder reuse, root-cause fixes, platform-native options, scope creep, bloat, and simplification. Cuts unnecessary work before writing it."
 ---
 
 # DevFlow Cut
@@ -9,17 +9,9 @@ Cut unnecessary work before writing it.
 
 **Violating the letter of the rules is violating the spirit of the rules.**
 
-## Input Sources
+## Context
 
-This skill receives input from three depth paths (selected at `devflow-brainstorm` Depth Selection Gate):
-
-| Depth | Source | Input Type | Has Plan Pack? |
-|-------|--------|-----------|----------------|
-| A (Full Spec) | `devflow-spec` → `/devflow-plan` → here | Plan Pack with spec traceability | Yes (`docs/plans/<name>.md`) |
-| B (Simplified Spec) | `/devflow-plan` → here | Plan Pack | Yes (`docs/plans/<name>.md`) |
-| C (Dialogue Confirmation) | `devflow-brainstorm` → here | Approved design contract | No |
-
-**Depth C handling**: when receiving a design contract directly (no Plan Pack), treat the design contract as the plan. The Required Gates apply identically — the absence of a Plan Pack does not skip any gate. The design contract's Goal / Not doing / Impact / Verification fields serve as the plan fields for gate checks.
+Receives from `devflow-brainstorm` (Depth C: approved design contract) or `/devflow-plan` (Depth A/B: Plan Pack). When no Plan Pack is present, the approved design contract is the plan — all gates still apply, using its Goal / Not doing / Impact / Verification fields.
 
 ## Cut Intensity
 
@@ -187,4 +179,3 @@ Before leaving this skill, confirm:
 - [ ] Removed scope is explicitly named.
 - [ ] Intentional simplifications have `devflow:` ceiling and revisit trigger markers.
 - [ ] Cut result is one of the four allowed statuses.
-- [ ] Input depth was identified (A: Plan Pack with spec, B: Plan Pack, C: design contract) and gates were run accordingly.
