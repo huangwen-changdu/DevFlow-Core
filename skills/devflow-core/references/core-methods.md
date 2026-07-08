@@ -9,7 +9,7 @@ This document is DevFlow Core's source of truth. It defines the native methods a
 | Context Map | Read project rules, docs, relevant files, tests, commands, memory, and maps before deciding. | Guessing, stale assumptions, hallucinated project facts. |
 | Lifecycle Router | Choose Fast, Design-lite, Design, Build, or Recovery by task shape and risk. | One-size-fits-all ceremony and silent risk escalation. |
 | Small Request Boundary | Classify tiny work by risk, impact, uncertainty, and proof before choosing Fast or Design-lite. | Treating every "small" feature as Fast Path or forcing heavy Design on trivial work. |
-| Method Lens | Select the working strategy for Design, Recovery, or high-risk proof before choosing artifacts. | Generic process with no task-specific brain. |
+| Method Lens | Select the working strategy for Design, Recovery, problem solving (问题解决), bug fixing, architecture design (架构设计), or high-risk proof before choosing artifacts. | Generic process with no task-specific brain. |
 | Brainstorm First | Clarify goal, constraints, success criteria, assumptions, and 2-3 approaches. | Building the first suggested implementation without checking the real goal. |
 | Minimal Solution Ladder | Prefer no-change, reuse, stdlib, platform, installed dependency, one-line/config, then minimum new code. | Rewriting existing capability, adding dependencies too early. |
 | Native Capability Check | Scan platform and standard-library alternatives before adding libraries or custom code. | Wrapper packages for things the runtime already provides. |
@@ -132,7 +132,7 @@ Pick one primary lens, and at most one secondary lens when it materially reduces
 |---|---|---|
 | Root Cause | Bug, regression, failing proof, repeated symptom. | Search causes and callers before proposing the fix. |
 | Working Backwards | Product, UX, API, workflow, or ambiguous value. | Start from user-visible outcome and acceptance proof. |
-| First Principles Cut | Scope, dependency, abstraction, or architecture pressure. | Question the need, delete steps, then simplify before building. |
+| First Principles Cut (第一性原理) | Problem solving (问题解决), bug fixing, 修 bug, architecture design (架构设计), scope, dependency, abstraction, or architecture pressure. | Reduce to facts, constraints, invariants, and the smallest necessary mechanism before proposing or building. |
 | Data/Proof | Metrics, validation, benchmark, release, or verifier-sensitive work. | Define evidence and status owner before implementation. |
 | Operational Owner | Cross-file, cross-agent, install, release, or handoff work. | Name owner, affected surfaces, rollback or follow-through proof. |
 
@@ -145,6 +145,7 @@ Method Lens: primary <lens>; secondary <lens/none>; why <risk or decision it han
 Rules:
 
 - The lens changes how the existing DevFlow route is executed; it does not replace Sense, Brainstorm, Cut, Build, or Prove.
+- Use First Principles Cut (第一性原理) for problem solving (问题解决), 修 bug, and architecture design (架构设计) when assumptions, inherited abstractions, or the apparent solution may hide the real constraint.
 - Do not add PUA flavor, pressure rhetoric, leaderboard, hook lifecycle, or default full OpenSpec to use a normal Method Lens. Pressure recovery is the exception: `devflow-pua` may use its local methodology router/library/display references to show flavor-method routing.
 - If no lens changes the decision, say `Method Lens: none; why standard route is enough`.
 

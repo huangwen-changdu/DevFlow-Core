@@ -28,6 +28,7 @@ Every request goes through this process. A config change, a single-function fix,
 7. **Define success criteria** the user or agent can verify.
 8. **Challenge hidden assumptions**:
    - Does this need to exist?
+   - What remains true from first principles (第一性原理) if the requested implementation, current abstraction, or preferred solution is removed?
    - Is the user asking for an implementation when a smaller outcome works?
    - What current system behavior may already satisfy the goal?
    - What would make this design unacceptable?
@@ -294,7 +295,7 @@ For Design work that would otherwise feel generic, choose one primary lens and a
 
 - Root Cause: bug, regression, failing proof, repeated symptom.
 - Working Backwards: product, UX, API, workflow, or ambiguous value.
-- First Principles Cut: scope, dependency, abstraction, or architecture pressure.
+- First Principles Cut (第一性原理): problem solving, bug fixes, scope, dependency, abstraction, or architecture pressure; reduce the request to facts, constraints, invariants, and the smallest necessary mechanism before proposing a solution.
 - Data/Proof: metrics, validation, benchmark, release, or verifier-sensitive work.
 - Operational Owner: cross-file, cross-agent, install, release, or handoff work.
 
@@ -449,6 +450,7 @@ Before leaving this skill, confirm:
 - [ ] Core Clarification 3 questions were completed (required for all depths, including C).
 - [ ] Clarifying questions were asked one at a time and user responses were received.
 - [ ] 2-3 approaches were compared when plausible, or Design-lite/Depth C was justified by the boundary gates.
+- [ ] First principles (第一性原理) were applied when assumptions, abstractions, bug causes, or architecture choices could hide a smaller solution.
 - [ ] Method Lens was selected or explicitly marked unnecessary, before convergence.
 - [ ] Recommended option is the smallest useful path.
 - [ ] Design contract was presented and user approved it.

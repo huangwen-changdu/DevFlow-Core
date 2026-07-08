@@ -80,6 +80,8 @@ Before routing, classify the incoming work:
 
 Problem investigation must not silently become implementation. First prove what is wrong, what is unknown, and whether a change is actually needed.
 
+For problem solving (问题解决), bug fixing, 修 bug, and architecture design (架构设计), use First Principles Cut (第一性原理) when the cause, invariant, abstraction, or smallest correct mechanism is unclear. Reduce the work to facts and constraints before selecting the route, design, or fix.
+
 ## Capability Dispatch
 
 | Signal | Capability | Required next action |

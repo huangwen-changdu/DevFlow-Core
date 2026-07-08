@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current Version: v30
+- Current Version: v31
 - Status: active
-- Last Change: brainstorm-depth-selection-gate
+- Last Change: first-principles-and-adversarial-proof
 - Product Area: runtime flow, skill routing, validation, learning loop
 
 ## Feature Background
@@ -28,7 +28,8 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - `devflow-pua` pressure recovery for user challenge, explicit wrong-code signals, repeated missing-piece complaints such as "少了这个/少个那个", changed-wrong results, repeated misses, quality complaints, local PUA methodology assets, compact `METHOD: {flavor} / {method}` display, concise method switch line, hard `devflow-brainstorm` restart, user-view miss diagnosis, method switching after failed methods, opposite-method recovery when a method still misses, wrong-context quarantine, pointed goal/result questions, changed approach, proof, and learning handoff.
 - `devflow-prove` Skill Activation Chain Check for rule, command, prompt, entry, and skill changes.
 - Small Request Boundary gates for Fast and Design-lite: impact, risk, uncertainty, and proof.
-- Method Lens selection for Design, Recovery, and high-risk proof: Root Cause, Working Backwards, First Principles Cut, Data/Proof, and Operational Owner.
+- Method Lens selection for Design, Recovery, problem solving (问题解决), bug fixing, architecture design (架构设计), and high-risk proof: Root Cause, Working Backwards, First Principles Cut (第一性原理), Data/Proof, and Operational Owner.
+- `devflow-prove` adversarial review (对抗式审查) before completion for development work, checking whether the result is still wrong, incomplete, unreachable, over-broad, or under-verified before any done/fixed/ready claim.
 - `devflow-brainstorm`, `devflow-spec`, `devflow-cut`, `devflow-build`, `devflow-prove`, `devflow-pua`, `devflow-learn`, and `devflow-audit` as focused runtime skills.
 - `devflow-brainstorm` interview discipline as core behavior: one question at a time, recommended answers, fact reads before asking, and documentation landing decisions through `devflow-spec`, feature ledgers, or ADRs when needed.
 - `devflow-brainstorm` Depth Selection Gate: three design depths (A: Full Spec with 3 confirmations, B: Simplified Spec with 2 confirmations, C: Dialogue Confirmation with 1 confirmation). Depth is user-chosen based on Small Request Boundary gates.
@@ -56,6 +57,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 
 | Version | Change | Type | Date | Status | Summary |
 |---|---|---|---|---|---|
+| v31 | first-principles-and-adversarial-proof | method/proof hardening | 2026-07-08 | active | Added explicit First Principles Cut (第一性原理) behavior to `devflow-brainstorm` and core routing/method coverage for problem solving (问题解决), 修 bug, and architecture design (架构设计). Added mandatory `devflow-prove` adversarial review (对抗式审查) before completion for development work. |
 | v30 | brainstorm-depth-selection-gate | design flow | 2026-07-02 | active | Added Depth Selection Gate (A/B/C) to `devflow-brainstorm`: A (Full Spec: Feature Ledger → Design Contract → devflow-spec → /devflow-plan, 3 confirmations), B (Simplified Spec: Feature Ledger → Design Contract → /devflow-plan, 2 confirmations), C (Dialogue Confirmation: Core Clarification → devflow-cut, 1 confirmation). Depth is user-chosen, not LLM-asserted. |
 | v29 | brainstorm-interview-discipline | reference absorption | 2026-07-01 | active | Absorbed Matt Pocock's interview behavior into core `devflow-brainstorm` interview discipline and docs landing decisions instead of keeping separate runtime concepts. |
 | v28 | pua-compact-method-display | recovery usability | 2026-06-27 | active | Simplified visible PUA methodology output to `METHOD: {flavor} / {method}` plus a concise switch line while keeping local methodology assets as the runtime source. |
@@ -122,6 +124,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - 2026-06-27: Add local PUA methodology assets instead of only naming methods. Reason: pressure recovery must expose which method is active, why it was chosen, what flavor is displayed, and what method steps will be executed without requiring runtime links to another project.
 - 2026-07-01: Absorb the source interview behavior into `devflow-brainstorm` instead of copying source skills or keeping separate runtime concepts. Reason: the useful behavior is one-question interview discipline plus docs landing decisions; `devflow-spec` remains the saved-requirements node before plan/cut/build when needed.
 - 2026-07-02: Add Depth Selection Gate (A/B/C) to `devflow-brainstorm` instead of only offering spec-vs-plan at the end. Reason: users need to choose design depth early so the flow and confirmation count are determined upfront; C path allows lightweight dialogue-only confirmation for small low-risk changes while still requiring Core Clarification.
+- 2026-07-08: Make First Principles Cut explicit as 第一性原理 in Brainstorm/Core and add adversarial review (对抗式审查) to Prove before completion. Reason: problem solving (问题解决), 修 bug, and architecture design (架构设计) need a visible way to reduce assumptions to facts and invariants, and completion proof needs a required disproof pass before done/fixed/ready claims.
 
 ## Known Constraints
 
@@ -144,7 +147,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - `scripts/devflow-audit.js` reports heuristic overengineering candidates only; important findings still require code reads before editing or claiming removable code.
 - Skill Activation Chain Check validates visible trigger and handoff evidence; it does not prove live host skill loading.
 - Validation harness details are tracked in `docs/features/validation-harness.md`; this ledger stays focused on runtime flow boundaries.
-- Method Lens is a strategy selector for existing routes; it must not reintroduce PUA flavor personas, pressure rhetoric, hook lifecycle, leaderboard mechanics, or full OpenSpec as defaults.
+- Method Lens is a strategy selector for existing routes; First Principles Cut (第一性原理) may guide problem solving (问题解决), 修 bug, and architecture design (架构设计), but it must not reintroduce PUA flavor personas, pressure rhetoric, hook lifecycle, leaderboard mechanics, or full OpenSpec as defaults.
 - Design-lite is not a bypass for requirements. It is only for small features with clear behavior, one plausible path, low risk, local impact, and quick proof; ambiguous boundaries require user route choice.
 - Claude Code hooks only inject route reminders at SessionStart. The installer merges the project hook into existing `.claude/settings.json` instead of replacing project permissions. Hooks do not prove a target project feature, run tests automatically, or replace `devflow-prove`.
 - `/devflow-core` is the Claude Code command bridge; `commands/devflow.toml` remains the generic command metadata for other command-capable hosts.

@@ -13,10 +13,11 @@ No proof, no completion.
 
 1. Identify the command, test, build, lint, diff check, validation script, or manual scenario that proves the claim.
 2. Run the narrowest sufficient check now.
-3. Read the real output and exit status.
-4. If it fails, report `FAIL` and return to Recovery; use `devflow-pua` when the failure includes user challenge, repeated miss, or changed-wrong behavior.
-5. If it cannot run, report `BLOCKED` and name the missing condition.
-6. Only then report completion or `candidate_pass`.
+3. Run adversarial review (对抗式审查) before completion for development work: try to disprove the result from the user's acceptance criteria, touched files, likely regressions, missing activation path, and skipped proof.
+4. Read the real output and exit status.
+5. If it fails, report `FAIL` and return to Recovery; use `devflow-pua` when the failure includes user challenge, repeated miss, or changed-wrong behavior.
+6. If it cannot run, report `BLOCKED` and name the missing condition.
+7. Only then report completion or `candidate_pass`.
 
 ## Proof Selection
 
@@ -31,6 +32,8 @@ No proof, no completion.
 ## Light Quality Gate
 
 After code changes, use the narrowest current quality signal before completion: targeted test, lint/typecheck, build, or a reproducible scenario. Do not run a full review checklist when a focused proof covers the claim.
+
+After development work, adversarial review (对抗式审查) is mandatory before completion: check the strongest plausible reason the change is still wrong, incomplete, unreachable, over-broad, or under-verified. If the adversarial review finds a real gap, report `FAIL` or continue the appropriate DevFlow route before claiming completion.
 
 After agent rule, command, prompt, entry, or `SKILL.md` changes, run a Skill Activation Chain Check before completion:
 
