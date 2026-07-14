@@ -26,7 +26,7 @@ const vaguePatterns = [
 function usage() {
   console.log("Usage: node scripts/devflow-plan.js [plan-file] [--self-test]");
   console.log("Checks whether a DevFlow Plan Pack has source tracing and executable task fields.");
-  console.log("Default plan landing is docs/plans/<short-name>.md unless the project documents another plan path.");
+  console.log("Default plan landing is docs/plans/YYYY-MM-DD-<short-kebab-name>.md unless the project documents another plan path.");
 }
 
 function splitTasks(body) {
@@ -100,19 +100,19 @@ function checkPlanLanding(filePath) {
   const isFeatureLedger = /(^|\/)docs\/features\/[^/]+\.md$/i.test(normalized);
 
   if (isDocsPlans) {
-    return { ok: true, message: "Plan landing: ok docs/plans/<name>.md" };
+    return { ok: true, message: "Plan landing: ok docs/plans/YYYY-MM-DD-<short-kebab-name>.md" };
   }
 
   if (isFeatureLedger) {
     return {
       ok: false,
-      message: "Plan landing: docs/features is for feature ledgers; put implementation plans under docs/plans/<name>.md"
+      message: "Plan landing: docs/features is for feature ledgers; put implementation plans under docs/plans/YYYY-MM-DD-<short-kebab-name>.md"
     };
   }
 
   return {
     ok: true,
-    message: "Plan landing: warning expected docs/plans/<name>.md unless this project has a documented plan path"
+    message: "Plan landing: warning expected docs/plans/YYYY-MM-DD-<short-kebab-name>.md unless this project has a documented plan path"
   };
 }
 
@@ -160,7 +160,7 @@ function readInput(args) {
 
 function selfTest() {
   const validPlan = [
-    "Source: docs/specs/add-plan-scanner.md",
+    "Source: docs/specs/2026-07-14-add-plan-scanner.md",
     "Spec coverage: Requirements map to Task 1",
     "Task: Add plan scanner",
     "Files: scripts/devflow-plan.js",
@@ -169,7 +169,7 @@ function selfTest() {
     "Not doing: generating plans or judging architecture"
   ].join("\n");
   const missingFieldPlan = [
-    "Source: docs/specs/add-plan-scanner.md",
+    "Source: docs/specs/2026-07-14-add-plan-scanner.md",
     "Spec coverage: Requirements map to Task 1",
     "Task: Add plan scanner",
     "Files: scripts/devflow-plan.js",
@@ -184,7 +184,7 @@ function selfTest() {
     "Not doing: generating plans or judging architecture"
   ].join("\n");
   const vaguePlan = [
-    "Source: docs/specs/add-plan-scanner.md",
+    "Source: docs/specs/2026-07-14-add-plan-scanner.md",
     "Spec coverage: similar to Task 1",
     "Task: Clean up later",
     "Files: scripts/devflow-plan.js",
@@ -212,7 +212,7 @@ function selfTest() {
     throw new Error("Self-test expected vague and unresolved terms to fail");
   }
 
-  const validLanding = checkPlanLanding("docs/plans/add-plan-scanner.md");
+  const validLanding = checkPlanLanding("docs/plans/2026-07-14-add-plan-scanner.md");
   if (!validLanding.ok) {
     throw new Error("Self-test expected docs/plans landing to pass");
   }

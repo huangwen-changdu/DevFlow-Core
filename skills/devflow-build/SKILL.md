@@ -9,7 +9,7 @@ Implement only the selected smallest useful solution.
 
 ## Context
 
-Receives `CUT_PASS` from `devflow-cut`. Input may be a Plan Pack (Depth A/B: `docs/plans/<name>.md`) or an approved design contract (Depth C: no plan file). When no plan file exists, the design contract is the plan — skip `devflow-plan.js` check and use its fields as the Build Contract basis.
+Receives `CUT_PASS` from `devflow-cut`. Input may be a Plan Pack (Depth A/B: `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`) or an approved design contract (Depth C: no plan file). When no plan file exists, the design contract is the plan — skip `devflow-plan.js` check and use its fields as the Build Contract basis.
 
 ## Build Contract
 
@@ -26,12 +26,12 @@ If work touches more than one file or one logical step, create Implementation Sl
 
 ## Plan Pack
 
-When saving a plan file, use `docs/plans/<short-kebab-name>.md` by default unless the target project already documents another plan/spec path. Do not save implementation plans under `docs/features/`; that directory is for feature ledgers.
+When saving a plan file, use `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`, resolved from the current target project's root, unless that project already documents another plan/spec path. Do not save implementation plans under `docs/features/`; that directory is for feature ledgers.
 
 For multi-step work, tasks must cite the approved source and be small and verifiable:
 
 ```text
-Source: <docs/specs/<name>.md or approved design>
+Source: <docs/specs/YYYY-MM-DD-<short-kebab-name>.md or approved design>
 Spec coverage: <which requirement(s) this plan covers, or design-only>
 Task: <short title>
 Files: <exact files likely touched>

@@ -68,26 +68,26 @@ function checkSpecLanding(filePath) {
   const isPlanDoc = /(^|\/)docs\/plans\/[^/]+\.md$/i.test(normalized);
 
   if (isDocsSpecs) {
-    return { ok: true, message: "Spec landing: ok docs/specs/<name>.md" };
+    return { ok: true, message: "Spec landing: ok docs/specs/YYYY-MM-DD-<short-kebab-name>.md" };
   }
 
   if (isFeatureLedger) {
     return {
       ok: false,
-      message: "Spec landing: docs/features is for feature ledgers; put generated specs under docs/specs/<name>.md"
+      message: "Spec landing: docs/features is for feature ledgers; put generated specs under docs/specs/YYYY-MM-DD-<short-kebab-name>.md"
     };
   }
 
   if (isPlanDoc) {
     return {
       ok: false,
-      message: "Spec landing: docs/plans is for implementation plans; put specs under docs/specs/<name>.md"
+      message: "Spec landing: docs/plans is for implementation plans; put specs under docs/specs/YYYY-MM-DD-<short-kebab-name>.md"
     };
   }
 
   return {
     ok: true,
-    message: "Spec landing: warning expected docs/specs/<name>.md unless this project has a documented specs path"
+    message: "Spec landing: warning expected docs/specs/YYYY-MM-DD-<short-kebab-name>.md unless this project has a documented specs path"
   };
 }
 
@@ -160,12 +160,12 @@ function selfTest() {
     throw new Error("Self-test expected vague and unresolved terms to fail");
   }
 
-  const validLanding = checkSpecLanding("docs/specs/add-spec-scanner.md");
+  const validLanding = checkSpecLanding("docs/specs/2026-07-14-add-spec-scanner.md");
   if (!validLanding.ok) {
     throw new Error("Self-test expected docs/specs landing to pass");
   }
 
-  const badPlanLanding = checkSpecLanding("docs/plans/add-spec-scanner.md");
+  const badPlanLanding = checkSpecLanding("docs/plans/2026-07-14-add-spec-scanner.md");
   if (badPlanLanding.ok) {
     throw new Error("Self-test expected docs/plans spec landing to fail");
   }

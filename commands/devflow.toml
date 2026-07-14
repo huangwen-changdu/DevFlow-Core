@@ -15,6 +15,8 @@ Before implementation, run Cut with Reuse, Native, Overbuild, Diff, and Scope ch
 For bug fixes, include Root-Cause Check: searched callers/references; shared vs narrow fix; reason.
 For deliberate simplifications, add or report `devflow: <ceiling>, revisit when <trigger>`.
 If implementation is requested, continue through Build and Prove.
+For problem solving, bug fixing, and architecture design, use First Principles Cut when the cause, constraint, invariant, abstraction, or smallest correct mechanism is unclear; reduce to facts, constraints, and invariants before selecting a solution.
+Before completion of development work, run adversarial review against acceptance criteria, touched files, likely regressions, activation paths, and proof coverage. A real gap means FAIL or continued work before completion.
 
 Design output:
 Goal:
@@ -26,5 +28,6 @@ Verification:
 Completion proof:
 Command:
 Result:
+Adversarial review:
 Judgment: PASS / FAIL / BLOCKED
 '''

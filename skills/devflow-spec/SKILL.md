@@ -23,7 +23,7 @@ Do not force a spec for Design-lite work where a short design contract and quick
 ## Process
 
 1. Read the approved design contract from `devflow-brainstorm` and the relevant project facts. Do not re-confirm goal, constraints, or approaches — those were already settled and user-approved in Brainstorm.
-2. Write the spec under `docs/specs/<short-kebab-name>.md` unless the target project already documents another specs path.
+2. Write the spec under `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`, resolved from the current target project's root, unless that project already documents another specs path.
 3. Include the required sections:
    - Goal
    - Context
@@ -45,7 +45,7 @@ Do not force a spec for Design-lite work where a short design contract and quick
 ## Output
 
 ```text
-Spec: docs/specs/<short-kebab-name>.md
+Spec: docs/specs/YYYY-MM-DD-<short-kebab-name>.md
 Source: <approved design from devflow-brainstorm>
 Review: unresolved-marker scan <pass/fail>; consistency <pass/fail>; scope <pass/fail>; ambiguity <pass/fail>
 Next: /devflow-plan with Source and Spec coverage, then devflow-cut -> devflow-build
@@ -66,7 +66,7 @@ Before leaving this skill, confirm:
 
 - [ ] Spec scope was named.
 - [ ] Required sections exist.
-- [ ] Spec landed under `docs/specs/` or a documented target-project specs path.
+- [ ] Spec landed under the current project's `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` path or a documented target-project specs path.
 - [ ] Unresolved-marker, consistency, scope, and ambiguity checks ran.
 - [ ] `scripts/devflow-spec.js` ran when available.
 - [ ] User reviewed the written spec and approved it.

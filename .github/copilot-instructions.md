@@ -9,7 +9,9 @@ Default workflow:
 3. Spec or Plan: `devflow-spec` saves a requirements spec under `docs/specs/`; `/devflow-plan` creates an implementation Plan Pack. Depth C skips both and goes directly to Cut. Both spec and plan have a STOP gate for user review.
 4. Cut: apply Required Gates (Reuse, Ponytail, Root-Cause, Native, Overbuild, Diff, Scope) before new code or structure. Output CUT_PASS / CUT_REDUCE / CUT_REUSE / CUT_BLOCKED.
 5. Build: make the smallest necessary change only.
-6. Prove: run verification and report real evidence.
+6. Prove: run verification and report real evidence. For development work, perform adversarial review against acceptance criteria, touched files, likely regressions, activation paths, and proof coverage; a real gap means `FAIL` or continued work before completion.
+
+For problem solving, bug fixing, and architecture design, use First Principles Cut when the cause, constraint, invariant, abstraction, or smallest correct mechanism is unclear. Reduce to facts, constraints, and invariants before selecting a solution.
 
 If the user challenges the result, says it was changed wrong, says your code is wrong/you wrote it wrong/has a problem/not right/missing/incomplete/still missing/有问题/不对/写错了/少了/少个/缺少/缺漏/遗漏/漏了, or repeated edits miss the target, enter pressure recovery: stop the current approach, read the local devflow-pua methodology-router/methodology-library/flavor-display references, quarantine old wrong context, classify User-view miss and Satisfaction gap, show `METHOD: {flavor} / {method}`, restart devflow-brainstorm, ask what is wrong and what result is wanted when not inferable, switch to a different/opposite method when the prior method failed, then prove. If the miss is reusable, load `devflow-learn`.
 
@@ -34,6 +36,7 @@ Completion proof:
 ```text
 Command:
 Result:
+Adversarial review:
 Judgment: PASS / FAIL / BLOCKED
 ```
 

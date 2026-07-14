@@ -270,7 +270,7 @@ Purpose: keep requirements and implementation tasks separate, reviewable, and tr
 
 Use a saved spec when the user asks for a spec/design document, when the work is too large for a short design contract, or when requirements can drift across multiple tasks.
 
-When saving a spec file, use `docs/specs/<short-kebab-name>.md` by default unless the target project already documents another specs path. Do not put generated specs under `docs/features/`; that directory is for feature ledgers. Do not put specs under `docs/plans/`; that directory is for implementation plans.
+When saving a spec file, use `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` from the current target project's root by default unless that project already documents another specs path. Do not put generated specs under `docs/features/`; that directory is for feature ledgers. Do not put specs under `docs/plans/`; that directory is for implementation plans.
 
 A spec must include:
 
@@ -290,12 +290,12 @@ Run `node scripts/devflow-spec.js <spec-file>` when the checker exists.
 
 Use a Plan Pack when work has more than one logical implementation step.
 
-When saving a plan file, use `docs/plans/<short-kebab-name>.md` by default unless the target project already documents another plan path. Do not put implementation plans under `docs/features/`.
+When saving a plan file, use `docs/plans/YYYY-MM-DD-<short-kebab-name>.md` from the current target project's root by default unless that project already documents another plan path. Do not put implementation plans under `docs/features/`.
 
 Each plan must cite its source and spec coverage:
 
 ```text
-Source: <docs/specs/<name>.md or approved design>
+Source: <docs/specs/YYYY-MM-DD-<short-kebab-name>.md or approved design>
 Spec coverage: <which requirements map to which tasks, or design-only>
 ```
 

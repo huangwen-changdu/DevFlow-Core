@@ -1,6 +1,6 @@
 ---
 name: devflow-cut
-description: "Use before adding code, dependencies, abstractions, configs, folders, framework layers, generic engines, reusable capabilities, or when checking YAGNI, Ponytail ladder reuse, root-cause fixes, platform-native options, scope creep, bloat, and simplification. Cuts unnecessary work before writing it."
+description: "Use before adding code, dependencies, abstractions, configs, folders, framework layers, generic engines, reusable capabilities, or when checking YAGNI, Ponytail ladder reuse, root-cause fixes, platform-native options, scope creep, bloat, and simplification. Cuts unnecessary work before writing it. Also use when the user says 'review for over-engineering', 'is this over-engineered', 'simplify review', 'review this diff/PR for cuts', or '/devflow-cut'."
 ---
 
 # DevFlow Cut
@@ -106,6 +106,22 @@ If nothing should be cut, say:
 ```text
 Lean already. Ship.
 ```
+
+## Examples
+
+✅ `src/validator.js:L12-38: stdlib: 27-line EmailValidator class. "@" in email, 1 line; real validation is the confirmation mail.`
+
+✅ `utils/time.js:L4: native: moment.js imported for one format call. Intl.DateTimeFormat, 0 deps.`
+
+✅ `repo.py:L88: yagni: AbstractRepository with one implementation. Inline it until a second one exists.`
+
+✅ `api/retry.js:L52-71: delete: retry wrapper around an idempotent local call. Nothing replaces it.`
+
+✅ `build.js:L30-44: shrink: manual loop builds dict. dict(zip(keys, values)), 1 line.`
+
+✅ `helpers/format.js:L9: reuse: duplicate date formatter. Use utils/time.js:formatDate, already in project.`
+
+❌ "This EmailValidator class might be more complex than necessary, have you considered whether all these validation rules are needed at this stage?" — 太软，无定位、无替换方案、无量化。
 
 ## Intentional Simplification Marker
 

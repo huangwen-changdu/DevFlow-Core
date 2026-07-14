@@ -8,6 +8,7 @@ Hard rules:
 
 - Do not claim completion without verification evidence.
 - Do not make engineering conclusions without reading or checking facts.
+- For problem solving, bug fixing, and architecture design, use First Principles Cut when the cause, constraint, invariant, or smallest correct mechanism is unclear and reduce the work to facts, constraints, and invariants; before completing development work, run adversarial review against acceptance criteria, touched files, likely regressions, activation paths, and proof coverage, and report `FAIL` or continue the appropriate route when it finds a real gap.
 - Do not add dependencies, abstractions, config, directories, framework layers, or generic extension points unless the current task needs them now. Every changed line must trace to the user goal.
 - User instructions say WHAT, not HOW. "Add X" or "Fix Y" doesn't mean skip workflows. Skills enforce their own gates.
 
@@ -38,16 +39,16 @@ Codex may only reliably see this file plus skill descriptions. Use these ASCII t
 - `problem report`, `investigate`, `check what is wrong`, `why broken` -> Problem -> Sense -> Prove facts.
 - `requirement`, `feature request`, `add support`, `implement` -> Design (Brainstorm shapes it first, then Plan/Cut/Build/Prove).
 - `spec`, `spec doc`, `requirements doc`, `design doc`, `设计文档`, `需求文档` -> devflow-spec. `plan`, `implementation plan`, `task breakdown`, `计划`, `任务拆解` -> /devflow-plan.
-- `bug report`, `error`, `failing test`, `fix bug`, `broken` -> Build with Root-Cause Check.
+- `bug report`, `error`, `failing test`, `fix bug`, `broken` -> Build with Root-Cause Check; use First Principles Cut when the constraint, invariant, abstraction, or smallest correct mechanism is unclear.
 - `wrong`, `not like that`, `changed wrong`, `your code is wrong`, `you wrote it wrong`, `has a problem`, `not right`, `missing`, `incomplete`, `still missing`, `quality complaint`, `user dissatisfied`, `有问题`, `不对`, `写错了`, `改歪了`, `没改对`, `不是我要的`, `理解错了`, `改了几次`, `少了`, `少个`, `缺少`, `缺漏`, `遗漏`, `漏了` -> Recovery -> devflow-pua -> restart devflow-brainstorm.
-- `done`, `fixed`, `complete`, `ready`, `passed` -> Prove before any completion claim.
+- `done`, `fixed`, `complete`, `ready`, `passed` -> Prove with adversarial review before any completion claim.
 
 ## Skills
 
 When the platform supports skills, start normal development work with `devflow-core`; otherwise follow this prompt directly.
 
 - `devflow-brainstorm`: requirements, product behavior, feature design, architecture changes, ambiguous asks, or multi-solution decisions. Produces an approved design contract. Depth Selection Gate (A/B/C) determines handoff: A → `devflow-spec` → `/devflow-plan` (3 confirmations), B → `/devflow-plan` (2 confirmations), C → `devflow-cut` directly (1 confirmation).
-- `devflow-spec`: turns an approved design contract into `docs/specs/<name>.md` for traceability. `/devflow-plan` (command): creates an implementation Plan Pack from a spec or approved design. Both hand off to `devflow-cut`.
+- `devflow-spec`: turns an approved design contract into `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` for traceability. `/devflow-plan` (command): creates an implementation Plan Pack from a spec or approved design. Both hand off to `devflow-cut`.
 - `devflow-cut`: before new code, dependencies, abstractions, config, folders, framework layers, generic capabilities, or overengineering review. Runs Required Gates; outputs CUT_PASS / CUT_REDUCE / CUT_REUSE / CUT_BLOCKED.
 - `devflow-build`: approved implementation, fixes, narrow refactors, and implementation slices.
 - `devflow-prove`: before saying done, fixed, complete, working, passed, ready, or candidate_pass.

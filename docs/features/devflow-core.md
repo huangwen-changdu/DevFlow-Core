@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current Version: v31
+- Current Version: v37
 - Status: active
-- Last Change: first-principles-and-adversarial-proof
+- Last Change: codex-hook-coverage
 - Product Area: runtime flow, skill routing, validation, learning loop
 
 ## Feature Background
@@ -22,7 +22,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 ### Currently Supported
 
 - Prompt-sized `AGENTS.md` with route and trigger words.
-- Claude Code `SessionStart` hook artifacts for project-level and plugin-style activation reminders.
+- Codex and Claude Code `SessionStart` hook artifacts for project-level activation reminders, plus Claude plugin-style activation.
 - Claude Code `/devflow-core` command under `.claude/commands/` that explicitly bridges requirements, UI/page ambiguity, prompt distinction issues, and server-backed implementation requests to `devflow-brainstorm`.
 - `devflow-core` route selection for Fast, Problem, Design-lite, Design, Build, and Recovery.
 - `devflow-pua` pressure recovery for user challenge, explicit wrong-code signals, repeated missing-piece complaints such as "少了这个/少个那个", changed-wrong results, repeated misses, quality complaints, local PUA methodology assets, compact `METHOD: {flavor} / {method}` display, concise method switch line, hard `devflow-brainstorm` restart, user-view miss diagnosis, method switching after failed methods, opposite-method recovery when a method still misses, wrong-context quarantine, pointed goal/result questions, changed approach, proof, and learning handoff.
@@ -34,7 +34,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - `devflow-brainstorm` interview discipline as core behavior: one question at a time, recommended answers, fact reads before asking, and documentation landing decisions through `devflow-spec`, feature ledgers, or ADRs when needed.
 - `devflow-brainstorm` Depth Selection Gate: three design depths (A: Full Spec with 3 confirmations, B: Simplified Spec with 2 confirmations, C: Dialogue Confirmation with 1 confirmation). Depth is user-chosen based on Small Request Boundary gates.
 - Commands for route, spec, plan, review, debt, prove, pua, learn, and audit; `/devflow-spec` can use the bundled `scripts/devflow-spec.js` checker, `/devflow-plan` can use the bundled `scripts/devflow-plan.js` plan-pack checker, `/devflow-review` can use the bundled `scripts/devflow-review.js` gate scanner, `/devflow-debt` can use the bundled `scripts/devflow-debt.js` scanner, and `/devflow-audit` can use the bundled `scripts/devflow-audit.js` repo-wide audit scanner.
-- Saved specs default to `docs/specs/<short-kebab-name>.md`; saved plans default to `docs/plans/<short-kebab-name>.md` and must cite `Source:` plus `Spec coverage:`.
+- Saved specs default to `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`; saved plans default to `docs/plans/YYYY-MM-DD-<short-kebab-name>.md` and must cite `Source:` plus `Spec coverage:`.
 - `npm test` validation for required files, skills, commands, PRD, learning cards, and stale paths.
 - Learning cards under `.copilot/` for repeatable corrections.
 - `/devflow-learn` command and `npm run learn:verify` for executable learning-loop closure checks.
@@ -57,6 +57,12 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 
 | Version | Change | Type | Date | Status | Summary |
 |---|---|---|---|---|---|
+| v37 | codex-hook-coverage | host activation | 2026-07-14 | active | Kept the existing Codex `SessionStart` registration minimal, added dated spec/plan landing guidance to its shared context payload, and covered `.codex/hooks.json` in runtime and host-adapter validation. |
+| v36 | dated-spec-plan-landing | documentation convention | 2026-07-14 | active | Changed default saved spec and plan names to `YYYY-MM-DD-<short-kebab-name>.md`, resolved from the current target project root, across skills, command prompts, checker guidance, and documentation. |
+| v35 | sync-scope-merge-guidance | adoption documentation | 2026-07-14 | active | Documented user-level versus target-project sync scope, required target-project confirmation for project-scoped files, and the rule/`AGENTS.md` merge policy; clarified that only Claude SessionStart settings merge automatically today. |
+| v34 | cross-surface-contract-sync | prompt/skill contract sync | 2026-07-14 | active | Synchronized First Principles Cut and adversarial review across Core routing, `/devflow`, Claude, Copilot, VS Code, CodeBuddy, SessionStart, and completion output contracts; validators now assert the same method/proof surface across these entries. |
+| v33 | method-proof-rule-surface | prompt/skill hardening | 2026-07-14 | active | Added concise First Principles Cut and adversarial review gates to `AGENTS.md` and primary host rules, exposed adversarial review in the `devflow-prove` description and required output, and hardened validators so short-context hosts cannot silently fall back to generic proof behavior. |
+| v32 | method-proof-activation-coverage | validation hardening | 2026-07-13 | active | Closed the v31 activation gap: `/devflow-prove` now requires a visible adversarial challenge and fails or continues when it finds a real gap; self-tests cover First Principles Cut outputs and adversarial rejection of premature completion; core, trigger, and host validators assert these concrete actions. |
 | v31 | first-principles-and-adversarial-proof | method/proof hardening | 2026-07-08 | active | Added explicit First Principles Cut (第一性原理) behavior to `devflow-brainstorm` and core routing/method coverage for problem solving (问题解决), 修 bug, and architecture design (架构设计). Added mandatory `devflow-prove` adversarial review (对抗式审查) before completion for development work. |
 | v30 | brainstorm-depth-selection-gate | design flow | 2026-07-02 | active | Added Depth Selection Gate (A/B/C) to `devflow-brainstorm`: A (Full Spec: Feature Ledger → Design Contract → devflow-spec → /devflow-plan, 3 confirmations), B (Simplified Spec: Feature Ledger → Design Contract → /devflow-plan, 2 confirmations), C (Dialogue Confirmation: Core Clarification → devflow-cut, 1 confirmation). Depth is user-chosen, not LLM-asserted. |
 | v29 | brainstorm-interview-discipline | reference absorption | 2026-07-01 | active | Absorbed Matt Pocock's interview behavior into core `devflow-brainstorm` interview discipline and docs landing decisions instead of keeping separate runtime concepts. |
@@ -125,6 +131,11 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - 2026-07-01: Absorb the source interview behavior into `devflow-brainstorm` instead of copying source skills or keeping separate runtime concepts. Reason: the useful behavior is one-question interview discipline plus docs landing decisions; `devflow-spec` remains the saved-requirements node before plan/cut/build when needed.
 - 2026-07-02: Add Depth Selection Gate (A/B/C) to `devflow-brainstorm` instead of only offering spec-vs-plan at the end. Reason: users need to choose design depth early so the flow and confirmation count are determined upfront; C path allows lightweight dialogue-only confirmation for small low-risk changes while still requiring Core Clarification.
 - 2026-07-08: Make First Principles Cut explicit as 第一性原理 in Brainstorm/Core and add adversarial review (对抗式审查) to Prove before completion. Reason: problem solving (问题解决), 修 bug, and architecture design (架构设计) need a visible way to reduce assumptions to facts and invariants, and completion proof needs a required disproof pass before done/fixed/ready claims.
+- 2026-07-13: Bind First Principles Cut and adversarial review to executable command and validation contracts instead of relying on skill text alone. Reason: v31 documented the behavior, but `/devflow-prove`, flow self-tests, trigger verification, and host verification could still pass without proving the required actions were reachable or capable of rejecting completion.
+- 2026-07-14: Surface First Principles Cut and adversarial review in `AGENTS.md`, primary host rules, and the `devflow-prove` description/output contract. Reason: some hosts may only see the runtime rule file or skill description; generic “Prove” wording was insufficient to guarantee the stronger method and completion gates were loaded.
+- 2026-07-14: Synchronize the method/proof contract across every route and host entry instead of only primary rules. Reason: `/devflow`, Claude, Copilot, VS Code, CodeBuddy, and SessionStart had completion blocks that could omit adversarial review even when `devflow-prove` required it.
+- 2026-07-14: Document sync scope and merge guidance instead of adding speculative automatic text merges. Reason: user-level skills/commands/scripts and target-project host rules have different ownership; generic merging of `AGENTS.md` or host rules can silently discard project constraints, while the current installer only safely merges Claude SessionStart settings.
+- 2026-07-14: Prefix saved specs and plans with their creation date and resolve the default paths from the current target project root. Reason: date-prefixed artifacts are easier to scan and avoid ambiguous repeated names across project history without introducing a new artifact directory or generator.
 
 ## Known Constraints
 
@@ -151,8 +162,8 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - Design-lite is not a bypass for requirements. It is only for small features with clear behavior, one plausible path, low risk, local impact, and quick proof; ambiguous boundaries require user route choice.
 - Claude Code hooks only inject route reminders at SessionStart. The installer merges the project hook into existing `.claude/settings.json` instead of replacing project permissions. Hooks do not prove a target project feature, run tests automatically, or replace `devflow-prove`.
 - `/devflow-core` is the Claude Code command bridge; `commands/devflow.toml` remains the generic command metadata for other command-capable hosts.
-- Saved implementation plans default to `docs/plans/<short-kebab-name>.md`; `docs/features/` remains reserved for feature ledgers.
-- Saved specs default to `docs/specs/<short-kebab-name>.md`; specs are optional for Design-lite and required only when the request asks for a spec or the work is too large for a short design contract.
+- Saved implementation plans default to `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`; `docs/features/` remains reserved for feature ledgers.
+- Saved specs default to `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`; specs are optional for Design-lite and required only when the request asks for a spec or the work is too large for a short design contract.
 
 ## Related Artifacts
 

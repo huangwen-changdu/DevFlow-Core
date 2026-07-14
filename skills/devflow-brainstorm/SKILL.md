@@ -40,7 +40,7 @@ Every request goes through this process. A config change, a single-function fix,
     - **Depth C**: this is confirmation 1 of 1. User approval here means the design is confirmed — proceed directly to `devflow-cut` (skip steps 13-14).
 13. **Design contract self-review** (Depth A/B only): Before handing off, check the design contract for unresolved filler text, internal contradictions, scope creep, and ambiguity. Fix inline. If a fundamental issue is found (scope needs decomposition, approach contradicts goal), go back to the relevant step instead of patching inline.
 14. **Depth-based handoff** (Depth A/B only):
-    - **Depth A**: **STOP — Confirm spec** → hand off to `devflow-spec` to land `docs/specs/<name>.md` (confirmation 2 of 3). After spec, hand off to `/devflow-plan` (confirmation 3 of 3).
+    - **Depth A**: **STOP — Confirm spec** → hand off to `devflow-spec` to land `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` (confirmation 2 of 3). After spec, hand off to `/devflow-plan` (confirmation 3 of 3).
     - **Depth B**: **STOP — Confirm plan** → hand off to `/devflow-plan` to create a Plan Pack (confirmation 2 of 2).
     - Recommend one based on project size and cross-module impact, but let the user decide. Wait for their response.
 
@@ -338,7 +338,7 @@ Design contract approved (confirmation 1) → hand off to `devflow-spec`:
 
 ```text
 Spec input: approved design + not-doing list + impact scope + acceptance/verification
-Default landing: docs/specs/<short-kebab-name>.md
+Default landing: docs/specs/YYYY-MM-DD-<short-kebab-name>.md
 Next: devflow-spec (confirm 2) -> /devflow-plan (confirm 3) -> devflow-cut -> devflow-build
 ```
 
@@ -353,7 +353,7 @@ Design contract approved (confirmation 1) → hand off to `/devflow-plan`:
 
 ```text
 Plan input: approved design + not-doing list + impact scope + verification method
-Default landing: docs/plans/<short-kebab-name>.md
+Default landing: docs/plans/YYYY-MM-DD-<short-kebab-name>.md
 Next: /devflow-plan (confirm 2) -> devflow-cut -> devflow-build
 ```
 
@@ -417,7 +417,7 @@ Do not hand off directly to Build. After the depth is selected and design contra
 
 ```text
 Spec input: approved design + not-doing list + impact scope + acceptance/verification
-Default landing: docs/specs/<short-kebab-name>.md
+Default landing: docs/specs/YYYY-MM-DD-<short-kebab-name>.md
 Next: devflow-spec (confirm 2) -> /devflow-plan (confirm 3) -> devflow-cut -> devflow-build
 ```
 
@@ -425,7 +425,7 @@ Next: devflow-spec (confirm 2) -> /devflow-plan (confirm 3) -> devflow-cut -> de
 
 ```text
 Plan input: approved design + not-doing list + impact scope + verification method
-Default landing: docs/plans/<short-kebab-name>.md
+Default landing: docs/plans/YYYY-MM-DD-<short-kebab-name>.md
 Next: /devflow-plan (confirm 2) -> devflow-cut -> devflow-build
 ```
 

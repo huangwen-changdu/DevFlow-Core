@@ -24,6 +24,7 @@ Use this repo as a project-level rules pack:
 
 ```text
 AGENTS.md                         Codex / general agents
+.codex/hooks.json                 Codex project SessionStart hook registration
 CLAUDE.md                         Claude Code pointer
 .github/copilot-instructions.md   GitHub Copilot repo rules
 .github/instructions/*.md         VS Code task instructions
@@ -76,6 +77,18 @@ This installs user-level `skills/`, `commands/`, and `scripts/devflow-*.js` unde
 
 Hard boundary: install `AGENTS.md` and `CLAUDE.md` only with `npm run install:target -- <project> --write`. Do not install them into `~/.codex`, `~/.claude`, or another user-level runtime directory.
 
+### Sync Scope And Merge Policy
+
+Use user-level sync for reusable agent capabilities and project sync for repository rules. The agent must ask which target project to use before syncing project-scoped files; do not infer a project from the current shell directory.
+
+| Surface | Scope | Sync policy |
+|---|---|---|
+| `skills/`, generic `commands/`, and `scripts/devflow-*.js` | User level: `~/.codex`; optionally `~/.claude` | Run the user installer with a dry-run first. Existing files are skipped by default; use `--write --force` only when replacing the user-level runtime is intentional. |
+| `.github/`, `.claude/`, `.codebuddy/`, and `.codex/` rule surfaces | Target project | Merge the DevFlow rule block into the target's existing host rule. Preserve local rules and host-specific configuration; do not copy these directories into a global user home. |
+| `commands/`, `scripts/`, `hooks/`, `AGENTS.md`, and `CLAUDE.md` | Target project selected by the user | Run `npm run install:target -- <project>` first. Merge existing rule files and `AGENTS.md` manually before write mode; use `--write --force` only when the target explicitly intends to replace the file. |
+
+The current installer merges only the DevFlow SessionStart entry into an existing `.claude/settings.json`. It intentionally skips other existing rule files instead of attempting a generic text merge. When merging `AGENTS.md`, preserve the target project's existing constraints and add the DevFlow route, Cut, Prove, and recovery rules without duplicating or contradicting local instructions.
+
 If a host supports slash commands, use:
 
 ```text
@@ -100,7 +113,7 @@ When installed into a target project, only the target-runtime scripts are copied
 | `node scripts/devflow-debt.js .` | Harvest intentional `devflow:` simplification markers into a debt report. |
 | `node scripts/devflow-audit.js <target-directory>` | Run a repo-wide audit candidate scan for overengineering, missed reuse, stdlib/native replacements, and YAGNI abstractions. |
 
-Saved specs should land in `docs/specs/<short-kebab-name>.md` unless the target project already documents another specs path. Saved implementation plans should land in `docs/plans/<short-kebab-name>.md`. `docs/features/` is for feature ledgers, not generated specs or task plans.
+Saved specs should land in the current target project's `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` unless that project already documents another specs path. Saved implementation plans should land in the current target project's `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`. `docs/features/` is for feature ledgers, not generated specs or task plans.
 
 Other `.js` files under `scripts/` are DevFlow-Core maintainer checks, installer tests, and coverage reports. They stay in this package and are not the daily runtime surface for target projects.
 
@@ -147,7 +160,7 @@ Global Codex config vs project runtime pack:
 
 Use both when possible: global Codex config can bootstrap the habit, but the target project should still carry the DevFlow runtime files that define and verify how that project is worked on.
 
-2. If the target project already has `AGENTS.md`, `CLAUDE.md`, Copilot rules, or CodeBuddy rules, do not overwrite them blindly. The installer skips existing files by default. Merge the DevFlow rules into the target project's existing rules, or use `--write --force` only when replacing them is intentional.
+2. Ask the user which target project should receive project-scoped files. If that project already has `AGENTS.md`, `CLAUDE.md`, Copilot rules, CodeBuddy rules, commands, scripts, or hooks, do not overwrite them blindly. The installer skips existing files by default. Merge DevFlow rule blocks and `AGENTS.md` with the target's local instructions, or use `--write --force` only when replacing a file is intentional.
 
 3. Open the target project root in Codex. Codex should read the installed `AGENTS.md` from that project. Do not keep Codex pointed at `DevFlow-Core` when the real task belongs to another repository.
 
@@ -209,8 +222,9 @@ npm run install:target -- D:/Project/YourProject --check
 
 Claude Code reads the target project's `CLAUDE.md`. In this pack, `CLAUDE.md` points back to the shared DevFlow contract in `AGENTS.md` and names the `devflow-*` skills to use when skills are available.
 
-Claude Code can also trigger DevFlow at session start through the installed hook files:
+Codex and Claude Code can trigger DevFlow at session start through the project hook files:
 
+- Codex project: `.codex/hooks.json` runs `node hooks/devflow-session-start.js`.
 - Project install: `.claude/settings.json` runs `node hooks/devflow-session-start.js`.
 - Slash command: `.claude/commands/devflow-core.md` provides `/devflow-core` for Claude Code.
 - Plugin install: `hooks/hooks.json` registers the same script through `SessionStart`.
@@ -223,6 +237,7 @@ Installed Claude-relevant project files:
 |---|---|
 | `CLAUDE.md` | Claude Code project entry point. | 
 | `AGENTS.md` | Shared DevFlow runtime rules referenced by `CLAUDE.md`. | 
+| `.codex/hooks.json` | Project-level Codex SessionStart hook registration. |
 | `.claude/settings.json` | Project-level Claude Code hook registration. |
 | `.claude/commands/devflow-core.md` | Claude Code `/devflow-core` command and Brainstorm trigger bridge. |
 | `hooks/hooks.json` | Plugin-style Claude hook registration. |
@@ -376,7 +391,7 @@ If verification is partial, say what is not covered. If verification cannot run,
 |---|---|
 | Ponytail | Minimal Solution Ladder, platform-native checklist, root-cause fix check, overengineering review tags, cut intensity, debt markers, ledger command, and repo-wide audit. |
 | Agent Skills | Skill anatomy, lifecycle commands, anti-rationalization tables, context/source discipline. |
-| Superpowers | Brainstorm-to-spec-to-plan-to-build handoff, `devflow-spec`, `docs/specs/<short-kebab-name>.md`, bite-sized tasks, `Source` / `Spec coverage` tracing, and verification-before-completion gate. |
+| Superpowers | Brainstorm-to-spec-to-plan-to-build handoff, `devflow-spec`, date-prefixed specs under `docs/specs/`, bite-sized tasks, `Source` / `Spec coverage` tracing, and verification-before-completion gate. |
 | PUA-Driven Spec Engineering | Fast/Design/Recovery gating, project memory checks, skill activation evidence, Codex proof contract, and Method Lens routing. |
 | PUA | `devflow-pua` pressure recovery, verifier role, multi-platform packaging, explicit command routing, and lightweight local flavor-method routing without full persona theater. |
 

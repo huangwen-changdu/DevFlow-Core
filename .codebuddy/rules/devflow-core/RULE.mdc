@@ -18,6 +18,7 @@ Rules:
 - For normal development work, load `devflow-core` when CodeBuddy supports skills. If skills are unavailable, follow this rule file.
 - User instructions say WHAT, not HOW. Skills enforce their own gates.
 - If the user asks to implement, fix, build, or land something, continue through Build and Prove. Steps scale to task size — Cut and Prove are never skipped, but Brainstorm/Plan may be skipped when already completed or when the task is trivial enough for Fast/Design-lite.
+- For problem solving, bug fixing, and architecture design, use First Principles Cut when the cause, constraint, invariant, abstraction, or smallest correct mechanism is unclear; reduce to facts, constraints, and invariants before selecting a solution.
 - If the user reports a problem without explicitly asking for a fix, prove the facts first and re-route only after the needed change is known.
 - If the user challenges the result, says changed wrong, says your code is wrong/you wrote it wrong/has a problem/not right/missing/incomplete/still missing/有问题/不对/写错了/少了/少个/缺少/缺漏/遗漏/漏了, reports a quality complaint, or repeated edits miss, run `devflow-pua`: stop the current approach, read local methodology-router/methodology-library/flavor-display references, quarantine old wrong context, classify User-view miss and Satisfaction gap, show `METHOD: {flavor} / {method}`, restart `devflow-brainstorm`, ask what is wrong and what result is wanted when not inferable, switch to a different/opposite method when the prior method failed, then prove.
 - For any requirement, behavior change, feature, architecture change, or ambiguous ask, run Brainstorm and Cut before Build. Design-lite is for existing features only, not new requirements.
@@ -27,7 +28,7 @@ Rules:
 - Mark deliberate simplifications with `devflow: <ceiling>, revisit when <trigger>` so `/devflow-debt` can harvest them.
 - Apply Karpathy Minimal Change: touch only the files needed for the user goal; do not add speculative abstraction or opportunistic refactors.
 - Before adding a dependency, abstraction, config, directory, framework layer, or generic engine, explain why it is needed now.
-- Before reporting done, run verification and output command, result, and `PASS / FAIL / BLOCKED`.
+- Before reporting done on development work, run verification and adversarial review against acceptance criteria, touched files, likely regressions, activation paths, and proof coverage. Output command, result, adversarial review, and `PASS / FAIL / BLOCKED`; a real gap means `FAIL` or continued work.
 - Build is blocked until Required Gates are answered: Reuse, Ponytail Rung, Root-Cause (bug fixes), Native, Overbuild, Diff, Scope. Cut results: CUT_PASS -> build; CUT_REDUCE/CUT_REUSE -> STOP for user confirmation; CUT_BLOCKED -> return to devflow-brainstorm.
 - STOP gates are mandatory wait points: brainstorm (depth selection A/B/C, core clarification, design contract; then depth-based: A=spec+plan, B=plan, C=direct to cut), spec (1: review), /devflow-plan (1: review), cut (1: CUT_REDUCE/CUT_REUSE).
 - If the user challenges the result and the miss is reusable, load `devflow-learn` before claiming completion.
@@ -47,5 +48,6 @@ Completion proof:
 ```text
 Command:
 Result:
+Adversarial review:
 Judgment: PASS / FAIL / BLOCKED
 ```

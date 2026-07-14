@@ -90,7 +90,7 @@ For problem solving (问题解决), bug fixing, 修 bug, and architecture design
 | unclear whether work is Fast, Design-lite, or full Design | Route Choice | Ask the user to choose; do not guess from line count or "sounds small". |
 | new code, dependency, abstraction, config, folder, framework layer | Cut Gate | Load `devflow-cut`; require Reuse, Native, Overbuild, Diff, Scope checks. |
 | implementation ready | Build Discipline | Load `devflow-build`; require touched files, slices, diff self-check. |
-| done/fixed/passed/ready claim | Proof Before Done | Load `devflow-prove`; require command/result/PASS-FAIL-BLOCKED. |
+| done/fixed/passed/ready claim | Proof Before Done | Load `devflow-prove`; require command/result/adversarial review/PASS-FAIL-BLOCKED. |
 | problem report without explicit fix request, bug report, or failing verification | Issue Triage + Root-Cause Fix Check | Prove symptom first; search callers/references; do not edit until root cause is clear. If fix is trivial → Fast/Design-lite. |
 | repeated failure, user challenge, changed wrong, missing-piece complaint, quality complaint | Pressure Recovery Gate | Load `devflow-pua`; stop editing, quarantine previous wrong assumptions, list 3 hypotheses, switch method, then Prove. |
 | reusable correction, repeated pitfall, project convention | Learning Capture | Load `devflow-learn`; update `.copilot/LEARNING_INDEX.md` and one focused card. |

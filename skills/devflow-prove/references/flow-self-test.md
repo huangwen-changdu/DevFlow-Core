@@ -111,6 +111,33 @@ Result: <NaN reproduced then fixed, or BLOCKED with missing repro>
 Judgment: PASS / FAIL / BLOCKED
 ```
 
+## Scenario 1C-A: First Principles Cut
+
+Input:
+
+```text
+The service layer is too complicated. Redesign the architecture and fix the timeout issue.
+```
+
+Expected behavior:
+
+- `devflow-core` selects First Principles Cut because inherited abstractions may hide the real constraint.
+- `devflow-brainstorm` separates verified facts, constraints, invariants, and assumptions before proposing architecture.
+- The recommendation names the smallest necessary mechanism rather than preserving the requested redesign by default.
+- `devflow-cut` still runs Reuse, Native, Overbuild, Diff, and Scope gates before implementation.
+
+Pass check:
+
+```text
+Method Lens: primary First Principles Cut; secondary <lens/none>; why <hidden constraint>
+Facts: ...
+Constraints: ...
+Invariants: ...
+Assumptions removed: ...
+Smallest necessary mechanism: ...
+Not doing: ...
+```
+
 ## Scenario 1D: Codex Trigger Surface
 
 Input:
@@ -272,7 +299,7 @@ Expected behavior:
 - Route: Build planning before implementation.
 - Skill path: `devflow-core -> devflow-brainstorm -> devflow-cut -> devflow-build -> devflow-prove`
 - Must create a Plan Pack with Task, Files, Acceptance, Verify, and Not doing fields.
-- Saved plan files default to `docs/plans/<short-kebab-name>.md`.
+- Saved plan files default to `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`.
 - Must not save implementation plans under `docs/features/`; that directory is for feature ledgers.
 - Must run `node scripts/devflow-plan.js <plan-file>` when the plan is saved to a file.
 - Must fail or revise the plan if fields are missing, unresolved, vague, or placed under `docs/features/`.
@@ -281,8 +308,8 @@ Expected behavior:
 Pass check:
 
 ```text
-Command: node scripts/devflow-plan.js docs/plans/<short-kebab-name>.md
-Result: DevFlow plan pack report; Plan landing: ok docs/plans/<name>.md; Judgment: PASS
+Command: node scripts/devflow-plan.js docs/plans/YYYY-MM-DD-<short-kebab-name>.md
+Result: DevFlow plan pack report; Plan landing: ok docs/plans/YYYY-MM-DD-<short-kebab-name>.md; Judgment: PASS
 Judgment: PASS / FAIL / BLOCKED
 ```
 
@@ -438,6 +465,9 @@ Are we done?
 Expected behavior:
 
 - `devflow-prove` runs or cites a fresh verification command.
+- For development work, `devflow-prove` runs adversarial review against acceptance criteria, touched files, likely regressions, activation path, and proof coverage.
+- The strongest plausible challenge and its disposition are visible before judgment.
+- If adversarial review finds a real gap, judgment is `FAIL` or the flow continues before any completion claim.
 - If no proof can run, report `BLOCKED`.
 - Do not say "done" before command/result/judgment.
 
@@ -446,7 +476,31 @@ Pass check:
 ```text
 Command: <actual command>
 Result: <real output summary>
+Adversarial review: <strongest challenge and disposition>
 Judgment: PASS / FAIL / BLOCKED
+```
+
+## Scenario 7A: Adversarial Review Rejects Completion
+
+Input:
+
+```text
+The unit test passes. Mark the API change complete.
+```
+
+Expected behavior:
+
+- `devflow-prove` checks whether the API entry point, callers, integration behavior, and acceptance criteria were actually covered.
+- A passing unit test alone does not override a discovered activation-path or regression gap.
+- When the strongest plausible challenge remains unresolved, report `FAIL` and name the missing proof.
+
+Pass check:
+
+```text
+Command: <unit test command>
+Result: <passing unit test output>
+Adversarial review: API activation path or integration behavior remains unverified.
+Judgment: FAIL
 ```
 
 ## Scenario 8: Skill Pack Validation

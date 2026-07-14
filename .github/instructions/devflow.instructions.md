@@ -24,11 +24,14 @@ Verification:
 ```text
 Command:
 Result:
+Adversarial review:
 Judgment: PASS / FAIL / BLOCKED
 ```
 
 - Before adding dependencies, abstractions, config, folders, framework layers, or generic engines, require a current need and a `Reuse Check`.
 - For bug fixes, require caller/reference search and a shared-vs-narrow Root-Cause Check.
 - For user challenge, changed-wrong result, explicit wrong-code signals such as your code is wrong/有问题/不对/写错了, missing-piece complaints such as missing/incomplete/少了/少个/缺漏, repeated miss, or quality complaint, require `devflow-pua`: stop the current approach, read local methodology-router/methodology-library/flavor-display references, quarantine old wrong context, classify User-view miss and Satisfaction gap, show `METHOD: {flavor} / {method}`, restart `devflow-brainstorm`, ask what is wrong and what result is wanted when not inferable, switch to a different/opposite method when the prior method failed, then prove. If the miss is reusable, load `devflow-learn`.
+- For problem solving, bug fixing, and architecture design, require First Principles Cut when the cause, constraint, invariant, abstraction, or smallest correct mechanism is unclear; reduce to facts, constraints, and invariants before selecting a solution.
+- Before completing development work, require adversarial review against acceptance criteria, touched files, likely regressions, activation paths, and proof coverage. A real gap must produce `FAIL` or continued work before completion.
 - If a deliberate simplification has a ceiling, require `devflow: <ceiling>, revisit when <trigger>`.
 - Validate changes with the narrowest relevant command before claiming completion; use `npm test` for broad package validation.

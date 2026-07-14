@@ -122,7 +122,7 @@ The framework must make ambiguous work concrete without forcing full ceremony on
 Acceptance:
 
 - Brainstorm outputs goal, constraints, success criteria, assumptions, 2-3 approaches, and recommendation.
-- Larger or explicitly spec-requested work writes a saved spec under `docs/specs/<short-kebab-name>.md`.
+- Larger or explicitly spec-requested work writes a saved spec under `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`.
 - /devflow-plan outputs smallest useful plan, not doing, impact, and verification.
 - For implementation requests, the plan must continue into Build and Prove.
 
@@ -145,7 +145,7 @@ Acceptance:
 
 - Multi-step work defines file-scoped slices.
 - Each slice has acceptance and verification.
-- Saved implementation plans land in `docs/plans/<short-kebab-name>.md` by default and include `Source:` plus `Spec coverage:`.
+- Saved implementation plans land in `docs/plans/YYYY-MM-DD-<short-kebab-name>.md` by default and include `Source:` plus `Spec coverage:`.
 - `docs/features/` remains for feature ledgers, not generated specs or implementation plans.
 - Unrelated cleanup is blocked unless required by the current goal.
 

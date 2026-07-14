@@ -26,6 +26,7 @@ const files = {
   cut: read("skills/devflow-cut/SKILL.md"),
   build: read("skills/devflow-build/SKILL.md"),
   prove: read("skills/devflow-prove/SKILL.md"),
+  flowSelfTest: read("skills/devflow-prove/references/flow-self-test.md"),
   pua: read("skills/devflow-pua/SKILL.md"),
   puaRouter: read("skills/devflow-pua/references/methodology-router.md"),
   puaLibrary: read("skills/devflow-pua/references/methodology-library.md"),
@@ -96,7 +97,7 @@ const cases = [
       ["interview discipline reference", files.interviewDiscipline, "one-question-at-a-time"],
       ["interview discipline reference", files.interviewDiscipline, "DevFlow design contract"],
       ["interview discipline reference", files.interviewDiscipline, "devflow-spec -> /devflow-plan"],
-      ["devflow-spec", files.spec, "docs/specs/<short-kebab-name>.md"],
+      ["devflow-spec", files.spec, "docs/specs/YYYY-MM-DD-<short-kebab-name>.md"],
       ["devflow command", files.devflowCommand, "interview-discipline.md"]
     ]
   },
@@ -114,15 +115,34 @@ const cases = [
     ]
   },
   {
+    name: "first principles architecture problem",
+    input: "The service layer is too complicated. Redesign the architecture and fix the timeout issue.",
+    route: "Build",
+    skillPath: "devflow-core -> devflow-brainstorm -> devflow-cut -> devflow-build -> devflow-prove",
+    checks: [
+      ["devflow-core", files.core, "use First Principles Cut"],
+      ["AGENTS.md", files.agents, "use First Principles Cut"],
+      ["devflow-brainstorm", files.brainstorm, "What remains true from first principles"],
+      ["devflow-brainstorm", files.brainstorm, "facts, constraints, invariants"],
+      ["first-principles self-test", files.flowSelfTest, "Scenario 1C-A: First Principles Cut"],
+      ["first-principles self-test", files.flowSelfTest, "Smallest necessary mechanism:"]
+    ]
+  },
+  {
     name: "completion claim",
     input: "Are we done?",
     route: "Fast",
     skillPath: "devflow-core -> devflow-prove",
     checks: [
       ["AGENTS.md", files.agents, "done"],
-      ["AGENTS.md", files.agents, "Prove before any completion claim"],
+      ["AGENTS.md", files.agents, "Prove with adversarial review before any completion claim"],
       ["devflow-prove description", description(files.prove), "done, fixed, complete"],
-      ["devflow-prove command", files.proveCommand, "Run DevFlow Prove"]
+      ["devflow-prove description", description(files.prove), "performs adversarial review for development work"],
+      ["devflow-prove command", files.proveCommand, "Run DevFlow Prove"],
+      ["devflow-prove command", files.proveCommand, "run adversarial review before completion"],
+      ["devflow-prove command", files.proveCommand, "Adversarial review:"],
+      ["completion self-test", files.flowSelfTest, "Scenario 7A: Adversarial Review Rejects Completion"],
+      ["completion self-test", files.flowSelfTest, "Judgment: FAIL"]
     ]
   },
   {
@@ -212,7 +232,7 @@ const commandCases = [
     checks: [
       ["devflow-spec command", files.specCommand, "Create a DevFlow spec"],
       ["devflow-spec command", files.specCommand, "scripts/devflow-spec.js"],
-      ["devflow-spec command", files.specCommand, "docs/specs/<short-kebab-name>.md"],
+      ["devflow-spec command", files.specCommand, "docs/specs/YYYY-MM-DD-<short-kebab-name>.md"],
       ["devflow-spec command", files.specCommand, "Required sections"],
       ["devflow-spec", files.spec, "Next: /devflow-plan with Source and Spec coverage"]
     ]
@@ -224,7 +244,7 @@ const commandCases = [
     checks: [
       ["devflow-plan command", files.planCommand, "Create a DevFlow Plan Pack"],
       ["devflow-plan command", files.planCommand, "scripts/devflow-plan.js"],
-      ["devflow-plan command", files.planCommand, "docs/plans/<short-kebab-name>.md"],
+      ["devflow-plan command", files.planCommand, "docs/plans/YYYY-MM-DD-<short-kebab-name>.md"],
       ["devflow-plan command", files.planCommand, "small verifiable slices"],
       ["devflow-build", files.build, "Plan Pack"]
     ]

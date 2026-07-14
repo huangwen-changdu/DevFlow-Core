@@ -1,6 +1,6 @@
 ---
 name: devflow-prove
-description: "Use before saying done, fixed, complete, working, passed, resolved, ready, or candidate_pass; use after builds, bug fixes, rule/docs/skill changes, tests, validation, and any PASS/FAIL/BLOCKED evidence claim. Runs the narrowest sufficient check and reports Command/Result/Judgment."
+description: "Use before saying done, fixed, complete, working, passed, resolved, ready, or candidate_pass; use after builds, bug fixes, rule/docs/skill changes, tests, validation, and any PASS/FAIL/BLOCKED evidence claim. Runs the narrowest sufficient check, performs adversarial review for development work, and reports Command/Result/Adversarial review/Judgment."
 ---
 
 # DevFlow Prove
@@ -54,6 +54,7 @@ Check:
 ```text
 Command: <actual command run>
 Result: <key output summary>
+Adversarial review: <strongest challenge and disposition, or not applicable for non-development verification>
 Judgment: PASS / FAIL / BLOCKED
 ```
 
@@ -150,5 +151,16 @@ Before leaving this skill, confirm:
 
 - [ ] Actual command or manual scenario was run.
 - [ ] Result summary cites real output.
-- [ ] Judgment is `PASS`, `FAIL`, or `BLOCKED`.
+- [ ] Judgment is `PASS`, `FAIL`, or `BLOCKED`.B 的 CLI 探针已执行，但 `codex exec` 的初始提示没有触发 `UserPromptSubmit`，标记文件未生成。它只能证明非交互 CLI 不触发该事件，不能证明 Codex Desktop 不支持。
+
+临时 Hook 注册、探针脚本和标记文件均已清理，没有残留配置改动。
+
+Command: `codex exec --sandbox read-only --ephemeral "Respond with exactly: PONG"`  
+Result: 会话正常返回 `PONG`，但未生成事件标记。  
+Adversarial review: 不把 CLI 未触发误判为 Desktop 不支持，也不基于未证实事件进入实现。  
+Judgment: BLOCKED
+
+继续需要你选择：
+- A. 改为基于已证实的 `PreToolUse`，实现“最近实际观察到的阶段/验证结果”。
+- B. 进行 Desktop 交互探针：我重新临时注册 Hook，你在 DevFlow-Core 新开 Codex 会话并发送一条普通提示，随后我读取标记。推荐。
 - [ ] Coverage and gaps are clear when relevant.

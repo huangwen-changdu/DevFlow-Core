@@ -48,6 +48,7 @@ const expectedCommands = [
 const expectedHooks = [
   "hooks/hooks.json",
   "hooks/devflow-session-start.js",
+  ".codex/hooks.json",
   ".claude/settings.json",
   ".claude/commands/devflow-core.md"
 ];
@@ -56,7 +57,7 @@ const adapters = [
   {
     name: "Codex / shared agents",
     file: "AGENTS.md",
-    terms: ["Sense -> Brainstorm -> [STOP: Depth A/B/C]", "problem report", "devflow-pua", "Completion proof", "STOP gates are mandatory", "Skills enforce their own gates"]
+    terms: ["Sense -> Brainstorm -> [STOP: Depth A/B/C]", "problem report", "devflow-pua", "Completion proof", "STOP gates are mandatory", "Skills enforce their own gates", "use First Principles Cut", "run adversarial review against acceptance criteria"]
   },
   {
     name: "Claude Code",
@@ -67,6 +68,11 @@ const adapters = [
     name: "Claude Code hooks",
     file: "hooks/hooks.json",
     terms: ["SessionStart", "devflow-session-start.js", "CLAUDE_PLUGIN_ROOT"]
+  },
+  {
+    name: "Codex project hooks",
+    file: ".codex/hooks.json",
+    terms: ["SessionStart", "node hooks/devflow-session-start.js"]
   },
   {
     name: "Claude project hook settings",
@@ -81,12 +87,12 @@ const adapters = [
   {
     name: "GitHub Copilot",
     file: ".github/copilot-instructions.md",
-    terms: ["AGENTS.md", "Sense", "Brainstorm", "Cut", "Prove", "changed wrong", "restart devflow-brainstorm", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Never claim done without proof"]
+    terms: ["AGENTS.md", "Sense", "Brainstorm", "Cut", "Prove", "changed wrong", "restart devflow-brainstorm", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Never claim done without proof", "First Principles Cut", "perform adversarial review against acceptance criteria"]
   },
   {
     name: "VS Code instruction",
     file: ".github/instructions/devflow.instructions.md",
-    terms: ["Every platform entry must preserve the same core contract", "Sense", "Brainstorm", "Cut", "Prove", "devflow-pua", "restart `devflow-brainstorm`", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "npm test"]
+    terms: ["Every platform entry must preserve the same core contract", "Sense", "Brainstorm", "Cut", "Prove", "devflow-pua", "restart `devflow-brainstorm`", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "npm test", "First Principles Cut", "require adversarial review against acceptance criteria"]
   },
   {
     name: "VS Code prompt",
@@ -96,7 +102,7 @@ const adapters = [
   {
     name: "CodeBuddy",
     file: ".codebuddy/rules/devflow-core/RULE.mdc",
-    terms: ["Sense -> Brainstorm -> [STOP: Depth A/B/C]", "devflow-pua", "restart `devflow-brainstorm`", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Authoritative method source", "PASS / FAIL / BLOCKED", "STOP gates are mandatory"]
+    terms: ["Sense -> Brainstorm -> [STOP: Depth A/B/C]", "devflow-pua", "restart `devflow-brainstorm`", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Authoritative method source", "PASS / FAIL / BLOCKED", "STOP gates are mandatory", "First Principles Cut", "run verification and adversarial review against acceptance criteria"]
   }
 ];
 
@@ -109,6 +115,26 @@ assert(
   read(".claude/commands/devflow-core.md").includes("skills/devflow-brainstorm/references/interview-discipline.md"),
   "Claude DevFlow command missing interview discipline reference"
 );
+assertTerms("devflow-prove skill", read("skills/devflow-prove/SKILL.md"), [
+  "adversarial review",
+  "strongest plausible reason",
+  "report `FAIL`"
+]);
+assertTerms("devflow-prove command", read("commands/devflow-prove.toml"), [
+  "run adversarial review before completion",
+  "Adversarial review:",
+  "report FAIL"
+]);
+for (const [file, terms] of [
+  [".github/copilot-instructions.md", ["First Principles Cut", "Adversarial review:"]],
+  [".github/instructions/devflow.instructions.md", ["First Principles Cut", "Adversarial review:"]],
+  [".github/prompts/devflow.prompt.md", ["First Principles Cut", "Adversarial review:"]],
+  [".codebuddy/rules/devflow-core/RULE.mdc", ["First Principles Cut", "Adversarial review:"]],
+  [".claude/commands/devflow-core.md", ["First Principles Cut", "Adversarial review:"]],
+  ["hooks/devflow-session-start.js", ["First Principles Cut", "adversarial review", "Command, Result, Adversarial review, and Judgment"]]
+]) {
+  assertTerms(file, read(file), terms);
+}
 
 const plugin = JSON.parse(read("plugin.json"));
 assert(plugin.entrypoints?.agents === "AGENTS.md", "plugin.json must expose AGENTS.md");
@@ -130,8 +156,10 @@ for (const hook of expectedHooks) {
 }
 
 const hookConfig = JSON.parse(read("hooks/hooks.json"));
+const codexHookConfig = JSON.parse(read(".codex/hooks.json"));
 const projectHookConfig = JSON.parse(read(".claude/settings.json"));
 assert(hookConfig.hooks?.SessionStart?.length > 0, "hooks/hooks.json must register SessionStart");
+assert(codexHookConfig.hooks?.SessionStart?.length > 0, ".codex/hooks.json must register SessionStart");
 assert(projectHookConfig.hooks?.SessionStart?.length > 0, ".claude/settings.json must register SessionStart");
 
 const hookRun = spawnSync(process.execPath, [path.join(root, "hooks/devflow-session-start.js")], {
@@ -162,7 +190,7 @@ for (const skill of expectedSkills) {
 
 console.log("Host Adapter Verification Report");
 console.log(`Adapters checked: ${adapters.length + 2}`);
-console.log("Entrypoints: AGENTS, CLAUDE, Claude hooks, Copilot, VS Code instruction, VS Code prompt, CodeBuddy, plugin manifest, Gemini metadata");
+console.log("Entrypoints: AGENTS, CLAUDE, Codex hooks, Claude hooks, Copilot, VS Code instruction, VS Code prompt, CodeBuddy, plugin manifest, Gemini metadata");
 console.log(`Skills checked: ${expectedSkills.length}`);
 console.log(`Commands checked: ${expectedCommands.length}`);
 console.log(`Hooks checked: ${expectedHooks.length}`);

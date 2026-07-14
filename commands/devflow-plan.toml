@@ -5,10 +5,10 @@ Create a DevFlow Plan Pack from a saved spec or approved design.
 Default landing for saved implementation plans is:
 
 ```text
-docs/plans/<short-kebab-name>.md
+docs/plans/YYYY-MM-DD-<short-kebab-name>.md
 ```
 
-Use an existing project plan directory only when the target project already documents that convention. Do not put implementation plans in `docs/features/`; that directory is for feature ledgers. Do not put implementation plans in `docs/specs/`; that directory is for requirements specs.
+Resolve the default path from the current target project's root. Use an existing project plan directory only when the target project already documents that convention. Do not put implementation plans in `docs/features/`; that directory is for feature ledgers. Do not put implementation plans in `docs/specs/`; that directory is for requirements specs.
 
 When `scripts/devflow-plan.js` exists and the plan is in a file, run:
 
@@ -29,7 +29,7 @@ Use the script output as the executable task-field and plan-landing check before
 Split work into small verifiable slices.
 
 The plan must include:
-Source: <docs/specs/<name>.md or approved design>
+Source: <docs/specs/YYYY-MM-DD-<short-kebab-name>.md or approved design>
 Spec coverage: <which requirements map to which tasks, or design-only>
 
 Each task must include:

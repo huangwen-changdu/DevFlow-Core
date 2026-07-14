@@ -11,6 +11,7 @@ const requiredFiles = [
   ".github/instructions/devflow.instructions.md",
   ".github/prompts/devflow.prompt.md",
   ".codebuddy/rules/devflow-core/RULE.mdc",
+  ".codex/hooks.json",
   ".claude/settings.json",
   ".claude/commands/devflow-core.md",
   "hooks/hooks.json",
@@ -116,8 +117,8 @@ const requiredTerms = [
   "Scenario 9: Target Project Install Check",
   "devflow-pua",
   "/devflow-pua",
-  "docs/plans/<short-kebab-name>.md",
-  "docs/specs/<short-kebab-name>.md",
+  "docs/plans/YYYY-MM-DD-<short-kebab-name>.md",
+  "docs/specs/YYYY-MM-DD-<short-kebab-name>.md",
   "Plan landing",
   "Spec landing",
   "Spec coverage",
@@ -188,6 +189,7 @@ const requiredTerms = [
   "Root Cause",
   "Working Backwards",
   "First Principles Cut",
+  "adversarial review",
   "Data/Proof",
   "Operational Owner",
   "method-lens-runtime",
@@ -280,6 +282,65 @@ for (const file of commandFiles) {
   const body = read(file);
   assert(body.includes("description ="), `${file} missing description`);
   assert(body.includes("prompt ="), `${file} missing prompt`);
+}
+
+const proveCommand = read("commands/devflow-prove.toml");
+for (const term of [
+  "run adversarial review before completion",
+  "strongest plausible reason",
+  "Adversarial review:",
+  "report FAIL"
+]) {
+  assert(proveCommand.includes(term), `commands/devflow-prove.toml missing adversarial action: ${term}`);
+}
+
+const agentsRuntimeBody = read("AGENTS.md");
+for (const term of [
+  "use First Principles Cut",
+  "reduce the work to facts, constraints, and invariants",
+  "run adversarial review against acceptance criteria",
+  "report `FAIL` or continue the appropriate route"
+]) {
+  assert(agentsRuntimeBody.includes(term), `AGENTS.md missing method/proof runtime rule: ${term}`);
+}
+
+const proveSkill = read("skills/devflow-prove/SKILL.md");
+for (const term of [
+  "description:",
+  "performs adversarial review for development work",
+  "Command/Result/Adversarial review/Judgment",
+  "Adversarial review: <strongest challenge and disposition"
+]) {
+  assert(proveSkill.includes(term), `skills/devflow-prove/SKILL.md missing visible adversarial contract: ${term}`);
+}
+
+for (const [file, terms] of [
+  ["commands/devflow.toml", ["First Principles Cut", "adversarial review", "Adversarial review:"]],
+  [".github/copilot-instructions.md", ["First Principles Cut", "perform adversarial review", "Adversarial review:"]],
+  [".github/instructions/devflow.instructions.md", ["First Principles Cut", "require adversarial review", "Adversarial review:"]],
+  [".github/prompts/devflow.prompt.md", ["First Principles Cut", "adversarial review", "Adversarial review:"]],
+  [".codebuddy/rules/devflow-core/RULE.mdc", ["First Principles Cut", "adversarial review", "Adversarial review:"]],
+  [".claude/commands/devflow-core.md", ["First Principles Cut", "Adversarial review:"]],
+  ["hooks/devflow-session-start.js", ["First Principles Cut", "adversarial review", "Command, Result, Adversarial review, and Judgment"]]
+]) {
+  const body = read(file);
+  for (const term of terms) {
+    assert(body.includes(term), `${file} missing synchronized method/proof surface: ${term}`);
+  }
+}
+
+const flowSelfTest = read("skills/devflow-prove/references/flow-self-test.md");
+for (const term of [
+  "Scenario 1C-A: First Principles Cut",
+  "Facts:",
+  "Constraints:",
+  "Invariants:",
+  "Smallest necessary mechanism:",
+  "Scenario 7A: Adversarial Review Rejects Completion",
+  "Adversarial review:",
+  "Judgment: FAIL"
+]) {
+  assert(flowSelfTest.includes(term), `flow-self-test missing method/proof behavior: ${term}`);
 }
 
 const packageJson = JSON.parse(read("package.json"));
@@ -453,7 +514,9 @@ for (const term of [
   "DevFlow Core active",
   "SessionStart",
   "devflow-pua",
-  "Command, Result, and Judgment: PASS / FAIL / BLOCKED"
+  "docs/specs/YYYY-MM-DD-<short-kebab-name>.md",
+  "docs/plans/YYYY-MM-DD-<short-kebab-name>.md",
+  "Command, Result, Adversarial review, and Judgment: PASS / FAIL / BLOCKED"
 ]) {
   assert(hookBody.includes(term), `hooks/devflow-session-start.js missing hook term: ${term}`);
 }
@@ -473,6 +536,14 @@ for (const term of [
   "node hooks/devflow-session-start.js"
 ]) {
   assert(claudeSettings.includes(term), `.claude/settings.json missing hook setting term: ${term}`);
+}
+
+const codexSettings = read(".codex/hooks.json");
+for (const term of [
+  "SessionStart",
+  "node hooks/devflow-session-start.js"
+]) {
+  assert(codexSettings.includes(term), `.codex/hooks.json missing hook setting term: ${term}`);
 }
 
 const claudeDevflowCommand = read(".claude/commands/devflow-core.md");

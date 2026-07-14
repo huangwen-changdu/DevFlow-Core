@@ -21,7 +21,7 @@ User development request
 -> devflow-learn when the work creates a reusable correction
 ```
 
-For design-only requests, stop after the approved design contract, `devflow-cut`, or `devflow-spec`, depending on what the user asked for and the selected depth. `devflow-spec` is the node for turning the approved design into `docs/specs/<short-kebab-name>.md` before `/devflow-plan` and implementation. Depth C skips spec and plan, going directly to `devflow-cut`.
+For design-only requests, stop after the approved design contract, `devflow-cut`, or `devflow-spec`, depending on what the user asked for and the selected depth. `devflow-spec` is the node for turning the approved design into `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` before `/devflow-plan` and implementation. Depth C skips spec and plan, going directly to `devflow-cut`.
 
 ## Interview Behavior
 
@@ -38,7 +38,7 @@ If the user asks to document the result, capture docs, or preserve decisions:
 
 1. Run the same one-question-at-a-time interview loop.
 2. When a project term is clarified, update an existing glossary or domain context only if the target project already has one.
-3. When no glossary exists, capture terminology in the relevant DevFlow artifact instead: the design contract, `docs/specs/<short-kebab-name>.md`, or a matched `docs/features/*.md` ledger.
+3. When no glossary exists, capture terminology in the relevant DevFlow artifact instead: the design contract, `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`, or a matched `docs/features/*.md` ledger.
 4. Use `devflow-spec` when the approved design needs a saved requirements source before `/devflow-plan`.
 5. Use a feature ledger for product capability history.
 6. Offer an ADR only when the decision is hard to reverse, surprising without context, and the result of a real trade-off.

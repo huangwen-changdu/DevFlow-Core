@@ -1,6 +1,6 @@
 ---
 name: devflow-audit
-description: "Use when auditing a repository or scope for overengineering, bloat, unnecessary abstraction, missed reuse, stdlib/native replacements, or asking what code can be deleted or simplified."
+description: "Use when auditing a repository or scope for overengineering, bloat, unnecessary abstraction, missed reuse, stdlib/native replacements, or asking what code can be deleted or simplified. Trigger phrases: 'audit this codebase', 'audit for over-engineering', 'what can I delete from this repo', 'find bloat', '/devflow-audit'."
 ---
 
 # DevFlow Audit
@@ -21,6 +21,7 @@ This is repo-wide `devflow-cut`, not correctness review and not implementation.
    - `native`: dependency or custom code doing what the platform already does.
    - `yagni`: abstraction, config, factory, wrapper, or layer with no current second use.
    - `shrink`: same behavior with fewer moving parts.
+   - Hunt targets: stdlib/platform-shipped deps, single-implementation interfaces, factories with one product, wrappers that only delegate, files exporting one thing, dead flags and config, hand-rolled stdlib.
 5. Rank biggest useful cut first.
 6. Do not apply fixes unless the user explicitly asks for a follow-up implementation.
 

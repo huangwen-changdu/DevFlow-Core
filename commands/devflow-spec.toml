@@ -5,10 +5,10 @@ Create a DevFlow spec from the current request or approved design.
 Default landing for saved specs is:
 
 ```text
-docs/specs/<short-kebab-name>.md
+docs/specs/YYYY-MM-DD-<short-kebab-name>.md
 ```
 
-Use an existing project specs directory only when the target project already documents that convention. Do not put implementation specs in `docs/features/`; that directory is for feature ledgers. Do not put specs in `docs/plans/`; that directory is for implementation plans.
+Resolve the default path from the current target project's root. Use an existing project specs directory only when the target project already documents that convention. Do not put implementation specs in `docs/features/`; that directory is for feature ledgers. Do not put specs in `docs/plans/`; that directory is for implementation plans.
 
 When `scripts/devflow-spec.js` exists and the spec is in a file, run:
 
