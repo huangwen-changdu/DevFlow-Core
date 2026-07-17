@@ -400,6 +400,33 @@ Command: npm run learn:verify
 Judgment: PASS / FAIL / BLOCKED
 ```
 
+## Scenario 6D: Progressive Knowledge Recall
+
+Input:
+
+```text
+Implement an order export change using existing project conventions.
+```
+
+Expected behavior:
+
+- At Sense, probe `.copilot/LEARNING_INDEX.md` and `docs/project-knowledge/` without creating either location.
+- Read the learning index before matching and reading only relevant cards.
+- Read `AI-START-HERE.md`, falling back to `index.md`, then use `registry.json` to select only relevant business knowledge documents.
+- Do not bulk-load cards or project knowledge. Missing locations, indexes, or registries are non-blocking facts.
+- A reusable execution lesson may lazily create `.copilot/` records. Only a user-confirmed, code-backed business candidate may reach `devflow-project-knowledge` to lazily maintain `docs/project-knowledge/`.
+
+Pass check:
+
+```text
+Knowledge recall: none / learning index + matched card / project knowledge entry + matched docs
+Read `.copilot/LEARNING_INDEX.md`
+Read only the matched card
+AI-START-HERE.md / index.md / registry.json
+Missing knowledge: recorded, non-blocking, no storage created
+devflow-learn -> user confirmation -> devflow-project-knowledge
+```
+
 ## Scenario 6C: User Challenge Pressure Recovery
 
 Input:

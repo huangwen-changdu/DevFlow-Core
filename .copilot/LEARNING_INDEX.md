@@ -4,7 +4,7 @@ Read this index first. Only read a card when its trigger matches the current tas
 
 | Card | Trigger | Scope | Confidence |
 |---|---|---|---:|
-| [DevFlow Runtime References](cards/devflow-runtime-references.md) | DevFlow-Core structure, skill framework layout, docs vs references, runtime method source, generated plan docs, Codex onboarding, install file map, target runtime files, user-level runtime files, script execution model, hooks, global config vs project runtime, project-only AGENTS and CLAUDE | project | 0.8 |
+| [DevFlow Runtime References](cards/devflow-runtime-references.md) | DevFlow-Core structure, skill framework layout, docs vs references, runtime method source, generated plan docs, Codex onboarding, install file map, target runtime files, user-level runtime files, project-knowledge skill, published skill manifest, script execution model, hooks, global config vs project runtime, project-only AGENTS and CLAUDE | project | 0.8 |
 | [Skill Description Trigger Surface](cards/skill-description-trigger-surface.md) | skill description, SKILL.md frontmatter, trigger wording, brand text in description, DevFlow-Core in description | project | 0.5 |
 | [Skill Sync After Update](cards/skill-sync-after-update.md) | skills updated, SKILL.md changed, update complete, sync latest skills, user-level skills directories, .claude skills, .codebuddy skills, .codex skills, .workbuddy skills | project | 0.5 |
 | [Reference Project Absorption Proof](cards/reference-project-absorption-proof.md) | reference project, Ponytail, agent-skills, superpowers, pua, skill migration, adapt a skill to DevFlow, absorbed capability, actual usage, not just mentioned | project | 0.8 |

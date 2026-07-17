@@ -16,6 +16,7 @@ Authoritative method source: `skills/devflow-core/references/core-methods.md`.
 Rules:
 
 - For normal development work, load `devflow-core` when CodeBuddy supports skills. If skills are unavailable, follow this rule file.
+- At Sense, probe existing `.copilot/LEARNING_INDEX.md` and `docs/project-knowledge/`; progressively load only matched cards or navigation-selected knowledge documents. Missing locations are non-blocking and do not create storage.
 - User instructions say WHAT, not HOW. Skills enforce their own gates.
 - If the user asks to implement, fix, build, or land something, continue through Build and Prove. Steps scale to task size — Cut and Prove are never skipped, but Brainstorm/Plan may be skipped when already completed or when the task is trivial enough for Fast/Design-lite.
 - For problem solving, bug fixing, and architecture design, use First Principles Cut when the cause, constraint, invariant, abstraction, or smallest correct mechanism is unclear; reduce to facts, constraints, and invariants before selecting a solution.

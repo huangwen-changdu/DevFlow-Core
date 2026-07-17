@@ -5,6 +5,7 @@ const context = [
   "[DevFlow Core active]",
   "Use the lightest safe route: Problem, Fast, Design-lite, Design, Build, or Recovery.",
   "Start normal development work with devflow-core when skills are available.",
+  "At Sense, probe existing .copilot/LEARNING_INDEX.md and docs/project-knowledge/; progressively load only matched cards or navigation-selected knowledge documents. Missing locations are non-blocking and do not create storage.",
   "For requirements or ambiguity, use Brainstorm before coding; before adding structure, run Cut; before claiming done, run Prove.",
   "Saved specs default to docs/specs/YYYY-MM-DD-<short-kebab-name>.md and plans to docs/plans/YYYY-MM-DD-<short-kebab-name>.md from the current target project root.",
   "Problem reports without an explicit fix request need Sense -> Prove facts before edits.",

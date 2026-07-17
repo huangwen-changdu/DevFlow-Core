@@ -32,6 +32,7 @@ const files = {
   puaLibrary: read("skills/devflow-pua/references/methodology-library.md"),
   puaDisplay: read("skills/devflow-pua/references/flavor-display.md"),
   learn: read("skills/devflow-learn/SKILL.md"),
+  projectKnowledge: read("skills/devflow-project-knowledge/SKILL.md"),
   audit: read("skills/devflow-audit/SKILL.md"),
   devflowCommand: read("commands/devflow.toml"),
   specCommand: read("commands/devflow-spec.toml"),
@@ -146,6 +147,20 @@ const cases = [
     ]
   },
   {
+    name: "progressive knowledge recall",
+    input: "Implement an order export change using existing project conventions.",
+    route: "Build",
+    skillPath: "devflow-core -> selective knowledge recall -> devflow-brainstorm -> devflow-cut -> devflow-build -> devflow-prove",
+    checks: [
+      ["AGENTS.md", files.agents, "probe existing `.copilot/LEARNING_INDEX.md` and `docs/project-knowledge/`"],
+      ["devflow-core", files.core, "Execution recall"],
+      ["devflow-core", files.core, "Business recall"],
+      ["devflow-core", files.core, "do not bulk-load `.copilot/cards/` or `docs/project-knowledge/`"],
+      ["devflow-project-knowledge", files.projectKnowledge, "先读 `AI-START-HERE.md`，回退 `index.md`"],
+      ["devflow-project-knowledge", files.projectKnowledge, "不得因读取尝试创建目录"]
+    ]
+  },
+  {
     name: "learning correction",
     input: "Not again: AGENTS.md is a runtime prompt. You put README-style explanation in the wrong place.",
     route: "Recovery",
@@ -156,6 +171,18 @@ const cases = [
       ["devflow-core", files.core, "Learning Capture"],
       ["devflow-learn description", description(files.learn), "repeated user correction"],
       ["devflow-learn command", files.learnCommand, "Learning closure"]
+    ]
+  },
+  {
+    name: "confirmed project-knowledge handoff",
+    input: "Confirm the code-backed order domain boundary and update project knowledge.",
+    route: "Build",
+    skillPath: "devflow-core -> devflow-prove -> devflow-learn -> user confirmation -> devflow-project-knowledge",
+    checks: [
+      ["devflow-core", files.core, "confirmed project-knowledge candidate"],
+      ["devflow-learn", files.learn, "user confirmation -> `devflow-project-knowledge` lazy maintenance"],
+      ["devflow-project-knowledge", files.projectKnowledge, "用户明确确认维护后，本 Skill 才接手"],
+      ["devflow-learn command", files.learnCommand, "wait for user confirmation before loading `devflow-project-knowledge`"]
     ]
   },
   {

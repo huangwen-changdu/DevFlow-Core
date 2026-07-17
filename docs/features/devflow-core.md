@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current Version: v37
+- Current Version: v38
 - Status: active
-- Last Change: codex-hook-coverage
+- Last Change: progressive-knowledge-recall
 - Product Area: runtime flow, skill routing, validation, learning loop
 
 ## Feature Background
@@ -38,6 +38,8 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - `npm test` validation for required files, skills, commands, PRD, learning cards, and stale paths.
 - Learning cards under `.copilot/` for repeatable corrections.
 - `/devflow-learn` command and `npm run learn:verify` for executable learning-loop closure checks.
+- Progressive knowledge recall at Sense: probe existing `.copilot/LEARNING_INDEX.md` and `docs/project-knowledge/`, load learning cards only after index trigger/scope matching, then use `AI-START-HERE.md` or `index.md` plus `registry.json` to select only relevant business knowledge documents. Missing recall sources are non-blocking and never create storage.
+- `devflow-learn` lazily creates `.copilot/` records only for reusable execution lessons; `devflow-project-knowledge` is shipped in plugin and both installer runtimes and lazily maintains `docs/project-knowledge/` only after explicit user confirmation of a code-backed business candidate.
 - `npm run scenario:coverage` for architecture-layer visibility across self-test scenarios.
 - `npm run trigger:verify` for prompt-to-route and skill-path trigger checks.
 - README copyable workflows for problem investigation, requirement implementation, bug fixes, and target install verification.
@@ -57,6 +59,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 
 | Version | Change | Type | Date | Status | Summary |
 |---|---|---|---|---|---|
+| v38 | progressive-knowledge-recall | memory recall | 2026-07-17 | active | Added a selective, non-blocking task-start recall chain for learning cards and project knowledge; made business-knowledge maintenance installable in plugin, target, and user runtimes; and extended validation for progressive disclosure and lazy storage ownership. |
 | v37 | codex-hook-coverage | host activation | 2026-07-14 | active | Kept the existing Codex `SessionStart` registration minimal, added dated spec/plan landing guidance to its shared context payload, and covered `.codex/hooks.json` in runtime and host-adapter validation. |
 | v36 | dated-spec-plan-landing | documentation convention | 2026-07-14 | active | Changed default saved spec and plan names to `YYYY-MM-DD-<short-kebab-name>.md`, resolved from the current target project root, across skills, command prompts, checker guidance, and documentation. |
 | v35 | sync-scope-merge-guidance | adoption documentation | 2026-07-14 | active | Documented user-level versus target-project sync scope, required target-project confirmation for project-scoped files, and the rule/`AGENTS.md` merge policy; clarified that only Claude SessionStart settings merge automatically today. |
@@ -136,6 +139,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - 2026-07-14: Synchronize the method/proof contract across every route and host entry instead of only primary rules. Reason: `/devflow`, Claude, Copilot, VS Code, CodeBuddy, and SessionStart had completion blocks that could omit adversarial review even when `devflow-prove` required it.
 - 2026-07-14: Document sync scope and merge guidance instead of adding speculative automatic text merges. Reason: user-level skills/commands/scripts and target-project host rules have different ownership; generic merging of `AGENTS.md` or host rules can silently discard project constraints, while the current installer only safely merges Claude SessionStart settings.
 - 2026-07-14: Prefix saved specs and plans with their creation date and resolve the default paths from the current target project root. Reason: date-prefixed artifacts are easier to scan and avoid ambiguous repeated names across project history without introducing a new artifact directory or generator.
+- 2026-07-17: Reuse existing learning and project-knowledge indexes for progressive recall instead of adding a search service. Reason: task-start probing plus index-directed reads makes stored knowledge usable while avoiding context bloat, automatic empty-directory creation, dependencies, and unproven runtime automation.
 
 ## Known Constraints
 
@@ -164,6 +168,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - `/devflow-core` is the Claude Code command bridge; `commands/devflow.toml` remains the generic command metadata for other command-capable hosts.
 - Saved implementation plans default to `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`; `docs/features/` remains reserved for feature ledgers.
 - Saved specs default to `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`; specs are optional for Design-lite and required only when the request asks for a spec or the work is too large for a short design contract.
+- Static validation proves recall and installation contracts, not that every live agent followed them; missing learning or project-knowledge sources remain non-blocking and are never created by recall alone.
 
 ## Related Artifacts
 

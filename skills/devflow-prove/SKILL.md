@@ -17,7 +17,8 @@ No proof, no completion.
 4. Read the real output and exit status.
 5. If it fails, report `FAIL` and return to Recovery; use `devflow-pua` when the failure includes user challenge, repeated miss, or changed-wrong behavior.
 6. If it cannot run, report `BLOCKED` and name the missing condition.
-7. Only then report completion or `candidate_pass`.
+7. On `PASS`, load `devflow-learn` for its mandatory proactive completion review before final completion reporting. The review may yield a learning card, a project-knowledge candidate pending user confirmation, or no useful record.
+8. Only then report completion or `candidate_pass`.
 
 ## Proof Selection
 
@@ -82,17 +83,24 @@ final_status_owner: external_verifier_or_human
 
 ## Learning Check
 
-If the user corrected the result, repeated the same rule, or a non-obvious pitfall appeared, load `devflow-learn` and report:
+Every `PASS` must load `devflow-learn` before the final completion report. The review actively extracts reusable implementation patterns, constrained decisions, effective proof, conventions, invariants, and business-fact candidates from verified work. A card is conditional on useful future-task value; the review itself is mandatory.
+
+If the user corrected the result, repeated the same rule, or a non-obvious pitfall appeared, preserve the existing `devflow-learn` recovery capture in addition to the `PASS` review.
+
+When a review identifies a code-backed business-semantic change, report the candidate and wait for user confirmation before loading `devflow-project-knowledge`. Do not update `docs/project-knowledge/` automatically.
+
+Report:
 
 ```text
 Learning closure:
-- Learning signal: yes/no
+- Learning signal: PASS review/correction/pitfall/none
 - Recall record: none/index/card
+- Review result: learning card/project-knowledge candidate/no useful record
 - New sediment: none/card/rule/skill
 - Next intercept: next time <X>, first do <Y>, do not do <Z>
 ```
 
-Do not create noisy learning entries for one-off facts.
+Do not create noisy learning entries for one-off facts, raw implementation narration, already-covered lessons, or pure refactors without reusable insight.
 
 ## Pressure Recovery Check
 

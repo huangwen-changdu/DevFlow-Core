@@ -3,6 +3,7 @@
 Use DevFlow Core for this request.
 
 First read `AGENTS.md`. If skill files are available, also read `skills/devflow-core/SKILL.md` before routing.
+At Sense, probe existing `.copilot/LEARNING_INDEX.md` and `docs/project-knowledge/`. Load only index-matched learning cards or navigation-selected business knowledge documents; absence is non-blocking and does not create storage.
 
 Route as Problem, Fast, Design-lite, Design, Build, or Recovery.
 

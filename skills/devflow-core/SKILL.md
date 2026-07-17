@@ -29,8 +29,11 @@ Before deciding, read the narrowest useful project facts:
 3. Current code, generated plan docs, config, tests, and references relevant to the task.
 4. Existing helpers, patterns, commands, and installed dependencies.
 5. Feature ledger: when present for an existing target-project capability, read the matched `docs/features/*.md` ledger before planning; if no ledger exists, mark it missing.
-6. Project memory: `.copilot/LEARNING_INDEX.md` if present.
-7. Maps: `graphify-out/GRAPH_REPORT.md` for architecture/impact questions when present.
+6. Execution recall: probe `.copilot/LEARNING_INDEX.md`; when present, read the index, match the task against card trigger and scope, then read only matched cards.
+7. Business recall: probe `docs/project-knowledge/`; when present, read `AI-START-HERE.md`, falling back to `index.md`, then use `registry.json` when present to select only task-relevant domain, module, risk, or entry-point documents.
+8. Maps: `graphify-out/GRAPH_REPORT.md` for architecture/impact questions when present.
+
+Recall is progressively disclosed: do not bulk-load `.copilot/cards/` or `docs/project-knowledge/`. Missing locations, indexes, entries, or registries are non-blocking facts and must not create storage. Record `Knowledge recall: none / learning index + matched card / project knowledge entry + matched docs` with the Context Map facts.
 
 Output:
 
@@ -90,10 +93,12 @@ For problem solving (问题解决), bug fixing, 修 bug, and architecture design
 | unclear whether work is Fast, Design-lite, or full Design | Route Choice | Ask the user to choose; do not guess from line count or "sounds small". |
 | new code, dependency, abstraction, config, folder, framework layer | Cut Gate | Load `devflow-cut`; require Reuse, Native, Overbuild, Diff, Scope checks. |
 | implementation ready | Build Discipline | Load `devflow-build`; require touched files, slices, diff self-check. |
-| done/fixed/passed/ready claim | Proof Before Done | Load `devflow-prove`; require command/result/adversarial review/PASS-FAIL-BLOCKED. |
+| done/fixed/passed/ready claim | Proof Before Done | Load `devflow-prove`; require command/result/adversarial review/PASS-FAIL-BLOCKED; every PASS then runs `devflow-learn` proactive review. |
 | problem report without explicit fix request, bug report, or failing verification | Issue Triage + Root-Cause Fix Check | Prove symptom first; search callers/references; do not edit until root cause is clear. If fix is trivial → Fast/Design-lite. |
 | repeated failure, user challenge, changed wrong, missing-piece complaint, quality complaint | Pressure Recovery Gate | Load `devflow-pua`; stop editing, quarantine previous wrong assumptions, list 3 hypotheses, switch method, then Prove. |
-| reusable correction, repeated pitfall, project convention | Learning Capture | Load `devflow-learn`; update `.copilot/LEARNING_INDEX.md` and one focused card. |
+| verified PASS | Completion Knowledge Review | Load `devflow-learn`; proactively classify reusable execution knowledge, project-knowledge candidates, or no useful record before final completion reporting. |
+| reusable correction, repeated pitfall, project convention | Learning Capture | Load `devflow-learn`; lazily create or update `.copilot/LEARNING_INDEX.md` and one focused card only when the lesson has future-task value. |
+| confirmed project-knowledge candidate | Business Knowledge Maintenance | Load `devflow-project-knowledge`; update only code-backed business facts after user confirmation. |
 | existing capability with a feature ledger | Feature Ledger Recall | Read matched `docs/features/*.md` before planning; update after validated change. |
 
 ## Required Route Outputs
@@ -103,6 +108,7 @@ Fast:
 ```text
 Goal: ...
 Facts: ...
+Knowledge recall: ...
 Verification: ...
 ```
 
@@ -167,7 +173,7 @@ Verification: ...
 - Design route -> `devflow-brainstorm`
 - Before adding structure -> `devflow-cut`
 - Approved work -> `devflow-build`
-- Before completion -> `devflow-prove`
+- Before completion -> `devflow-prove -> devflow-learn` (every PASS reviews useful knowledge; candidate business facts wait for user confirmation before `devflow-project-knowledge`)
 - User challenge, explicit wrong-code signal, changed-wrong result, repeated miss, repeated "少了这个/少个那个" feedback, missing-piece complaint, or quality complaint -> `devflow-pua -> devflow-brainstorm`
 - User correction or reusable pitfall -> `devflow-learn`
 

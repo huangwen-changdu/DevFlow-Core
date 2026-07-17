@@ -1,24 +1,49 @@
 ---
 name: devflow-learn
-description: "Use when the user says wrong, not like that, changed wrong, remember, learn, 沉淀, 下次不要, 放错位置, 改歪了, 没改对, 不是我要的, 少了, 少个, 缺漏, 遗漏, or when a repeated user correction, repeated user challenge, repeated missing-piece complaint, misplaced content, reusable pitfall, wrong assumption, skipped validation, project convention, or .copilot learning-card update appears."
+description: "Use after every verified DevFlow PASS to proactively extract useful reusable knowledge, or when the user says wrong, not like that, changed wrong, remember, learn, 沉淀, 下次不要, 放错位置, 改歪了, 没改对, 不是我要的, 少了, 少个, 缺漏, 遗漏, or when a repeated user correction, reusable pitfall, project convention, or .copilot learning-card update appears."
 ---
 
 # DevFlow Learn
 
-Turn corrections and pitfalls into reusable intercept rules without bloating context.
+Turn verified work, corrections, and pitfalls into reusable intercept rules without bloating context.
+
+## Completion Review
+
+Every `devflow-prove` judgment of `PASS` must enter this lightweight review before final completion reporting. Review both successful and failed paths from the completed task; do not wait for a correction or pitfall signal.
+
+Extract only knowledge that can help a future task:
+
+- a proven implementation or reuse pattern
+- a decision tied to a constraint or tradeoff
+- an effective validation method
+- a non-obvious repository convention or invariant
+- a costly, counterintuitive, repeated, or project-wide lesson
+- a confirmed project-business fact that may require knowledge-package maintenance
+
+`PASS` requires the review, not a new record. If no useful reusable knowledge remains after classification, report that result and create nothing.
+
+| Review result | Action | Store |
+|---|---|---|
+| Reusable execution experience or proven work pattern | Create or update one focused card | `.copilot/cards/` |
+| Confirmed business fact changed | Report a project-knowledge candidate and wait for user confirmation | `docs/project-knowledge/` after confirmation via `devflow-project-knowledge` |
+| Ordinary detail, one-off fact, already-covered lesson, or pure refactor without insight | Report no useful record | none |
+
+Project-knowledge candidates include changed domain semantics, rules, boundaries, entity/DTO/enum meaning, API or table boundaries, module responsibility, job behavior, and task entry points. `devflow-learn` must not update the package itself or infer business facts without evidence.
 
 ## Process
 
 1. Detect the learning signal:
-   - user correction, repeated user correction, repeated user challenge, repeated missing-piece complaint, changed-wrong result, wrong assumption, repeated failure, skipped validation, missed project convention, misplaced content, or non-obvious pitfall
-2. Read `.copilot/LEARNING_INDEX.md` if it exists.
-3. Read only matched cards; do not load all `.copilot/cards/**`.
-4. Decide whether to record:
-   - record if the mistake is likely to repeat, costly, counterintuitive, or project-wide
-   - skip if it is a one-off fact, already covered, or too context-specific
-5. Create or update one focused card.
-6. Update `.copilot/LEARNING_INDEX.md`.
-7. Report learning closure before completion.
+   - `devflow-prove` `PASS` completion review, user correction, repeated user correction, repeated user challenge, repeated missing-piece complaint, changed-wrong result, wrong assumption, repeated failure, skipped validation, missed project convention, misplaced content, or non-obvious pitfall
+2. Probe `.copilot/LEARNING_INDEX.md`. Read `.copilot/LEARNING_INDEX.md` when it exists; otherwise record that learning recall is absent.
+3. Match the current task against card Trigger and Scope. Read only matched cards; do not load all `.copilot/cards/**`.
+4. Extract a candidate from the task's implementation, decisions, proof, and business impact.
+5. Decide whether to record:
+   - record if the candidate is cross-task reusable and proven useful, costly if missed, counterintuitive, non-obvious, repeated, or project-wide
+   - report a project-knowledge candidate if code-backed business semantics changed; wait for user confirmation before calling `devflow-project-knowledge`
+   - skip if it is ordinary narration, a one-off fact, already covered, or too context-specific
+6. Create `.copilot/LEARNING_INDEX.md`, `.copilot/cards/`, and one focused card only when the result belongs in project learning; do not create empty learning storage after a no-record review.
+7. Update `.copilot/LEARNING_INDEX.md` when a card changed.
+8. Report learning closure before completion.
 
 ## Repeat Correction Gate
 
@@ -63,13 +88,25 @@ Project learning lives in:
 
 Keep cards small. A card must answer what to do next time.
 
+Learning storage is lazily created only by this skill after a qualifying reusable execution lesson. Recall does not create it.
+
+## Knowledge Boundaries
+
+| Store | Owns | Does not own |
+|---|---|---|
+| `graphify-out/` | Structural code graph, communities, and dependency relationships | Execution lessons or curated business guidance |
+| `.copilot/cards/` | Execution experience, intercept rules, and proven work patterns | Business reference documentation |
+| `docs/project-knowledge/` | Curated, code-backed business facts, boundaries, and task entry points | Agent mistakes or raw implementation history |
+
+Handoff: `devflow-prove PASS` -> `devflow-learn` review -> project-knowledge candidate -> user confirmation -> `devflow-project-knowledge` lazy maintenance of `docs/project-knowledge/`.
+
 ## Card Format
 
 ```text
 # <Short Name>
 
 - Trigger: <next time signal>
-- Lesson: <what this pitfall taught>
+- Lesson: <what this work taught>
 - Next action: Next time encountering <X>, first do <Y>, do not do <Z>.
 - Scope: session | project | global | skill | module
 - Related: <files or commands>
@@ -103,8 +140,10 @@ Always report:
 
 ```text
 Learning closure:
-- Learning signal: none/yes
+- Learning signal: PASS review/correction/pitfall/none
 - Recall record: none/index/card
+- Knowledge recall: none/learning index + matched card/project knowledge candidate
+- Review result: learning card/project-knowledge candidate/no useful record
 - New sediment: none/learning card/rule/skill
 - Next intercept: next time <X>, first do <Y>, do not do <Z>
 ```
@@ -114,6 +153,7 @@ Learning closure:
 | Excuse | Reality |
 |---|---|
 | "This was just a correction." | Corrections reveal future intercepts. Check if reusable. |
+| "The task passed, so there is nothing to learn." | PASS proves the work; proactively review its implementation, decision, proof, and business impact. |
 | "The user already told me where it goes." | Repeated placement corrections must become a card so the next run recalls them before acting. |
 | "The user only complained about quality." | Repeated challenge is a reusable signal when the miss pattern can repeat. |
 | "I'll remember it." | Memory without an index is not recallable. |
@@ -125,8 +165,10 @@ Learning closure:
 Before leaving this skill, confirm:
 
 - [ ] Learning signal was classified.
+- [ ] Every `PASS` ran a proactive completion review before final completion reporting.
 - [ ] `LEARNING_INDEX.md` was checked or created.
 - [ ] Only matched cards were read.
 - [ ] Repeated user corrections, repeated user challenges, and misplaced content were recorded or explicitly classified as already covered.
 - [ ] New or updated card has trigger, lesson, next action, scope, and related files.
+- [ ] Business-semantic changes were reported as candidates and await user confirmation before knowledge-package maintenance.
 - [ ] Completion output includes learning closure.

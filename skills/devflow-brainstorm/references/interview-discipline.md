@@ -32,6 +32,26 @@ For design-only requests, stop after the approved design contract, `devflow-cut`
 - Preserve DevFlow's Small Request Boundary, Method Lens, Not Doing list, and Cut gate.
 - Stop when the shared understanding is strong enough to produce the normal DevFlow design contract.
 
+## Progressive Design-Section Confirmation
+
+After the interview and approach comparison, present the design in small sections and wait for confirmation after each. This is not a second workflow — it is the confirmation phase of the same Brainstorm pass.
+
+- Scale sections to the work: Design-lite may use one section; full Design uses separate sections for scope, implementation, and verification.
+- Each section names what it decides, the key tradeoff, and asks for confirmation before continuing.
+- If the user rejects a section, revise that section only — do not restart the entire design.
+- After all sections are confirmed, consolidate them into the normal DevFlow design contract.
+
+Section output shape:
+
+```text
+Section: <section name>
+Proposed decision: <what this section decides>
+Key tradeoff: <what was considered and why this choice>
+Confirm? <wait for user response>
+```
+
+Do not duplicate the full Brainstorm workflow, safeguard tables, or Depth Selection Gate here — those live in `SKILL.md`. This reference focuses on interview mechanics and section confirmation.
+
 ## Documentation Landing
 
 If the user asks to document the result, capture docs, or preserve decisions:
@@ -57,7 +77,16 @@ Recommended answer: <answer and rationale>
 Why now: <dependency or risk this resolves>
 ```
 
-When the interview is complete:
+When presenting design sections (between interview and final contract):
+
+```text
+Section: <section name>
+Proposed decision: <what this section decides>
+Key tradeoff: <what was considered and why this choice>
+Confirm? <wait for user response>
+```
+
+When the interview and section confirmations are complete:
 
 ```text
 Goal:

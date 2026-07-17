@@ -87,10 +87,11 @@ function assertInstalledRuntimeIsSelfContained(targetRoot) {
 
       if (
         referencedPath === "docs/plans/" ||
-        referencedPath === "docs/specs/" ||
-        referencedPath === "docs/features/" ||
-        referencedPath === "docs/features/*.md" ||
-        referencedPath === "docs/adr/"
+         referencedPath === "docs/specs/" ||
+         referencedPath === "docs/features/" ||
+         referencedPath === "docs/features/*.md" ||
+         referencedPath === "docs/project-knowledge/" ||
+         referencedPath === "docs/adr/"
       ) {
         continue;
       }
@@ -150,6 +151,7 @@ assert(fs.existsSync(path.join(createTarget, "AGENTS.md")), "Write mode must cre
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-core/SKILL.md")), "Write mode must create core skill");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-spec/SKILL.md")), "Write mode must create spec skill");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-pua/SKILL.md")), "Write mode must create pua skill");
+assert(fs.existsSync(path.join(createTarget, "skills/devflow-project-knowledge/SKILL.md")), "Write mode must create project-knowledge skill");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-pua/references/methodology-router.md")), "Write mode must create pua methodology router");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-pua/references/methodology-library.md")), "Write mode must create pua methodology library");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-pua/references/flavor-display.md")), "Write mode must create pua flavor display");

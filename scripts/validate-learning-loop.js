@@ -36,6 +36,7 @@ const prove = read("skills/devflow-prove/SKILL.md");
 const selfTest = read("skills/devflow-prove/references/flow-self-test.md");
 const index = read(".copilot/LEARNING_INDEX.md");
 const command = read("commands/devflow-learn.toml");
+const projectKnowledge = read("skills/devflow-project-knowledge/SKILL.md");
 
 for (const signal of scenario.signals) {
   assert(scenario.input.includes(signal), `Scenario is missing signal: ${signal}`);
@@ -88,7 +89,36 @@ assert(command.includes("Run DevFlow Learn"), "devflow-learn command must invoke
 assert(command.includes("Learning closure:"), "devflow-learn command must require closure output");
 assert(command.includes(".copilot/LEARNING_INDEX.md"), "devflow-learn command must mention the learning index");
 
+for (const term of [
+  "Match the current task against card Trigger and Scope",
+  "do not load all `.copilot/cards/**`",
+  "do not create empty learning storage after a no-record review",
+  "user confirmation -> `devflow-project-knowledge` lazy maintenance"
+]) {
+  assert(learn.includes(term), `devflow-learn missing progressive recall contract: ${term}`);
+}
+
+for (const term of [
+  "先读 `AI-START-HERE.md`，回退 `index.md`",
+  "registry.json",
+  "禁止全量读取知识包",
+  "不得因读取尝试创建目录",
+  "唯一维护者"
+]) {
+  assert(projectKnowledge.includes(term), `devflow-project-knowledge missing progressive recall contract: ${term}`);
+}
+
+for (const term of [
+  "Scenario 6D: Progressive Knowledge Recall",
+  "Knowledge recall:",
+  "Missing knowledge: recorded, non-blocking, no storage created",
+  "devflow-learn -> user confirmation -> devflow-project-knowledge"
+]) {
+  assert(selfTest.includes(term), `Self-test missing progressive knowledge recall evidence: ${term}`);
+}
+
 console.log("Learning loop validation passed");
 console.log(`Scenario: ${scenario.input}`);
 console.log(`Matched card: ${matched.rel}`);
 console.log("Closure: core route -> prove learning check -> learn storage -> next-time recall card");
+console.log("Knowledge recall: selective learning-card and project-knowledge navigation contract verified");

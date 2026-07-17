@@ -20,7 +20,7 @@ Use the lightest safe route:
 - Fast: pure Q&A, fact lookup, verification, or trivial code change (one line, no logic change, no risk). Run Sense -> Prove.
 - Design-lite: small change to an existing feature with clear behavior, one plausible path, low risk, local impact, and quick proof. Not for new requirements or features. Use short goal, acceptance, not-doing, Cut, then Build/Prove if implementation is requested.
 - Design: requirement, feature request, behavior change, architecture change, ambiguity, multi-solution decision, or unclear small-feature boundary. Run Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut.
-- Development requests still start at devflow-core. `devflow-brainstorm` uses one-question-at-a-time interview discipline by default: read `skills/devflow-brainstorm/references/interview-discipline.md`, include recommended answers, and continue through Spec/Plan/Cut/Build/Prove when the route calls for it. Depth A/B/C is chosen by the user at the Depth Selection Gate, not by the LLM.
+- Development requests still start at devflow-core. At Sense, probe existing `.copilot/LEARNING_INDEX.md` and `docs/project-knowledge/`; use their indexes to read only task-matched knowledge, record absence without creating storage, then continue the normal flow. `devflow-brainstorm` uses one-question-at-a-time interview discipline by default: read `skills/devflow-brainstorm/references/interview-discipline.md`, include recommended answers, and continue through Spec/Plan/Cut/Build/Prove when the route calls for it. Depth A/B/C is chosen by the user at the Depth Selection Gate, not by the LLM.
 - Build: implement, fix, land, execute a change, bug report with fix request, failing test, or broken behavior. Run Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut -> Build -> Prove. Skip Brainstorm/Plan if already completed.
 - Recovery: repeated failure, user correction, user challenge, missing-piece complaint, repeated `少了这个/少个那个`, quality complaint, changed-wrong result, explicit wrong-code signal, unexpected verification failure, or giving-up impulse. Stop the current path, quarantine wrong assumptions, diagnose user-view miss, restart Brainstorm when challenged hard, switch to a different/opposite method after method failure, then Prove. If the miss is reusable, load `devflow-learn`.
 
@@ -41,7 +41,7 @@ Codex may only reliably see this file plus skill descriptions. Use these ASCII t
 - `spec`, `spec doc`, `requirements doc`, `design doc`, `设计文档`, `需求文档` -> devflow-spec. `plan`, `implementation plan`, `task breakdown`, `计划`, `任务拆解` -> /devflow-plan.
 - `bug report`, `error`, `failing test`, `fix bug`, `broken` -> Build with Root-Cause Check; use First Principles Cut when the constraint, invariant, abstraction, or smallest correct mechanism is unclear.
 - `wrong`, `not like that`, `changed wrong`, `your code is wrong`, `you wrote it wrong`, `has a problem`, `not right`, `missing`, `incomplete`, `still missing`, `quality complaint`, `user dissatisfied`, `有问题`, `不对`, `写错了`, `改歪了`, `没改对`, `不是我要的`, `理解错了`, `改了几次`, `少了`, `少个`, `缺少`, `缺漏`, `遗漏`, `漏了` -> Recovery -> devflow-pua -> restart devflow-brainstorm.
-- `done`, `fixed`, `complete`, `ready`, `passed` -> Prove with adversarial review before any completion claim.
+- `done`, `fixed`, `complete`, `ready`, `passed` -> Prove with adversarial review before any completion claim; every PASS then runs `devflow-learn` proactive review. Record only useful reusable knowledge; business-fact candidates require user confirmation before `devflow-project-knowledge`.
 
 ## Skills
 
@@ -51,9 +51,9 @@ When the platform supports skills, start normal development work with `devflow-c
 - `devflow-spec`: turns an approved design contract into `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` for traceability. `/devflow-plan` (command): creates an implementation Plan Pack from a spec or approved design. Both hand off to `devflow-cut`.
 - `devflow-cut`: before new code, dependencies, abstractions, config, folders, framework layers, generic capabilities, or overengineering review. Runs Required Gates; outputs CUT_PASS / CUT_REDUCE / CUT_REUSE / CUT_BLOCKED.
 - `devflow-build`: approved implementation, fixes, narrow refactors, and implementation slices.
-- `devflow-prove`: before saying done, fixed, complete, working, passed, ready, or candidate_pass.
+- `devflow-prove`: before saying done, fixed, complete, working, passed, ready, or candidate_pass; every PASS invokes `devflow-learn` proactive review before final completion reporting.
 - `devflow-pua`: user challenge, explicit wrong-code signal, missing-piece complaint, changed-wrong result, repeated miss, quality complaint, or pressure recovery before more edits; classify `User-view miss`, `Satisfaction gap`, display `METHOD: {flavor} / {method}`, and switch to a different/opposite method if the prior method still failed.
-- `devflow-learn`: user correction, repeated user correction, misplaced content, wrong place, repeated failure, reusable pitfall, skipped validation, or project convention.
+- `devflow-learn`: every verified PASS proactively reviews successful and failed paths for useful reusable knowledge; also handles user correction, repeated user correction, misplaced content, wrong place, repeated failure, reusable pitfall, skipped validation, or project convention. It lazily creates `.copilot/` records only for reusable execution experience; confirmed business facts route to `devflow-project-knowledge`, which alone lazily maintains `docs/project-knowledge/` after user confirmation.
 
 ## Cut Before Code
 

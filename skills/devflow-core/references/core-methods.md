@@ -26,6 +26,7 @@ This document is DevFlow Core's source of truth. It defines the native methods a
 | Skill Activation Evidence | Record which skill triggered, why, and what artifact/check it requires. | Saying a skill was used when it was only mentioned. |
 | Skill Activation Chain Check | After rule, command, prompt, entry, or skill changes, verify trigger wording, runtime load action, and downstream evidence. | Editing skill text while the skill is still unreachable. |
 | Verifier Lens | Separate implementation claims from evidence checks; external verifier or human owns final status when required. | Self-certifying completion. |
+| Knowledge Recall | Probe existing learning and business knowledge indexes, then read only task-matched records. | Context bloat, stale bulk reads, and knowledge that is written but never used. |
 | Learning Capture | When user correction or repeat failure happens, load `devflow-learn` and capture the next-time intercept rule. | Repeating the same preventable mistake. |
 | Feature Ledger Recall | When present for an existing target-project capability, read and update the matched `docs/features/*.md` ledger. | Losing product history across iterations. |
 
@@ -39,14 +40,16 @@ Before deciding, inspect the narrowest useful context:
 2. Read relevant docs and source files.
 3. Search for existing helpers, patterns, tests, and commands.
 4. When present for an existing target-project capability, read the matched `docs/features/*.md` feature ledger before planning.
-5. Check `.copilot/LEARNING_INDEX.md`; only read matched cards.
-6. If architecture or impact is involved, read `graphify-out/GRAPH_REPORT.md` when present.
-7. If a project knowledge pack is configured, read its declared entry point; do not assume runtime framework methods live under `docs/`.
+5. Probe `.copilot/LEARNING_INDEX.md`. When present, read the index, match the task against Trigger and Scope, then read only matched cards.
+6. Probe `docs/project-knowledge/`. When present, read `AI-START-HERE.md`; fall back to `index.md`; then use `registry.json` when present to select only task-relevant domain, module, risk, or entry-point documents.
+7. If either location, index, entry, or registry is absent, record the absence and continue. Recall alone must not create `.copilot/` or `docs/project-knowledge/`.
+8. If architecture or impact is involved, read `graphify-out/GRAPH_REPORT.md` when present.
 
 Output evidence:
 
 ```text
 Facts: read/confirmed <files or commands>
+Knowledge recall: none / learning index + matched card / project knowledge entry + matched docs
 Unknowns: <still unknown, or none>
 ```
 

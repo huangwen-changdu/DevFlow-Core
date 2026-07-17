@@ -49,6 +49,7 @@ assert(!userEntries.includes("AGENTS.md"), "User installer must not install AGEN
 assert(userEntries.includes("skills/devflow-core/SKILL.md"), "User installer missing core skill");
 assert(userEntries.includes("skills/devflow-spec/SKILL.md"), "User installer missing spec skill");
 assert(userEntries.includes("skills/devflow-pua/SKILL.md"), "User installer missing pua skill");
+assert(userEntries.includes("skills/devflow-project-knowledge/SKILL.md"), "User installer missing project-knowledge skill");
 assert(userEntries.includes("skills/devflow-pua/references/methodology-router.md"), "User installer missing pua methodology router");
 assert(userEntries.includes("skills/devflow-pua/references/methodology-library.md"), "User installer missing pua methodology library");
 assert(userEntries.includes("skills/devflow-pua/references/flavor-display.md"), "User installer missing pua flavor display");
@@ -74,6 +75,7 @@ assert(createOutput.includes("created: skills/devflow-core/SKILL.md"), "Write mo
 assert(fs.existsSync(path.join(createHome, "skills/devflow-core/SKILL.md")), "Write mode must create skill file");
 assert(fs.existsSync(path.join(createHome, "skills/devflow-spec/SKILL.md")), "Write mode must create spec skill file");
 assert(fs.existsSync(path.join(createHome, "skills/devflow-pua/SKILL.md")), "Write mode must create pua skill file");
+assert(fs.existsSync(path.join(createHome, "skills/devflow-project-knowledge/SKILL.md")), "Write mode must create project-knowledge skill file");
 assert(fs.existsSync(path.join(createHome, "skills/devflow-pua/references/methodology-router.md")), "Write mode must create pua methodology router");
 assert(fs.existsSync(path.join(createHome, "skills/devflow-pua/references/methodology-library.md")), "Write mode must create pua methodology library");
 assert(fs.existsSync(path.join(createHome, "skills/devflow-pua/references/flavor-display.md")), "Write mode must create pua flavor display");

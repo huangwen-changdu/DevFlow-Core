@@ -48,6 +48,7 @@ const requiredFiles = [
   "skills/devflow-pua/references/methodology-library.md",
   "skills/devflow-pua/references/flavor-display.md",
   "skills/devflow-learn/SKILL.md",
+  "skills/devflow-project-knowledge/SKILL.md",
   "skills/devflow-audit/SKILL.md",
   "skills/devflow-brainstorm/references/interview-discipline.md",
   "skills/devflow-prove/references/flow-self-test.md",
@@ -114,6 +115,7 @@ const requiredTerms = [
   "Scenario 6A: Repeated Correction Learning Closure",
   "Scenario 6B: New Reusable Pitfall Card",
   "Scenario 6C: User Challenge Pressure Recovery",
+  "Scenario 6D: Progressive Knowledge Recall",
   "Scenario 9: Target Project Install Check",
   "devflow-pua",
   "/devflow-pua",
@@ -127,6 +129,8 @@ const requiredTerms = [
   "Learning closure",
   "Learning loop validation passed",
   "learn:verify",
+  "Knowledge recall",
+  "docs/project-knowledge/",
   "Scenario Coverage Report",
   "scenario:coverage",
   "report-scenario-coverage",
@@ -218,6 +222,7 @@ const skillNames = [
   "devflow-prove",
   "devflow-pua",
   "devflow-learn",
+  "devflow-project-knowledge",
   "devflow-audit"
 ];
 
@@ -249,7 +254,7 @@ function assert(condition, message) {
 }
 
 function hasFrontmatter(body) {
-  return /^---\n[\s\S]+?\n---\n/.test(body);
+  return /^---\r?\n[\s\S]+?\r?\n---\r?\n/.test(body);
 }
 
 for (const file of requiredFiles) {
@@ -382,8 +387,9 @@ for (const term of [
   "skills/devflow-core/SKILL.md",
   "skills/devflow-brainstorm/references/interview-discipline.md",
   "skills/devflow-spec/SKILL.md",
-  "skills/devflow-pua/SKILL.md",
-  "skills/devflow-pua/references/methodology-router.md",
+    "skills/devflow-pua/SKILL.md",
+    "skills/devflow-project-knowledge/SKILL.md",
+    "skills/devflow-pua/references/methodology-router.md",
   "skills/devflow-pua/references/methodology-library.md",
   "skills/devflow-pua/references/flavor-display.md",
   "skills/devflow-audit/SKILL.md",
@@ -481,8 +487,9 @@ for (const term of [
   "Existing user files are skipped unless --force is passed.",
   "skills/devflow-core/SKILL.md",
   "skills/devflow-spec/SKILL.md",
-  "skills/devflow-pua/SKILL.md",
-  "skills/devflow-pua/references/methodology-router.md",
+    "skills/devflow-pua/SKILL.md",
+    "skills/devflow-project-knowledge/SKILL.md",
+    "skills/devflow-pua/references/methodology-router.md",
   "skills/devflow-pua/references/methodology-library.md",
   "skills/devflow-pua/references/flavor-display.md",
   "skills/devflow-audit/SKILL.md",
@@ -644,6 +651,8 @@ const codexTriggerChecks = [
   ["skills/devflow-brainstorm/SKILL.md", "METHOD: {flavor} / {method}"],
   ["skills/devflow-learn/SKILL.md", "repeated missing-piece complaint"],
   ["skills/devflow-learn/SKILL.md", "different/opposite method"],
+  ["skills/devflow-core/SKILL.md", "Business recall"],
+  ["skills/devflow-project-knowledge/SKILL.md", "渐进披露与落地边界"],
   ["skills/devflow-audit/SKILL.md", "overengineering"],
   ["commands/devflow-pua.toml", "Run DevFlow PUA"],
   ["commands/devflow-audit.toml", "Audit the repository or named scope"],
