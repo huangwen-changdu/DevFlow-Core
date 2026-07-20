@@ -51,7 +51,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 ### Non-Goals
 
 - Do not recreate a 20+ skill lifecycle by default.
-- Do not require full OpenSpec for every change.
+- Do not require full spec-heavy process for every change.
 - Do not place runtime method source under `docs/`.
 - Do not add heavy Stop-loop automation, benchmark scoreboards, or external verifier services before a current need exists.
 
@@ -162,7 +162,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - `scripts/devflow-audit.js` reports heuristic overengineering candidates only; important findings still require code reads before editing or claiming removable code.
 - Skill Activation Chain Check validates visible trigger and handoff evidence; it does not prove live host skill loading.
 - Validation harness details are tracked in `docs/features/validation-harness.md`; this ledger stays focused on runtime flow boundaries.
-- Method Lens is a strategy selector for existing routes; First Principles Cut (第一性原理) may guide problem solving (问题解决), 修 bug, and architecture design (架构设计), but it must not reintroduce PUA flavor personas, pressure rhetoric, hook lifecycle, leaderboard mechanics, or full OpenSpec as defaults.
+- Method Lens is a strategy selector for existing routes; First Principles Cut (第一性原理) may guide problem solving (问题解决), 修 bug, and architecture design (架构设计), but it must not reintroduce PUA flavor personas, pressure rhetoric, hook lifecycle, leaderboard mechanics, or full spec-heavy process as defaults.
 - Design-lite is not a bypass for requirements. It is only for small features with clear behavior, one plausible path, low risk, local impact, and quick proof; ambiguous boundaries require user route choice.
 - Claude Code hooks only inject route reminders at SessionStart. The installer merges the project hook into existing `.claude/settings.json` instead of replacing project permissions. Hooks do not prove a target project feature, run tests automatically, or replace `devflow-prove`.
 - `/devflow-core` is the Claude Code command bridge; `commands/devflow.toml` remains the generic command metadata for other command-capable hosts.

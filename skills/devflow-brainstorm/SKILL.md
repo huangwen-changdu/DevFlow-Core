@@ -343,7 +343,7 @@ Output:
 Method Lens: primary <lens>; secondary <lens/none>; why <risk or decision it handles>
 ```
 
-Do not import PUA flavor, pressure rhetoric, or default full OpenSpec to use a lens.
+Do not import PUA flavor, pressure rhetoric, or default full spec-heavy process to use a lens.
 
 ## Required Design Contract
 

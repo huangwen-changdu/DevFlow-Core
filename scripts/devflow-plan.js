@@ -2,6 +2,7 @@ const fs = require("node:fs");
 
 const requiredGlobalFields = ["Source", "Spec coverage"];
 const requiredTaskFields = ["Task", "Files", "Acceptance", "Verify", "Not doing"];
+
 const fieldPatterns = Object.fromEntries(
   [...requiredGlobalFields, ...requiredTaskFields].map((field) => [field, new RegExp(`^\\s*${field}\\s*:`, "im")])
 );

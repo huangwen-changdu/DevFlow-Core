@@ -28,11 +28,11 @@ Use the script output as the executable task-field and plan-landing check before
 
 Split work into small verifiable slices.
 
-The plan must include:
+The plan must include (headers must remain in English for checker validation; content can be in the user's language):
 Source: <docs/specs/YYYY-MM-DD-<short-kebab-name>.md or approved design>
 Spec coverage: <which requirements map to which tasks, or design-only>
 
-Each task must include:
+Each task must include (headers must remain in English):
 Task: <short title>
 Files: <exact files likely touched>
 Acceptance: <specific condition>

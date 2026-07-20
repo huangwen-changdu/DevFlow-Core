@@ -303,7 +303,7 @@ Exit criteria:
 ## 9. Non-Goals
 
 - Do not recreate all 24 Agent Skills.
-- Do not make full OpenSpec mandatory for every change.
+- Do not make full spec-heavy process mandatory for every change.
 - Do not put runtime framework source under `docs/`.
 - Do not add a dependency, hook system, database, or CI platform before a current need exists.
 - Do not claim benchmark results until reproducible tests exist.

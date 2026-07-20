@@ -149,7 +149,7 @@ Rules:
 
 - The lens changes how the existing DevFlow route is executed; it does not replace Sense, Brainstorm, Cut, Build, or Prove.
 - Use First Principles Cut (第一性原理) for problem solving (问题解决), 修 bug, and architecture design (架构设计) when assumptions, inherited abstractions, or the apparent solution may hide the real constraint.
-- Do not add PUA flavor, pressure rhetoric, leaderboard, hook lifecycle, or default full OpenSpec to use a normal Method Lens. Pressure recovery is the exception: `devflow-pua` may use its local methodology router/library/display references to show flavor-method routing.
+- Do not add PUA flavor, pressure rhetoric, leaderboard, hook lifecycle, or default full spec-heavy process to use a normal Method Lens. Pressure recovery is the exception: `devflow-pua` may use its local methodology router/library/display references to show flavor-method routing.
 - If no lens changes the decision, say `Method Lens: none; why standard route is enough`.
 
 ## Method 5: Minimal Solution Ladder

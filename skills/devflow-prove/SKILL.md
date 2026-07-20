@@ -9,6 +9,14 @@ No proof, no completion.
 
 **Violating the letter of the rules is violating the spirit of the rules.**
 
+## Methodology Assets
+
+When this skill activates, read this local reference before choosing or running proof scenarios:
+
+- `skills/devflow-prove/references/flow-self-test.md`
+
+This file contains end-to-end scenario tests and pressure scenarios for the framework itself.
+
 ## Process
 
 1. Identify the command, test, build, lint, diff check, validation script, or manual scenario that proves the claim.

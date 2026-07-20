@@ -99,7 +99,7 @@ Absorbed into DevFlow-Core:
 
 Not absorbed:
 
-- Heavy pressure rhetoric and full OpenSpec default. DevFlow-Core keeps the recovery mechanics without making every task high-pressure.
+- Heavy pressure rhetoric and full spec-heavy process default. DevFlow-Core keeps the recovery mechanics without making every task high-pressure.
 
 ## PUA
 
@@ -120,7 +120,7 @@ Absorbed into DevFlow-Core:
 
 Not absorbed:
 
-- Full PUA persona theater, pressure rhetoric, leaderboard, network feedback, agent lifecycle accounting, hook automation, and default full OpenSpec. DevFlow-Core only keeps the lightweight flavor-method display needed for pressure recovery.
+- Full PUA persona theater, pressure rhetoric, leaderboard, network feedback, agent lifecycle accounting, hook automation, and default full spec-heavy process. DevFlow-Core only keeps the lightweight flavor-method display needed for pressure recovery.
 
 ## Resulting Product Shape
 

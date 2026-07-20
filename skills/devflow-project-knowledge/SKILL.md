@@ -28,7 +28,7 @@ description: "Use when initializing a project-knowledge pack, adding a business 
 - 用户说"初始化知识包""给这个项目生成 project-knowledge"
 - 用户说"新增了一个业务模块/业务点，帮我更新知识文档"
 - 用户说"梳理一下 XX 业务，沉淀到知识包"
-- 用户完成了一个新功能的 OpenSpec/brainstorming，需要把结论落到知识包
+- 用户完成了一个新功能的 devflow-spec/brainstorming，需要把结论落到知识包
 - `devflow-learn` 在验证通过后的主动复盘识别到业务事实变更，且用户已确认维护知识包
 - 知识包某个文件的 `stale_risk` 已经是 `high`，需要重新扫描更新
 
@@ -150,7 +150,7 @@ docs/project-knowledge/
 ## 阶段二：新业务域追加
 
 ### 触发条件
-- 新功能 OpenSpec 已确认，需要把业务定义沉淀到知识包
+- 新功能 devflow-spec 已确认，需要把业务定义沉淀到知识包
 - 新业务点上线，涉及新的 Controller / Service / Entity / Table
 - 用户说"梳理一下 XX 业务"
 
@@ -164,7 +164,7 @@ docs/project-knowledge/
 
 **Step 1：确认业务域边界**
 
-先问（或从 OpenSpec/brainstorming 结论中提取）：
+先问（或从 devflow-spec/brainstorming 结论中提取）：
 - 业务域名称是什么？（用项目术语，不用通用词）
 - 涉及哪些 Controller / Service / Entity / Table？
 - 有哪些关键业务规则 / 边界条件 / 风险点？
@@ -184,7 +184,7 @@ docs/project-knowledge/
 Metadata:
 - repo: {项目路径}
 - last_updated: {YYYY-MM-DD}
-- updated_from: {来源：OpenSpec/brainstorming/代码扫描}
+- updated_from: {来源：devflow-spec/brainstorming/代码扫描}
 - confidence: {low/medium/high}
 - coverage: {覆盖范围描述}
 - stale_risk: {low/medium/high}
@@ -238,7 +238,7 @@ Metadata:
 - 新增文件：`{NN}-{domain}-deep-dive.md`
 - 覆盖范围：{一句话}
 - 更新文件：`index.md`、`registry.json`
-- 来源：{OpenSpec/brainstorming/代码扫描/用户梳理}
+- 来源：{devflow-spec/brainstorming/代码扫描/用户梳理}
 ```
 
 ---
@@ -282,7 +282,7 @@ Metadata:
 |---|---|---|
 | graphify | `graphify-out/` | 生成知识包前可先读 `GRAPH_REPORT.md` 了解模块社区划分，但不依赖它 |
 | .copilot/cards | `.copilot/cards/` | 执行经验与复用模式；知识包是业务定义，不互相替代 |
-| OpenSpec | `openspec/` | 新功能 OpenSpec 确认后，用本 Skill 把业务定义沉淀到知识包 |
+| devflow-spec | `docs/specs/` | 新功能 devflow-spec 确认后，用本 Skill 把业务定义沉淀到知识包 |
 
 ---
 
@@ -305,7 +305,7 @@ Metadata:
 | 新业务域上线（新 Controller/Service/Entity/Table）| 追加 `{NN}-{domain}-deep-dive.md` + 更新 `index.md` + `registry.json` |
 | 现有域有业务语义变化（规则变更、字段新增、边界调整）| 更新对应 deep-dive 文件 + 追加 `11-change-log.md` |
 | 纯代码重构（无业务语义变化，如改方法名、提取公共方法）| **不触发**知识包更新 |
-| OpenSpec 新功能确认后 | 用本 Skill 把业务定义沉淀到知识包（阶段二流程）|
+| devflow-spec 新功能确认后 | 用本 Skill 把业务定义沉淀到知识包（阶段二流程）|
 
 ---
 

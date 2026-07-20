@@ -24,7 +24,7 @@ Do not force a spec for Design-lite work where a short design contract and quick
 
 1. Read the approved design contract from `devflow-brainstorm` and the relevant project facts. Do not re-confirm goal, constraints, or approaches — those were already settled and user-approved in Brainstorm.
 2. Write the spec under `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`, resolved from the current target project's root, unless that project already documents another specs path.
-3. Include the required sections:
+3. Include the required sections with English headers:
    - Goal
    - Context
    - Requirements
@@ -34,6 +34,8 @@ Do not force a spec for Design-lite work where a short design contract and quick
    - Acceptance
    - Verification
    - Open Questions
+
+   Section content should be written in the user's language (e.g., Chinese for Chinese users), but section headers must remain in English so `scripts/devflow-spec.js` can validate them.
 4. Run the spec self-review:
    - Unresolved-marker scan: no draft markers, unresolved question marks, or unresolved angle values.
    - Consistency: requirements, approach, impact, acceptance, and verification do not contradict.
