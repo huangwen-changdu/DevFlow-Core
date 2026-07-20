@@ -47,7 +47,6 @@ DevFlow-Core/
     |-- devflow-core/SKILL.md
     |-- devflow-core/references/
     |   |-- core-methods.md
-    |   |-- decision-tree.md
     |   |-- project-structure.md
     |   |-- reference-projects.md
     |   `-- skill-guide.md

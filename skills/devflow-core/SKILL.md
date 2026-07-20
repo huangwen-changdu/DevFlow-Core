@@ -51,7 +51,7 @@ Do not claim understanding without facts.
 | Fast | Pure Q&A, fact lookup, verification, or trivial code change (one line, no logic change, no risk). | Sense -> Prove |
 | Problem | User reports "something is wrong" or asks to inspect without asking for a fix. | Sense -> Prove facts; re-route only after the needed change is known |
 | Design-lite | Small change to an existing feature with clear behavior, one plausible path, low risk, local impact, and quick proof. Not for new requirements. | Short goal -> acceptance -> not-doing -> Cut -> Build/Prove if requested |
-| Design | Requirement, behavior change, feature, architecture change, ambiguity, multi-solution decision, or unclear small-feature boundary. | Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut |
+| Design | Requirement, behavior change, feature, architecture change, ambiguity, multi-solution decision, or unclear small-feature boundary. | Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut; continue to Build/Prove when implementation is requested |
 | Build | User asks to implement, fix, land, or execute a change. | Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut -> Build -> Prove. Skip Brainstorm/Plan if already completed. |
 | Recovery | Repeated failure, user correction, user challenge, missing-piece complaint, repeated "少了这个/少个那个" feedback, quality complaint, changed-wrong result, unexpected verification failure, or giving-up impulse. | Load `devflow-pua` when pressure recovery is needed; diagnose user-view miss -> re-read facts -> 3 hypotheses -> different/opposite method -> changed approach -> Prove |
 
@@ -89,7 +89,7 @@ For problem solving (问题解决), bug fixing, 修 bug, and architecture design
 
 | Signal | Capability | Required next action |
 |---|---|---|
-| unclear ask, behavior change, multiple paths, or non-trivial design interview | Brainstorm First | Load `devflow-brainstorm`; require goal, constraints, 2-3 approaches. Depth Selection Gate (A/B/C) determines handoff: A → devflow-spec → /devflow-plan, B → /devflow-plan, C → devflow-cut. Use Brainstorm Interview Discipline (one question at a time with recommended answer). Pick Method Lens (Root Cause, Working Backwards, First Principles Cut, Data/Proof, Operational Owner) when risk is high. |
+| unclear ask, behavior change, multiple paths, or non-trivial design interview | Brainstorm First | Load `devflow-brainstorm`; require goal, constraints, 2-3 approaches. Brainstorm ends at the Depth Selection Gate where the user picks A/B/C (option semantics live in `skills/devflow-brainstorm/SKILL.md`). Use Brainstorm Interview Discipline (one question at a time with recommended answer). Pick Method Lens (Root Cause, Working Backwards, First Principles Cut, Data/Proof, Operational Owner) when risk is high. |
 | unclear whether work is Fast, Design-lite, or full Design | Route Choice | Ask the user to choose; do not guess from line count or "sounds small". |
 | new code, dependency, abstraction, config, folder, framework layer | Cut Gate | Load `devflow-cut`; require Reuse, Native, Overbuild, Diff, Scope checks. |
 | implementation ready | Build Discipline | Load `devflow-build`; require touched files, slices, diff self-check. |

@@ -30,7 +30,6 @@ const runtimeEntries = [
   "scripts/devflow-audit.js",
   "skills/devflow-core/SKILL.md",
   "skills/devflow-core/references/core-methods.md",
-  "skills/devflow-core/references/decision-tree.md",
   "skills/devflow-core/references/skill-guide.md",
   "skills/devflow-brainstorm/SKILL.md",
   "skills/devflow-spec/SKILL.md",

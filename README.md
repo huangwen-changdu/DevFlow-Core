@@ -16,66 +16,43 @@ It is not a link collection. The useful parts are built into this repo as rules,
 - Implementation slices with per-slice verification when work spans multiple steps
 - Completion proof with actual command output and `PASS / FAIL / BLOCKED`
 - Recovery rules for failures: re-read facts, list 3 hypotheses, switch approach, verify again
-- Multi-platform entry files for Codex, Claude, Copilot, CodeBuddy, Gemini-style extension metadata, and command-capable hosts
+- Multi-platform entry files for Codex, Claude Code, opencode, CodeBuddy, WorkBuddy, Copilot, Gemini-style extension metadata, and command-capable hosts — per-platform setup in [docs/platform-setup.md](docs/platform-setup.md)
 
 ## Quick Start
 
-Use this repo as a project-level rules pack:
+One runtime pack, every platform reads its own entry:
 
-```text
-AGENTS.md                         Codex / general agents
-.codex/hooks.json                 Codex project SessionStart hook registration
-CLAUDE.md                         Claude Code pointer
-.github/copilot-instructions.md   GitHub Copilot repo rules
-.github/instructions/*.md         VS Code task instructions
-.github/prompts/*.md              Manual prompt entry
-.codebuddy/rules/*/RULE.mdc       CodeBuddy always-on rule
-.claude/settings.json             Claude Code project hook registration
-.claude/commands/devflow-core.md  Claude Code /devflow-core command
-hooks/hooks.json                  Claude plugin hook registration
-hooks/devflow-session-start.js    Claude SessionStart context injection
-skills/devflow-*/SKILL.md         Skill-capable agents
-skills/devflow-*/references/*.md  Skill-local reference material
-commands/*.toml                   Slash-command capable agents
-```
+| Platform | Entry it reads |
+|---|---|
+| Codex / opencode / shared agents | `AGENTS.md` |
+| Claude Code | `CLAUDE.md` + `.claude/settings.json` (SessionStart hook) |
+| CodeBuddy IDE | `.codebuddy/rules/devflow-core/RULE.mdc` |
+| GitHub Copilot / VS Code | `.github/copilot-instructions.md` + `.github/instructions/` |
+| WorkBuddy | GUI project instructions + imported `skills/` (manual, see guide) |
+| Skill-capable hosts | `skills/devflow-*/SKILL.md` |
+| Command-capable hosts | `commands/*.toml` |
 
-Start most work with `devflow-core`.
-
-Install into a target project with a dry-run first:
+Install the pack into a target project (dry-run first):
 
 ```bash
 npm run install:target -- ../my-project
 npm run install:target -- ../my-project --write
 npm run install:target -- ../my-project --check
-npm run install:target -- ../my-project --write --force
 ```
 
-The installer copies runtime entry files, Claude Code hook files, skills, and commands. It does not copy product docs or validation harness files into the target project. Existing files are skipped unless `--force` is passed.
+The installer copies runtime entry files, hook files, skills, commands, and the target-runtime checkers. It does not copy product docs or validation harness files. Existing files are skipped unless `--force` is passed; use `--check` later to detect drift.
 
-Use `--check` after install to verify the target project's runtime files still match this package. It reports `ok`, `missing`, or `changed` per runtime file, prints `Check passed` when the installed runtime matches, and exits non-zero when the installed pack is incomplete or drifted.
-
-Install user-level skills, commands, and scripts for Codex with a dry-run first:
+For personal global access, install user-level skills, commands, and scripts:
 
 ```bash
-npm run install:user
-npm run install:user -- --write
-npm run install:user -- --check
-npm run install:user -- --write --force
-```
-
-The user installer targets `CODEX_HOME` or `~/.codex` by default. It copies only `skills/`, `commands/`, and `scripts/devflow-*.js`; it does not install `AGENTS.md`, `CLAUDE.md`, or project-specific host rule files. Existing user files are skipped unless `--force` is passed.
-
-For Claude Code user-level files, point the same installer at `~/.claude`:
-
-```bash
-npm run install:user -- --home ~/.claude
+npm run install:user -- --write                 # ~/.codex by default
 npm run install:user -- --home ~/.claude --write
-npm run install:user -- --home ~/.claude --check
+npm run install:user -- --home ~/.codebuddy --write
 ```
 
-This installs user-level `skills/`, `commands/`, and `scripts/devflow-*.js` under `~/.claude`. Project rules such as `AGENTS.md` and `CLAUDE.md` still belong in the target repository.
+The user installer never installs `AGENTS.md`, `CLAUDE.md`, or project-specific host rule files — those stay project-level.
 
-Hard boundary: install `AGENTS.md` and `CLAUDE.md` only with `npm run install:target -- <project> --write`. Do not install them into `~/.codex`, `~/.claude`, or another user-level runtime directory.
+**Per-platform setup, sync scope, and daily usage: [docs/platform-setup.md](docs/platform-setup.md).**
 
 ### Sync Scope And Merge Policy
 
@@ -116,148 +93,6 @@ When installed into a target project, only the target-runtime scripts are copied
 Saved specs should land in the current target project's `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` unless that project already documents another specs path. Saved implementation plans should land in the current target project's `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`. `docs/features/` is for feature ledgers, not generated specs or task plans.
 
 Other `.js` files under `scripts/` are DevFlow-Core maintainer checks, installer tests, and coverage reports. They stay in this package and are not the daily runtime surface for target projects.
-
-## Use With Codex
-
-Use DevFlow-Core as a runtime pack inside the project Codex should work on. The target project is the source of truth; this repository is only the pack source.
-
-1. Install the runtime pack into the target project:
-
-```bash
-cd D:/Project/Github/DevFlow-Core
-npm run install:target -- D:/Project/YourProject
-npm run install:target -- D:/Project/YourProject --write
-npm run install:target -- D:/Project/YourProject --check
-```
-
-Installed file map:
-
-| Target path | Purpose |
-|---|---|
-| `AGENTS.md` | Codex and shared-agent runtime prompt. This is the main Codex entry. |
-| `CLAUDE.md` | Claude Code adapter that points to the same DevFlow contract. |
-| `.github/copilot-instructions.md` | GitHub Copilot repository-level rules. |
-| `.github/instructions/devflow.instructions.md` | VS Code instruction file for DevFlow authoring and rule edits. |
-| `.github/prompts/devflow.prompt.md` | VS Code prompt entry for manual DevFlow invocation. |
-| `.codebuddy/rules/devflow-core/RULE.mdc` | CodeBuddy always-on rule entry. |
-| `.claude/settings.json` | Claude Code project hook registration for DevFlow SessionStart injection. |
-| `.claude/commands/devflow-core.md` | Claude Code `/devflow-core` command that loads core routing and Brainstorm triggers. |
-| `hooks/hooks.json` | Claude plugin hook registration for plugin-style installs. |
-| `hooks/devflow-session-start.js` | Lightweight SessionStart hook that injects DevFlow routing reminders. |
-| `commands/devflow*.toml` | Slash-command entries for hosts that support command files. |
-| `skills/devflow-*/SKILL.md` | Skill definitions for skill-capable agents. |
-| `skills/devflow-brainstorm/references/interview-discipline.md` | Interview discipline reference used by DevFlow Brainstorm. |
-| `skills/*/references/*.md` or skill-local reference files | Runtime reference material used by the installed skills. |
-| `skills/skill-call-diagram.md` | Skill chain map for humans and agents. |
-| `scripts/devflow-spec.js`, `scripts/devflow-plan.js`, `scripts/devflow-review.js`, `scripts/devflow-debt.js`, `scripts/devflow-audit.js` | Target-runtime checkers available inside the target project. |
-
-Global Codex config vs project runtime pack:
-
-| Scope | Put there | Why |
-|---|---|---|
-| Codex global config | Personal defaults such as "read the repo `AGENTS.md` first", proof-before-done preference, minimal-change habits, and user-level DevFlow `skills/`, `commands/`, and `scripts/`. | Good for one developer's baseline behavior and global slash/skill access, but not versioned with a project and not shared with teammates automatically. |
-| Target project runtime pack | `AGENTS.md`, host rule files, `commands/`, `skills/`, skill references, and `scripts/devflow-*.js`. | Project-specific, reviewable, install-checkable, and available to any agent or teammate opening the repo. |
-
-Use both when possible: global Codex config can bootstrap the habit, but the target project should still carry the DevFlow runtime files that define and verify how that project is worked on.
-
-2. Ask the user which target project should receive project-scoped files. If that project already has `AGENTS.md`, `CLAUDE.md`, Copilot rules, CodeBuddy rules, commands, scripts, or hooks, do not overwrite them blindly. The installer skips existing files by default. Merge DevFlow rule blocks and `AGENTS.md` with the target's local instructions, or use `--write --force` only when replacing a file is intentional.
-
-3. Open the target project root in Codex. Codex should read the installed `AGENTS.md` from that project. Do not keep Codex pointed at `DevFlow-Core` when the real task belongs to another repository.
-
-4. Start work with route-friendly wording:
-
-```text
-Problem report: the login flow looks wrong. Check what is wrong, do not fix yet.
-Requirement: implement CSV export for orders.
-Bug report: order totals sometimes render as NaN. Fix the bug.
-/devflow review this request before coding
-```
-
-5. Treat `AGENTS.md` as the stable Codex contract. Codex may not reliably auto-load every `SKILL.md`, so the installed prompt, command files, and local scripts must carry the workflow. Skill-capable hosts can still use `devflow-core` and the focused `devflow-*` skills.
-
-6. Use the installed runtime scripts when files are available:
-
-```bash
-node scripts/devflow-plan.js <plan-file>
-node scripts/devflow-spec.js <spec-file>
-node scripts/devflow-review.js <plan-or-diff-file>
-node scripts/devflow-debt.js .
-node scripts/devflow-audit.js <target-directory>
-```
-
-Execution model:
-
-- These scripts do not run by themselves after installation.
-- They are local checkers that Codex or another agent runs when the task route calls for them, or when the user invokes a matching command such as `/devflow-spec`, `/devflow-plan`, `/devflow-review`, `/devflow-debt`, or `/devflow-audit`.
-- `commands/devflow*.toml` tells command-capable hosts what to do; the command prompt can instruct the agent to run the matching `node scripts/devflow-*.js` command.
-- `AGENTS.md` gives Codex the always-visible workflow contract. If Codex does not auto-load `SKILL.md`, it can still follow `AGENTS.md`, read command files, and run the installed scripts as shell commands.
-- No git hook, daemon, file watcher, or CI job is installed by default. Automatic enforcement would require a separate hook or CI integration, which this pack intentionally does not add yet.
-
-7. Before claiming completion, run the target project's real proof command, then report command, result, and judgment. DevFlow-Core package checks prove the framework pack; they do not prove a target project's business feature.
-
-```text
-Command: <target project test/build/manual scenario>
-Result: <key output>
-Judgment: PASS / FAIL / BLOCKED
-```
-
-8. When updating an installed target project after this pack changes, run:
-
-```bash
-npm run install:target -- D:/Project/YourProject --check
-```
-
-If check mode reports `changed`, review the target-local edits before replacing anything.
-
-## Use With Claude Code
-
-Use project-level install for a repository Claude Code should work on:
-
-```bash
-cd D:/Project/Github/DevFlow-Core
-npm run install:target -- D:/Project/YourProject
-npm run install:target -- D:/Project/YourProject --write
-npm run install:target -- D:/Project/YourProject --check
-```
-
-Claude Code reads the target project's `CLAUDE.md`. In this pack, `CLAUDE.md` points back to the shared DevFlow contract in `AGENTS.md` and names the `devflow-*` skills to use when skills are available.
-
-Codex and Claude Code can trigger DevFlow at session start through the project hook files:
-
-- Codex project: `.codex/hooks.json` runs `node hooks/devflow-session-start.js`.
-- Project install: `.claude/settings.json` runs `node hooks/devflow-session-start.js`.
-- Slash command: `.claude/commands/devflow-core.md` provides `/devflow-core` for Claude Code.
-- Plugin install: `hooks/hooks.json` registers the same script through `SessionStart`.
-- The hook only injects a short DevFlow Core reminder. It does not run tests, edit files, block tools, or start a Stop-loop.
-- If a target project already has `.claude/settings.json`, the installer preserves existing fields and appends the DevFlow `SessionStart` entry. Use `--force` only when replacing the whole file is intentional.
-
-Installed Claude-relevant project files:
-
-| Target path | Purpose |
-|---|---|
-| `CLAUDE.md` | Claude Code project entry point. | 
-| `AGENTS.md` | Shared DevFlow runtime rules referenced by `CLAUDE.md`. | 
-| `.codex/hooks.json` | Project-level Codex SessionStart hook registration. |
-| `.claude/settings.json` | Project-level Claude Code hook registration. |
-| `.claude/commands/devflow-core.md` | Claude Code `/devflow-core` command and Brainstorm trigger bridge. |
-| `hooks/hooks.json` | Plugin-style Claude hook registration. |
-| `hooks/devflow-session-start.js` | SessionStart hook that injects a short DevFlow Core activation reminder. |
-| `skills/devflow-*/SKILL.md` | Skill-capable runtime workflows. |
-| `skills/devflow-brainstorm/references/interview-discipline.md` | Interview discipline reference used by DevFlow Brainstorm. |
-| `skills/*/references/*.md` or skill-local reference files | Runtime reference material for the installed skills. |
-| `commands/devflow*.toml` | Command metadata for hosts that can use it. |
-| `scripts/devflow-spec.js`, `scripts/devflow-plan.js`, `scripts/devflow-review.js`, `scripts/devflow-debt.js`, `scripts/devflow-audit.js` | Local checkers Claude can run from the target project. |
-
-Optional user-level Claude Code install:
-
-```bash
-cd D:/Project/Github/DevFlow-Core
-npm run install:user -- --home ~/.claude
-npm run install:user -- --home ~/.claude --write
-npm run install:user -- --home ~/.claude --check
-```
-
-Use user-level install only for personal global access to DevFlow skills, commands, and scripts. It does not install `AGENTS.md`, `CLAUDE.md`, or project-specific rules. For team use and project-specific behavior, keep the project-level runtime pack installed in the repository.
 
 ## Runtime Flow
 
@@ -461,7 +296,7 @@ It also checks `--check` mode for matching, missing, and changed target runtime 
 Runtime reference material lives beside the skill that uses it:
 
 - [skills/devflow-core/references/core-methods.md](skills/devflow-core/references/core-methods.md): authoritative method rules
-- [skills/devflow-core/references/decision-tree.md](skills/devflow-core/references/decision-tree.md): route and gate quick reference
+- [skills/devflow-core/SKILL.md](skills/devflow-core/SKILL.md): route table, small-request boundary, and capability dispatch
 - [skills/devflow-cut/references/native-capability-checklist.md](skills/devflow-cut/references/native-capability-checklist.md): platform/stdlib alternatives before new code
 - [skills/devflow-prove/references/flow-self-test.md](skills/devflow-prove/references/flow-self-test.md): end-to-end scenario tests
 - [skills/devflow-core/references/skill-guide.md](skills/devflow-core/references/skill-guide.md): how skills are structured

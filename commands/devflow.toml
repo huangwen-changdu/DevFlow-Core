@@ -11,7 +11,8 @@ If the boundary is unclear, ask the user to choose Fast, Design-lite, or full De
 Run Sense first by reading or citing relevant project facts.
 At Sense, probe `.copilot/LEARNING_INDEX.md` and `docs/project-knowledge/` when present. Read only matched learning cards or navigation-selected knowledge documents; missing locations are non-blocking and do not create storage.
 For requirements or ambiguity, run Brainstorm with 2-3 approaches. The brainstorming skill enforces its own HARD-GATE — Design-lite does not bypass it for new features.
-For non-trivial Brainstorm, read skills/devflow-brainstorm/references/interview-discipline.md, ask one question at a time with a recommended answer, and continue through devflow-spec when a saved requirements source is needed, otherwise through the normal Cut/Build/Prove path.
+For non-trivial Brainstorm, read skills/devflow-brainstorm/references/interview-discipline.md, ask one question at a time with a recommended answer.
+Brainstorm ends at the Depth Selection Gate (STOP): the user picks A/B/C (option semantics live in skills/devflow-brainstorm/SKILL.md). Do not proceed past brainstorm until the user picks a depth.
 Before implementation, run Cut with Reuse, Native, Overbuild, Diff, and Scope checks.
 For bug fixes, include Root-Cause Check: searched callers/references; shared vs narrow fix; reason.
 For deliberate simplifications, add or report `devflow: <ceiling>, revisit when <trigger>`.

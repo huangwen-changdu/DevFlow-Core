@@ -19,9 +19,12 @@ graph TD
     CORE -->|"/devflow-audit or audit request"| AUDIT
     PUA -->|"goal/result clear"| BRAIN
     PUA -->|"proof needed"| PROVE
-    BRAIN -->|"design contract"| CUT
-    BRAIN -->|"saved spec needed"| SPEC
-    SPEC -->|"validated spec"| CUT
+    BRAIN -->|"STOP: Depth Gate (user picks)"| DEPTH{"Depth A/B/C"}
+    DEPTH -->|"A: Full Spec"| SPEC
+    DEPTH -->|"B: Simplified"| PLAN["/devflow-plan"]
+    DEPTH -->|"C: Dialogue"| CUT
+    SPEC --> PLAN
+    PLAN --> CUT
     CUT -->|"cut gate passed"| BUILD
     BUILD -->|"implementation done"| PROVE
     PROVE -->|"FAIL/BLOCKED"| CORE
@@ -32,13 +35,7 @@ graph TD
 ## Runtime Chain
 
 ```text
-devflow-core -> devflow-brainstorm -> devflow-cut -> devflow-build -> devflow-prove
-devflow-core --> devflow-brainstorm
-devflow-brainstorm --> devflow-spec
-devflow-spec --> devflow-cut
-devflow-brainstorm --> devflow-cut
-devflow-cut --> devflow-build
-devflow-build --> devflow-prove
+devflow-core -> devflow-brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> devflow-cut -> devflow-build -> devflow-prove
 devflow-core --> devflow-pua
 devflow-pua --> devflow-brainstorm
 devflow-pua --> devflow-prove
@@ -48,8 +45,8 @@ devflow-core --> devflow-audit
 
 ## Short Rules
 
-- Requirements and behavior changes enter `devflow-brainstorm`.
-- Larger or explicitly spec-requested work enters `devflow-spec` before planning.
+- Requirements and behavior changes enter `devflow-brainstorm`, which ends at the Depth Selection Gate (user picks A/B/C).
+- Depth A saves a spec via `devflow-spec` then plans via `/devflow-plan`; Depth B plans directly; Depth C goes straight to `devflow-cut`.
 - New implementation structure enters `devflow-cut`.
 - Approved minimal work enters `devflow-build`.
 - Any completion claim enters `devflow-prove`.

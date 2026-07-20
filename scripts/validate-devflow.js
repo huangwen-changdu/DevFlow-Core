@@ -33,7 +33,6 @@ const requiredFiles = [
   "docs/features/validation-harness.md",
   "skills/devflow-core/SKILL.md",
   "skills/devflow-core/references/core-methods.md",
-  "skills/devflow-core/references/decision-tree.md",
   "skills/devflow-core/references/project-structure.md",
   "skills/devflow-core/references/reference-projects.md",
   "skills/devflow-core/references/skill-guide.md",
@@ -777,11 +776,21 @@ assert(
 );
 
 const staleDocsHits = textFiles.flatMap((file) => {
-  const matches = read(file).match(/docs\/(?:CORE-METHODS|DECISION-TREE|FLOW-SELF-TEST|NATIVE-CAPABILITY-CHECKLIST|REFERENCE-PROJECTS|SKILL-GUIDE|PROJECT-STRUCTURE)\.md/g);
+  const matches = read(file).match(/docs\/(?:CORE-METHODS|FLOW-SELF-TEST|NATIVE-CAPABILITY-CHECKLIST|REFERENCE-PROJECTS|SKILL-GUIDE|PROJECT-STRUCTURE)\.md/g);
   return matches ? [`${file}: ${matches.join(", ")}`] : [];
 });
 
 assert(staleDocsHits.length === 0, `Runtime references must not point to old docs paths:\n${staleDocsHits.join("\n")}`);
+
+const deletedReferenceHits = textFiles.flatMap((file) => {
+  const matches = read(file).match(/references\/decision-tree\.md/g);
+  return matches ? [`${file}: ${matches.length} hit(s)`] : [];
+});
+
+assert(
+  deletedReferenceHits.length === 0,
+  `decision-tree.md was deleted (route table lives in skills/devflow-core/SKILL.md); remove stale references:\n${deletedReferenceHits.join("\n")}`
+);
 
 console.log("DevFlow validation passed");
 console.log(`Checked ${requiredFiles.length} files, ${skillNames.length} skills, ${commandFiles.length} commands`);

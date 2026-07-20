@@ -181,6 +181,33 @@ assert(
   "devflow-session-start.js must inject pressure recovery context"
 );
 
+// Drift sentinel: Depth option semantics must live only in the brainstorm skill.
+// Other surfaces may mention the Depth Selection Gate, but must not restate the
+// full A/B/C option mapping (that duplication is what previously drifted).
+const depthSemanticsOwners = [
+  "skills/devflow-brainstorm/SKILL.md",
+  "skills/skill-call-diagram.md"
+];
+const depthSemanticsPattern = /3 confirmations/;
+for (const file of [
+  "AGENTS.md",
+  "CLAUDE.md",
+  "commands/devflow.toml",
+  ".codebuddy/rules/devflow-core/RULE.mdc",
+  ".github/copilot-instructions.md",
+  ".github/instructions/devflow.instructions.md",
+  ".github/prompts/devflow.prompt.md",
+  ".claude/commands/devflow-core.md",
+  "skills/devflow-core/SKILL.md",
+  "skills/devflow-core/references/core-methods.md"
+]) {
+  if (depthSemanticsOwners.includes(file)) continue;
+  assert(
+    !depthSemanticsPattern.test(read(file)),
+    `${file} restates Depth A/B/C option semantics (e.g. "3 confirmations"); point to skills/devflow-brainstorm/SKILL.md instead`
+  );
+}
+
 const gemini = JSON.parse(read("gemini-extension.json"));
 assert(gemini.contextFileName === "AGENTS.md", "gemini-extension.json must point to AGENTS.md");
 
