@@ -63,7 +63,7 @@ What it does:
 
 Absorbed into DevFlow-Core:
 
-- `Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut -> Build -> Prove` remains the default chain.
+- `Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> devflow-cut -> devflow-build -> devflow-prove` remains the default chain.
 - `devflow-brainstorm` includes design approval shape, assumption challenges, and approach comparison.
 - `devflow-spec`, `commands/devflow-spec.toml`, and `scripts/devflow-spec.js` add a saved requirements source for larger or explicitly spec-requested work.
 - Generated specs default to `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`; `docs/features/` remains feature ledger memory and `docs/plans/` remains implementation planning.

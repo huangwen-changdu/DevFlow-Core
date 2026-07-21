@@ -178,7 +178,7 @@ Expected behavior:
 - Route: Fast verification
 - Skill path: `devflow-core -> devflow-prove`
 - Must check `AGENTS.md`, `CLAUDE.md`, Copilot instructions, VS Code instruction/prompt, CodeBuddy rule, plugin metadata, and Gemini metadata.
-- Must confirm platform adapters preserve `Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut -> Build -> Prove`.
+- Must confirm platform adapters preserve `Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> devflow-cut -> devflow-build -> devflow-prove`.
 - Must confirm plugin metadata includes all shipped skills and commands.
 - Must not rewrite adapter rules unless drift is proven.
 

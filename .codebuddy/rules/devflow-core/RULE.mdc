@@ -9,7 +9,7 @@ provider:
 
 Follow [AGENTS.md](../../../AGENTS.md) as the shared project rule source.
 
-Use `Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> Cut -> Build -> Prove` as the default lightweight development flow. Depth A/B/C is chosen by the user at the brainstorm Depth Selection Gate, not by the LLM (option semantics live in `skills/devflow-brainstorm/SKILL.md`).
+Use `Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> devflow-cut -> devflow-build -> devflow-prove` as the default lightweight development flow. Depth A/B/C is chosen by the user at the brainstorm Depth Selection Gate, not by the LLM (option semantics live in `skills/devflow-brainstorm/SKILL.md`).
 
 Authoritative method source: `skills/devflow-core/references/core-methods.md`.
 
