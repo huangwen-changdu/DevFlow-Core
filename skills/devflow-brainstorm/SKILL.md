@@ -10,7 +10,7 @@ Turn a request into the smallest useful design before implementation, through pr
 **Violating the letter of the rules is violating the spirit of the rules.**
 
 <HARD-GATE>
-Do NOT hand off to `devflow-cut`, `devflow-build`, write any code, or take any implementation action until you have presented a design contract and the user has approved it. This applies to EVERY request regardless of perceived simplicity. The Depth Selection Gate (A/B/C) must be presented before clarification begins — the user chooses the depth, not the LLM.
+Do NOT hand off to `devflow-cut`, `devflow-build`, write any code, or take any implementation action until you have presented a design contract and the user has approved it. This applies to EVERY request regardless of perceived simplicity. Semantic understanding must be echoed back and confirmed by the user before the Depth Selection Gate (A/B/C) is presented — the user chooses the depth, not the LLM.
 </HARD-GATE>
 
 ## Anti-Pattern: "This Is Too Simple To Need A Design"
@@ -21,73 +21,29 @@ Every request goes through this process. A config change, a single-function fix,
 
 1. **Read facts first**: inspect relevant files, docs, configs, tests, existing behavior, commit history, and patterns. Do not ask the user what you can discover by reading.
 2. **Frame the goal** as a one-sentence problem statement.
-3. **Check the Small Request Boundary**: decide whether this is Design-lite, full Design, or needs user route choice.
-4. **STOP — Depth Selection Gate**: Present A/B/C depth options to the user (see Depth Selection Gate section). Wait for their choice. The selected depth determines how many confirmations follow and whether spec documents are landed.
-5. **Progressive clarification**: Ask one question at a time. Each message resolves exactly one blocking decision — goal, constraint, or acceptance. Include a recommended answer. Wait for the user's response before continuing. Prefer multiple choice when possible. Only infer from project facts when the question is purely technical and evidence is unambiguous. If it is a business decision, ask. Even when depth C is selected and all boundary gates pass, you MUST still complete the 3 core questions before continuing.
-6. **Define success criteria** the user or agent can verify.
-7. **Challenge hidden assumptions**:
+3. **STOP — Confirm understanding**: Echo your understanding back to the user before any process question (see Semantic Echo-Back section). The echo-back doubles as the first clarification question — it does not add a round trip. If the request allows two or more plausible interpretations, the echo-back must be a disambiguation multiple-choice between those interpretations. Do not check the Small Request Boundary or present the Depth Selection Gate until the user confirms or corrects the understanding.
+4. **Check the Small Request Boundary**: decide whether this is Design-lite, full Design, or needs user route choice.
+5. **STOP — Depth Selection Gate**: Present A/B/C depth options to the user (see Depth Selection Gate section). Wait for their choice. The selected depth determines how many confirmations follow and whether spec documents are landed.
+6. **Progressive clarification**: Ask one question at a time. Each message resolves exactly one blocking decision — goal, constraint, or acceptance. Include a recommended answer. Wait for the user's response before continuing. Prefer multiple choice when possible. Only infer from project facts when the question is purely technical and evidence is unambiguous. If it is a business decision, ask. Even when depth C is selected and all boundary gates pass, you MUST still complete the 3 core questions before continuing.
+7. **Define success criteria** the user or agent can verify.
+8. **Challenge hidden assumptions**:
    - Does this need to exist?
    - What remains true from first principles (第一性原理) if the requested implementation, current abstraction, or preferred solution is removed?
    - Is the user asking for an implementation when a smaller outcome works?
    - What current system behavior may already satisfy the goal?
    - What would make this design unacceptable?
-8. **Compare approaches**: Diverge with 2-3 genuinely different approaches unless Design-lite applies (Step 3 gates passed) or depth C is selected with all boundary gates passing. Each option must include what it does, what it does not do, tradeoff, impact size, and verification.
-9. **Apply a Method Lens** when the design, risk, or ambiguity needs a specific working strategy.
-10. **Present design in sections**: Present the proposed design in small sections scaled to the work. Default sections cover, as applicable: scope and goals; interaction or implementation design; error handling and verification. Wait for confirmation after each section before presenting the next.
-11. **Converge into design contract**: Summarize the approved sections as the existing DevFlow design contract (`Goal`, `Smallest useful plan`, `Not doing`, `Impact`, `Verification`).
-12. **STOP — Present design contract**: Present the design contract to the user. Ask whether it looks right. If the user requests changes, go back to the relevant step. Only proceed once the user approves.
-    - **Depth A/B**: this is confirmation 1 of 3/2. Continue to step 13.
-    - **Depth C**: this is confirmation 1 of 1. User approval here means the design is confirmed — proceed directly to `devflow-cut` (skip steps 13-14).
-13. **Design contract self-review** (Depth A/B only): Before handing off, check the design contract for unresolved filler text, internal contradictions, scope creep, and ambiguity. Fix inline. If a fundamental issue is found (scope needs decomposition, approach contradicts goal), go back to the relevant step instead of patching inline.
-14. **Depth-based handoff** (Depth A/B only):
+9. **Compare approaches**: Diverge with 2-3 genuinely different approaches unless Design-lite applies (Step 4 gates passed) or depth C is selected with all boundary gates passing. Each option must include what it does, what it does not do, tradeoff, impact size, and verification.
+10. **Apply a Method Lens** when the design, risk, or ambiguity needs a specific working strategy.
+11. **Present design in sections**: Present the proposed design in small sections scaled to the work. Default sections cover, as applicable: scope and goals; interaction or implementation design; error handling and verification. Wait for confirmation after each section before presenting the next.
+12. **Converge into design contract**: Summarize the approved sections as the existing DevFlow design contract (`Goal`, `Smallest useful plan`, `Not doing`, `Impact`, `Verification`).
+13. **STOP — Present design contract**: Present the design contract to the user. Ask whether it looks right. If the user requests changes, go back to the relevant step. Only proceed once the user approves.
+    - **Depth A/B**: this is confirmation 1 of 3/2. Continue to step 14.
+    - **Depth C**: this is confirmation 1 of 1. User approval here means the design is confirmed — proceed directly to `devflow-cut` (skip steps 14-15).
+14. **Design contract self-review** (Depth A/B only): Before handing off, check the design contract for unresolved filler text, internal contradictions, scope creep, and ambiguity. Fix inline. If a fundamental issue is found (scope needs decomposition, approach contradicts goal), go back to the relevant step instead of patching inline.
+15. **Depth-based handoff** (Depth A/B only):
     - **Depth A**: **STOP — Confirm spec** → hand off to `devflow-spec` to land `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` (confirmation 2 of 3). After spec, hand off to `/devflow-plan` (confirmation 3 of 3).
     - **Depth B**: **STOP — Confirm plan** → hand off to `/devflow-plan` to create a Plan Pack (confirmation 2 of 2).
     - Recommend one based on project size and cross-module impact, but let the user decide. Wait for their response.
-
-## Process Flow
-
-```dot
-digraph brainstorming {
-    "Read facts first" [shape=box];
-    "Frame the goal" [shape=box];
-    "Small Request Boundary" [shape=box];
-    "Depth Selection Gate\n(A/B/C, wait for user)" [shape=box];
-    "Progressive clarification\n(one question at a time,\nwith recommended answer)" [shape=box];
-    "Define success criteria" [shape=box];
-    "Challenge assumptions" [shape=box];
-    "Compare 2-3 approaches" [shape=box];
-    "Apply Method Lens" [shape=box];
-    "Present design in sections\n(confirm each section)" [shape=box];
-    "Converge into design contract" [shape=box];
-    "Present design contract" [shape=box];
-    "User approves design?" [shape=diamond];
-    "Design contract self-review\n(fix inline)" [shape=box];
-    "Fundamental issue?" [shape=diamond];
-    "Depth A: devflow-spec\n(confirm 2 of 3)" [shape=box];
-    "Depth B: /devflow-plan\n(confirm 2 of 2)" [shape=box];
-    "Depth C: devflow-cut\n(confirm 1 of 1)" [shape=box];
-
-    "Read facts first" -> "Frame the goal";
-    "Frame the goal" -> "Small Request Boundary";
-    "Small Request Boundary" -> "Depth Selection Gate\n(A/B/C, wait for user)";
-    "Depth Selection Gate\n(A/B/C, wait for user)" -> "Progressive clarification\n(one question at a time,\nwith recommended answer)";
-    "Progressive clarification\n(one question at a time,\nwith recommended answer)" -> "Define success criteria";
-    "Define success criteria" -> "Challenge assumptions";
-    "Challenge assumptions" -> "Compare 2-3 approaches";
-    "Compare 2-3 approaches" -> "Apply Method Lens";
-    "Apply Method Lens" -> "Present design in sections\n(confirm each section)";
-    "Present design in sections\n(confirm each section)" -> "Converge into design contract";
-    "Converge into design contract" -> "Present design contract";
-    "Present design contract" -> "User approves design?";
-    "User approves design?" -> "Present design contract" [label="no, revise"];
-    "User approves design?" -> "Design contract self-review\n(fix inline)" [label="yes (A/B)"];
-    "User approves design?" -> "Depth C: devflow-cut\n(confirm 1 of 1)" [label="yes (C)"];
-    "Design contract self-review\n(fix inline)" -> "Fundamental issue?";
-    "Fundamental issue?" -> "Present design contract" [label="yes, go back"];
-    "Fundamental issue?" -> "Depth A: devflow-spec\n(confirm 2 of 3)" [label="no (A)"];
-    "Fundamental issue?" -> "Depth B: /devflow-plan\n(confirm 2 of 2)" [label="no (B)"];
-}
-```
 
 The terminal state depends on the depth selected at the Depth Selection Gate:
 - **Depth A**: `devflow-spec` → `/devflow-plan` → `devflow-cut` → `devflow-build` → `devflow-prove`
@@ -95,6 +51,26 @@ The terminal state depends on the depth selected at the Depth Selection Gate:
 - **Depth C**: `devflow-cut` → `devflow-build` → `devflow-prove`
 
 Do NOT hand off to `devflow-build` or any other implementation skill directly.
+
+## Semantic Echo-Back
+
+Before any process question (depth A/B/C, spec, plan), confirm you understood what the user actually wants. This is the first user-facing interaction and doubles as the first clarification question — it does not add a round trip.
+
+```text
+My understanding:
+- Problem to solve: <one sentence, in the user's domain language>
+- Known facts/constraints: <read from code, docs, commits>
+- NOT what you want: <the misreading being ruled out>
+Is this right? (correct me / confirm)
+```
+
+Scale it: 1-2 lines for a clear small request, the full shape when the request is ambiguous.
+
+Rules:
+
+- If the request allows two or more plausible interpretations, do not guess — make the echo-back a multiple-choice between the interpretations and wait for the user's pick.
+- Facts read from the codebase are stated, not asked. Business intent is confirmed, not inferred.
+- Only after the user confirms or corrects the understanding do you check the Small Request Boundary and present the Depth Selection Gate.
 
 ## Core Questions
 
@@ -264,20 +240,6 @@ Select A / B / C:
 | **B. Simplified Spec** | Feature Ledger → Design Contract → /devflow-plan | 2 |
 | **C. Dialogue Confirmation** | Core Clarification 3 questions → dialogue confirm → devflow-cut | 1 |
 
-```text
-Full path (select A):
-Feature Ledger → Design Contract ─→ devflow-spec ─→ /devflow-plan
-                  (confirm 1)        (confirm 2)      (confirm 3) → devflow-cut → devflow-build
-
-Simplified path (select B):
-Feature Ledger → Design Contract ─→ /devflow-plan
-                  (confirm 1)        (confirm 2) → devflow-cut → devflow-build
-
-Dialogue path (select C):
-Core Clarification 3 questions → dialogue confirm
-                                  (confirm 1) → devflow-cut → devflow-build
-```
-
 ### Feature Ledger Check
 
 Before producing the design contract, check for an existing feature ledger:
@@ -417,6 +379,7 @@ The design must be user-approved, and the depth must be user-selected at the Dep
 | Excuse | Reality |
 |---|---|
 | "The user already gave a solution." | A proposed solution is not the goal. Check the goal. |
+| "The request is clear, skip the echo-back." | Semantic misreading is the top source of changed-wrong results. A one-line echo-back costs far less than a rebuild. |
 | "Only one approach is obvious." | Compare at least a direct option and a reuse/no-change option. |
 | "Questions slow us down." | One precise question prevents the wrong build. |
 | "We can decide scope during coding." | Scope belongs in the design contract before Build. |
@@ -435,6 +398,7 @@ The design must be user-approved, and the depth must be user-selected at the Dep
 - Combining multiple clarifying questions into one message
 - Proceeding past a STOP gate without user response
 - Handing off directly to `devflow-build` instead of `devflow-spec`, `/devflow-plan`, or `devflow-cut`
+- Asking process questions (depth A/B/C, spec, plan) before the user has confirmed your understanding of the request
 - Proceeding without presenting the Depth Selection Gate (A/B/C)
 - LLM self-deciding depth instead of letting the user choose
 - Presenting all design sections without waiting for per-section confirmation
@@ -457,6 +421,7 @@ Before leaving this skill, confirm:
 
 - [ ] Facts were read or unknowns were named.
 - [ ] Goal was framed before checking Small Request Boundary.
+- [ ] Understanding was echoed back and confirmed by the user before the Depth Selection Gate (disambiguation first when multiple interpretations existed).
 - [ ] Small Request Boundary was checked for tiny requirement or feature work.
 - [ ] Depth Selection Gate was presented and user selected A, B, or C.
 - [ ] Goal, constraints, and success criteria exist — confirmed with the user when unclear, not just inferred.

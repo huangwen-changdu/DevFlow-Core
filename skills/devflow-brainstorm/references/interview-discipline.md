@@ -9,6 +9,7 @@ This absorbs the useful behavior from Matt Pocock's interview skills into DevFlo
 ```text
 User development request
 -> devflow-core Sense/routing
+-> devflow-brainstorm Semantic Echo-Back (confirm understanding; doubles as first clarification question)
 -> devflow-brainstorm Depth Selection Gate (A/B/C)
 -> devflow-brainstorm interview discipline (Core Clarification, required for all depths)
 -> approved DevFlow design contract
@@ -25,6 +26,7 @@ For design-only requests, stop after the approved design contract, `devflow-cut`
 
 ## Interview Behavior
 
+- Start with the Semantic Echo-Back: confirm what the user wants before any process question. If the request has multiple plausible interpretations, the echo-back is a disambiguation multiple-choice, not a statement.
 - Ask exactly one question at a time.
 - For each question, include your recommended answer.
 - Walk the design tree by dependencies: do not ask a downstream question before the upstream decision is resolved.
