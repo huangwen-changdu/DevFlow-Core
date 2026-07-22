@@ -1,6 +1,6 @@
 ---
 name: devflow-brainstorm
-description: "Use when a request is unclear, a requirement or feature idea appears, behavior/product/architecture may change, assumptions need challenging, documentation capture or spec handoff may be needed, 2-3 approaches are needed, implementation should be shaped before coding, or a user challenge requires re-asking the goal/result before rebuilding. Turns a request into the smallest useful design through collaborative dialogue."
+description: "Use when a request is unclear, a requirement or feature idea appears, behavior/product/architecture may change, assumptions need challenging, documentation capture or spec handoff may be needed, 2-3 approaches are needed, implementation should be shaped before coding, or a user challenge requires re-asking the goal/result before rebuilding. Turns a request into the smallest useful design through collaborative dialogue. Always opens with a semantic echo-back confirmed by the user before any depth or process question."
 ---
 
 # DevFlow Brainstorm
@@ -71,6 +71,13 @@ Rules:
 - If the request allows two or more plausible interpretations, do not guess — make the echo-back a multiple-choice between the interpretations and wait for the user's pick.
 - Facts read from the codebase are stated, not asked. Business intent is confirmed, not inferred.
 - Only after the user confirms or corrects the understanding do you check the Small Request Boundary and present the Depth Selection Gate.
+
+[CRITICAL] Hard constraints:
+
+- The echo-back MUST be its own message, ending with an explicit confirm-or-correct question. Stating your understanding and moving on within the same message is a violation.
+- Never combine the echo-back with any other question — one question per message applies here too.
+- No user confirmation means no progress: do not check the Small Request Boundary, present the Depth Selection Gate, or ask any clarification question until the user responds.
+- The echo-back never replaces the Depth Selection Gate — after confirmation, the A/B/C gate is still presented and the user still picks the depth.
 
 ## Core Questions
 

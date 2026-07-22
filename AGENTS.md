@@ -43,7 +43,7 @@ STOP gates are mandatory wait points — do not continue until the user responds
 
 When the platform supports skills, start normal development work with `devflow-core`; otherwise follow this prompt directly.
 
-- `devflow-brainstorm`: requirements, product behavior, feature design, architecture changes, ambiguous asks, or multi-solution decisions. Produces an approved design contract, ending at the Depth Selection Gate (user picks A/B/C; full option semantics live in `skills/devflow-brainstorm/SKILL.md`).
+- `devflow-brainstorm`: requirements, product behavior, feature design, architecture changes, ambiguous asks, or multi-solution decisions. Its first user-facing output is a semantic echo-back (my understanding + explicit confirm/correct question) — never the A/B/C depth gate or any process question; no progress until the user confirms or corrects. Produces an approved design contract, ending at the Depth Selection Gate (user picks A/B/C; full option semantics live in `skills/devflow-brainstorm/SKILL.md`).
 - `devflow-spec`: turns an approved design contract into `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` for traceability. Hands off to /devflow-plan or `devflow-cut`.
 - `/devflow-plan` (command): creates an implementation Plan Pack from a spec or approved design. Hands off to `devflow-cut`.
 - `devflow-cut`: before new code, dependencies, abstractions, config, folders, framework layers, generic capabilities, or overengineering review. Runs Required Gates; outputs CUT_PASS / CUT_REDUCE / CUT_REUSE / CUT_BLOCKED.
