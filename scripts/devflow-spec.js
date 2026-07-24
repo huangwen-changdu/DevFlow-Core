@@ -9,6 +9,7 @@ const requiredFields = [
   "Impact",
   "Acceptance",
   "Verification",
+  "Code Documentation",
   "Open Questions"
 ];
 
@@ -128,11 +129,13 @@ function selfTest() {
     "Impact: scripts/devflow-spec.js and command metadata.",
     "Acceptance: Complete spec reports PASS.",
     "Verification: node scripts/devflow-spec.js --self-test",
+    "Code Documentation: scripts/devflow-spec.js needs file-level comment explaining checker purpose; checkSpec function needs comment explaining validation logic.",
     "Open Questions: none"
   ].join("\n");
   const missingSpec = [
     "Goal: Add spec validation",
-    "Context: DevFlow needs a saved requirements source."
+    "Context: DevFlow needs a saved requirements source.",
+    "Code Documentation: none — trivial change"
   ].join("\n");
   const vagueSpec = [
     "Goal: TODO",
@@ -143,6 +146,7 @@ function selfTest() {
     "Impact: scripts/devflow-spec.js",
     "Acceptance: ???",
     "Verification: node scripts/devflow-spec.js --self-test",
+    "Code Documentation: none — trivial change",
     "Open Questions: <question>"
   ].join("\n");
 

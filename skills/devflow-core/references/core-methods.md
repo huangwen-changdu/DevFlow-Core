@@ -2,15 +2,52 @@
 
 This document is DevFlow Core's source of truth. It defines the native methods agents must apply directly. Do not outsource behavior to other projects or describe ideas without turning them into actions, gates, and proof.
 
+## Method 0: Architect Mindset
+
+Purpose: give every DevFlow route engineering judgment, not just process compliance.
+
+This method is always active. It shapes how every other method is applied.
+
+### Thinking Principles
+
+1. System Awareness — Before any change, understand: what module am I in, what depends on it, what breaks if I'm wrong, what's the blast radius?
+
+2. Contract Thinking — Every function, API, and component is a contract. Changing the contract costs more than changing the implementation. Prefer contract-preserving changes.
+
+3. Coupling Lens — Tight coupling makes changes expensive. When adding code, ask: am I creating a new dependency? Can the caller be simpler? Is this coupling necessary now?
+
+4. Data Flow First — For bugs, trace data from input to output. The bug lives where the data is wrong, not where the symptom appears.
+
+5. Failure Mode Analysis — For risky changes, enumerate: what fails if this is wrong? What's the rollback? What's the blast radius? Spend ceremony proportional to the answer.
+
+6. Simplicity Budget — Every system has a complexity budget. Spending it on abstractions, config surfaces, or framework layers means less budget for the actual problem. Spend deliberately.
+
+7. Evidence Over Intuition — "I think it works" is not proof. "The test passed" is proof. "The build succeeded" is proof. Demand evidence at every gate.
+
+8. Reversibility Awareness — Some decisions are easy to reverse (code), some are hard (data migration, API contract, schema). Spend more ceremony on hard-to-reverse decisions.
+
+### Decision Heuristics
+
+| Situation | Engineering instinct |
+|---|---|
+| "Should I add an abstraction?" | Only if there are 2+ callers with different needs today. |
+| "Should I add a dependency?" | Only if the stdlib/platform can't do it and the cost of the dependency < cost of writing it. |
+| "Should I refactor this?" | Only if the current code blocks the user goal. Not "while I'm here". |
+| "Should I add a config option?" | Only if there are 2+ valid values now. Not for future flexibility. |
+| "Should I fix the symptom or the cause?" | Cause, always. Search callers before editing. |
+| "Is this done?" | Only with proof. Run the command, show the output. |
+| "The user said it's wrong" | Stop. Re-read facts. Quarantine assumptions. Switch approach. |
+
 ## Capability Matrix
 
 | Capability | Action | Blocks |
 |---|---|---|
+| Architect Mindset | Apply engineering judgment: system awareness, contract thinking, coupling lens, data flow first, failure mode analysis, simplicity budget, evidence over intuition, reversibility awareness. | Process compliance without judgment, symptom-level fixes, speculative structure. |
 | Context Map | Read project rules, docs, relevant files, tests, commands, memory, and maps before deciding. | Guessing, stale assumptions, hallucinated project facts. |
 | Lifecycle Router | Choose Fast, Design-lite, Design, Build, or Recovery by task shape and risk. | One-size-fits-all ceremony and silent risk escalation. |
 | Small Request Boundary | Classify tiny work by risk, impact, uncertainty, and proof before choosing Fast or Design-lite. | Treating every "small" feature as Fast Path or forcing heavy Design on trivial work. |
 | Method Lens | Select the working strategy for Design, Recovery, problem solving (问题解决), bug fixing, architecture design (架构设计), or high-risk proof before choosing artifacts. | Generic process with no task-specific brain. |
-| Brainstorm First | Clarify goal, constraints, success criteria, assumptions, and 2-3 approaches. | Building the first suggested implementation without checking the real goal. |
+| Brainstorm First | Clarify goal, constraints, success criteria, assumptions, and 2-3 approaches. When Fast Exit conditions are met (small change to existing feature, all boundary gates pass, single plausible path), offer Fast Exit as a recommended option at the Path Selection Gate — the user chooses, not the LLM. | Building the first suggested implementation without checking the real goal. Auto-selecting Fast Exit without user confirmation. |
 | Minimal Solution Ladder | Prefer no-change, reuse, stdlib, platform, installed dependency, one-line/config, then minimum new code. | Rewriting existing capability, adding dependencies too early. |
 | Native Capability Check | Scan platform and standard-library alternatives before adding libraries or custom code. | Wrapper packages for things the runtime already provides. |
 | Anti-Overengineering Gate | Require a current reason for abstractions, dependencies, config, folders, framework layers, or generic engines. | Future-proofing, one-caller abstractions, speculative extension points. |
@@ -59,7 +96,9 @@ Do not claim understanding unless the understanding cites facts that were read o
 
 Purpose: prevent building the wrong thing.
 
-Use for requirements, behavior changes, features, architecture changes, ambiguous requests, and multi-solution decisions.
+Use for new requirements, behavior changes, features, architecture changes, ambiguous requests, and multi-solution decisions. Do NOT use for documentation writing, config tuning, trivial code changes, or clear bug fixes with known root cause — those go through Fast or Design-lite.
+
+**Fast Exit**: When a task enters Brainstorm but is a small change to an existing feature (not a new requirement), all four Small Request Boundary gates pass, and only one plausible implementation path exists, offer Fast Exit as a recommended option at the Path Selection Gate. The user chooses Fast Exit or full A/B/C — the LLM does not auto-select. If the user chooses Fast Exit, present a short design contract directly, get approval, and hand off to `devflow-cut`. This prevents forcing spec/plan ceremony on simple tasks while keeping the user in control.
 
 Actions:
 
@@ -75,6 +114,7 @@ Required output:
 
 ```text
 Goal: ...
+Motivation: why now, what triggered this need
 Facts: read/confirmed ...
 Constraints: ...
 Acceptance: ...
@@ -286,10 +326,13 @@ Approach:
 Impact:
 Acceptance:
 Verification:
+Code Documentation:
 Open Questions:
 ```
 
-Run `node scripts/devflow-spec.js <spec-file>` when the checker exists.
+The `Code Documentation` section specifies what code comments are required: which files need file-level comments, which functions need function-level comments, which non-obvious logic needs inline comments explaining WHY. For trivial changes, state "none — trivial change" explicitly.
+
+Run `node scripts/devflow-spec.js <spec-file>` when the checker exists. See Script Path Resolution below for path fallback order.
 
 Use a Plan Pack when work has more than one logical implementation step.
 
@@ -309,6 +352,7 @@ Task: <short title>
 Files: <exact files likely touched>
 Acceptance: <specific condition>
 Verify: <exact command or manual scenario>
+Comments: <what code comments are required — which functions need function-level comments, which non-obvious logic needs inline comments explaining WHY; or "none — trivial change">
 Not doing: <scope removed>
 ```
 
@@ -355,17 +399,18 @@ Use when the selected solution touches more than one file or more than one logic
 Actions:
 
 1. Split work into 1-5 slices.
-2. Each slice names files/modules, behavior change, and verification.
+2. Each slice names files/modules, behavior change, verification, and required code comments.
 3. Prefer slices that produce visible or testable results.
 4. Verify each slice before moving on when a focused check exists.
 5. Merge slices that cannot be verified separately.
+6. Each slice must include code comments as specified in the spec's Code Documentation section and the plan's Comments field.
 
 Output:
 
 ```text
 Implementation Slices:
-- Slice 1: files / change / per-slice verification
-- Slice 2: files / change / per-slice verification
+- Slice 1: files / change / per-slice verification / required comments
+- Slice 2: files / change / per-slice verification / required comments
 ```
 
 ## Method 13: Proof Before Done
@@ -376,8 +421,8 @@ Before saying done, run the narrowest sufficient proof:
 
 - rules/skills/references: file presence, frontmatter, required wording, command entries, path consistency
 - agent rules/skills/commands/entries: Skill Activation Check covering trigger, surface, runtime load action, and downstream evidence
-- code: targeted test, build, lint, typecheck, or manual runtime scenario
-- bug fix: reproduce symptom or run regression check
+- code: targeted test, build, lint, typecheck, or manual runtime scenario; plus comment verification — new/changed functions have comments, non-obvious logic has inline comments
+- bug fix: reproduce symptom or run regression check; plus fix location has a comment explaining what was broken and what the fix does
 - framework design: checklist against agreed output contract
 
 Completion format:
@@ -432,6 +477,7 @@ Design output:
 
 ```text
 Goal: what to solve
+Motivation: why now, what triggered this need
 Smallest useful plan: why this is the smallest useful solution now
 Not doing: what is explicitly cut
 Impact: modules/files/behavior involved
@@ -444,4 +490,29 @@ Completion output:
 Command: <actual command run>
 Result: <key output summary>
 Judgment: PASS / FAIL / BLOCKED
+```
+
+## Script Path Resolution
+
+DevFlow checker scripts (`devflow-spec.js`, `devflow-plan.js`, `devflow-review.js`, `devflow-debt.js`, `devflow-audit.js`) may be located in different places depending on how DevFlow is installed. Always resolve the script path before running:
+
+1. **Project-level**: `scripts/devflow-<name>.js` — relative to the current target project's root. Use when the target project has DevFlow scripts installed locally.
+2. **User-level (Codex)**: `~/.codex/scripts/devflow-<name>.js` — use when only user-level DevFlow is installed.
+3. **User-level (Claude Code)**: `~/.claude/scripts/devflow-<name>.js` — alternative user-level location.
+
+Try paths in this order. Use the first path that exists. If none exists, skip the script check and note it as unavailable — do not block the flow on a missing checker.
+
+**Do NOT look for scripts under `skills/scripts/`** — that path does not exist. Scripts are always under `scripts/` (project-level) or `~/.codex/scripts/` / `~/.claude/scripts/` (user-level).
+
+Example resolution for `devflow-spec.js`:
+
+```bash
+# 1. Try project-level
+node scripts/devflow-spec.js <spec-file>
+
+# 2. If not found, try user-level Codex
+node ~/.codex/scripts/devflow-spec.js <spec-file>
+
+# 3. If not found, try user-level Claude Code
+node ~/.claude/scripts/devflow-spec.js <spec-file>
 ```

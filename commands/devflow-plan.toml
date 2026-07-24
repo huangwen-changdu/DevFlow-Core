@@ -37,6 +37,7 @@ Task: <short title>
 Files: <exact files likely touched>
 Acceptance: <specific condition>
 Verify: <exact command or manual scenario>
+Comments: <what code comments are required for this task — which functions need function-level comments, which non-obvious logic needs inline comments explaining WHY; or "none — trivial change" for trivial tasks>
 Not doing: <scope removed>
 
 No unresolved markers, vague edge cases, speculative abstractions, or unverified assumptions.

@@ -19,7 +19,9 @@ graph TD
     CORE -->|"/devflow-audit or audit request"| AUDIT
     PUA -->|"goal/result clear"| BRAIN
     PUA -->|"proof needed"| PROVE
-    BRAIN -->|"STOP: Depth Gate (user picks)"| DEPTH{"Depth A/B/C"}
+    BRAIN -->|"STOP: Path Gate (user chooses)"| PATH{"Fast Exit / A/B/C"}
+    PATH -->|"User picks Fast Exit"| CUT
+    PATH -->|"User picks A/B/C"| DEPTH{"Depth A/B/C"}
     DEPTH -->|"A: Full Spec"| SPEC
     DEPTH -->|"B: Simplified"| PLAN["/devflow-plan"]
     DEPTH -->|"C: Dialogue"| CUT
@@ -35,7 +37,10 @@ graph TD
 ## Runtime Chain
 
 ```text
-devflow-core -> devflow-brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> devflow-cut -> devflow-build -> devflow-prove
+devflow-core -> devflow-brainstorm -> [STOP: Path Gate: user chooses Fast Exit or A/B/C]
+  -> Fast Exit (user-chosen): short design contract -> devflow-cut
+  -> A/B/C (user-chosen): A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct -> devflow-cut
+-> devflow-build -> devflow-prove
 devflow-core --> devflow-pua
 devflow-pua --> devflow-brainstorm
 devflow-pua --> devflow-prove
@@ -45,7 +50,7 @@ devflow-core --> devflow-audit
 
 ## Short Rules
 
-- Requirements and behavior changes enter `devflow-brainstorm`, which ends at the Depth Selection Gate (user picks A/B/C).
+- Requirements and behavior changes enter `devflow-brainstorm`, which presents a Path Selection Gate: when Fast Exit conditions are met (small change to existing feature, all boundary gates pass, single plausible path), Fast Exit is offered as a recommended option alongside A/B/C. The user chooses the path — the LLM does not auto-select.
 - Depth A saves a spec via `devflow-spec` then plans via `/devflow-plan`; Depth B plans directly; Depth C goes straight to `devflow-cut`.
 - New implementation structure enters `devflow-cut`.
 - Approved minimal work enters `devflow-build`.

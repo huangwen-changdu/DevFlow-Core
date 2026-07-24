@@ -33,8 +33,8 @@ This file contains end-to-end scenario tests and pressure scenarios for the fram
 | Work type | Proof |
 |---|---|
 | Docs/rules/skills | File presence, frontmatter, required wording, command entries, path consistency, scenario checklist. |
-| Code | Targeted test, build, lint, typecheck, or runtime scenario. |
-| Bug fix | Original symptom reproduction or regression check. |
+| Code | Targeted test, build, lint, typecheck, or runtime scenario. **Plus: comment verification — check that new/changed functions have comments explaining WHY, non-obvious logic has inline comments, and comment style matches the project.** |
+| Bug fix | Original symptom reproduction or regression check. **Plus: the fix location has a comment explaining what was broken and what the fix does.** |
 | Framework design | Native capability coverage, anti-pattern gates, skill behavior, and output contracts. |
 | Productized skill pack | `npm test` or equivalent package validation. |
 
@@ -43,6 +43,15 @@ This file contains end-to-end scenario tests and pressure scenarios for the fram
 After code changes, use the narrowest current quality signal before completion: targeted test, lint/typecheck, build, or a reproducible scenario. Do not run a full review checklist when a focused proof covers the claim.
 
 After development work, adversarial review (对抗式审查) is mandatory before completion: check the strongest plausible reason the change is still wrong, incomplete, unreachable, over-broad, or under-verified. If the adversarial review finds a real gap, report `FAIL` or continue the appropriate DevFlow route before claiming completion.
+
+Adversarial review checklist for code changes:
+
+- **Correctness**: Does the code actually solve the stated goal? Are edge cases handled?
+- **Regression**: Could this change break sibling callers, shared state, or downstream consumers?
+- **Activation path**: Is the new code actually reachable? Can the user/trigger reach it?
+- **Scope creep**: Does the diff include unrequested behavior or drive-by refactors?
+- **Proof coverage**: Is the verification narrow enough to be meaningful, or is it a rubber-stamp?
+- **Code comments**: Do new/changed functions have comments explaining WHY? Is non-obvious logic documented? Is the fix location commented for bug fixes? If comments are missing, the implementation is incomplete — report `FAIL` or add comments before claiming `PASS`.
 
 After agent rule, command, prompt, entry, or `SKILL.md` changes, run a Skill Activation Chain Check before completion:
 
@@ -149,6 +158,8 @@ Recovery requires re-reading facts, listing 3 hypotheses, and trying a materiall
 | "A partial check is enough." | Partial proof must be labeled partial. |
 | "The tool said success." | Tool claims are data. Verify the actual artifact/output. |
 | "I am confident." | Confidence is not evidence. |
+| "Comments are optional, the code works." | Code without comments is incomplete implementation. The spec/plan defined what needs comments — verify they exist. |
+| "The code is self-explanatory." | If the spec or plan required comments, they are not optional. If the logic is non-obvious, it needs a comment regardless of spec. |
 
 ## Red Flags — STOP
 
@@ -158,6 +169,8 @@ Recovery requires re-reading facts, listing 3 hypotheses, and trying a materiall
 - Reusing old output as proof
 - Expressing satisfaction before verification runs
 - Skipping the Skill Activation Chain Check after rule/skill/command changes
+- Claiming PASS when new/changed functions have no comments and the spec/plan required them
+- Claiming PASS when non-obvious logic has no inline comments
 
 **All of these mean: run the command, read the output, then claim.**
 

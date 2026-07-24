@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current Version: v27
+- Current Version: v28
 - Status: active
-- Last Change: brainstorm-interview-discipline-validation
+- Last Change: local-capability-evaluation
 - Product Area: local validation, evidence commands, coverage reports
 
 ## Feature Background
@@ -20,6 +20,8 @@ This ledger exists because validation behavior now changes independently from th
 - `npm test` runs `scripts/validate-devflow.js`.
 - `npm run learn:verify` validates repeated-correction learning closure.
 - `npm run scenario:coverage` reports self-test coverage, weak layers, and suggested next scenarios across agent-engineering layers.
+- `npm run capability:eval` evaluates a versioned scenario contract against exact self-test evidence and de-duplicated local npm commands; it reports per-scenario `PASS`/`FAIL`/`BLOCKED`, routes, layer coverage, gaps, and reproduction commands.
+- `npm run capability:verify` self-tests contract success, missing fields, negative constraints, command failures, duplicate IDs, and command de-duplication.
 - Scenario self-tests include host adapter contract drift coverage for prompt-surface validation.
 - Scenario self-tests include new reusable pitfall card coverage for memory/learning validation.
 - Scenario self-tests include target project install check coverage for onboarding and post-install proof.
@@ -43,6 +45,8 @@ This ledger exists because validation behavior now changes independently from th
 ### Non-Goals
 
 - Do not claim benchmark or adoption scores without reproducible methodology.
+- Capability evaluation proves local scenario contracts and evidence commands, not model quality, token use, latency, cost, or live host loading.
+- Do not commit generated capability evaluation reports.
 - Do not add CI, hooks, databases, or external verifier services before a current need exists.
 - Do not simulate LLM reasoning as proof of host-specific skill loading.
 - Do not mutate learning cards from validation commands.
@@ -51,6 +55,7 @@ This ledger exists because validation behavior now changes independently from th
 
 | Version | Change | Type | Date | Status | Summary |
 |---|---|---|---|---|---|
+| v28 | local-capability-evaluation | capability regression | 2026-07-24 | active | Added versioned scenario contracts and a zero-dependency evaluator that maps fixed self-test evidence to deduplicated local command results, with per-scenario reporting and explicit non-benchmark boundaries. |
 | v27 | brainstorm-interview-discipline-validation | trigger and installer coverage | 2026-07-01 | active | Added package, trigger, host, target-installer, user-installer, plugin manifest, and Gemini manifest coverage proving `devflow-brainstorm` interview discipline and `devflow-spec` handoff are installed and reachable. |
 | v26 | pua-compact-method-display-validation | trigger hardening | 2026-06-27 | active | Updated trigger, host, and package validation to require the compact `METHOD: {flavor} / {method}` contract instead of verbose methodology output fields. |
 | v25 | pua-methodology-assets-validation | trigger hardening | 2026-06-27 | active | Added validation that `devflow-pua` ships local methodology router/library/display references and requires visible method output. |
@@ -81,6 +86,9 @@ This ledger exists because validation behavior now changes independently from th
 
 ## Key Decisions
 
+- 2026-07-24: Add `npm run capability:eval` plus a versioned JSON scenario contract instead of an external benchmark service. Reason: the harness can now prove which fixed local behavior contracts and evidence commands remain intact without modeling unstable API cost or host-runtime behavior.
+- 2026-07-24: Reuse existing npm evidence commands and execute each referenced command once per report. Reason: it preserves the current proof sources, prevents repeated expensive verification, and keeps `scenario:coverage` as an advisory coverage map rather than mislabeling it as a quality benchmark.
+- 2026-07-24: Do not commit generated capability reports. Reason: the manifest and script are reproducible source, while report output is time-sensitive evidence that would create stale diffs.
 - 2026-06-24: Keep validation commands zero-dependency Node scripts. Reason: maintainers should be able to run proof immediately after installing the pack.
 - 2026-06-24: Treat reports as evidence, not final external verifier status. Reason: local scripts can prove artifacts and coverage, but humans or external CI still own final release approval when required.
 - 2026-06-24: Keep learning validation no-mutation. Reason: validation should prove the closure path without manufacturing project memory.
@@ -112,6 +120,9 @@ This ledger exists because validation behavior now changes independently from th
 
 ## Known Constraints
 
+- `npm run capability:eval` validates manifest-declared local contracts, scenario text, and command output only; it is not a model quality, token, latency, cost, or live host-loading benchmark.
+- Capability evaluator `BLOCKED` means the manifest or evaluation environment could not be read or executed; it must never be presented as a passed scenario.
+- Generated capability reports are console evidence and are intentionally not stored in the repository.
 - Coverage and trigger scripts inspect visible files, command prompts, and keywords; they do not prove actual host plugin behavior.
 - Weak-layer thresholds are heuristic and should guide backlog work, not serve as benchmark scores.
 - Host adapter smoke tests validate packaged files and metadata, not live IDE extension loading.
@@ -132,6 +143,8 @@ This ledger exists because validation behavior now changes independently from th
 - Package validation: `scripts/validate-devflow.js`
 - Learning-loop validation: `scripts/validate-learning-loop.js`
 - Scenario coverage: `scripts/report-scenario-coverage.js`
+- Capability evaluator: `scripts/capability-eval.js`
+- Capability scenario contract: `scripts/capability-eval-scenarios.json`
 - Trigger validation: `scripts/validate-skill-triggers.js`
 - PUA methodology router: `skills/devflow-pua/references/methodology-router.md`
 - PUA methodology library: `skills/devflow-pua/references/methodology-library.md`

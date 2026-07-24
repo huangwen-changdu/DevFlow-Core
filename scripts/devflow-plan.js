@@ -1,7 +1,7 @@
 const fs = require("node:fs");
 
 const requiredGlobalFields = ["Source", "Spec coverage"];
-const requiredTaskFields = ["Task", "Files", "Acceptance", "Verify", "Not doing"];
+const requiredTaskFields = ["Task", "Files", "Acceptance", "Verify", "Comments", "Not doing"];
 
 const fieldPatterns = Object.fromEntries(
   [...requiredGlobalFields, ...requiredTaskFields].map((field) => [field, new RegExp(`^\\s*${field}\\s*:`, "im")])
@@ -167,6 +167,7 @@ function selfTest() {
     "Files: scripts/devflow-plan.js",
     "Acceptance: reports PASS for complete task fields",
     "Verify: node scripts/devflow-plan.js --self-test",
+    "Comments: splitTasks needs function-level comment explaining task boundary detection; checkTask needs comment explaining field validation logic.",
     "Not doing: generating plans or judging architecture"
   ].join("\n");
   const missingFieldPlan = [
@@ -175,6 +176,7 @@ function selfTest() {
     "Task: Add plan scanner",
     "Files: scripts/devflow-plan.js",
     "Acceptance: reports PASS for complete task fields",
+    "Comments: none — trivial change",
     "Not doing: generating plans"
   ].join("\n");
   const missingSourcePlan = [
@@ -182,6 +184,7 @@ function selfTest() {
     "Files: scripts/devflow-plan.js",
     "Acceptance: reports PASS for complete task fields",
     "Verify: node scripts/devflow-plan.js --self-test",
+    "Comments: none — trivial change",
     "Not doing: generating plans or judging architecture"
   ].join("\n");
   const vaguePlan = [
@@ -191,6 +194,7 @@ function selfTest() {
     "Files: scripts/devflow-plan.js",
     "Acceptance: make it work",
     "Verify: add tests",
+    "Comments: none — trivial change",
     "Not doing: TBD"
   ].join("\n");
 

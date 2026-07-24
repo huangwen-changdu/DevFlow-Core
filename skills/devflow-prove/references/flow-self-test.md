@@ -301,7 +301,7 @@ Expected behavior:
 - Must create a Plan Pack with Task, Files, Acceptance, Verify, and Not doing fields.
 - Saved plan files default to `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`.
 - Must not save implementation plans under `docs/features/`; that directory is for feature ledgers.
-- Must run `node scripts/devflow-plan.js <plan-file>` when the plan is saved to a file.
+- Must run `node scripts/devflow-plan.js <plan-file>` when the plan is saved to a file. If not found at `scripts/devflow-plan.js` (project-level), try `~/.codex/scripts/devflow-plan.js` or `~/.claude/scripts/devflow-plan.js` (user-level). Do NOT look under `skills/scripts/`.
 - Must fail or revise the plan if fields are missing, unresolved, vague, or placed under `docs/features/`.
 - Must not treat the checker as architecture approval; it only proves the plan is executable.
 

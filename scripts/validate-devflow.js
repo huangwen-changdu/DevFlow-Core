@@ -54,6 +54,8 @@ const requiredFiles = [
   "skills/skill-call-diagram.md",
   "scripts/validate-learning-loop.js",
   "scripts/report-scenario-coverage.js",
+  "scripts/capability-eval.js",
+  "scripts/capability-eval-scenarios.json",
   "scripts/validate-skill-triggers.js",
   "scripts/validate-host-adapters.js",
   "scripts/install-devflow.js",
@@ -351,6 +353,8 @@ const packageJson = JSON.parse(read("package.json"));
 assert(packageJson.scripts?.test === "node scripts/validate-devflow.js", "package.json test script must run validate-devflow.js");
 assert(packageJson.scripts?.["learn:verify"] === "node scripts/validate-learning-loop.js", "package.json learn:verify script must run validate-learning-loop.js");
 assert(packageJson.scripts?.["scenario:coverage"] === "node scripts/report-scenario-coverage.js", "package.json scenario:coverage script must run report-scenario-coverage.js");
+assert(packageJson.scripts?.["capability:eval"] === "node scripts/capability-eval.js", "package.json capability:eval script must run capability-eval.js");
+assert(packageJson.scripts?.["capability:verify"] === "node scripts/capability-eval.js --self-test", "package.json capability:verify script must run capability-eval self-test");
 assert(packageJson.scripts?.["trigger:verify"] === "node scripts/validate-skill-triggers.js", "package.json trigger:verify script must run validate-skill-triggers.js");
 assert(packageJson.scripts?.["host:verify"] === "node scripts/validate-host-adapters.js", "package.json host:verify script must run validate-host-adapters.js");
 assert(packageJson.scripts?.["install:verify"] === "node scripts/validate-installer.js", "package.json install:verify script must run validate-installer.js");
@@ -360,7 +364,7 @@ assert(packageJson.scripts?.["review:verify"] === "node scripts/devflow-review.j
 assert(packageJson.scripts?.["spec:verify"] === "node scripts/devflow-spec.js --self-test", "package.json spec:verify script must run devflow-spec self-test");
 assert(packageJson.scripts?.["plan:verify"] === "node scripts/devflow-plan.js --self-test", "package.json plan:verify script must run devflow-plan self-test");
 assert(packageJson.scripts?.["audit:verify"] === "node scripts/devflow-audit.js --self-test", "package.json audit:verify script must run devflow-audit self-test");
-assert(packageJson.scripts?.["verify:all"] === "npm test && npm run learn:verify && npm run scenario:coverage && npm run trigger:verify && npm run host:verify && npm run install:verify && npm run user:verify && npm run debt:verify && npm run review:verify && npm run spec:verify && npm run plan:verify && npm run audit:verify", "package.json verify:all script must run the full local verification matrix");
+assert(packageJson.scripts?.["verify:all"] === "npm test && npm run learn:verify && npm run scenario:coverage && npm run trigger:verify && npm run host:verify && npm run install:verify && npm run user:verify && npm run debt:verify && npm run review:verify && npm run spec:verify && npm run plan:verify && npm run audit:verify && npm run capability:verify && npm run capability:eval", "package.json verify:all script must run the full local verification matrix");
 assert(packageJson.scripts?.["install:target"] === "node scripts/install-devflow.js", "package.json install:target script must run install-devflow.js");
 assert(packageJson.scripts?.["install:user"] === "node scripts/install-devflow-user.js", "package.json install:user script must run install-devflow-user.js");
 
@@ -447,6 +451,27 @@ for (const term of [
   "Judgment: FAIL"
 ]) {
   assert(specScriptBody.includes(term), `scripts/devflow-spec.js missing spec verifier term: ${term}`);
+}
+
+const capabilityEvalBody = read("scripts/capability-eval.js");
+for (const term of [
+  "DevFlow Capability Evaluation Report",
+  "local capability contracts",
+  "not a model-quality, cost, latency, or live-host benchmark",
+  "DevFlow capability evaluation self-test passed",
+  "negative-constraint failure",
+  "command de-duplication",
+  "Judgment:** BLOCKED"
+]) {
+  assert(capabilityEvalBody.includes(term), `scripts/capability-eval.js missing capability evaluation term: ${term}`);
+}
+
+const capabilityManifest = JSON.parse(read("scripts/capability-eval-scenarios.json"));
+assert(Array.isArray(capabilityManifest) && capabilityManifest.length > 0, "capability evaluation manifest must contain scenarios");
+for (const scenario of capabilityManifest) {
+  for (const field of ["id", "scenario", "layers", "expectedRoute", "command", "scenarioEvidence", "commandEvidence", "negativeConstraints"]) {
+    assert(scenario[field], `capability evaluation scenario missing field: ${field}`);
+  }
 }
 
 const auditScriptBody = read("scripts/devflow-audit.js");
