@@ -1,0 +1,113 @@
+[
+  {
+    "id": "vague-design-route",
+    "scenario": "Scenario 1: Vague Feature Request",
+    "layers": ["Prompt Surface", "Harness/Validation", "Context", "Eval/Verifier", "Orchestration/Slices"],
+    "expectedRoute": "Design",
+    "command": "trigger:verify",
+    "scenarioEvidence": [
+      "Route: Design",
+      "Skill path: `devflow-core -> devflow-brainstorm -> devflow-cut`",
+      "Must compare 2-3 approaches."
+    ],
+    "commandEvidence": ["Skill Trigger Verification Report"],
+    "negativeConstraints": ["Must not implement until the design contract is approved"]
+  },
+  {
+    "id": "first-principles-cut",
+    "scenario": "Scenario 1C-A: First Principles Cut",
+    "layers": ["Harness/Validation", "Context"],
+    "expectedRoute": "Build",
+    "command": "trigger:verify",
+    "scenarioEvidence": [
+      "`devflow-core` selects First Principles Cut",
+      "facts, constraints, invariants",
+      "Smallest necessary mechanism"
+    ],
+    "commandEvidence": ["first principles architecture problem: Build"],
+    "negativeConstraints": ["preserving the requested redesign by default"]
+  },
+  {
+    "id": "host-adapter-drift",
+    "scenario": "Scenario 1E: Host Adapter Contract Drift",
+    "layers": ["Prompt Surface", "Harness/Validation", "Eval/Verifier", "Orchestration/Slices"],
+    "expectedRoute": "Fast verification",
+    "command": "host:verify",
+    "scenarioEvidence": [
+      "Route: Fast verification",
+      "Command: npm run host:verify",
+      "Must not rewrite adapter rules unless drift is proven."
+    ],
+    "commandEvidence": ["Host Adapter Verification Report"],
+    "negativeConstraints": ["Must not rewrite adapter rules unless drift is proven."]
+  },
+  {
+    "id": "learning-closure",
+    "scenario": "Scenario 6A: Repeated Correction Learning Closure",
+    "layers": ["Prompt Surface", "Loop/Recovery", "Harness/Validation", "Memory/Learning"],
+    "expectedRoute": "Recovery",
+    "command": "learn:verify",
+    "scenarioEvidence": [
+      "Route: Recovery",
+      "Load `devflow-learn`",
+      "Report learning closure before claiming completion."
+    ],
+    "commandEvidence": ["Learning loop validation passed"],
+    "negativeConstraints": ["Read only the matched card"]
+  },
+  {
+    "id": "pressure-recovery",
+    "scenario": "Scenario 6C: User Challenge Pressure Recovery",
+    "layers": ["Loop/Recovery", "Harness/Validation", "Context", "Memory/Learning", "Eval/Verifier", "Orchestration/Slices"],
+    "expectedRoute": "Recovery",
+    "command": "trigger:verify",
+    "scenarioEvidence": [
+      "Route: Recovery",
+      "Must stop the current approach before more edits.",
+      "Must switch to a different/opposite method"
+    ],
+    "commandEvidence": ["pressure recovery challenge: Recovery"],
+    "negativeConstraints": ["Must stop the current approach before more edits."]
+  },
+  {
+    "id": "completion-proof",
+    "scenario": "Scenario 7: Completion Claim",
+    "layers": ["Harness/Validation", "Eval/Verifier"],
+    "expectedRoute": "Fast",
+    "command": "trigger:verify",
+    "scenarioEvidence": [
+      "`devflow-prove` runs or cites a fresh verification command.",
+      "If no proof can run, report `BLOCKED`.",
+      "Do not say \"done\" before command/result/judgment."
+    ],
+    "commandEvidence": ["completion claim: Fast"],
+    "negativeConstraints": ["Do not say \"done\" before command/result/judgment."]
+  },
+  {
+    "id": "adversarial-proof-rejection",
+    "scenario": "Scenario 7A: Adversarial Review Rejects Completion",
+    "layers": ["Harness/Validation", "Eval/Verifier"],
+    "expectedRoute": "Fast",
+    "command": "test",
+    "scenarioEvidence": [
+      "`devflow-prove` checks whether the API entry point",
+      "report `FAIL` and name the missing proof."
+    ],
+    "commandEvidence": ["DevFlow validation passed"],
+    "negativeConstraints": ["A passing unit test alone does not override"]
+  },
+  {
+    "id": "target-install-check",
+    "scenario": "Scenario 9: Target Project Install Check",
+    "layers": ["Harness/Validation", "Eval/Verifier", "Orchestration/Slices"],
+    "expectedRoute": "Fast verification",
+    "command": "install:verify",
+    "scenarioEvidence": [
+      "Route: Fast verification after the install target is known.",
+      "Must use `npm run install:target -- <target> --check` after install.",
+      "Must not copy product docs"
+    ],
+    "commandEvidence": ["Installer validation passed"],
+    "negativeConstraints": ["Must not copy product docs"]
+  }
+]
