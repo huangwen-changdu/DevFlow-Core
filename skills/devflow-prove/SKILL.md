@@ -11,11 +11,10 @@ No proof, no completion.
 
 ## Methodology Assets
 
-When this skill activates, read this local reference before choosing or running proof scenarios:
+When this skill activates, read these local references before choosing or running proof scenarios:
 
-- `skills/devflow-prove/references/flow-self-test.md`
-
-This file contains end-to-end scenario tests and pressure scenarios for the framework itself.
+- `skills/devflow-prove/references/flow-self-test.md` — end-to-end scenario tests and pressure scenarios for the framework itself.
+- `skills/devflow-prove/references/code-review-checklist.md` — language-specific code quality criteria for adversarial code review.
 
 ## Process
 
@@ -23,24 +22,23 @@ This file contains end-to-end scenario tests and pressure scenarios for the fram
 2. Run the narrowest sufficient check now.
 3. Run adversarial review (对抗式审查) before completion for development work: try to disprove the result from the user's acceptance criteria, touched files, likely regressions, missing activation path, and skipped proof.
 4. Read the real output and exit status.
-5. If it fails, report `FAIL` and return to Recovery; use `devflow-pua` when the failure includes user challenge, repeated miss, or changed-wrong behavior.
-6. If it cannot run, report `BLOCKED` and name the missing condition.
-7. On `PASS`, load `devflow-learn` for its mandatory proactive completion review before final completion reporting. The review may yield a learning card, a project-knowledge candidate pending user confirmation, or no useful record.
-8. Only then report completion or `candidate_pass`.
+5. For code changes: run the **Code Quality Review** (General Engineering Review + Language-Specific Checklist from `code-review-checklist.md`), then generate a **Code Review Report** (see format below). If the report finds issues, **STOP** — present the report and wait for user confirmation before fixing. Do not silently fix and claim PASS.
+6. If it fails, report `FAIL` and return to Recovery; use `devflow-pua` when the failure includes user challenge, repeated miss, or changed-wrong behavior.
+7. If it cannot run, report `BLOCKED` and name the missing condition.
+8. On `PASS`, load `devflow-learn` for its mandatory proactive completion review before final completion reporting. The review may yield a learning card, a project-knowledge candidate pending user confirmation, or no useful record.
+9. Only then report completion or `candidate_pass`.
 
 ## Proof Selection
 
 | Work type | Proof |
 |---|---|
 | Docs/rules/skills | File presence, frontmatter, required wording, command entries, path consistency, scenario checklist. |
-| Code | Targeted test, build, lint, typecheck, or runtime scenario. **Plus: comment verification — check that new/changed functions have comments explaining WHY, non-obvious logic has inline comments, and comment style matches the project.** |
+| Code | Targeted test, build, lint, typecheck, or runtime scenario. **Plus: comment verification — check that new/changed functions have comments explaining WHY, non-obvious logic has inline comments, and comment style matches the project.** **Plus: language-specific code quality review — detect language from file extensions, apply the matching checklist in `skills/devflow-prove/references/code-review-checklist.md`, and flag any item that would fail a senior developer's review.** |
 | Bug fix | Original symptom reproduction or regression check. **Plus: the fix location has a comment explaining what was broken and what the fix does.** |
 | Framework design | Native capability coverage, anti-pattern gates, skill behavior, and output contracts. |
 | Productized skill pack | `npm test` or equivalent package validation. |
 
-## Light Quality Gate
-
-After code changes, use the narrowest current quality signal before completion: targeted test, lint/typecheck, build, or a reproducible scenario. Do not run a full review checklist when a focused proof covers the claim.
+## Adversarial Review
 
 After development work, adversarial review (对抗式审查) is mandatory before completion: check the strongest plausible reason the change is still wrong, incomplete, unreachable, over-broad, or under-verified. If the adversarial review finds a real gap, report `FAIL` or continue the appropriate DevFlow route before claiming completion.
 
@@ -52,6 +50,7 @@ Adversarial review checklist for code changes:
 - **Scope creep**: Does the diff include unrequested behavior or drive-by refactors?
 - **Proof coverage**: Is the verification narrow enough to be meaningful, or is it a rubber-stamp?
 - **Code comments**: Do new/changed functions have comments explaining WHY? Is non-obvious logic documented? Is the fix location commented for bug fixes? If comments are missing, the implementation is incomplete — report `FAIL` or add comments before claiming `PASS`.
+- **Code Quality**: Two-layer review. The adversarial review items above (Correctness, Regression, Activation path, Scope creep) already cover functional correctness. Then run the **General Engineering Review** from `skills/devflow-prove/references/code-review-checklist.md` for the remaining dimensions: requirements understanding, code quality (readability, maintainability, testability), performance, security, error handling. Finally, detect language(s) from file extensions and apply the matching **Language-Specific Checklist**. **Generate a Code Review Report (see format below) listing all findings. If issues are found, STOP — present the report and wait for user confirmation before fixing. Do not silently fix and claim PASS.**
 
 After agent rule, command, prompt, entry, or `SKILL.md` changes, run a Skill Activation Chain Check before completion:
 
@@ -83,20 +82,35 @@ Coverage: <what was verified>
 Not covered: <none or explicit gap>
 ```
 
-## Verifier Lens
+## Code Review Report
 
-When an external verifier, CI, human gate, or benchmark owns final approval:
-
-- You may report `candidate_pass` after local proof.
-- Do not write final external `verifier_status=pass`.
-- Do not modify tests, scoring, verifier, CI, or hidden assets to make proof pass.
-
-Verifier-style output:
+For code changes, after running the Code Quality Review (General Engineering Review + Language-Specific Checklist), generate this report before claiming PASS or FAIL. If issues are found, **STOP** — present the report and wait for user confirmation before fixing.
 
 ```text
-agent_proposed_status: candidate_pass / fail / blocked
-final_status_owner: external_verifier_or_human
+Code Review Report:
+─ General Engineering Review:
+  [PASS/FAIL] Requirements Understanding — <note or ok>
+  [PASS/FAIL] Code Quality: Readability — <note or ok>
+  [PASS/FAIL] Code Quality: Maintainability — <note or ok>
+  [PASS/FAIL] Code Quality: Testability — <note or ok>
+  [PASS/FAIL] Performance — <note or ok>
+  [PASS/FAIL] Security — <note or ok>
+  [PASS/FAIL] Error Handling — <note or ok>
+─ Language-Specific (<detected language>):
+  [PASS/FAIL] <checklist item> — <note if FAIL, omit if PASS>
+  ...
+─ Issues found: <count>
+  1. [Critical/Warning] <file>:<line> — <problem> → <suggested fix>
+  2. [Critical/Warning] <file>:<line> — <problem> → <suggested fix>
+  ...
+─ Judgment: PASS (no issues) / FAIL (fix required, awaiting user confirmation)
 ```
+
+Rules:
+- List every FAIL item with file, line, problem, and suggested fix.
+- Severity: `Critical` = must fix before PASS (security, correctness, data loss). `Warning` = should fix (readability, convention, minor pattern).
+- If all items PASS, the report is still generated (shows all green) — this is evidence, not theater.
+- **STOP gate**: when issues are found, do not fix immediately. Present the report, let the user decide which issues to fix, then fix and re-verify.
 
 ## Learning Check
 
@@ -180,16 +194,5 @@ Before leaving this skill, confirm:
 
 - [ ] Actual command or manual scenario was run.
 - [ ] Result summary cites real output.
-- [ ] Judgment is `PASS`, `FAIL`, or `BLOCKED`.B 的 CLI 探针已执行，但 `codex exec` 的初始提示没有触发 `UserPromptSubmit`，标记文件未生成。它只能证明非交互 CLI 不触发该事件，不能证明 Codex Desktop 不支持。
-
-临时 Hook 注册、探针脚本和标记文件均已清理，没有残留配置改动。
-
-Command: `codex exec --sandbox read-only --ephemeral "Respond with exactly: PONG"`  
-Result: 会话正常返回 `PONG`，但未生成事件标记。  
-Adversarial review: 不把 CLI 未触发误判为 Desktop 不支持，也不基于未证实事件进入实现。  
-Judgment: BLOCKED
-
-继续需要你选择：
-- A. 改为基于已证实的 `PreToolUse`，实现“最近实际观察到的阶段/验证结果”。
-- B. 进行 Desktop 交互探针：我重新临时注册 Hook，你在 DevFlow-Core 新开 Codex 会话并发送一条普通提示，随后我读取标记。推荐。
+- [ ] Judgment is `PASS`, `FAIL`, or `BLOCKED`.
 - [ ] Coverage and gaps are clear when relevant.

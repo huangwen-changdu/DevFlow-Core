@@ -17,18 +17,19 @@ User development request
       -> user picks Full A/B/C: continue to Depth Selection Gate
    -> if Fast Exit conditions NOT met: present A/B/C depth options only
 -> devflow-brainstorm Depth Selection Gate (A/B/C) — only when user chose Full A/B/C
--> devflow-brainstorm interview discipline (Core Clarification, required for all depths)
+-> if user chose C: minimal design contract from echo-back -> devflow-cut (skip progressive clarification)
+-> if user chose A/B: devflow-brainstorm interview discipline (Core Clarification, required for A/B only)
 -> approved DevFlow design contract
 -> depth-based handoff:
    -> A (Full Spec): devflow-spec -> /devflow-plan -> devflow-cut
    -> B (Simplified Spec): /devflow-plan -> devflow-cut
-   -> C (Dialogue Confirmation): devflow-cut
+   -> C (Direct): devflow-cut (no progressive clarification, no design contract STOP gate)
 -> devflow-build when implementation is requested
 -> devflow-prove
 -> devflow-learn when the work creates a reusable correction
 ```
 
-For design-only requests, stop after the approved design contract, `devflow-cut`, or `devflow-spec`, depending on what the user asked for and the selected path. `devflow-spec` is the node for turning the approved design into `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` before `/devflow-plan` and implementation. Fast Exit and Depth C skip spec and plan, going directly to `devflow-cut`.
+For design-only requests, stop after the approved design contract, `devflow-cut`, or `devflow-spec`, depending on what the user asked for and the selected path. `devflow-spec` is the node for turning the approved design into `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` before `/devflow-plan` and implementation. Fast Exit and Depth C skip spec and plan, going directly to `devflow-cut`. Depth C also skips progressive clarification and the design contract STOP gate — the user's choice of C is the approval.
 
 ## Interview Behavior
 
@@ -37,7 +38,7 @@ For design-only requests, stop after the approved design contract, `devflow-cut`
 - Ask exactly one question at a time, in priority order: goal ambiguity → scope boundary → actor/recipient → constraint → acceptance → implementation detail. Do not ask an implementation question before goal/scope/actor/constraint/acceptance are resolved.
 - For each question, include your recommended answer.
 - Walk the design tree by dependencies: do not ask a downstream question before the upstream decision is resolved.
-- If a question can be answered by reading code, docs, config, tests, or feature ledgers, read those facts instead of asking.
+- If a question can be answered by reading code, docs, config, or tests, read those facts instead of asking.
 - If a user's answer reveals your echo-back understanding was partially wrong, re-echo the corrected understanding before continuing — do not silently update your mental model.
 - Match the user's communication level and terminology. Use their domain language, not jargon they did not use.
 - Preserve DevFlow's Small Request Boundary, Method Lens, Not Doing list, and Cut gate.
@@ -69,12 +70,10 @@ If the user asks to document the result, capture docs, or preserve decisions:
 
 1. Run the same one-question-at-a-time interview loop.
 2. When a project term is clarified, update an existing glossary or domain context only if the target project already has one.
-3. When no glossary exists, capture terminology in the relevant DevFlow artifact instead: the design contract, `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`, or a matched `docs/features/*.md` ledger.
+3. When no glossary exists, capture terminology in the relevant DevFlow artifact instead: the design contract or `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`.
 4. Use `devflow-spec` when the approved design needs a saved requirements source before `/devflow-plan`.
-5. Use a feature ledger for product capability history.
-6. Offer an ADR only when the decision is hard to reverse, surprising without context, and the result of a real trade-off.
-7. If an ADR is accepted, create it under `docs/adr/` lazily.
-8. Update feature ledgers only after validation for a capability change passes.
+5. Offer an ADR only when the decision is hard to reverse, surprising without context, and the result of a real trade-off.
+6. If an ADR is accepted, create it under `docs/adr/` lazily.
 
 Do not create `CONTEXT.md`, `CONTEXT-MAP.md`, or `docs/adr/` just because documentation was requested. Create docs only when a term or decision actually crystallizes.
 
@@ -130,7 +129,7 @@ Next: devflow-cut / devflow-spec -> /devflow-plan / wait for user
 |---|---|
 | "Interviewing means ask many questions." | One question at a time is the point. |
 | "The answer is probably in the user's head." | If code or docs can answer it, read facts instead. |
-| "Docs requested means write every doc type." | Use `devflow-spec` for requirements, feature ledgers for capability history, and ADRs only for hard-to-reverse trade-offs. |
+| "Docs requested means write every doc type." | Use `devflow-spec` for requirements and ADRs only for hard-to-reverse trade-offs. |
 | "This replaces DevFlow Brainstorm." | It is Brainstorm's discipline, not a separate workflow. |
 | "The echo-back is just restating the request." | Echo-back must surface assumptions and gaps, not paraphrase. A restatement adds zero understanding. |
 | "I can infer the motivation from the codebase." | Code tells you what exists, not why the user wants a change now. If motivation is unclear, ask. |

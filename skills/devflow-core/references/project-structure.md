@@ -78,7 +78,6 @@ DevFlow-Core/
 - `scripts/validate-skill-triggers.js`: prompt-to-route trigger verification.
 - `scripts/validate-host-adapters.js`: cross-host adapter smoke test.
 - `docs/PRD.md`: product direction, architecture model, roadmap, and release gates.
-- `docs/features/*.md`: feature iteration ledgers for long-lived product capability memory.
 - `docs/specs/*.md`: generated requirements specs created during actual use.
 - `docs/plans/*.md`: generated implementation plans created during actual use.
 - `skills/devflow-*`: skill-capable runtime workflows.
@@ -88,4 +87,4 @@ DevFlow-Core/
 
 Platform entry files are thin adapters. The durable method source stays in `skills/devflow-core/references/core-methods.md`; runtime skill behavior stays in `skills/devflow-*/SKILL.md`.
 
-`docs/` is reserved for product and generated DevFlow artifacts. Use `docs/features/` for feature ledgers, `docs/specs/` for saved requirements specs, and `docs/plans/` for saved implementation plans created during actual use. Do not place runtime framework methods there.
+`docs/` is reserved for product and generated DevFlow artifacts. Use `docs/specs/` for saved requirements specs and `docs/plans/` for saved implementation plans created during actual use. Do not place runtime framework methods there.

@@ -28,12 +28,12 @@ Before deciding, read the narrowest useful project facts:
 2. Framework source: `skills/devflow-core/references/core-methods.md` — MANDATORY read, not optional. This file defines Method 0 (Architect Mindset) through Method 15 and the Capability Matrix. You must read it before route selection, engineering decisions, or code changes. Do not skip even for "simple" tasks — Method 0 shapes how every other method is applied.
 3. Current code, generated plan docs, config, tests, and references relevant to the task.
 4. Existing helpers, patterns, commands, and installed dependencies.
-5. Feature ledger: when present for an existing target-project capability, read the matched `docs/features/*.md` ledger before planning; if no ledger exists, mark it missing.
-6. Execution recall: probe `.copilot/LEARNING_INDEX.md`; when present, read the index, match the task against card trigger and scope, then read only matched cards.
-7. Business recall: probe `docs/project-knowledge/`; when present, read `AI-START-HERE.md`, falling back to `index.md`, then use `registry.json` when present to select only task-relevant domain, module, risk, or entry-point documents.
-8. Maps: `graphify-out/GRAPH_REPORT.md` for architecture/impact questions when present.
+5. Execution recall: probe `.copilot/LEARNING_INDEX.md`; when present, read the index, match the task against card trigger and scope, then read only matched cards.
+6. Business recall: probe `docs/project-knowledge/`; when present, read `AI-START-HERE.md`, falling back to `index.md`, then use `registry.json` when present to select only task-relevant domain, module, risk, or entry-point documents.
+7. Maps: `graphify-out/GRAPH_REPORT.md` for architecture/impact questions when present.
+8. Skill Discovery: scan available skills in the current environment — platform skill registry (e.g., `use_skill` tool listing), local skill directories (`~/.claude/skills/`, `~/.codex/skills/`, `.github/skills/`, `.codebuddy/skills/`), or any other skill source the platform exposes. Match task-relevant skills by description keywords. External skills are complementary to the devflow route: devflow manages scope and risk (what to change, how much); external skills guide execution quality (how to do it well). Record matched skills for alongside-route loading. Missing or unavailable skills are non-blocking.
 
-Recall is progressively disclosed: do not bulk-load `.copilot/cards/` or `docs/project-knowledge/`. Missing locations, indexes, entries, or registries are non-blocking facts and must not create storage. Record `Knowledge recall: none / learning index + matched card / project knowledge entry + matched docs` with the Context Map facts.
+Recall is progressively disclosed: do not bulk-load `.copilot/cards/` or `docs/project-knowledge/`. Missing locations, indexes, entries, or registries are non-blocking facts and must not create storage. Record `Knowledge recall: none / learning index + matched card / project knowledge entry + matched docs` with the Context Map facts. Record `Skill Discovery: none / <skill-name> (matched: <why>)` with the Context Map facts.
 
 Output:
 
@@ -41,6 +41,7 @@ Output:
 Facts: read/confirmed <files or commands>
 Methods: read/confirmed core-methods.md (Method 0-15 + Capability Matrix)
 Knowledge recall: none / learning index + matched card / project knowledge entry + matched docs
+Skill Discovery: none / <skill-name> (matched: <why>)
 Unknowns: <none or specific unknown>
 ```
 
@@ -93,6 +94,9 @@ For problem solving (问题解决), bug fixing, 修 bug, and architecture design
 |---|---|---|
 | unclear ask, new requirement, behavior change, multiple paths, or non-trivial design interview | Brainstorm First | Load `devflow-brainstorm` only when the request involves genuine design decisions, new features, or architecture changes. For documentation, config, trivial code changes, or clear bug fixes with known root cause, use Design-lite or Fast instead. When loading Brainstorm: require goal, constraints, 2-3 approaches. Brainstorm presents a Path Selection Gate: when Fast Exit conditions are met (small change to existing feature, all boundary gates pass, single plausible path), Fast Exit is offered as a recommended option alongside A/B/C — the user chooses, not the LLM. If A/B/C is chosen, Brainstorm ends at the Depth Selection Gate where the user picks A/B/C (option semantics live in `skills/devflow-brainstorm/SKILL.md`). Use Brainstorm Interview Discipline (one question at a time with recommended answer). Pick Method Lens (Root Cause, Working Backwards, First Principles Cut, Data/Proof, Operational Owner) when risk is high. |
 | unclear whether work is Fast, Design-lite, or full Design | Route Choice | Ask the user to choose; do not guess from line count or "sounds small". |
+| explicit deep adversarial review, red-team review, 对抗审查, 升级版对抗审查 | Independent Manual Review | Load `devflow-adversarial` directly. It may run at any task stage and must not read, require, modify, or hand off to another skill or lifecycle state. |
+| explicit find faults, biggest omission, blind spot, least certain, 找茬, 最大遗漏, 没有意识到什么, 最没有把握 | Independent Manual Review | Load `devflow-find-fault` directly. It may run at any task stage and must not read, require, modify, or hand off to another skill or lifecycle state. |
+| task matches an available non-devflow skill (e.g., frontend-design, pdf, docx, understand, data-analysis) | External Skill Dispatch | Suggest loading the matched skill alongside the devflow route. External skills and devflow are complementary: devflow manages scope, risk, and minimum change (what to change); external skills guide execution quality (how to do it well). The devflow chain (brainstorm -> cut -> build -> prove) always runs. `CUT_REUSE` applies only when the external skill fully handles the task with no new code needed (e.g., `pdf` for reading a PDF, `understand` for codebase analysis). Record `External Skill: <name> (matched: <why>)`. |
 | new code, dependency, abstraction, config, folder, framework layer | Cut Gate | Load `devflow-cut`; require Reuse, Native, Overbuild, Diff, Scope checks. |
 | implementation ready | Build Discipline | Load `devflow-build`; require touched files, slices, diff self-check. |
 | done/fixed/passed/ready claim | Proof Before Done | Load `devflow-prove`; require command/result/adversarial review/PASS-FAIL-BLOCKED; every PASS then runs `devflow-learn` proactive review. |
@@ -101,7 +105,6 @@ For problem solving (问题解决), bug fixing, 修 bug, and architecture design
 | verified PASS | Completion Knowledge Review | Load `devflow-learn`; proactively classify reusable execution knowledge, project-knowledge candidates, or no useful record before final completion reporting. |
 | reusable correction, repeated pitfall, project convention | Learning Capture | Load `devflow-learn`; lazily create or update `.copilot/LEARNING_INDEX.md` and one focused card only when the lesson has future-task value. |
 | confirmed project-knowledge candidate | Business Knowledge Maintenance | Load `devflow-project-knowledge`; update only code-backed business facts after user confirmation. |
-| existing capability with a feature ledger | Feature Ledger Recall | Read matched `docs/features/*.md` before planning; update after validated change. |
 
 ## Required Route Outputs
 
@@ -170,13 +173,17 @@ Verification: ...
 | "This is a new feature but it's small, so Design-lite." | New features go through Brainstorm. Design-lite is for existing features only. The brainstorming skill enforces its own HARD-GATE. However, once inside Brainstorm, when Fast Exit conditions are met, Fast Exit is offered as a recommended option — the user chooses whether to take it or go through A/B/C. |
 | "Documentation/config work needs Brainstorm." | No — documentation writing, config tuning, and trivial changes go through Fast or Design-lite, not Brainstorm. Brainstorm is for genuine design decisions. |
 | "I used the skill because I named it." | Activation requires trigger, steps, artifact/check, and handoff. |
+| "DevFlow skills are the only skills." | The environment may have other skills (frontend-design, pdf, understand, etc.). Scan and suggest loading them alongside the devflow route — they guide execution quality while devflow manages scope and risk. |
 
 ## Handoff
 
 - Design route -> `devflow-brainstorm`
 - Before adding structure -> `devflow-cut`
 - Approved work -> `devflow-build`
+- Task matches available external skill -> suggest loading that skill alongside the devflow route; devflow manages scope/risk, external skill guides execution quality; devflow chain always runs
+- Explicit independent manual adversarial review -> `devflow-adversarial`; explicit independent find-fault review -> `devflow-find-fault`. Both end after reporting findings and do not create a lifecycle handoff.
 - Before completion -> `devflow-prove -> devflow-learn` (every PASS reviews useful knowledge; candidate business facts wait for user confirmation before `devflow-project-knowledge`)
+- After verified feature completion -> `devflow-docs-followup` (asks user which optional follow-up documents to create; never generates unconfirmed documents)
 - User challenge, explicit wrong-code signal, changed-wrong result, repeated miss, repeated "少了这个/少个那个" feedback, missing-piece complaint, or quality complaint -> `devflow-pua -> devflow-brainstorm`
 - User correction or reusable pitfall -> `devflow-learn`
 
@@ -186,6 +193,7 @@ Before leaving this skill, confirm:
 
 - [ ] `core-methods.md` was read and listed in the `Methods:` output line.
 - [ ] Route selected from task facts.
+- [ ] Skill Discovery was run: available environment skills were scanned and matched or recorded as none.
 - [ ] Small Request Boundary used for any Fast or Design-lite classification.
 - [ ] Relevant project facts were read or explicitly marked missing.
 - [ ] Next skill is named.

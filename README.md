@@ -9,7 +9,7 @@ It is not a link collection. The useful parts are built into this repo as rules,
 - A default flow that stays light: `Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> devflow-cut -> devflow-build -> devflow-prove`
 - A Fast / Design-lite / Design / Build / Recovery router with clear small-request gates and user route choice when the boundary is unclear
 - A Method Lens selector for choosing Root Cause, Working Backwards, First Principles Cut, Data/Proof, or Operational Owner strategy when the route needs more than generic process
-- A Ponytail-style ladder that prefers no-change, reuse, standard library, native platform, installed dependency, one-line/config, then minimum new code
+- A Ponytail-style ladder that prefers no-change, reuse existing code, available environment skill, standard library, native platform, installed dependency, one-line/config, then minimum new code
 - Brainstorming that produces 2-3 real options when needed, while Design-lite uses short goal, acceptance proof, and not-doing for clear small features
 - Anti-overengineering gates before dependencies, abstractions, config, folders, framework layers, and generic engines
 - Karpathy-style minimal change rules so every changed line traces to the user goal

@@ -42,6 +42,37 @@
     "negativeConstraints": ["Must not rewrite adapter rules unless drift is proven."]
   },
   {
+    "id": "independent-manual-adversarial-review",
+    "scenario": "Scenario 1F: Independent Manual Adversarial Review",
+    "layers": ["Prompt Surface", "Harness/Validation", "Context", "Eval/Verifier"],
+    "expectedRoute": "Independent manual",
+    "command": "trigger:verify",
+    "scenarioEvidence": [
+      "Route: Independent manual.",
+      "Before identifying or reading materials, must warn that the review may take a long time and wait for explicit confirmation.",
+      "Without confirmation, must output only the confirmation prompt and stop.",
+      "Must cover all five fixed dimensions: requirement coverage, reachability, boundaries and regressions, evidence strength, and user-visible outcome.",
+      "Must not read, require, modify, or hand off to `devflow-prove`, PUA, Build, Learn, or any completion state."
+    ],
+    "commandEvidence": ["Skill Trigger Verification Report"],
+    "negativeConstraints": ["Must not edit code, create a task, invoke another skill, or declare global task status.", "Without confirmation, must output only the confirmation prompt and stop."]
+  },
+  {
+    "id": "independent-manual-find-fault-review",
+    "scenario": "Scenario 1G: Independent Manual Find-Fault Review",
+    "layers": ["Prompt Surface", "Harness/Validation", "Context", "Eval/Verifier"],
+    "expectedRoute": "Independent manual",
+    "command": "trigger:verify",
+    "scenarioEvidence": [
+      "Route: Independent manual.",
+      "Must answer biggest omission, unrecognized blind spot, and least certain point, plus every explicit user follow-up question.",
+      "Each answer must separate facts, inference, and unknowns, then state confidence and a next step; findings must use `Critical`, `Important`, or `Observation` with evidence and context limitations.",
+      "Must not read, require, modify, or hand off to `devflow-prove`, PUA, Build, Learn, or any completion state."
+    ],
+    "commandEvidence": ["Skill Trigger Verification Report"],
+    "negativeConstraints": ["Must not edit code, create a task, invoke another skill, or declare global task status."]
+  },
+  {
     "id": "learning-closure",
     "scenario": "Scenario 6A: Repeated Correction Learning Closure",
     "layers": ["Prompt Surface", "Loop/Recovery", "Harness/Validation", "Memory/Learning"],

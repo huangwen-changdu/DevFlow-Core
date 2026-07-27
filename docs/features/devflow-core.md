@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current Version: v38
+- Current Version: v43
 - Status: active
-- Last Change: progressive-knowledge-recall
+- Last Change: adversarial-review-confirmation-pause
 - Product Area: runtime flow, skill routing, validation, learning loop
 
 ## Feature Background
@@ -30,15 +30,17 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - Small Request Boundary gates for Fast and Design-lite: impact, risk, uncertainty, and proof.
 - Method Lens selection for Design, Recovery, problem solving (问题解决), bug fixing, architecture design (架构设计), and high-risk proof: Root Cause, Working Backwards, First Principles Cut (第一性原理), Data/Proof, and Operational Owner.
 - `devflow-prove` adversarial review (对抗式审查) before completion for development work, checking whether the result is still wrong, incomplete, unreachable, over-broad, or under-verified before any done/fixed/ready claim.
-- `devflow-brainstorm`, `devflow-spec`, `devflow-cut`, `devflow-build`, `devflow-prove`, `devflow-pua`, `devflow-learn`, and `devflow-audit` as focused runtime skills.
+- `devflow-adversarial` and `devflow-find-fault` as explicitly requested, independent manual review skills: they may inspect any current task material, but do not read, require, modify, or hand off to lifecycle skills or completion state. `devflow-adversarial` first warns that review may take a long time and waits for explicit confirmation before reading materials.
+- `devflow-brainstorm`, `devflow-spec`, `devflow-cut`, `devflow-build`, `devflow-prove`, `devflow-pua`, `devflow-learn`, and `devflow-audit` as focused lifecycle or audit skills.
 - `devflow-brainstorm` interview discipline as core behavior: one question at a time, recommended answers, fact reads before asking, and documentation landing decisions through `devflow-spec`, feature ledgers, or ADRs when needed.
 - `devflow-brainstorm` Depth Selection Gate: three design depths (A: Full Spec with 3 confirmations, B: Simplified Spec with 2 confirmations, C: Dialogue Confirmation with 1 confirmation). Depth is user-chosen based on Small Request Boundary gates.
-- Commands for route, spec, plan, review, debt, prove, pua, learn, and audit; `/devflow-spec` can use the bundled `scripts/devflow-spec.js` checker, `/devflow-plan` can use the bundled `scripts/devflow-plan.js` plan-pack checker, `/devflow-review` can use the bundled `scripts/devflow-review.js` gate scanner, `/devflow-debt` can use the bundled `scripts/devflow-debt.js` scanner, and `/devflow-audit` can use the bundled `scripts/devflow-audit.js` repo-wide audit scanner.
+- Commands for route, spec, plan, review, debt, prove, pua, learn, audit, independent adversarial review, and find-fault review; `/devflow-spec` can use the bundled `scripts/devflow-spec.js` checker, `/devflow-plan` can use the bundled `scripts/devflow-plan.js` plan-pack checker, `/devflow-review` can use the bundled `scripts/devflow-review.js` gate scanner, `/devflow-debt` can use the bundled `scripts/devflow-debt.js` scanner, and `/devflow-audit` can use the bundled `scripts/devflow-audit.js` repo-wide audit scanner.
 - Saved specs default to `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`; saved plans default to `docs/plans/YYYY-MM-DD-<short-kebab-name>.md` and must cite `Source:` plus `Spec coverage:`.
 - `npm test` validation for required files, skills, commands, PRD, learning cards, and stale paths.
 - Learning cards under `.copilot/` for repeatable corrections.
 - `/devflow-learn` command and `npm run learn:verify` for executable learning-loop closure checks.
 - Progressive knowledge recall at Sense: probe existing `.copilot/LEARNING_INDEX.md` and `docs/project-knowledge/`, load learning cards only after index trigger/scope matching, then use `AI-START-HERE.md` or `index.md` plus `registry.json` to select only relevant business knowledge documents. Missing recall sources are non-blocking and never create storage.
+- **External Skill Discovery** at Sense: scan available skills in the current environment (platform skill registry, `use_skill` listing, local skill directories). External skills are complementary to the devflow route: devflow manages scope and risk (what to change, how much); external skills guide execution quality (how to do it well). When a non-devflow skill (e.g., `frontend-design`, `pdf`, `understand`, `data-analysis`) matches the task, suggest loading it alongside the devflow route. The devflow chain (brainstorm -> cut -> build -> prove) always runs. The Minimal Solution Ladder includes a skill-reuse rung: "Does an available skill in the environment handle this without writing new code?" `CUT_REUSE` applies only when the skill fully handles the task with no new code needed (e.g., `pdf` for reading a PDF). For skills that guide implementation (e.g., `frontend-design`), they are loaded alongside devflow-build, not instead of it.
 - `devflow-learn` lazily creates `.copilot/` records only for reusable execution lessons; `devflow-project-knowledge` is shipped in plugin and both installer runtimes and lazily maintains `docs/project-knowledge/` only after explicit user confirmation of a code-backed business candidate.
 - `npm run scenario:coverage` for architecture-layer visibility across self-test scenarios.
 - `npm run trigger:verify` for prompt-to-route and skill-path trigger checks.
@@ -59,6 +61,11 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 
 | Version | Change | Type | Date | Status | Summary |
 |---|---|---|---|---|---|
+| v43 | adversarial-review-confirmation-pause | manual review safety | 2026-07-27 | active | Added a confirmation pause inside `devflow-adversarial`: every run warns that the review may take a long time, and does not inspect materials or begin the five-angle review until the user explicitly confirms. |
+| v42 | external-skill-complementary-model | skill integration | 2026-07-27 | active | Corrected External Skill Discovery from alternative to complementary model. External skills (e.g., `frontend-design`) guide execution quality; devflow (brainstorm -> cut -> build -> prove) manages scope and risk. The devflow chain always runs. `CUT_REUSE` applies only when a skill fully handles the task with no new code needed (e.g., `pdf`, `understand`). Removed "instead of writing new code" and "Do not force devflow skills" language from all surfaces. Updated skill-call-diagram.md to remove EXT->PROVE shortcut edge. |
+| v41 | external-skill-discovery | skill integration | 2026-07-27 | active | Added External Skill Discovery to `devflow-core` Context Map, Capability Dispatch, and Verification checklist. Added skill-reuse rung to the Minimal Solution Ladder in `devflow-cut` and `core-methods.md`. Updated `skill-call-diagram.md` with external skill integration points. Updated all host entry points (AGENTS.md, CLAUDE.md, CodeBuddy rules, Copilot instructions, VS Code prompt, Gemini, Claude command) with Skill Discovery awareness. |
+| v40 | independent-manual-review-skills | manual review capability | 2026-07-26 | active | Added `/devflow-adversarial` and `/devflow-find-fault` as explicit, any-stage reviews. They report structured findings and uncertainty without reading lifecycle/completion state, mutating code, or triggering follow-up work. |
+| v39 | completion-document-followup | completion documentation | 2026-07-26 | active | Added the independent `devflow-docs-followup` Skill. After verified feature completion it asks the current user whether to create technical solution, frontend API handoff, or feature-flow troubleshooting documentation; it writes only explicitly confirmed selections and ships through plugin, target, and user runtime surfaces. |
 | v38 | progressive-knowledge-recall | memory recall | 2026-07-17 | active | Added a selective, non-blocking task-start recall chain for learning cards and project knowledge; made business-knowledge maintenance installable in plugin, target, and user runtimes; and extended validation for progressive disclosure and lazy storage ownership. |
 | v37 | codex-hook-coverage | host activation | 2026-07-14 | active | Kept the existing Codex `SessionStart` registration minimal, added dated spec/plan landing guidance to its shared context payload, and covered `.codex/hooks.json` in runtime and host-adapter validation. |
 | v36 | dated-spec-plan-landing | documentation convention | 2026-07-14 | active | Changed default saved spec and plan names to `YYYY-MM-DD-<short-kebab-name>.md`, resolved from the current target project root, across skills, command prompts, checker guidance, and documentation. |
@@ -140,6 +147,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - 2026-07-14: Document sync scope and merge guidance instead of adding speculative automatic text merges. Reason: user-level skills/commands/scripts and target-project host rules have different ownership; generic merging of `AGENTS.md` or host rules can silently discard project constraints, while the current installer only safely merges Claude SessionStart settings.
 - 2026-07-14: Prefix saved specs and plans with their creation date and resolve the default paths from the current target project root. Reason: date-prefixed artifacts are easier to scan and avoid ambiguous repeated names across project history without introducing a new artifact directory or generator.
 - 2026-07-17: Reuse existing learning and project-knowledge indexes for progressive recall instead of adding a search service. Reason: task-start probing plus index-directed reads makes stored knowledge usable while avoiding context bloat, automatic empty-directory creation, dependencies, and unproven runtime automation.
+- 2026-07-26: Add `devflow-adversarial` and `devflow-find-fault` as separate manual skills instead of extending `devflow-prove` or PUA. Reason: users need an on-demand challenge at any task stage, while Prove is completion-gated and PUA is recovery-gated; coupling either would make manual critique unexpectedly alter lifecycle behavior or completion semantics.
 
 ## Known Constraints
 
@@ -160,6 +168,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - `scripts/devflow-plan.js` checks whether a plan pack has executable task fields; it does not generate plans or judge architecture correctness.
 - `scripts/devflow-spec.js` checks required sections, vague terms, and landing path; it does not generate requirements or replace human/agent design judgment.
 - `scripts/devflow-audit.js` reports heuristic overengineering candidates only; important findings still require code reads before editing or claiming removable code.
+- `/devflow-adversarial` and `/devflow-find-fault` are user-invoked advice surfaces, not automatic gates: they do not edit code, create tasks, invoke other skills, or declare task completion.
 - Skill Activation Chain Check validates visible trigger and handoff evidence; it does not prove live host skill loading.
 - Validation harness details are tracked in `docs/features/validation-harness.md`; this ledger stays focused on runtime flow boundaries.
 - Method Lens is a strategy selector for existing routes; First Principles Cut (第一性原理) may guide problem solving (问题解决), 修 bug, and architecture design (架构设计), but it must not reintroduce PUA flavor personas, pressure rhetoric, hook lifecycle, leaderboard mechanics, or full spec-heavy process as defaults.

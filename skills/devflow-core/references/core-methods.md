@@ -48,7 +48,7 @@ This method is always active. It shapes how every other method is applied.
 | Small Request Boundary | Classify tiny work by risk, impact, uncertainty, and proof before choosing Fast or Design-lite. | Treating every "small" feature as Fast Path or forcing heavy Design on trivial work. |
 | Method Lens | Select the working strategy for Design, Recovery, problem solving (问题解决), bug fixing, architecture design (架构设计), or high-risk proof before choosing artifacts. | Generic process with no task-specific brain. |
 | Brainstorm First | Clarify goal, constraints, success criteria, assumptions, and 2-3 approaches. When Fast Exit conditions are met (small change to existing feature, all boundary gates pass, single plausible path), offer Fast Exit as a recommended option at the Path Selection Gate — the user chooses, not the LLM. | Building the first suggested implementation without checking the real goal. Auto-selecting Fast Exit without user confirmation. |
-| Minimal Solution Ladder | Prefer no-change, reuse, stdlib, platform, installed dependency, one-line/config, then minimum new code. | Rewriting existing capability, adding dependencies too early. |
+| Minimal Solution Ladder | Prefer no-change, reuse, available environment skill, stdlib, platform, installed dependency, one-line/config, then minimum new code. | Rewriting existing capability, ignoring available skills, adding dependencies too early. |
 | Native Capability Check | Scan platform and standard-library alternatives before adding libraries or custom code. | Wrapper packages for things the runtime already provides. |
 | Anti-Overengineering Gate | Require a current reason for abstractions, dependencies, config, folders, framework layers, or generic engines. | Future-proofing, one-caller abstractions, speculative extension points. |
 | Root-Cause Fix Check | For bugs, search callers and fix the shared entry when that is the smaller correct change. | Per-caller symptom patches that leave sibling paths broken. |
@@ -62,10 +62,9 @@ This method is always active. It shapes how every other method is applied.
 | Pressure Recovery Gate | When the user challenges a result or repeated edits miss, load `devflow-pua`, stop the current path, restate the goal/result, ask pointed questions if blocked, switch approach, then prove. | Continuing the same wrong approach under pressure. |
 | Skill Activation Evidence | Record which skill triggered, why, and what artifact/check it requires. | Saying a skill was used when it was only mentioned. |
 | Skill Activation Chain Check | After rule, command, prompt, entry, or skill changes, verify trigger wording, runtime load action, and downstream evidence. | Editing skill text while the skill is still unreachable. |
-| Verifier Lens | Separate implementation claims from evidence checks; external verifier or human owns final status when required. | Self-certifying completion. |
 | Knowledge Recall | Probe existing learning and business knowledge indexes, then read only task-matched records. | Context bloat, stale bulk reads, and knowledge that is written but never used. |
 | Learning Capture | When user correction or repeat failure happens, load `devflow-learn` and capture the next-time intercept rule. | Repeating the same preventable mistake. |
-| Feature Ledger Recall | When present for an existing target-project capability, read and update the matched `docs/features/*.md` ledger. | Losing product history across iterations. |
+| Skill Discovery | Scan available skills in the environment (platform skill registry, `use_skill` listing, local skill directories) before and during the devflow route. External skills are complementary: devflow manages scope and risk; external skills guide execution quality. Suggest loading matched skills alongside the devflow route. `CUT_REUSE` applies only when a skill fully handles the task with no new code needed. | Ignoring available skills that could assist execution. Forcing devflow-only routing when an external skill could guide implementation quality. Treating external skills as replacements for the devflow chain when they are complementary. |
 
 ## Method 1: Context Map
 
@@ -76,17 +75,18 @@ Before deciding, inspect the narrowest useful context:
 1. Read rules entry points: `AGENTS.md`, `CLAUDE.md`, `.github/*`, `.codebuddy/*` when present.
 2. Read relevant docs and source files.
 3. Search for existing helpers, patterns, tests, and commands.
-4. When present for an existing target-project capability, read the matched `docs/features/*.md` feature ledger before planning.
-5. Probe `.copilot/LEARNING_INDEX.md`. When present, read the index, match the task against Trigger and Scope, then read only matched cards.
-6. Probe `docs/project-knowledge/`. When present, read `AI-START-HERE.md`; fall back to `index.md`; then use `registry.json` when present to select only task-relevant domain, module, risk, or entry-point documents.
-7. If either location, index, entry, or registry is absent, record the absence and continue. Recall alone must not create `.copilot/` or `docs/project-knowledge/`.
-8. If architecture or impact is involved, read `graphify-out/GRAPH_REPORT.md` when present.
+4. Probe `.copilot/LEARNING_INDEX.md`. When present, read the index, match the task against Trigger and Scope, then read only matched cards.
+5. Probe `docs/project-knowledge/`. When present, read `AI-START-HERE.md`; fall back to `index.md`; then use `registry.json` when present to select only task-relevant domain, module, risk, or entry-point documents.
+6. If either location, index, entry, or registry is absent, record the absence and continue. Recall alone must not create `.copilot/` or `docs/project-knowledge/`.
+7. If architecture or impact is involved, read `graphify-out/GRAPH_REPORT.md` when present.
+8. Scan available skills in the current environment — platform skill registry (e.g., `use_skill` tool listing), local skill directories (`~/.claude/skills/`, `~/.codex/skills/`, `.github/skills/`, `.codebuddy/skills/`), or any other skill source the platform exposes. Match by description keywords against the task. External skills are complementary to the devflow route: devflow manages scope and risk; external skills guide execution quality. Record matched skills for alongside-route loading. Missing or unavailable skills are non-blocking.
 
 Output evidence:
 
 ```text
 Facts: read/confirmed <files or commands>
 Knowledge recall: none / learning index + matched card / project knowledge entry + matched docs
+Skill Discovery: none / <skill-name> (matched: <why>)
 Unknowns: <still unknown, or none>
 ```
 
@@ -201,16 +201,17 @@ Run this before writing new code:
 1. Does this need to exist?
 2. Can the user goal be met without changing code?
 3. Does this already exist in the codebase?
-4. Does the standard library do it?
-5. Does the native platform do it?
-6. Does an already-installed dependency do it?
-7. Can it be one line or direct configuration?
-8. Only then write the minimum new code.
+4. Does an available skill in the environment handle this without writing new code? (e.g., `pdf` for reading a PDF, `understand` for codebase analysis. If a skill like `frontend-design` guides how to implement, load it alongside the devflow route — it complements, not replaces, the devflow chain.)
+5. Does the standard library do it?
+6. Does the native platform do it?
+7. Does an already-installed dependency do it?
+8. Can it be one line or direct configuration?
+9. Only then write the minimum new code.
 
 Required evidence:
 
 ```text
-Reuse Check: searched <files/helpers/patterns>; selected rung <N>; reason <why lower rungs failed>
+Reuse Check: searched <files/helpers/patterns/skills>; selected rung <N>; reason <why lower rungs failed>
 ```
 
 Do not cut trust-boundary validation, auth, permission, data-loss protection, security, accessibility, explicitly requested behavior, or the smallest useful verification.

@@ -32,6 +32,9 @@ const files = {
   puaLibrary: read("skills/devflow-pua/references/methodology-library.md"),
   puaDisplay: read("skills/devflow-pua/references/flavor-display.md"),
   learn: read("skills/devflow-learn/SKILL.md"),
+  docsFollowup: read("skills/devflow-docs-followup/SKILL.md"),
+  adversarial: read("skills/devflow-adversarial/SKILL.md"),
+  findFault: read("skills/devflow-find-fault/SKILL.md"),
   projectKnowledge: read("skills/devflow-project-knowledge/SKILL.md"),
   audit: read("skills/devflow-audit/SKILL.md"),
   devflowCommand: read("commands/devflow.toml"),
@@ -42,6 +45,8 @@ const files = {
   proveCommand: read("commands/devflow-prove.toml"),
   puaCommand: read("commands/devflow-pua.toml"),
   learnCommand: read("commands/devflow-learn.toml"),
+  adversarialCommand: read("commands/devflow-adversarial.toml"),
+  findFaultCommand: read("commands/devflow-find-fault.toml"),
   auditCommand: read("commands/devflow-audit.toml")
 };
 
@@ -144,6 +149,50 @@ const cases = [
       ["devflow-prove command", files.proveCommand, "Adversarial review:"],
       ["completion self-test", files.flowSelfTest, "Scenario 7A: Adversarial Review Rejects Completion"],
       ["completion self-test", files.flowSelfTest, "Judgment: FAIL"]
+    ]
+  },
+  {
+    name: "completion document follow-up",
+    input: "The feature is verified and complete. Ask whether technical solution, frontend API handoff, or troubleshooting documentation is needed.",
+    route: "Fast",
+    skillPath: "devflow-core -> devflow-docs-followup",
+    checks: [
+      ["AGENTS.md", files.agents, "devflow-docs-followup"],
+      ["docs follow-up description", description(files.docsFollowup), "verified feature completion"],
+      ["docs follow-up", files.docsFollowup, "Do not create any document until the user explicitly confirms it"],
+      ["docs follow-up", files.docsFollowup, "Frontend API Handoff Document"],
+      ["docs follow-up", files.docsFollowup, "Feature-Flow Troubleshooting Document"]
+    ]
+  },
+  {
+    name: "independent manual adversarial review",
+    input: "Run an upgraded adversarial review of this current change without using completion status.",
+    route: "Independent manual",
+    skillPath: "devflow-core -> devflow-adversarial",
+    checks: [
+      ["AGENTS.md", files.agents, "devflow-adversarial"],
+      ["devflow-core", files.core, "Independent Manual Review"],
+      ["adversarial description", description(files.adversarial), "upgraded adversarial review"],
+      ["adversarial review", files.adversarial, "Review confirmation"],
+      ["adversarial review", files.adversarial, "may take a long time"],
+      ["adversarial review", files.adversarial, "Requirement coverage"],
+      ["adversarial review", files.adversarial, "User-visible outcome"],
+      ["adversarial review", files.adversarial, "do not read, require, or alter `devflow-prove`"]
+    ]
+  },
+  {
+    name: "independent manual find-fault review",
+    input: "Find faults in this change: identify the biggest omission, blind spot, and least certain point.",
+    route: "Independent manual",
+    skillPath: "devflow-core -> devflow-find-fault",
+    checks: [
+      ["AGENTS.md", files.agents, "devflow-find-fault"],
+      ["find-fault description", description(files.findFault), "find faults"],
+      ["find-fault", files.findFault, "What is the biggest omission"],
+      ["find-fault", files.findFault, "What might the user or agent not have recognized"],
+      ["find-fault", files.findFault, "What is currently least certain"],
+      ["find-fault", files.findFault, "Next step"],
+      ["find-fault", files.findFault, "do not read, require, or alter `devflow-prove`"]
     ]
   },
   {
@@ -321,6 +370,27 @@ const commandCases = [
       ["devflow-pua command", files.puaCommand, "少个"],
       ["devflow-pua command", files.puaCommand, "Judgment: PASS / FAIL / BLOCKED"],
       ["devflow-pua", files.pua, "Changed approach"]
+    ]
+  },
+  {
+    name: "independent adversarial command",
+    input: "/devflow-adversarial run a deep review of the current change",
+    command: "/devflow-adversarial",
+    checks: [
+      ["devflow-adversarial command", files.adversarialCommand, "Run DevFlow Adversarial Review"],
+      ["devflow-adversarial command", files.adversarialCommand, "wait for explicit confirmation"],
+      ["devflow-adversarial command", files.adversarialCommand, "does not require, read, modify, or hand off to devflow-prove"],
+      ["devflow-adversarial", files.adversarial, "Five-Angle Review"]
+    ]
+  },
+  {
+    name: "independent find-fault command",
+    input: "/devflow-find-fault identify the biggest omission in this change",
+    command: "/devflow-find-fault",
+    checks: [
+      ["devflow-find-fault command", files.findFaultCommand, "Run DevFlow Find Fault"],
+      ["devflow-find-fault command", files.findFaultCommand, "does not require, read, modify, or hand off to devflow-prove"],
+      ["devflow-find-fault", files.findFault, "Questions and answers"]
     ]
   },
   {

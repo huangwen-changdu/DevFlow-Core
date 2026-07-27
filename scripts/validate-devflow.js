@@ -24,6 +24,8 @@ const requiredFiles = [
   "commands/devflow-prove.toml",
   "commands/devflow-pua.toml",
   "commands/devflow-learn.toml",
+  "commands/devflow-adversarial.toml",
+  "commands/devflow-find-fault.toml",
   "commands/devflow-audit.toml",
   "plugin.json",
   "gemini-extension.json",
@@ -47,6 +49,10 @@ const requiredFiles = [
   "skills/devflow-pua/references/methodology-library.md",
   "skills/devflow-pua/references/flavor-display.md",
   "skills/devflow-learn/SKILL.md",
+  "skills/devflow-docs-followup/SKILL.md",
+  "skills/devflow-docs-followup/agents/openai.yaml",
+  "skills/devflow-adversarial/SKILL.md",
+  "skills/devflow-find-fault/SKILL.md",
   "skills/devflow-project-knowledge/SKILL.md",
   "skills/devflow-audit/SKILL.md",
   "skills/devflow-brainstorm/references/interview-discipline.md",
@@ -223,6 +229,9 @@ const skillNames = [
   "devflow-prove",
   "devflow-pua",
   "devflow-learn",
+  "devflow-docs-followup",
+  "devflow-adversarial",
+  "devflow-find-fault",
   "devflow-project-knowledge",
   "devflow-audit"
 ];
@@ -236,6 +245,8 @@ const commandFiles = [
   "commands/devflow-prove.toml",
   "commands/devflow-pua.toml",
   "commands/devflow-learn.toml",
+  "commands/devflow-adversarial.toml",
+  "commands/devflow-find-fault.toml",
   "commands/devflow-audit.toml"
 ];
 
@@ -283,6 +294,31 @@ for (const name of skillNames) {
   assert(body.includes("Verification") || body.includes("Proof"), `${rel} missing verification/proof section`);
   assert(body.includes("Anti-Rationalization"), `${rel} missing anti-rationalization section`);
 }
+
+const docsFollowupSkill = read("skills/devflow-docs-followup/SKILL.md");
+for (const term of [
+  "verified feature completion",
+  "Frontend API Handoff Document",
+  "Do not create any document until the user explicitly confirms it",
+  "Feature-Flow Troubleshooting Document"
+]) {
+  assert(docsFollowupSkill.includes(term), `devflow-docs-followup missing required behavior: ${term}`);
+}
+
+assert(read("AGENTS.md").includes("devflow-docs-followup"), "AGENTS.md missing completion document follow-up handoff");
+
+for (const [file, terms] of [
+  ["skills/devflow-adversarial/SKILL.md", ["Review confirmation", "may take a long time", "Requirement coverage", "Reachability", "Boundaries and regressions", "Evidence strength", "User-visible outcome", "Context limitations", "do not read, require, or alter `devflow-prove`"]],
+  ["skills/devflow-find-fault/SKILL.md", ["What is the biggest omission", "What might the user or agent not have recognized", "What is currently least certain", "Facts", "Inference", "Unknowns", "Next step", "Context limitations", "do not read, require, or alter `devflow-prove`"]]
+]) {
+  const body = read(file);
+  for (const term of terms) {
+    assert(body.includes(term), `${file} missing independent-review behavior: ${term}`);
+  }
+}
+
+assert(read("AGENTS.md").includes("devflow-adversarial"), "AGENTS.md missing independent adversarial routing");
+assert(read("AGENTS.md").includes("devflow-find-fault"), "AGENTS.md missing independent find-fault routing");
 
 for (const file of commandFiles) {
   const body = read(file);

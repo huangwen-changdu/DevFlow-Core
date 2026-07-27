@@ -1,6 +1,6 @@
 ---
 name: devflow-brainstorm
-description: "Use when a request involves a genuine new requirement, feature design, behavior/product/architecture change, ambiguous ask with multiple plausible interpretations, multi-solution decision, or a user challenge requiring re-asking the goal/result before rebuilding. Do NOT use for documentation writing, config tuning, trivial code changes, or clear bug fixes with known root cause — those go through Fast or Design-lite. Turns a request into the smallest useful design through collaborative dialogue. Always opens with a semantic echo-back confirmed by the user before any depth or process question. When Fast Exit conditions are met (small change to existing feature, all boundary gates pass, single plausible path), Fast Exit is offered as a recommended option alongside A/B/C — the user chooses, not the LLM."
+description: "Use when a request involves a genuine new requirement, feature design, behavior/product/architecture change, ambiguous ask with multiple plausible interpretations, multi-solution decision, documentation capture within feature design, or a user challenge requiring re-asking the goal/result before rebuilding. Do NOT use for documentation writing, config tuning, trivial code changes, or clear bug fixes with known root cause — those go through Fast or Design-lite. Turns a request into the smallest useful design through collaborative dialogue. Always opens with a semantic echo-back confirmed by the user before any depth or process question. When Fast Exit conditions are met (small change to existing feature, all boundary gates pass, single plausible path), Fast Exit is offered as a recommended option alongside A/B/C — the user chooses, not the LLM."
 ---
 
 # DevFlow Brainstorm
@@ -10,7 +10,7 @@ Turn a request into the smallest useful design before implementation, through pr
 **Violating the letter of the rules is violating the spirit of the rules.**
 
 <HARD-GATE>
-Do NOT hand off to `devflow-cut`, `devflow-build`, write any code, or take any implementation action until you have presented a design contract and the user has approved it. This applies to every request that enters the Brainstorm flow. Semantic understanding must be echoed back and confirmed by the user before the Path Selection Gate is presented. The user chooses the path (Fast Exit or A/B/C) and depth (A/B/C) — not the LLM. The LLM must not auto-select Fast Exit or auto-skip A/B/C.
+Do NOT hand off to `devflow-cut`, `devflow-build`, write any code, or take any implementation action until you have presented a design contract and the user has approved it. This applies to every request that enters the Brainstorm flow. Exception: when the user explicitly chooses Depth C, the choice itself is the approval — produce a minimal design contract inline from the echo-back and hand off directly to `devflow-cut` without a STOP gate. Semantic understanding must be echoed back and confirmed by the user before the Path Selection Gate is presented. The user chooses the path (Fast Exit or A/B/C) and depth (A/B/C) — not the LLM. The LLM must not auto-select Fast Exit or auto-skip A/B/C.
 </HARD-GATE>
 
 <ENTRY-GATE>
@@ -37,8 +37,8 @@ Once a request enters the Brainstorm flow, it goes through the full process — 
    - **If Fast Exit conditions are met**: present both Fast Exit (recommended) and full A/B/C options. Wait for user choice.
    - **If Fast Exit conditions are NOT met**: present A/B/C depth options only. Wait for user choice.
 6. **If user chose Fast Exit**: present a short design contract directly (see Fast Exit Path section). Get user approval, then hand off to `devflow-cut`. Skip progressive clarification, approach comparison, and spec/plan handoff.
-7. **If user chose A/B/C**: continue with progressive clarification and the full design flow (steps 8-17 below).
-8. **Progressive clarification**: Ask one question at a time, in priority order (goal ambiguity → scope boundary → actor/recipient → constraint → acceptance → implementation detail). Each message resolves exactly one blocking decision — goal, motivation, constraint, or acceptance. Include a recommended answer. Wait for the user's response before continuing. Prefer multiple choice when possible. Only infer from project facts when the question is purely technical and evidence is unambiguous. If it is a business decision, ask. If a user's answer reveals your echo-back understanding was partially wrong, re-echo the corrected understanding before continuing. Even when depth C is selected and all boundary gates pass, you MUST still complete the 3 core questions before continuing.
+7. **If user chose C**: produce a minimal design contract inline from the echo-back (Goal, Not doing, Impact, Verification) — no STOP gate, no progressive clarification, no approach comparison. The user's choice of C is the approval. Hand off directly to `devflow-cut`. Skip steps 8-17. **If user chose A/B**: continue with progressive clarification and the full design flow (steps 8-17 below).
+8. **Progressive clarification**: Ask one question at a time, in priority order (goal ambiguity → scope boundary → actor/recipient → constraint → acceptance → implementation detail). Each message resolves exactly one blocking decision — goal, motivation, constraint, or acceptance. Include a recommended answer. Wait for the user's response before continuing. Prefer multiple choice when possible. Only infer from project facts when the question is purely technical and evidence is unambiguous. If it is a business decision, ask. If a user's answer reveals your echo-back understanding was partially wrong, re-echo the corrected understanding before continuing.
 9. **Define success criteria** the user or agent can verify.
 10. **Challenge hidden assumptions**:
    - Does this need to exist?
@@ -46,13 +46,12 @@ Once a request enters the Brainstorm flow, it goes through the full process — 
    - Is the user asking for an implementation when a smaller outcome works?
    - What current system behavior may already satisfy the goal?
    - What would make this design unacceptable?
-11. **Compare approaches**: Diverge with 2-3 genuinely different approaches unless Design-lite applies (Step 4 gates passed) or depth C is selected with all boundary gates passing. Each option must include what it does, what it does not do, tradeoff, impact size, and verification.
+11. **Compare approaches**: Diverge with 2-3 genuinely different approaches unless Design-lite applies (Step 4 gates passed). Each option must include what it does, what it does not do, tradeoff, impact size, and verification.
 12. **Apply a Method Lens** when the design, risk, or ambiguity needs a specific working strategy.
 13. **Present design in sections**: Present the proposed design in small sections scaled to the work. Default sections cover, as applicable: scope and goals; interaction or implementation design; error handling and verification. Wait for confirmation after each section before presenting the next.
 14. **Converge into design contract**: Summarize the approved sections as the existing DevFlow design contract (`Goal`, `Smallest useful plan`, `Not doing`, `Impact`, `Verification`).
 15. **STOP — Present design contract**: Present the design contract to the user. Ask whether it looks right. If the user requests changes, go back to the relevant step. Only proceed once the user approves.
     - **Depth A/B**: this is confirmation 1 of 3/2. Continue to step 16.
-    - **Depth C**: this is confirmation 1 of 1. User approval here means the design is confirmed — proceed directly to `devflow-cut` (skip steps 16-17).
 16. **Design contract self-review** (Depth A/B only): Before handing off, check the design contract for unresolved filler text, internal contradictions, scope creep, and ambiguity. Fix inline. If a fundamental issue is found (scope needs decomposition, approach contradicts goal), go back to the relevant step instead of patching inline.
 17. **Depth-based handoff** (Depth A/B only):
     - **Depth A**: **STOP — Confirm spec** → hand off to `devflow-spec` to land `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` (confirmation 2 of 3). After spec, hand off to `/devflow-plan` (confirmation 3 of 3).
@@ -186,8 +185,8 @@ For any non-trivial Brainstorm pass:
 1. Read `skills/devflow-brainstorm/references/interview-discipline.md`.
 2. Use Brainstorm's one-question-at-a-time interview discipline.
 3. Include a recommended answer with each question.
-4. If code, docs, config, tests, or feature ledgers can answer the question, read those facts instead of asking.
-5. When documentation capture is requested or needed, choose the right DevFlow docs surface: `devflow-spec` for saved requirements, feature ledger for capability history, ADR for hard-to-reverse trade-offs.
+4. If code, docs, config, or tests can answer the question, read those facts instead of asking.
+5. When documentation capture is requested or needed, choose the right DevFlow docs surface: `devflow-spec` for saved requirements, ADR for hard-to-reverse trade-offs.
 6. End with the normal DevFlow design contract and hand off to `devflow-cut`, `devflow-spec`, or the user.
 
 This is core `devflow-brainstorm` behavior, not a separate workflow.
@@ -252,8 +251,6 @@ Use visual expression only when a specific question or design section is genuine
 
 - **When visual helps**: layout decisions, UI flow, architecture diagrams, data flow, component relationships.
 - **When text suffices**: goal framing, constraint listing, approach tradeoffs, acceptance criteria, configuration.
-
-If you use a visual representation, describe it in text (ASCII diagram, mermaid, or structured description) within the message. Do not add a visual companion, browser server, scripts, state directories, or any `.superpowers/` artifacts.
 
 ## Re-Ask After Challenge
 
@@ -348,17 +345,17 @@ If the user chose Full A/B/C (or Fast Exit conditions were not met), present the
 📋 Enter design flow. Select design depth for this task:
 
 A. Full Spec (recommended for cross-module / new feature / architecture change)
-   → Feature Ledger → Design Contract → devflow-spec → /devflow-plan → devflow-cut → devflow-build
+   → Design Contract → devflow-spec → /devflow-plan → devflow-cut → devflow-build
    → 3 confirmations: design contract, spec doc, plan
 
 B. Simplified Spec (for clear-scope changes)
-   → Feature Ledger → Design Contract → /devflow-plan → devflow-cut → devflow-build
+   → Design Contract → /devflow-plan → devflow-cut → devflow-build
    → 2 confirmations: design contract, plan
 
-C. Dialogue Confirmation (only for single-file / low-risk / user-explicit)
-   → Core Clarification 3 questions → dialogue confirm → devflow-cut → devflow-build
-   → 1 confirmation: dialogue confirm
-   → No spec document, but Core Clarification 3 questions are still required
+C. Direct (only for single-file / low-risk / user-explicit)
+   → devflow-cut → devflow-build
+   → 0 additional confirmations: echo-back already confirmed
+   → No spec document, no core clarification questions, no design contract STOP gate
 
 Select A / B / C:
 ```
@@ -373,8 +370,7 @@ Select A / B / C:
 | New feature or architecture change | A only (C not allowed) |
 
 **Additional constraints**:
-- User selects C: AI must re-confirm once: "Confirm no spec document? Design decisions cannot be traced later."
-- Design-lite gates all pass AND user selects C: allowed, but Core Clarification 3 questions are still mandatory
+- User selects C: no additional confirmation needed. The echo-back was already confirmed and the user's choice of C is the approval. Hand off directly to `devflow-cut`.
 
 [CRITICAL] **Prohibited behaviors**:
 - LLM self-decides "low risk, skip design"
@@ -386,26 +382,9 @@ Select A / B / C:
 
 | User Choice | Flow Path | Confirmations |
 |----------|---------|---------|
-| **A. Full Spec** | Feature Ledger → Design Contract → devflow-spec → /devflow-plan | 3 |
-| **B. Simplified Spec** | Feature Ledger → Design Contract → /devflow-plan | 2 |
-| **C. Dialogue Confirmation** | Core Clarification 3 questions → dialogue confirm → devflow-cut | 1 |
-
-### Feature Ledger Check
-
-Before producing the design contract, check for an existing feature ledger:
-
-1. **Search**: look for `docs/features/*.md` matching the capability being changed.
-2. **Read or note**: if found, read current state and constraints. If not found, note it as a new capability.
-3. **Update after validation**: feature ledgers are updated after `devflow-prove` passes, not during brainstorm.
-
-Output before the design contract:
-
-```text
-✅ Feature Ledger check:
-- Feature ledger: [found: docs/features/{name}.md / new / not applicable]
-- Capability: {feature-name}
-- Key constraints: {constraints from existing ledger or "none"}
-```
+| **A. Full Spec** | Design Contract → devflow-spec → /devflow-plan | 3 |
+| **B. Simplified Spec** | Design Contract → /devflow-plan | 2 |
+| **C. Direct** | devflow-cut | 0 (echo-back only) |
 
 ## Large Project Decomposition
 
@@ -521,16 +500,16 @@ Recommend Depth B when:
 - Impact is local, risk is low, and a short design contract is enough.
 - The user wants to move fast and the design contract captures all needed context.
 
-### Depth C: Dialogue Confirmation (1 confirmation)
+### Depth C: Direct (0 additional confirmations)
 
-Design contract approved = confirmation 1 of 1. No spec document is landed. Hand off directly to `devflow-cut`:
+User chose C at the Depth Selection Gate. Echo-back was already confirmed. Produce a minimal design contract inline from the echo-back (Goal, Not doing, Impact, Verification) and hand off directly to `devflow-cut`. No STOP gate, no progressive clarification, no approach comparison. The user's choice of C is the approval.
 
 ```text
-Cut input: approved design + not-doing list + impact scope + verification method
+Cut input: minimal design contract from echo-back (Goal / Not doing / Impact / Verification)
 Next: devflow-cut -> devflow-build
 ```
 
-**Depth C constraint**: The user must have explicitly chosen C at the Depth Selection Gate. The LLM must not auto-select C. Core Clarification 3 questions were still completed.
+**Depth C constraint**: The user must have explicitly chosen C at the Depth Selection Gate. The LLM must not auto-select C.
 
 The design must be user-approved, and the depth must be user-selected at the Depth Selection Gate, before any handoff.
 
@@ -551,7 +530,7 @@ The design must be user-approved, and the depth must be user-selected at the Dep
 | "Fast Exit means no design needed." | Fast Exit still requires echo-back, boundary check, and a short design contract with user approval. It only skips spec/plan documents and the A/B/C ceremony. |
 | "I'll auto-select Fast Exit since conditions are met." | No — Fast Exit is always user-chosen. The LLM recommends it but the user must confirm. Auto-selecting Fast Exit is the same as skipping the gate. |
 | "I'll present A/B/C just to be safe." | When Fast Exit conditions are met, present both options and let the user choose. Don't withhold the lighter path. |
-| "Depth C means no design needed." | Depth C still requires Core Clarification 3 questions and a design contract. It only skips document landing. |
+| "Depth C means no design needed." | Depth C goes directly to `devflow-cut` with a minimal inline design contract from the echo-back. No progressive clarification, no STOP gate. The user's choice of C is the approval. |
 | "I can present all design sections at once." | Progressive confirmation prevents scope drift. Present one section, wait, then continue. |
 | "The echo-back is just restating the request." | Echo-back must surface `My assumptions` and `Understanding gaps`. A paraphrase adds zero understanding. |
 | "I can infer the motivation from the codebase." | Code tells you what exists, not why the user wants a change now. If motivation is unclear, ask. |
@@ -562,7 +541,7 @@ The design must be user-approved, and the depth must be user-selected at the Dep
 ## Red Flags — STOP
 
 - Entering Brainstorm for documentation writing, config tuning, or trivial code changes that should be Fast or Design-lite
-- About to write code before presenting a design contract
+- About to write code before presenting a design contract (Depth A/B and Fast Exit only; Depth C produces a minimal inline design contract without a STOP gate)
 - "This is too simple to need a design"
 - "The user already described the solution, so I can skip dialogue"
 - "I can infer the business decision from the codebase"
@@ -604,20 +583,19 @@ Before leaving this skill, confirm:
 - [ ] Small Request Boundary was checked for tiny requirement or feature work.
 - [ ] Fast Exit conditions were checked: if all pass, present Fast Exit as recommended option alongside A/B/C at the Path Selection Gate.
 - [ ] Path Selection Gate was presented: user chose Fast Exit or A/B/C. If A/B/C, user selected A, B, or C.
-- [ ] Goal, motivation, constraints, and success criteria exist — confirmed with the user when unclear, not just inferred.
-- [ ] Core Clarification 3 questions were completed (required for all depths, including C).
-- [ ] Clarifying questions were asked one at a time, in priority order (goal → scope → actor → constraint → acceptance → implementation).
-- [ ] If a user's answer revealed a misunderstanding, the corrected understanding was re-echoed before continuing.
-- [ ] 2-3 approaches were compared when plausible, or Design-lite/Depth C was justified by the boundary gates.
+- [ ] Goal, motivation, constraints, and success criteria exist — confirmed with the user when unclear, not just inferred. (Depth A/B only; C skips this.)
+- [ ] Clarifying questions were asked one at a time, in priority order (goal → scope → actor → constraint → acceptance → implementation). (Depth A/B only; C skips this.)
+- [ ] If a user's answer revealed a misunderstanding, the corrected understanding was re-echoed before continuing. (Depth A/B only; C skips this.)
+- [ ] 2-3 approaches were compared when plausible, or Design-lite was justified by the boundary gates. (Depth A/B only; C skips this.)
 - [ ] First principles (第一性原理) were applied when assumptions, abstractions, bug causes, or architecture choices could hide a smaller solution.
 - [ ] Method Lens was selected or explicitly marked unnecessary, before convergence.
-- [ ] Design was presented in sections with per-section confirmation.
+- [ ] Design was presented in sections with per-section confirmation. (Depth A/B only; C skips this.)
 - [ ] Recommended option is the smallest useful path.
-- [ ] Design contract was presented and user approved it.
+- [ ] Design contract was presented and user approved it. (Depth A/B only; C produces a minimal inline design contract without a STOP gate.)
 - [ ] Design contract self-review was run (Depth A/B only): no unresolved filler text, contradictions, or ambiguity.
 - [ ] Path-based handoff was executed correctly:
   - Fast Exit (user-chosen): devflow-cut (1 confirmation: design contract)
   - A: devflow-spec → /devflow-plan (3 confirmations)
   - B: /devflow-plan (2 confirmations)
-  - C: devflow-cut (1 confirmation)
+  - C: devflow-cut (0 additional confirmations; echo-back only)
 - [ ] Design contract is complete.

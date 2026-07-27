@@ -191,6 +191,67 @@ Command: npm run host:verify
 Judgment: PASS / FAIL / BLOCKED
 ```
 
+## Scenario 1F: Independent Manual Adversarial Review
+
+Input:
+
+```text
+Run an upgraded adversarial review of this current change without using completion status.
+```
+
+Expected behavior:
+
+- Route: Independent manual.
+- Skill path: explicit user request -> `devflow-adversarial`.
+- Must run only because the user explicitly requested it; it may inspect materials from any task stage.
+- Before identifying or reading materials, must warn that the review may take a long time and wait for explicit confirmation.
+- Without confirmation, must output only the confirmation prompt and stop.
+- Must cover all five fixed dimensions: requirement coverage, reachability, boundaries and regressions, evidence strength, and user-visible outcome.
+- Findings must use `Critical`, `Important`, or `Observation` and include evidence, confidence, and context limitations.
+- Must not read, require, modify, or hand off to `devflow-prove`, PUA, Build, Learn, or any completion state.
+- Must not edit code, create a task, invoke another skill, or declare global task status.
+
+Pass check:
+
+```text
+Review confirmation: pending / confirmed after duration notice
+This independent adversarial review may take a long time. Do you confirm that I should start?
+Adversarial review target: ...
+Findings: Critical / Important / Observation
+Five-angle coverage: requirement coverage / reachability / boundaries and regressions / evidence strength / user-visible outcome
+Context limitations: ...
+Suggested next action: manual only
+```
+
+## Scenario 1G: Independent Manual Find-Fault Review
+
+Input:
+
+```text
+Find faults in this change: what is the biggest omission, what have we not recognized, and what is least certain?
+```
+
+Expected behavior:
+
+- Route: Independent manual.
+- Skill path: explicit user request -> `devflow-find-fault`.
+- Must run only because the user explicitly requested it; it may inspect materials from any task stage.
+- Must answer biggest omission, unrecognized blind spot, and least certain point, plus every explicit user follow-up question.
+- Each answer must separate facts, inference, and unknowns, then state confidence and a next step; findings must use `Critical`, `Important`, or `Observation` with evidence and context limitations.
+- Must not read, require, modify, or hand off to `devflow-prove`, PUA, Build, Learn, or any completion state.
+- Must not edit code, create a task, invoke another skill, or declare global task status.
+
+Pass check:
+
+```text
+Find-fault target: ...
+Questions and answers: biggest omission / unrecognized blind spot / least certain point / user questions
+Facts / inference / unknowns / confidence / next step
+Findings: Critical / Important / Observation
+Context limitations: ...
+Suggested next action: manual only
+```
+
 ## Scenario 2: Small Clear Change
 
 Input:

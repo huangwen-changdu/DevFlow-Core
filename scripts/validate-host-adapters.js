@@ -29,6 +29,8 @@ const expectedSkills = [
   "skills/devflow-prove/SKILL.md",
   "skills/devflow-pua/SKILL.md",
   "skills/devflow-learn/SKILL.md",
+  "skills/devflow-adversarial/SKILL.md",
+  "skills/devflow-find-fault/SKILL.md",
   "skills/devflow-audit/SKILL.md",
   "skills/devflow-brainstorm/references/interview-discipline.md"
 ];
@@ -42,6 +44,8 @@ const expectedCommands = [
   "commands/devflow-prove.toml",
   "commands/devflow-pua.toml",
   "commands/devflow-learn.toml",
+  "commands/devflow-adversarial.toml",
+  "commands/devflow-find-fault.toml",
   "commands/devflow-audit.toml"
 ];
 
@@ -57,7 +61,7 @@ const adapters = [
   {
     name: "Codex / shared agents",
     file: "AGENTS.md",
-    terms: ["Sense -> Brainstorm -> [STOP: Depth A/B/C]", "problem report", "devflow-pua", "Completion proof", "STOP gates are mandatory", "Skills enforce their own gates", "use First Principles Cut", "run adversarial review against acceptance criteria"]
+    terms: ["Sense -> Brainstorm -> [STOP: Path Selection Gate]", "problem report", "devflow-pua", "Completion proof", "STOP gates are mandatory", "Skills enforce their own gates", "use First Principles Cut", "run adversarial review against acceptance criteria"]
   },
   {
     name: "Claude Code",
@@ -108,6 +112,19 @@ const adapters = [
 
 for (const adapter of adapters) {
   assertTerms(adapter.name, read(adapter.file), adapter.terms);
+}
+
+for (const [file, terms] of Object.entries({
+  "AGENTS.md": ["devflow-adversarial", "devflow-find-fault"],
+  "CLAUDE.md": ["devflow-adversarial", "devflow-find-fault"],
+  ".github/copilot-instructions.md": ["devflow-adversarial", "devflow-find-fault"],
+  ".github/instructions/devflow.instructions.md": ["devflow-adversarial", "devflow-find-fault"],
+  ".github/prompts/devflow.prompt.md": ["devflow-adversarial", "devflow-find-fault"],
+  ".codebuddy/rules/devflow-core/RULE.mdc": ["devflow-adversarial", "devflow-find-fault"],
+  ".claude/commands/devflow-core.md": ["skills/devflow-adversarial/SKILL.md", "skills/devflow-find-fault/SKILL.md"],
+  "hooks/devflow-session-start.js": ["devflow-adversarial", "devflow-find-fault"]
+})) {
+  assertTerms(`Independent manual review surface ${file}`, read(file), terms);
 }
 
 assert(read("AGENTS.md").includes("interview-discipline.md"), "AGENTS.md missing Brainstorm interview discipline surface");

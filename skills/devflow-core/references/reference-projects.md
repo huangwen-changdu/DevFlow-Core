@@ -44,7 +44,7 @@ Absorbed into DevFlow-Core:
 - `skills/devflow-core/references/skill-guide.md` and all `SKILL.md` files now require executable skill contracts, anti-rationalization checks, and verification.
 - `devflow-core` maps work to route and next skill.
 - `devflow-build` includes plan-pack, source-check, and slice execution.
-- `devflow-prove` includes rules/skills/references validation and verifier lens.
+- `devflow-prove` includes rules/skills/references validation.
 - `commands/*.toml` expose practical lifecycle entry points.
 
 Not absorbed:
@@ -66,7 +66,7 @@ Absorbed into DevFlow-Core:
 - `Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> devflow-cut -> devflow-build -> devflow-prove` remains the default chain.
 - `devflow-brainstorm` includes design approval shape, assumption challenges, and approach comparison.
 - `devflow-spec`, `commands/devflow-spec.toml`, and `scripts/devflow-spec.js` add a saved requirements source for larger or explicitly spec-requested work.
-- Generated specs default to `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`; `docs/features/` remains feature ledger memory and `docs/plans/` remains implementation planning.
+- Generated specs default to `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`; `docs/plans/` remains implementation planning.
 - `devflow-plan` and Plan Pack now require `Source:` and `Spec coverage:` so tasks trace to a spec or approved design.
 - `devflow-build` includes implementation slices and exact verification per slice.
 - `skills/devflow-prove/references/flow-self-test.md` defines pressure scenarios for the framework itself.
@@ -115,7 +115,7 @@ Absorbed into DevFlow-Core:
 - `plugin.json`, `gemini-extension.json`, commands, Copilot, and CodeBuddy entries make the framework installable/adaptable.
 - Method Lens absorbs PUA method routing as native DevFlow behavior for normal work: Root Cause, Working Backwards, First Principles Cut, Data/Proof, and Operational Owner are selectable lenses.
 - `devflow-pua/references/methodology-router.md`, `methodology-library.md`, and `flavor-display.md` absorb the practical PUA flavor-method routing for pressure recovery, including the compact visible output `METHOD: {flavor} / {method}` plus a concise `SWITCH:` line when the method changes.
-- `devflow-prove` includes a verifier lens and forbids self-certifying final status when an external verifier is required.
+- `devflow-prove` forbids self-certifying completion without evidence.
 - `devflow-core` includes Recovery route and 3-hypothesis approach switching.
 
 Not absorbed:

@@ -50,6 +50,10 @@ assert(userEntries.includes("skills/devflow-core/SKILL.md"), "User installer mis
 assert(userEntries.includes("skills/devflow-spec/SKILL.md"), "User installer missing spec skill");
 assert(userEntries.includes("skills/devflow-pua/SKILL.md"), "User installer missing pua skill");
 assert(userEntries.includes("skills/devflow-project-knowledge/SKILL.md"), "User installer missing project-knowledge skill");
+assert(userEntries.includes("skills/devflow-docs-followup/SKILL.md"), "User installer missing completion document follow-up skill");
+assert(userEntries.includes("skills/devflow-docs-followup/agents/openai.yaml"), "User installer missing completion document follow-up UI metadata");
+assert(userEntries.includes("skills/devflow-adversarial/SKILL.md"), "User installer missing independent adversarial skill");
+assert(userEntries.includes("skills/devflow-find-fault/SKILL.md"), "User installer missing independent find-fault skill");
 assert(userEntries.includes("skills/devflow-pua/references/methodology-router.md"), "User installer missing pua methodology router");
 assert(userEntries.includes("skills/devflow-pua/references/methodology-library.md"), "User installer missing pua methodology library");
 assert(userEntries.includes("skills/devflow-pua/references/flavor-display.md"), "User installer missing pua flavor display");
@@ -58,6 +62,8 @@ assert(userEntries.includes("skills/devflow-brainstorm/references/interview-disc
 assert(userEntries.includes("commands/devflow.toml"), "User installer missing devflow command");
 assert(userEntries.includes("commands/devflow-spec.toml"), "User installer missing spec command");
 assert(userEntries.includes("commands/devflow-pua.toml"), "User installer missing pua command");
+assert(userEntries.includes("commands/devflow-adversarial.toml"), "User installer missing independent adversarial command");
+assert(userEntries.includes("commands/devflow-find-fault.toml"), "User installer missing independent find-fault command");
 assert(userEntries.includes("commands/devflow-audit.toml"), "User installer missing audit command");
 assert(userEntries.includes("scripts/devflow-plan.js"), "User installer missing plan script");
 assert(userEntries.includes("scripts/devflow-spec.js"), "User installer missing spec script");
@@ -76,6 +82,10 @@ assert(fs.existsSync(path.join(createHome, "skills/devflow-core/SKILL.md")), "Wr
 assert(fs.existsSync(path.join(createHome, "skills/devflow-spec/SKILL.md")), "Write mode must create spec skill file");
 assert(fs.existsSync(path.join(createHome, "skills/devflow-pua/SKILL.md")), "Write mode must create pua skill file");
 assert(fs.existsSync(path.join(createHome, "skills/devflow-project-knowledge/SKILL.md")), "Write mode must create project-knowledge skill file");
+assert(fs.existsSync(path.join(createHome, "skills/devflow-docs-followup/SKILL.md")), "Write mode must create completion document follow-up skill file");
+assert(fs.existsSync(path.join(createHome, "skills/devflow-docs-followup/agents/openai.yaml")), "Write mode must create completion document follow-up UI metadata");
+assert(fs.existsSync(path.join(createHome, "skills/devflow-adversarial/SKILL.md")), "Write mode must create independent adversarial skill file");
+assert(fs.existsSync(path.join(createHome, "skills/devflow-find-fault/SKILL.md")), "Write mode must create independent find-fault skill file");
 assert(fs.existsSync(path.join(createHome, "skills/devflow-pua/references/methodology-router.md")), "Write mode must create pua methodology router");
 assert(fs.existsSync(path.join(createHome, "skills/devflow-pua/references/methodology-library.md")), "Write mode must create pua methodology library");
 assert(fs.existsSync(path.join(createHome, "skills/devflow-pua/references/flavor-display.md")), "Write mode must create pua flavor display");
@@ -84,6 +94,8 @@ assert(fs.existsSync(path.join(createHome, "skills/devflow-brainstorm/references
 assert(fs.existsSync(path.join(createHome, "commands/devflow.toml")), "Write mode must create command file");
 assert(fs.existsSync(path.join(createHome, "commands/devflow-spec.toml")), "Write mode must create spec command file");
 assert(fs.existsSync(path.join(createHome, "commands/devflow-pua.toml")), "Write mode must create pua command file");
+assert(fs.existsSync(path.join(createHome, "commands/devflow-adversarial.toml")), "Write mode must create independent adversarial command file");
+assert(fs.existsSync(path.join(createHome, "commands/devflow-find-fault.toml")), "Write mode must create independent find-fault command file");
 assert(fs.existsSync(path.join(createHome, "commands/devflow-audit.toml")), "Write mode must create audit command file");
 assert(fs.existsSync(path.join(createHome, "scripts/devflow-plan.js")), "Write mode must create script file");
 assert(fs.existsSync(path.join(createHome, "scripts/devflow-spec.js")), "Write mode must create spec script file");

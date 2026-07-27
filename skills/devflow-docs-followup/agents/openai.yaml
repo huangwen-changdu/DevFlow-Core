@@ -1,0 +1,4 @@
+interface:
+  display_name: "Completion Document Follow-Up"
+  short_description: "Offer post-completion technical and handoff docs."
+  default_prompt: "Use $devflow-docs-followup to ask which completion documents to create."

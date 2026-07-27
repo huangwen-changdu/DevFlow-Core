@@ -3,20 +3,21 @@
 Use DevFlow Core for this request.
 
 First read `AGENTS.md`. If skill files are available, also read `skills/devflow-core/SKILL.md` before routing.
-At Sense, probe existing `.copilot/LEARNING_INDEX.md` and `docs/project-knowledge/`. Load only index-matched learning cards or navigation-selected business knowledge documents; absence is non-blocking and does not create storage.
+At Sense, probe existing `.copilot/LEARNING_INDEX.md` and `docs/project-knowledge/`. Load only index-matched learning cards or navigation-selected business knowledge documents; absence is non-blocking and does not create storage. **Also scan available skills in the current environment** (platform skill registry, `use_skill` listing, local skill directories). When a non-devflow skill (e.g., `frontend-design`, `pdf`, `understand`, `data-analysis`) matches the task, suggest loading it alongside the devflow route — external skills guide execution quality, devflow manages scope and risk.
 
 Route as Problem, Fast, Design-lite, Design, Build, or Recovery.
 
 Hard trigger rules:
 
 - If the request mentions requirement, feature, UI, page, behavior, architecture, ambiguity, multiple options, unclear distinction, prompt, quick question, service/server implementation, or says something is hard to distinguish, load `skills/devflow-brainstorm/SKILL.md` before coding.
-- For non-trivial Brainstorm, load `skills/devflow-brainstorm/SKILL.md` plus `skills/devflow-brainstorm/references/interview-discipline.md`; ask one question at a time with a recommended answer, read facts instead of asking when possible. Brainstorm ends at the Depth Selection Gate where the user picks A/B/C (option semantics live in `skills/devflow-brainstorm/SKILL.md`). Core Clarification 3 questions are required for all depths. Continue through the selected depth path, then Cut/Build/Prove.
+- For non-trivial Brainstorm, load `skills/devflow-brainstorm/SKILL.md` plus `skills/devflow-brainstorm/references/interview-discipline.md`; ask one question at a time with a recommended answer, read facts instead of asking when possible. Brainstorm ends at the Depth Selection Gate where the user picks A/B/C (option semantics live in `skills/devflow-brainstorm/SKILL.md`). Core Clarification is required for A/B only; C goes directly to `devflow-cut`. Continue through the selected depth path, then Cut/Build/Prove.
 - Requirements and feature requests load devflow-brainstorm before any code. The brainstorming skill enforces its own HARD-GATE.
 - If the user asks to implement, adjust, update, fix, build, or land the change, continue through Build and Prove. Steps scale to task size — Cut and Prove are never skipped, but Brainstorm/Plan may be skipped when already completed or when the task is trivial enough for Fast/Design-lite.
 - If the request reports a problem without asking for a fix, run Problem: Sense -> Prove facts first.
 - If the request includes bug, error, failing test, broken, or regression, include Root-Cause Check before editing.
 - For problem solving, bug fixing, and architecture design, use First Principles Cut when the cause, constraint, invariant, abstraction, or smallest correct mechanism is unclear; reduce to facts, constraints, and invariants before selecting a solution.
 - If the user says wrong, not like that, changed wrong, your code is wrong, you wrote it wrong, has a problem, not right, missing, incomplete, still missing, quality complaint, user dissatisfied, 有问题, 不对, 写错了, 改歪了, 没改对, 不是我要的, 理解错了, 少了, 少个, 缺少, 缺漏, 遗漏, 漏了, or 改了几次, load `skills/devflow-pua/SKILL.md`. For repeated challenge, explicit wrong-code signals, or repeated missing-piece complaints, also read `skills/devflow-pua/references/methodology-router.md`, `skills/devflow-pua/references/methodology-library.md`, and `skills/devflow-pua/references/flavor-display.md`; stop the current approach, quarantine old wrong context, classify User-view miss and Satisfaction gap, display `METHOD: {flavor} / {method}`, restart `skills/devflow-brainstorm/SKILL.md`, ask what is wrong and what result is wanted when not inferable, switch to a different/opposite method when the prior method failed, then Prove and Learn when reusable.
+- If the user explicitly requests independent deep adversarial review, red-team review, 对抗审查, or 升级版对抗审查, load `skills/devflow-adversarial/SKILL.md` directly. If the user explicitly requests find-fault review, biggest omission, blind spot, least-certain point, 找茬, 最大遗漏, 没有意识到什么, or 最没有把握, load `skills/devflow-find-fault/SKILL.md` directly. Both are manual at any stage and do not read, require, modify, or hand off to lifecycle skills or completion state.
 
 For Brainstorm:
 

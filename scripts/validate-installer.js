@@ -88,10 +88,14 @@ function assertInstalledRuntimeIsSelfContained(targetRoot) {
       if (
         referencedPath === "docs/plans/" ||
          referencedPath === "docs/specs/" ||
-         referencedPath === "docs/features/" ||
-         referencedPath === "docs/features/*.md" ||
-         referencedPath === "docs/project-knowledge/" ||
-         referencedPath === "docs/adr/"
+        referencedPath === "docs/features/" ||
+        referencedPath === "docs/features/*.md" ||
+        referencedPath === "docs/project-knowledge/" ||
+        referencedPath === "docs/adr/" ||
+        referencedPath === "docs/technical/" ||
+        referencedPath === "docs/frontend-handoff/" ||
+        referencedPath === "docs/troubleshooting/" ||
+        referencedPath === "scripts/devflow-"
       ) {
         continue;
       }
@@ -152,6 +156,10 @@ assert(fs.existsSync(path.join(createTarget, "skills/devflow-core/SKILL.md")), "
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-spec/SKILL.md")), "Write mode must create spec skill");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-pua/SKILL.md")), "Write mode must create pua skill");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-project-knowledge/SKILL.md")), "Write mode must create project-knowledge skill");
+assert(fs.existsSync(path.join(createTarget, "skills/devflow-docs-followup/SKILL.md")), "Write mode must create completion document follow-up skill");
+assert(fs.existsSync(path.join(createTarget, "skills/devflow-docs-followup/agents/openai.yaml")), "Write mode must create completion document follow-up UI metadata");
+assert(fs.existsSync(path.join(createTarget, "skills/devflow-adversarial/SKILL.md")), "Write mode must create independent adversarial skill");
+assert(fs.existsSync(path.join(createTarget, "skills/devflow-find-fault/SKILL.md")), "Write mode must create independent find-fault skill");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-pua/references/methodology-router.md")), "Write mode must create pua methodology router");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-pua/references/methodology-library.md")), "Write mode must create pua methodology library");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-pua/references/flavor-display.md")), "Write mode must create pua flavor display");
@@ -159,6 +167,8 @@ assert(fs.existsSync(path.join(createTarget, "commands/devflow.toml")), "Write m
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-brainstorm/references/interview-discipline.md")), "Write mode must create interview discipline reference");
 assert(fs.existsSync(path.join(createTarget, "commands/devflow-spec.toml")), "Write mode must create spec command");
 assert(fs.existsSync(path.join(createTarget, "commands/devflow-pua.toml")), "Write mode must create pua command");
+assert(fs.existsSync(path.join(createTarget, "commands/devflow-adversarial.toml")), "Write mode must create independent adversarial command");
+assert(fs.existsSync(path.join(createTarget, "commands/devflow-find-fault.toml")), "Write mode must create independent find-fault command");
 assert(fs.existsSync(path.join(createTarget, "commands/devflow-audit.toml")), "Write mode must create audit command");
 assert(fs.existsSync(path.join(createTarget, "scripts/devflow-debt.js")), "Write mode must create debt scanner");
 assert(fs.existsSync(path.join(createTarget, "scripts/devflow-review.js")), "Write mode must create review scanner");

@@ -30,11 +30,12 @@ After reading the touched flow, stop at the first rung that works:
 1. Does this need to exist?
 2. Can the user goal be met by not changing code?
 3. Does it already exist in this codebase?
-4. Does the standard library do it?
-5. Does the native platform do it?
-6. Does an already-installed dependency do it?
-7. Can it be one line or direct configuration?
-8. Only then write the minimum new code.
+4. Does an available skill in the environment handle this without writing new code? (e.g., `pdf` for reading a PDF, `understand` for codebase analysis. If a skill like `frontend-design` guides how to implement, load it alongside the devflow route — it complements, not replaces, the devflow chain. Produce `CUT_REUSE` only when the skill fully handles the task with no new code needed.)
+5. Does the standard library do it?
+6. Does the native platform do it?
+7. Does an already-installed dependency do it?
+8. Can it be one line or direct configuration?
+9. Only then write the minimum new code.
 
 If two rungs both work, take the earlier rung and move on. The ladder is not permission to skip reading; first trace the real flow the change touches.
 
@@ -69,7 +70,7 @@ If the native option is not enough, name the current limitation and evidence.
 Missing answers block Build:
 
 ```text
-Reuse Check: what existing capability was searched/confirmed?
+Reuse Check: what existing capability was searched/confirmed? Include available environment skills that match the task.
 Ponytail Rung: where did the ladder stop, and why were lower rungs insufficient?
 Root-Cause Check: for bug fixes, were callers/shared entry points searched? shared or narrow fix, and why?
 Native Check: is platform or standard-library capability enough?
