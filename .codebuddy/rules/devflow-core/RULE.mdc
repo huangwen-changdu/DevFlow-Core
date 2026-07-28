@@ -9,7 +9,7 @@ provider:
 
 Follow [AGENTS.md](../../../AGENTS.md) as the shared project rule source.
 
-Use `Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> devflow-cut -> devflow-build -> devflow-prove` as the default lightweight development flow. Depth A/B/C is chosen by the user at the brainstorm Depth Selection Gate, not by the LLM (option semantics live in `skills/devflow-brainstorm/SKILL.md`).
+Use `Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> devflow-cut -> /devflow-plan | B: devflow-cut -> /devflow-plan | C: direct -> devflow-cut) -> devflow-build -> devflow-prove` as the default lightweight development flow. Depth A/B/C is chosen by the user at the brainstorm Depth Selection Gate, not by the LLM (option semantics live in `skills/devflow-brainstorm/SKILL.md`).
 
 Authoritative method source: `skills/devflow-core/references/core-methods.md`.
 
@@ -32,7 +32,7 @@ Rules:
 - Apply Karpathy Minimal Change: touch only the files needed for the user goal; do not add speculative abstraction or opportunistic refactors.
 - Before adding a dependency, abstraction, config, directory, framework layer, or generic engine, explain why it is needed now.
 - Before reporting done on development work, run verification and adversarial review against acceptance criteria, touched files, likely regressions, activation paths, and proof coverage. Output command, result, adversarial review, and `PASS / FAIL / BLOCKED`; a real gap means `FAIL` or continued work.
-- Build is blocked until Required Gates are answered: Reuse, Ponytail Rung, Root-Cause (bug fixes), Native, Overbuild, Diff, Scope. Cut results: CUT_PASS -> build; CUT_REDUCE/CUT_REUSE -> STOP for user confirmation; CUT_BLOCKED -> return to devflow-brainstorm.
+- Build is blocked until Required Gates are answered: Reuse, Ponytail Rung, Root-Cause (bug fixes), Native, Overbuild, Diff, Scope. Cut results: CUT_PASS -> A/B: /devflow-plan -> build; C: build; CUT_REDUCE/CUT_REUSE -> STOP for user confirmation; CUT_BLOCKED -> return to devflow-brainstorm.
 - STOP gates are mandatory wait points: brainstorm (depth selection A/B/C, design contract [A/B only]), spec (1: review), /devflow-plan (1: review), cut (1: CUT_REDUCE/CUT_REUSE).
 - If the user challenges the result and the miss is reusable, load `devflow-learn` before claiming completion.
 

@@ -48,6 +48,7 @@ for (const entry of userEntries) {
 assert(!userEntries.includes("AGENTS.md"), "User installer must not install AGENTS.md");
 assert(userEntries.includes("skills/devflow-core/SKILL.md"), "User installer missing core skill");
 assert(userEntries.includes("skills/devflow-spec/SKILL.md"), "User installer missing spec skill");
+assert(userEntries.includes("skills/devflow-plan/SKILL.md"), "User installer missing plan skill");
 assert(userEntries.includes("skills/devflow-pua/SKILL.md"), "User installer missing pua skill");
 assert(userEntries.includes("skills/devflow-project-knowledge/SKILL.md"), "User installer missing project-knowledge skill");
 assert(userEntries.includes("skills/devflow-docs-followup/SKILL.md"), "User installer missing completion document follow-up skill");
@@ -80,6 +81,7 @@ const createOutput = runInstaller(createHome, ["--write"]);
 assert(createOutput.includes("created: skills/devflow-core/SKILL.md"), "Write mode must create user skill");
 assert(fs.existsSync(path.join(createHome, "skills/devflow-core/SKILL.md")), "Write mode must create skill file");
 assert(fs.existsSync(path.join(createHome, "skills/devflow-spec/SKILL.md")), "Write mode must create spec skill file");
+assert(fs.existsSync(path.join(createHome, "skills/devflow-plan/SKILL.md")), "Write mode must create plan skill file");
 assert(fs.existsSync(path.join(createHome, "skills/devflow-pua/SKILL.md")), "Write mode must create pua skill file");
 assert(fs.existsSync(path.join(createHome, "skills/devflow-project-knowledge/SKILL.md")), "Write mode must create project-knowledge skill file");
 assert(fs.existsSync(path.join(createHome, "skills/devflow-docs-followup/SKILL.md")), "Write mode must create completion document follow-up skill file");

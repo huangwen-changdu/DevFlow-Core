@@ -11,7 +11,11 @@ Cut unnecessary work before writing it.
 
 ## Context
 
-Receives from `devflow-brainstorm` (Depth C: approved design contract) or `/devflow-plan` (Depth A/B: Plan Pack). When no Plan Pack is present, the approved design contract is the plan — all gates still apply, using its Goal / Not doing / Impact / Verification fields.
+Receives an approved design contract (Depth C) or an approved design/saved spec (Depth A/B). Cut decides the smallest implementation boundary before a Plan Pack is written; do not use a future plan as the evidence for these gates.
+
+- Depth A/B: `CUT_PASS` produces the Cut Decision consumed by `devflow-plan`.
+- Depth C: `CUT_PASS` hands the approved design and Cut Decision directly to `devflow-build`.
+- A user-approved Plan Pack receives only a lightweight Cut-consistency review. If it adds scope, dependencies, abstractions, or file responsibilities outside the Cut Decision, re-run only the affected Cut gates before Build.
 
 ## Cut Intensity
 
@@ -151,10 +155,10 @@ Do not remove:
 Output one of:
 
 ```text
-CUT_PASS: smallest plan holds; enter devflow-build
-CUT_REDUCE: plan is too heavy; reduce to <smaller option>
+CUT_PASS: smallest scope holds; Depth A/B enter `devflow-plan`, Depth C enters `devflow-build`
+CUT_REDUCE: proposed scope is too heavy; reduce to <smaller option>
 CUT_REUSE: existing capability can be reused; do not write new implementation
-CUT_BLOCKED: missing facts or risk too high; cannot enter Build
+CUT_BLOCKED: missing facts or risk too high; cannot enter Plan or Build
 ```
 
 When `CUT_REDUCE` or `CUT_REUSE` occurs, **STOP — present the reduction or reuse finding to the user**. Explain what was cut, what existing capability replaces it, and why the smaller option is sufficient. Wait for the user to confirm before updating the design contract and entering Build.
@@ -185,7 +189,12 @@ When `CUT_BLOCKED` occurs, hand back to `devflow-brainstorm` to re-explore the g
 
 ## Handoff
 
-When the cut gate passes, load `devflow-build`.
+After `CUT_PASS`, record a Cut Decision containing the allowed scope, reuse conclusion, exclusions, and required verification:
+
+- Depth A/B: load `devflow-plan` to create the construction checklist.
+- Depth C: load `devflow-build` with the approved design and Cut Decision.
+
+Do not hand a `CUT_REDUCE` or `CUT_REUSE` result forward until the user confirms it. Do not let a Plan Pack broaden the Cut Decision without re-running the affected gates.
 
 ## Verification
 

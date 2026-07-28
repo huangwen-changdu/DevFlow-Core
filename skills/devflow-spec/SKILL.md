@@ -58,7 +58,7 @@ Do not force a spec for Design-lite work where a short design contract and quick
 Spec: docs/specs/YYYY-MM-DD-<short-kebab-name>.md
 Source: <approved design from devflow-brainstorm>
 Review: unresolved-marker scan <pass/fail>; consistency <pass/fail>; scope <pass/fail>; ambiguity <pass/fail>
-Next: /devflow-plan with Source and Spec coverage, then devflow-cut -> devflow-build
+Next: `devflow-cut` with Source and Spec coverage; after `CUT_PASS`, `devflow-plan` / `/devflow-plan`; then devflow-build
 ```
 
 ## Anti-Rationalization

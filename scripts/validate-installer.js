@@ -154,6 +154,7 @@ assert(createOutput.includes("created: AGENTS.md"), "Write mode must create AGEN
 assert(fs.existsSync(path.join(createTarget, "AGENTS.md")), "Write mode must create AGENTS.md");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-core/SKILL.md")), "Write mode must create core skill");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-spec/SKILL.md")), "Write mode must create spec skill");
+assert(fs.existsSync(path.join(createTarget, "skills/devflow-plan/SKILL.md")), "Write mode must create plan skill");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-pua/SKILL.md")), "Write mode must create pua skill");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-project-knowledge/SKILL.md")), "Write mode must create project-knowledge skill");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-docs-followup/SKILL.md")), "Write mode must create completion document follow-up skill");

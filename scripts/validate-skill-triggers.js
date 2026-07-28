@@ -23,6 +23,7 @@ const files = {
   brainstorm: read("skills/devflow-brainstorm/SKILL.md"),
   interviewDiscipline: read("skills/devflow-brainstorm/references/interview-discipline.md"),
   spec: read("skills/devflow-spec/SKILL.md"),
+  plan: read("skills/devflow-plan/SKILL.md"),
   cut: read("skills/devflow-cut/SKILL.md"),
   build: read("skills/devflow-build/SKILL.md"),
   prove: read("skills/devflow-prove/SKILL.md"),
@@ -94,7 +95,7 @@ const cases = [
     name: "interviewed build request with spec",
     input: "Implement CSV export for orders; clarify the design and write a spec before implementation.",
     route: "Build",
-    skillPath: "devflow-core -> devflow-brainstorm -> devflow-spec -> /devflow-plan -> devflow-cut -> devflow-build -> devflow-prove",
+    skillPath: "devflow-core -> devflow-brainstorm -> devflow-spec -> devflow-cut -> /devflow-plan -> devflow-build -> devflow-prove",
     checks: [
       ["AGENTS.md", files.agents, "interview-discipline.md"],
       ["devflow-core", files.core, "Brainstorm Interview Discipline"],
@@ -102,8 +103,8 @@ const cases = [
       ["devflow-brainstorm", files.brainstorm, "interview-discipline.md"],
       ["interview discipline reference", files.interviewDiscipline, "one-question-at-a-time"],
       ["interview discipline reference", files.interviewDiscipline, "DevFlow design contract"],
-      ["interview discipline reference", files.interviewDiscipline, "devflow-spec -> /devflow-plan"],
-      ["devflow-spec", files.spec, "docs/specs/YYYY-MM-DD-<short-kebab-name>.md"],
+      ["devflow-brainstorm", files.brainstorm, "devflow-spec → devflow-cut → /devflow-plan"],
+      ["devflow-spec", files.spec, "Next: `devflow-cut` with Source and Spec coverage; after `CUT_PASS`, `devflow-plan` / `/devflow-plan`"],
       ["devflow command", files.devflowCommand, "interview-discipline.md"]
     ]
   },
@@ -310,7 +311,7 @@ const commandCases = [
       ["devflow-spec command", files.specCommand, "scripts/devflow-spec.js"],
       ["devflow-spec command", files.specCommand, "docs/specs/YYYY-MM-DD-<short-kebab-name>.md"],
       ["devflow-spec command", files.specCommand, "Required sections"],
-      ["devflow-spec", files.spec, "Next: /devflow-plan with Source and Spec coverage"]
+      ["devflow-spec", files.spec, "Next: `devflow-cut` with Source and Spec coverage; after `CUT_PASS`, `devflow-plan` / `/devflow-plan`"]
     ]
   },
   {
@@ -318,10 +319,15 @@ const commandCases = [
     input: "/devflow-plan create implementation slices from this approved design",
     command: "/devflow-plan",
     checks: [
-      ["devflow-plan command", files.planCommand, "Create a DevFlow Plan Pack"],
+      ["devflow-plan command", files.planCommand, "single DevFlow Plan Pack"],
+      ["devflow-plan command", files.planCommand, "CUT_PASS"],
       ["devflow-plan command", files.planCommand, "scripts/devflow-plan.js"],
+      ["devflow-plan command", files.planCommand, "lightweight Cut-consistency review"],
+      ["devflow-plan command", files.planCommand, "devflow-build"],
       ["devflow-plan command", files.planCommand, "docs/plans/YYYY-MM-DD-<short-kebab-name>.md"],
-      ["devflow-plan command", files.planCommand, "small verifiable slices"],
+      ["devflow-plan command", files.planCommand, "Interfaces:"],
+      ["devflow-plan command", files.planCommand, "concrete file + symbol/behavior/command + expected result"],
+      ["devflow-plan skill", files.plan, "only DevFlow plan-generation skill"],
       ["devflow-build", files.build, "Plan Pack"]
     ]
   },

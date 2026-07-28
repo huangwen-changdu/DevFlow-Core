@@ -24,7 +24,7 @@ node ~/.codex/scripts/devflow-spec.js <spec-file>
 node ~/.claude/scripts/devflow-spec.js <spec-file>
 ```
 
-Use the script output as the required-section, unresolved-marker, and spec-landing check before `/devflow-plan`.
+Use the script output as the required-section, unresolved-marker, and spec-landing check before `devflow-cut`.
 
 Required sections (headers must remain in English for checker validation; content can be in the user's language):
 Goal:
@@ -38,9 +38,10 @@ Verification:
 Code Documentation:
 Open Questions:
 
-After the spec passes, create the plan with:
+After `CUT_PASS`, create the plan with:
 Source: <spec path or approved design>
 Spec coverage: <which requirements map to which tasks>
+Cut Decision: <allowed scope, reuse conclusion, exclusions, verification constraints>
 
-Next: /devflow-plan with Source and Spec coverage, then devflow-cut -> devflow-build -> devflow-prove.
+Next: devflow-cut -> `CUT_PASS` -> /devflow-plan with Source, Spec coverage, and Cut Decision -> devflow-build -> devflow-prove.
 '''

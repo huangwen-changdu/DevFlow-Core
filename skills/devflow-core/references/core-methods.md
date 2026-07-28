@@ -335,22 +335,37 @@ The `Code Documentation` section specifies what code comments are required: whic
 
 Run `node scripts/devflow-spec.js <spec-file>` when the checker exists. See Script Path Resolution below for path fallback order.
 
-Use a Plan Pack when work has more than one logical implementation step.
+Use a Plan Pack when work has more than one logical implementation step. `devflow-plan` is the single runtime skill that writes this contract after `devflow-cut` returns `CUT_PASS`.
+
+For Depth A/B, Cut receives the approved design or saved spec first and records the allowed scope, reuse decision, exclusions, and verification constraints. The Plan Pack then turns only that Cut Decision into construction tasks. After plan review, perform a lightweight consistency review; re-run affected Cut gates only when the plan expands scope, dependencies, abstractions, or file responsibilities.
 
 When saving a plan file, use `docs/plans/YYYY-MM-DD-<short-kebab-name>.md` from the current target project's root by default unless that project already documents another plan path. Do not put implementation plans under `docs/features/`.
 
-Each plan must cite its source and spec coverage:
+Each plan header must cite its source and spec coverage:
 
 ```text
+Goal: <outcome>
+Architecture: <smallest design and boundaries>
+Tech Stack: <relevant existing stack>
 Source: <docs/specs/YYYY-MM-DD-<short-kebab-name>.md or approved design>
 Spec coverage: <which requirements map to which tasks, or design-only>
+Cut Decision: <CUT_PASS allowed scope, reuse conclusion, exclusions, verification constraints>
 ```
 
 Each task must include:
 
 ```text
 Task: <short title>
-Files: <exact files likely touched>
+Files:
+- Create: <path> | <responsibility>
+- Modify: <path> | <responsibility>
+- Test: <path> | <behavior proved>  # only when applicable
+Interfaces:
+- Consumes: <input/API/module or documentation-only exception>
+- Produces: <output/API/module or documentation-only exception>
+Steps:
+- [ ] <concrete file + symbol/behavior/command + expected result>
+- [ ] <concrete file + symbol/behavior/command + expected result>
 Acceptance: <specific condition>
 Verify: <exact command or manual scenario>
 Comments: <what code comments are required — which functions need function-level comments, which non-obvious logic needs inline comments explaining WHY; or "none — trivial change">
@@ -364,7 +379,7 @@ Task sizing:
 - M: 3-5 files, one feature slice
 - L: 5+ files, split before execution
 
-No unresolved markers, vague "add tests" tasks, "handle edge cases" items without naming the case, or "similar to Task N" shortcuts.
+No unresolved markers, vague "add tests" tasks, "handle edge cases" items without naming the case, or "similar to Task N" shortcuts. The checker validates static task structure; source coverage and architecture judgment remain the author’s review responsibility.
 
 ## Method 11: Karpathy Minimal Change
 
@@ -431,6 +446,7 @@ Completion format:
 ```text
 Command: <actual command>
 Result: <key output, count, or failure>
+Adversarial review: <acceptance criteria, regressions, activation paths, and proof coverage checked>
 Judgment: PASS / FAIL / BLOCKED
 ```
 

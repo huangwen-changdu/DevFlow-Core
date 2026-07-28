@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current Version: v43
+- Current Version: v45
 - Status: active
-- Last Change: adversarial-review-confirmation-pause
+- Last Change: cut-before-plan-construction-flow
 - Product Area: runtime flow, skill routing, validation, learning loop
 
 ## Feature Background
@@ -12,7 +12,7 @@
 DevFlow Core Runtime is the central product capability of DevFlow-Core. It turns developer requests into a lightweight but verified agent workflow:
 
 ```text
-Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> devflow-cut -> devflow-build -> devflow-prove -> devflow-learn when needed
+Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> devflow-cut -> /devflow-plan | B: devflow-cut -> /devflow-plan | C: direct -> devflow-cut) -> devflow-build -> devflow-prove -> devflow-learn when needed
 ```
 
 This ledger exists so future changes do not lose why the runtime is shaped this way, which reference-project ideas were absorbed, and which boundaries must not drift.
@@ -34,6 +34,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - `devflow-brainstorm`, `devflow-spec`, `devflow-cut`, `devflow-build`, `devflow-prove`, `devflow-pua`, `devflow-learn`, and `devflow-audit` as focused lifecycle or audit skills.
 - `devflow-brainstorm` interview discipline as core behavior: one question at a time, recommended answers, fact reads before asking, and documentation landing decisions through `devflow-spec`, feature ledgers, or ADRs when needed.
 - `devflow-brainstorm` Depth Selection Gate: three design depths (A: Full Spec with 3 confirmations, B: Simplified Spec with 2 confirmations, C: Dialogue Confirmation with 1 confirmation). Depth is user-chosen based on Small Request Boundary gates.
+- `devflow-plan` is the single plan-generation skill behind the unchanged `/devflow-plan` command: after `devflow-cut` returns `CUT_PASS`, it writes reviewed construction Plan Packs with source coverage, categorized file operations, input/output interface contracts, concrete checkbox steps, task acceptance and verification, code-comment requirements, and an approval stop before `devflow-build`; plan review performs only a lightweight Cut-consistency check and re-runs affected Cut gates only on scope drift. It does not prescribe test-first development, version-control task steps, independent review, or plan execution.
 - Commands for route, spec, plan, review, debt, prove, pua, learn, audit, independent adversarial review, and find-fault review; `/devflow-spec` can use the bundled `scripts/devflow-spec.js` checker, `/devflow-plan` can use the bundled `scripts/devflow-plan.js` plan-pack checker, `/devflow-review` can use the bundled `scripts/devflow-review.js` gate scanner, `/devflow-debt` can use the bundled `scripts/devflow-debt.js` scanner, and `/devflow-audit` can use the bundled `scripts/devflow-audit.js` repo-wide audit scanner.
 - Saved specs default to `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`; saved plans default to `docs/plans/YYYY-MM-DD-<short-kebab-name>.md` and must cite `Source:` plus `Spec coverage:`.
 - `npm test` validation for required files, skills, commands, PRD, learning cards, and stale paths.
@@ -61,6 +62,8 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 
 | Version | Change | Type | Date | Status | Summary |
 |---|---|---|---|---|---|
+| v45 | cut-before-plan-construction-flow | lifecycle routing | 2026-07-28 | active | Reordered Depth A/B to run `devflow-cut` before the sole `devflow-plan` skill. `CUT_PASS` now provides allowed scope, reuse conclusions, exclusions, and verification constraints to the construction plan; approved plans receive only a lightweight Cut-consistency review, returning to affected Cut gates only when their scope drifts. Depth C remains Cut -> Build, and `devflow-prove` remains the final validation and code-review layer. |
+| v44 | unified-devflow-plan-writing-discipline | plan generation | 2026-07-28 | active | Added `devflow-plan` as the sole plan-generation skill behind the unchanged `/devflow-plan` command. It absorbs writing-plans discipline through categorized file operations, interface contracts, concrete steps, and static checker coverage while preserving DevFlow source tracing and the approval -> `devflow-cut` handoff. It intentionally excludes test-first workflow, version-control task steps, independent reviewer skills, and plan execution. |
 | v43 | adversarial-review-confirmation-pause | manual review safety | 2026-07-27 | active | Added a confirmation pause inside `devflow-adversarial`: every run warns that the review may take a long time, and does not inspect materials or begin the five-angle review until the user explicitly confirms. |
 | v42 | external-skill-complementary-model | skill integration | 2026-07-27 | active | Corrected External Skill Discovery from alternative to complementary model. External skills (e.g., `frontend-design`) guide execution quality; devflow (brainstorm -> cut -> build -> prove) manages scope and risk. The devflow chain always runs. `CUT_REUSE` applies only when a skill fully handles the task with no new code needed (e.g., `pdf`, `understand`). Removed "instead of writing new code" and "Do not force devflow skills" language from all surfaces. Updated skill-call-diagram.md to remove EXT->PROVE shortcut edge. |
 | v41 | external-skill-discovery | skill integration | 2026-07-27 | active | Added External Skill Discovery to `devflow-core` Context Map, Capability Dispatch, and Verification checklist. Added skill-reuse rung to the Minimal Solution Ladder in `devflow-cut` and `core-methods.md`. Updated `skill-call-diagram.md` with external skill integration points. Updated all host entry points (AGENTS.md, CLAUDE.md, CodeBuddy rules, Copilot instructions, VS Code prompt, Gemini, Claude command) with Skill Discovery awareness. |
@@ -147,6 +150,8 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - 2026-07-14: Document sync scope and merge guidance instead of adding speculative automatic text merges. Reason: user-level skills/commands/scripts and target-project host rules have different ownership; generic merging of `AGENTS.md` or host rules can silently discard project constraints, while the current installer only safely merges Claude SessionStart settings.
 - 2026-07-14: Prefix saved specs and plans with their creation date and resolve the default paths from the current target project root. Reason: date-prefixed artifacts are easier to scan and avoid ambiguous repeated names across project history without introducing a new artifact directory or generator.
 - 2026-07-17: Reuse existing learning and project-knowledge indexes for progressive recall instead of adding a search service. Reason: task-start probing plus index-directed reads makes stored knowledge usable while avoiding context bloat, automatic empty-directory creation, dependencies, and unproven runtime automation.
+- 2026-07-28: Run `devflow-cut` before the existing `devflow-plan` skill instead of adding a second Cut after a detailed plan. Reason: Cut must bound whether and what to build before file-level construction tasks exist; a later plan needs only a consistency check unless it expands the approved scope.
+- 2026-07-28: Upgrade the existing `devflow-plan` command into one dedicated `devflow-plan` skill rather than adding a `devflow-writing-plans` alias or second plan skill. Reason: planning has one lifecycle position and one checker; file operations, interface contracts, and concrete steps improve its existing contract without creating routing ambiguity or duplicate install surfaces.
 - 2026-07-26: Add `devflow-adversarial` and `devflow-find-fault` as separate manual skills instead of extending `devflow-prove` or PUA. Reason: users need an on-demand challenge at any task stage, while Prove is completion-gated and PUA is recovery-gated; coupling either would make manual critique unexpectedly alter lifecycle behavior or completion semantics.
 
 ## Known Constraints

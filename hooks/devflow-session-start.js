@@ -6,7 +6,7 @@ const context = [
   "Use the lightest safe route: Problem, Fast, Design-lite, Design, Build, or Recovery.",
   "Start normal development work with devflow-core when skills are available.",
   "At Sense, probe existing .copilot/LEARNING_INDEX.md and docs/project-knowledge/; progressively load only matched cards or navigation-selected knowledge documents. Missing locations are non-blocking and do not create storage.",
-  "For requirements or ambiguity, use Brainstorm before coding; before adding structure, run Cut; before claiming done, run Prove.",
+  "For requirements or ambiguity, use Brainstorm before coding; after approved Design or Spec, run Cut; Depth A/B create an implementation plan only after CUT_PASS, while Depth C enters Build; before claiming done, run Prove.",
   "Saved specs default to docs/specs/YYYY-MM-DD-<short-kebab-name>.md and plans to docs/plans/YYYY-MM-DD-<short-kebab-name>.md from the current target project root.",
   "Problem reports without an explicit fix request need Sense -> Prove facts before edits.",
   "For problem solving, bug fixing, and architecture design, use First Principles Cut when the cause, constraint, invariant, abstraction, or smallest correct mechanism is unclear; reduce to facts, constraints, and invariants before selecting a solution.",

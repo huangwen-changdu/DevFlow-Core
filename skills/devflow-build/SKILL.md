@@ -9,8 +9,12 @@ Implement only the selected smallest useful solution.
 
 ## Context
 
-Receives `CUT_PASS` from `devflow-cut`. Input may be a Plan Pack (Depth A/B: `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`) or an approved design contract (Depth C: no plan file). When no plan file exists, the design contract is the plan — skip the plan checker and use its fields as the Build Contract basis.
+Receives a `CUT_PASS` Cut Decision from `devflow-cut`.
 
+- Depth A/B input: `CUT_PASS` plus a user-approved Plan Pack at `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`. Confirm the plan stays within the recorded Cut scope; re-run only affected Cut gates if the plan introduces scope, dependency, abstraction, or file-responsibility drift.
+- Depth C input: `CUT_PASS` plus the approved design contract; no Plan Pack is required.
+
+When no plan file exists, the approved design and Cut Decision form the Build Contract basis; skip the plan checker.
 ## Build Contract
 
 Before editing, state:
@@ -31,10 +35,23 @@ When saving a plan file, use `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`, reso
 For multi-step work, tasks must cite the approved source and be small and verifiable:
 
 ```text
+Goal: <outcome>
+Architecture: <smallest design and boundaries>
+Tech Stack: <relevant existing stack>
 Source: <docs/specs/YYYY-MM-DD-<short-kebab-name>.md or approved design>
 Spec coverage: <which requirement(s) this plan covers, or design-only>
+Cut Decision: <CUT_PASS allowed scope, reuse conclusion, exclusions, verification constraints>
 Task: <short title>
-Files: <exact files likely touched>
+Files:
+- Create: <path> | <responsibility>
+- Modify: <path> | <responsibility>
+- Test: <path> | <behavior proved>  # only when applicable
+Interfaces:
+- Consumes: <input/API/module or documentation-only exception>
+- Produces: <output/API/module or documentation-only exception>
+Steps:
+- [ ] <concrete file + symbol/behavior/command + expected result>
+- [ ] <concrete file + symbol/behavior/command + expected result>
 Acceptance: <specific condition>
 Verify: <exact command or manual scenario>
 Comments: <what code comments are required — which functions need function-level comments, which non-obvious logic needs inline comments explaining WHY; or "none — trivial change">

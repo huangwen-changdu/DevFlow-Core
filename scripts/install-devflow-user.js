@@ -26,6 +26,7 @@ const userEntries = [
   "skills/devflow-core/references/skill-guide.md",
   "skills/devflow-brainstorm/SKILL.md",
   "skills/devflow-spec/SKILL.md",
+  "skills/devflow-plan/SKILL.md",
   "skills/devflow-cut/SKILL.md",
   "skills/devflow-cut/references/native-capability-checklist.md",
   "skills/devflow-build/SKILL.md",

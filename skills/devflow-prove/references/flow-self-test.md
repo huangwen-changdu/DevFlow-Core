@@ -358,8 +358,10 @@ Create implementation slices from this approved design and check the plan before
 Expected behavior:
 
 - Route: Build planning before implementation.
-- Skill path: `devflow-core -> devflow-brainstorm -> devflow-cut -> devflow-build -> devflow-prove`
-- Must create a Plan Pack with Task, Files, Acceptance, Verify, and Not doing fields.
+- Skill path: `devflow-core -> devflow-brainstorm -> devflow-cut -> /devflow-plan -> devflow-build -> devflow-prove`.
+- Must run `devflow-cut` before creating a Plan Pack and record `CUT_PASS` with allowed scope, reuse conclusion, exclusions, and verification constraints.
+- Must create a Plan Pack with Task, Files, Acceptance, Verify, and Not doing fields only after `CUT_PASS`.
+- A user-approved Plan Pack receives a lightweight Cut-consistency review; scope, dependency, abstraction, or file-responsibility drift returns only affected gates to Cut.
 - Saved plan files default to `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`.
 - Must not save implementation plans under `docs/features/`; that directory is for feature ledgers.
 - Must run `node scripts/devflow-plan.js <plan-file>` when the plan is saved to a file. If not found at `scripts/devflow-plan.js` (project-level), try `~/.codex/scripts/devflow-plan.js` or `~/.claude/scripts/devflow-plan.js` (user-level). Do NOT look under `skills/scripts/`.
@@ -369,8 +371,10 @@ Expected behavior:
 Pass check:
 
 ```text
+CUT_PASS: allowed scope / reuse conclusion / exclusions / verification constraints
 Command: node scripts/devflow-plan.js docs/plans/YYYY-MM-DD-<short-kebab-name>.md
 Result: DevFlow plan pack report; Plan landing: ok docs/plans/YYYY-MM-DD-<short-kebab-name>.md; Judgment: PASS
+Next: lightweight Cut-consistency review -> devflow-build
 Judgment: PASS / FAIL / BLOCKED
 ```
 

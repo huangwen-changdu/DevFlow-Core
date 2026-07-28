@@ -54,14 +54,14 @@ Once a request enters the Brainstorm flow, it goes through the full process — 
     - **Depth A/B**: this is confirmation 1 of 3/2. Continue to step 16.
 16. **Design contract self-review** (Depth A/B only): Before handing off, check the design contract for unresolved filler text, internal contradictions, scope creep, and ambiguity. Fix inline. If a fundamental issue is found (scope needs decomposition, approach contradicts goal), go back to the relevant step instead of patching inline.
 17. **Depth-based handoff** (Depth A/B only):
-    - **Depth A**: **STOP — Confirm spec** → hand off to `devflow-spec` to land `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` (confirmation 2 of 3). After spec, hand off to `/devflow-plan` (confirmation 3 of 3).
-    - **Depth B**: **STOP — Confirm plan** → hand off to `/devflow-plan` to create a Plan Pack (confirmation 2 of 2).
+    - **Depth A**: **STOP — Confirm spec** → hand off to `devflow-spec` to land `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` (confirmation 2 of 3). After spec, hand off to `devflow-cut`; `CUT_PASS` then enters `/devflow-plan` (confirmation 3 of 3).
+    - **Depth B**: hand off to `devflow-cut`; `CUT_PASS` then enters `/devflow-plan` to create a Plan Pack (confirmation 2 of 2).
     - Recommend one based on project size and cross-module impact, but let the user decide. Wait for their response.
 
 The terminal state depends on the path taken:
 - **Fast Exit**: `devflow-cut` → `devflow-build` → `devflow-prove` (no spec/plan documents)
-- **Depth A**: `devflow-spec` → `/devflow-plan` → `devflow-cut` → `devflow-build` → `devflow-prove`
-- **Depth B**: `/devflow-plan` → `devflow-cut` → `devflow-build` → `devflow-prove`
+- **Depth A**: `devflow-spec` → `devflow-cut` → `/devflow-plan` → lightweight Cut-consistency review → `devflow-build` → `devflow-prove`
+- **Depth B**: `devflow-cut` → `/devflow-plan` → lightweight Cut-consistency review → `devflow-build` → `devflow-prove`
 - **Depth C**: `devflow-cut` → `devflow-build` → `devflow-prove`
 
 Do NOT hand off to `devflow-build` or any other implementation skill directly.
@@ -317,7 +317,7 @@ Fast Exit (recommended): all boundary gates pass; existing feature; single path.
    → No spec/plan document
 
 Full A/B/C: spec/plan documents with depth selection.
-   → A/B/C depth → progressive clarification → design contract → spec/plan → devflow-cut
+   → A/B/C depth → progressive clarification → design contract → spec when selected → devflow-cut → plan when selected
    → 2-3 confirmations depending on depth
 
 Select: Fast Exit / Full A/B/C
@@ -345,11 +345,11 @@ If the user chose Full A/B/C (or Fast Exit conditions were not met), present the
 📋 Enter design flow. Select design depth for this task:
 
 A. Full Spec (recommended for cross-module / new feature / architecture change)
-   → Design Contract → devflow-spec → /devflow-plan → devflow-cut → devflow-build
+   → Design Contract → devflow-spec → devflow-cut → /devflow-plan → devflow-build
    → 3 confirmations: design contract, spec doc, plan
 
 B. Simplified Spec (for clear-scope changes)
-   → Design Contract → /devflow-plan → devflow-cut → devflow-build
+   → Design Contract → devflow-cut → /devflow-plan → devflow-build
    → 2 confirmations: design contract, plan
 
 C. Direct (only for single-file / low-risk / user-explicit)
@@ -382,8 +382,8 @@ Select A / B / C:
 
 | User Choice | Flow Path | Confirmations |
 |----------|---------|---------|
-| **A. Full Spec** | Design Contract → devflow-spec → /devflow-plan | 3 |
-| **B. Simplified Spec** | Design Contract → /devflow-plan | 2 |
+| **A. Full Spec** | Design Contract → devflow-spec → devflow-cut → /devflow-plan | 3 |
+| **B. Simplified Spec** | Design Contract → devflow-cut → /devflow-plan | 2 |
 | **C. Direct** | devflow-cut | 0 (echo-back only) |
 
 ## Large Project Decomposition
@@ -478,7 +478,7 @@ Design contract approved (confirmation 1) → hand off to `devflow-spec`:
 ```text
 Spec input: approved design + not-doing list + impact scope + acceptance/verification
 Default landing: docs/specs/YYYY-MM-DD-<short-kebab-name>.md
-Next: devflow-spec (confirm 2) -> /devflow-plan (confirm 3) -> devflow-cut -> devflow-build
+Next: devflow-spec (confirm 2) -> devflow-cut -> /devflow-plan (confirm 3) -> devflow-build
 ```
 
 Recommend Depth A when:
@@ -488,12 +488,12 @@ Recommend Depth A when:
 
 ### Depth B: Simplified Spec (2 confirmations)
 
-Design contract approved (confirmation 1) → hand off to `/devflow-plan`:
+Design contract approved (confirmation 1) → hand off to `devflow-cut`:
 
 ```text
-Plan input: approved design + not-doing list + impact scope + verification method
-Default landing: docs/plans/YYYY-MM-DD-<short-kebab-name>.md
-Next: /devflow-plan (confirm 2) -> devflow-cut -> devflow-build
+Cut input: approved design + not-doing list + impact scope + verification method
+Next: devflow-cut -> `CUT_PASS` -> /devflow-plan (confirm 2) -> devflow-build
+Plan landing: docs/plans/YYYY-MM-DD-<short-kebab-name>.md
 ```
 
 Recommend Depth B when:
@@ -569,7 +569,7 @@ The design must be user-approved, and the depth must be user-selected at the Dep
 - **Wait for user response** at every STOP point before continuing.
 - After a user challenge, do not continue with the old approach unless the goal and desired result are now proven.
 - Mark high-risk or irreversible decisions and require explicit approval.
-- If the user asked to implement, continue based on user-chosen path: Fast Exit → `devflow-cut`, A → `devflow-spec` → `/devflow-plan`, B → `/devflow-plan`, C → `devflow-cut`.
+- If the user asked to implement, continue based on user-chosen path: Fast Exit → `devflow-cut`, A → `devflow-spec` → `devflow-cut` → `/devflow-plan`, B → `devflow-cut` → `/devflow-plan`, C → `devflow-cut`.
 
 ## Verification
 
@@ -595,7 +595,7 @@ Before leaving this skill, confirm:
 - [ ] Design contract self-review was run (Depth A/B only): no unresolved filler text, contradictions, or ambiguity.
 - [ ] Path-based handoff was executed correctly:
   - Fast Exit (user-chosen): devflow-cut (1 confirmation: design contract)
-  - A: devflow-spec → /devflow-plan (3 confirmations)
-  - B: /devflow-plan (2 confirmations)
+  - A: devflow-spec → devflow-cut → /devflow-plan (3 confirmations)
+  - B: devflow-cut → /devflow-plan (2 confirmations)
   - C: devflow-cut (0 additional confirmations; echo-back only)
 - [ ] Design contract is complete.

@@ -24,6 +24,7 @@ const expectedSkills = [
   "skills/devflow-core/SKILL.md",
   "skills/devflow-brainstorm/SKILL.md",
   "skills/devflow-spec/SKILL.md",
+  "skills/devflow-plan/SKILL.md",
   "skills/devflow-cut/SKILL.md",
   "skills/devflow-build/SKILL.md",
   "skills/devflow-prove/SKILL.md",
@@ -61,7 +62,7 @@ const adapters = [
   {
     name: "Codex / shared agents",
     file: "AGENTS.md",
-    terms: ["Sense -> Brainstorm -> [STOP: Path Selection Gate]", "problem report", "devflow-pua", "Completion proof", "STOP gates are mandatory", "Skills enforce their own gates", "use First Principles Cut", "run adversarial review against acceptance criteria"]
+    terms: ["Sense -> Brainstorm -> [STOP: Path Selection Gate]", "devflow-spec -> devflow-cut -> /devflow-plan", "devflow-cut -> /devflow-plan", "problem report", "devflow-pua", "Completion proof", "STOP gates are mandatory", "Skills enforce their own gates", "use First Principles Cut", "run adversarial review against acceptance criteria"]
   },
   {
     name: "Claude Code",
@@ -106,7 +107,7 @@ const adapters = [
   {
     name: "CodeBuddy",
     file: ".codebuddy/rules/devflow-core/RULE.mdc",
-    terms: ["Sense -> Brainstorm -> [STOP: Depth A/B/C]", "devflow-pua", "restart `devflow-brainstorm`", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Authoritative method source", "PASS / FAIL / BLOCKED", "STOP gates are mandatory", "First Principles Cut", "run verification and adversarial review against acceptance criteria"]
+    terms: ["Sense -> Brainstorm -> [STOP: Depth A/B/C]", "devflow-spec -> devflow-cut -> /devflow-plan", "devflow-cut -> /devflow-plan", "devflow-pua", "restart `devflow-brainstorm`", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Authoritative method source", "PASS / FAIL / BLOCKED", "STOP gates are mandatory", "First Principles Cut", "run verification and adversarial review against acceptance criteria"]
   }
 ];
 
@@ -192,6 +193,10 @@ assert(
 assert(
   hookPayload.hookSpecificOutput?.additionalContext?.includes("DevFlow Core active"),
   "devflow-session-start.js must inject DevFlow context"
+);
+assert(
+  hookPayload.hookSpecificOutput?.additionalContext?.includes("Depth A/B create an implementation plan only after CUT_PASS"),
+  "devflow-session-start.js must inject Cut-before-Plan context"
 );
 assert(
   hookPayload.hookSpecificOutput?.additionalContext?.includes("devflow-pua"),

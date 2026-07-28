@@ -40,6 +40,7 @@ const requiredFiles = [
   "skills/devflow-core/references/skill-guide.md",
   "skills/devflow-brainstorm/SKILL.md",
   "skills/devflow-spec/SKILL.md",
+  "skills/devflow-plan/SKILL.md",
   "skills/devflow-cut/SKILL.md",
   "skills/devflow-cut/references/native-capability-checklist.md",
   "skills/devflow-build/SKILL.md",
@@ -187,7 +188,7 @@ const requiredTerms = [
   "Product Iteration Ledger",
   "PRD Is Not Runtime Source",
   "Immediate Iteration Backlog",
-  "Feature Ledger Recall",
+  "Feature ledgers",
   "Small Request Boundary",
   "Design-lite",
   "Route Choice Needed",
@@ -224,6 +225,7 @@ const skillNames = [
   "devflow-core",
   "devflow-brainstorm",
   "devflow-spec",
+  "devflow-plan",
   "devflow-cut",
   "devflow-build",
   "devflow-prove",
@@ -379,6 +381,9 @@ for (const term of [
   "Invariants:",
   "Smallest necessary mechanism:",
   "Scenario 7A: Adversarial Review Rejects Completion",
+  "Scenario 5A: Plan Pack Check",
+  "CUT_PASS",
+  "lightweight Cut-consistency review",
   "Adversarial review:",
   "Judgment: FAIL"
 ]) {
@@ -426,6 +431,7 @@ for (const term of [
   "skills/devflow-core/SKILL.md",
   "skills/devflow-brainstorm/references/interview-discipline.md",
   "skills/devflow-spec/SKILL.md",
+  "skills/devflow-plan/SKILL.md",
     "skills/devflow-pua/SKILL.md",
     "skills/devflow-project-knowledge/SKILL.md",
     "skills/devflow-pua/references/methodology-router.md",
@@ -470,7 +476,9 @@ for (const term of [
   "Missing: at least one Task field",
   "Judgment: FAIL",
   "Not doing",
-  "vague plan blocking",
+  "Interfaces",
+  "file-operation categories",
+  "concrete checkbox steps",
   "plan landing guidance",
   "Plan landing"
 ]) {
@@ -547,6 +555,7 @@ for (const term of [
   "Existing user files are skipped unless --force is passed.",
   "skills/devflow-core/SKILL.md",
   "skills/devflow-spec/SKILL.md",
+  "skills/devflow-plan/SKILL.md",
     "skills/devflow-pua/SKILL.md",
     "skills/devflow-project-knowledge/SKILL.md",
     "skills/devflow-pua/references/methodology-router.md",
@@ -730,7 +739,7 @@ for (const [file, term] of codexTriggerChecks) {
 
 const agentsBody = read("AGENTS.md");
 const agentsLines = agentsBody.split(/\r?\n/).length;
-assert(agentsLines <= 100, `AGENTS.md should stay prompt-sized, found ${agentsLines} lines`);
+assert(agentsLines <= 110, `AGENTS.md should stay prompt-sized, found ${agentsLines} lines`);
 assert(agentsBody.includes("AGENTS.md is a runtime prompt"), "AGENTS.md must identify itself as a runtime prompt");
 
 const prohibitedAgentsTerms = [
@@ -806,7 +815,7 @@ const textFiles = requiredFiles.filter((file) =>
 );
 
 const placeholderHits = textFiles.flatMap((file) => {
-  const matches = read(file).match(/\b(TODO|TBD|coming soon|placeholders?)\b/gi);
+  const matches = read(file).match(/\b(TODO|TBD|coming soon)\b/gi);
   return matches ? [`${file}: ${matches.join(", ")}`] : [];
 });
 

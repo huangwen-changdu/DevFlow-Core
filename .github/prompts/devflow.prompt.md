@@ -18,7 +18,7 @@ Apply DevFlow Core to the request:
 4. Cut with Required Gates: Reuse, Ponytail Rung, Root-Cause Check (for bug fixes), Native, Overbuild, Diff, Scope.
    Output CUT_PASS / CUT_REDUCE / CUT_REUSE / CUT_BLOCKED. CUT_REDUCE/CUT_REUSE: STOP for user confirmation. CUT_BLOCKED: return to devflow-brainstorm.
    For deliberate simplifications, add or report `devflow: <ceiling>, revisit when <trigger>`.
-5. Present design contract (brainstorm STOP), then spec or /devflow-plan (STOP), using:
+5. For Depth A/B, after the approved design contract, run Cut before `devflow-spec`-derived or design-derived `/devflow-plan`; `CUT_PASS` is the plan input. For Depth C, Cut hands directly to Build. The plan has its review stop and then only lightweight Cut-consistency review.
 
 ```text
 Goal:

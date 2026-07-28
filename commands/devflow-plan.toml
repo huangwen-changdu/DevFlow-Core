@@ -1,48 +1,47 @@
-description = "Create the smallest usable implementation plan from a DevFlow spec or approved design."
+description = "Create a reviewed, executable implementation plan from an approved DevFlow spec or design."
 prompt = '''
-Create a DevFlow Plan Pack from a saved spec or approved design.
+Load `skills/devflow-plan/SKILL.md` and create the single DevFlow Plan Pack from `CUT_PASS` plus its approved design or saved spec.
 
-Default landing for saved implementation plans is:
+`CUT_PASS` must state the allowed scope, reuse conclusion, exclusions, and verification constraints. Do not create a construction plan before Cut returns `CUT_PASS`.
+
+Save plans by default at:
 
 ```text
 docs/plans/YYYY-MM-DD-<short-kebab-name>.md
 ```
 
-Resolve the default path from the current target project's root. Use an existing project plan directory only when the target project already documents that convention. Do not put implementation plans in `docs/features/`; that directory is for feature ledgers. Do not put implementation plans in `docs/specs/`; that directory is for requirements specs.
+Keep the plan header in English:
 
-When `scripts/devflow-plan.js` exists and the plan is in a file, run:
-
-```bash
-node scripts/devflow-plan.js <plan-file>
-```
-
-If only user-level DevFlow is installed, run the user script instead:
-
-```bash
-node ~/.codex/scripts/devflow-plan.js <plan-file>
-# or, for Claude Code user-level install:
-node ~/.claude/scripts/devflow-plan.js <plan-file>
-```
-
-Use the script output as the executable task-field and plan-landing check before implementation.
-
-Split work into small verifiable slices.
-
-The plan must include (headers must remain in English for checker validation; content can be in the user's language):
+```text
+Goal: <outcome>
+Architecture: <smallest design and boundaries>
+Tech Stack: <relevant existing stack>
 Source: <docs/specs/YYYY-MM-DD-<short-kebab-name>.md or approved design>
-Spec coverage: <which requirements map to which tasks, or design-only>
+Spec coverage: <requirements mapped to tasks, or design-only>
+Cut Decision: <CUT_PASS allowed scope, reuse conclusion, exclusions, verification constraints>
+```
 
-Each task must include (headers must remain in English):
+Each independently understandable task must contain:
+
+```text
 Task: <short title>
-Files: <exact files likely touched>
+Files:
+- Create: <path> | <responsibility>
+- Modify: <path> | <responsibility>
+- Test: <path> | <behavior proved>  # only when applicable
+Interfaces:
+- Consumes: <input or documentation-only exception>
+- Produces: <output or documentation-only exception>
+Steps:
+- [ ] <concrete file + symbol/behavior/command + expected result>
+- [ ] <concrete file + symbol/behavior/command + expected result>
 Acceptance: <specific condition>
 Verify: <exact command or manual scenario>
-Comments: <what code comments are required for this task — which functions need function-level comments, which non-obvious logic needs inline comments explaining WHY; or "none — trivial change" for trivial tasks>
+Comments: <required code comments or "none — trivial change">
 Not doing: <scope removed>
+```
 
-No unresolved markers, vague edge cases, speculative abstractions, or unverified assumptions.
+Run `node scripts/devflow-plan.js <plan-file>` when it exists; otherwise use the user-level fallback specified in `core-methods.md`. Self-review source coverage, interfaces, concrete steps, placeholders, and file-operation labels before presenting the plan.
 
-STOP — After creating the plan, present it to the user for review. If the user requests changes, revise and re-run the plan checker. Only proceed once the user approves.
-
-Next: hand off to `devflow-cut` for reuse/overbuild/scope gates before `devflow-build`.
+STOP after writing and validating the plan: request user review. After approval, perform a lightweight Cut-consistency review and hand off to `devflow-build` when the plan remains within `CUT_PASS`. Return to `devflow-cut` only to re-run affected gates when the plan adds scope, dependencies, abstractions, or file responsibilities. Do not perform Cut, Build, Prove, test-first workflow, version-control task steps, independent review, or automatic execution here.
 '''

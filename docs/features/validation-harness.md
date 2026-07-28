@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current Version: v28
+- Current Version: v30
 - Status: active
-- Last Change: local-capability-evaluation
+- Last Change: cut-before-plan-lifecycle-validation
 - Product Area: local validation, evidence commands, coverage reports
 
 ## Feature Background
@@ -35,7 +35,8 @@ This ledger exists because validation behavior now changes independently from th
 - `npm run debt:verify` validates `devflow:` marker discovery, ceiling detection, and revisit trigger detection.
 - `npm run review:verify` validates required review gate detection and missing-gate reporting.
 - `npm run spec:verify` validates required section detection, vague spec blocking, and spec landing guidance.
-- `npm run plan:verify` validates plan-pack task field detection, missing field reporting, vague plan blocking, and plan landing guidance.
+- `npm run plan:verify` validates executable plan headers, categorized file operations, `Consumes`/`Produces` interface contracts, concrete checkbox steps, retained task fields, and plan landing guidance; it does not generate plans, judge architecture, or prove lifecycle state.
+- Package, trigger, host, and scenario validation assert that Depth A/B run Cut before Plan and that Plan review only performs lightweight Cut-consistency review.
 - `npm run audit:verify` validates repo-wide audit scanner candidate detection for reuse, stdlib, native, YAGNI, and delete tags.
 - `npm test` validates Skill Activation Check wording and `reuse` tag coverage in skills and scripts.
 - `npm run verify:all` runs the full local verification matrix in one command.
@@ -55,6 +56,8 @@ This ledger exists because validation behavior now changes independently from th
 
 | Version | Change | Type | Date | Status | Summary |
 |---|---|---|---|---|---|
+| v30 | cut-before-plan-lifecycle-validation | lifecycle validation | 2026-07-28 | active | Added validation that Depth A/B run Cut before Plan and that the plan checker remains limited to static Plan Pack structure rather than lifecycle state. |
+| v29 | unified-plan-contract-validation | plan contract hardening | 2026-07-28 | active | Added package, trigger, host-adapter, target-installer, and user-installer coverage for the sole `devflow-plan` skill. Expanded the plan checker self-test from basic task fields to executable headers, categorized file operations, interface contracts, and concrete checkbox steps while preserving source tracing and landing checks. |
 | v28 | local-capability-evaluation | capability regression | 2026-07-24 | active | Added versioned scenario contracts and a zero-dependency evaluator that maps fixed self-test evidence to deduplicated local command results, with per-scenario reporting and explicit non-benchmark boundaries. |
 | v27 | brainstorm-interview-discipline-validation | trigger and installer coverage | 2026-07-01 | active | Added package, trigger, host, target-installer, user-installer, plugin manifest, and Gemini manifest coverage proving `devflow-brainstorm` interview discipline and `devflow-spec` handoff are installed and reachable. |
 | v26 | pua-compact-method-display-validation | trigger hardening | 2026-06-27 | active | Updated trigger, host, and package validation to require the compact `METHOD: {flavor} / {method}` contract instead of verbose methodology output fields. |
@@ -86,6 +89,7 @@ This ledger exists because validation behavior now changes independently from th
 
 ## Key Decisions
 
+- 2026-07-28: Expand the existing `devflow-plan` checker instead of adding a second writing-plan validator or plan generator. Reason: headers, file operations, interface contracts, and concrete steps are deterministic structural evidence; architecture quality and plan authorship remain agent/human judgment.
 - 2026-07-24: Add `npm run capability:eval` plus a versioned JSON scenario contract instead of an external benchmark service. Reason: the harness can now prove which fixed local behavior contracts and evidence commands remain intact without modeling unstable API cost or host-runtime behavior.
 - 2026-07-24: Reuse existing npm evidence commands and execute each referenced command once per report. Reason: it preserves the current proof sources, prevents repeated expensive verification, and keeps `scenario:coverage` as an advisory coverage map rather than mislabeling it as a quality benchmark.
 - 2026-07-24: Do not commit generated capability reports. Reason: the manifest and script are reproducible source, while report output is time-sensitive evidence that would create stale diffs.

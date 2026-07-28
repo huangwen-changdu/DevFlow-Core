@@ -5,6 +5,7 @@ graph TD
     CORE["devflow-core<br/>route Fast / Design / Build / Recovery<br/>+ Skill Discovery"]
     BRAIN["devflow-brainstorm<br/>goal, constraints, approaches"]
     SPEC["devflow-spec<br/>requirements source"]
+    PLAN["devflow-plan<br/>reviewed executable Plan Pack"]
     CUT["devflow-cut<br/>Ponytail Ladder + gates<br/>+ skill reuse rung"]
     BUILD["devflow-build<br/>minimal implementation"]
     PROVE["devflow-prove<br/>evidence before completion"]
@@ -29,11 +30,12 @@ graph TD
     PATH -->|"User picks Fast Exit"| CUT
     PATH -->|"User picks A/B/C"| DEPTH{"Depth A/B/C"}
     DEPTH -->|"A: Full Spec"| SPEC
-    DEPTH -->|"B: Simplified"| PLAN["/devflow-plan"]
+    DEPTH -->|"B: Simplified"| CUT
     DEPTH -->|"C: Direct"| CUT
-    SPEC --> PLAN
-    PLAN --> CUT
-    CUT -->|"cut gate passed"| BUILD
+    SPEC --> CUT
+    CUT -->|"CUT_PASS: A/B construction checklist"| PLAN
+    PLAN -->|"approved + Cut-consistent"| BUILD
+    CUT -->|"CUT_PASS: Depth C"| BUILD
     CUT -->|"CUT_REUSE: skill fully handles, no new code"| EXT
     BUILD -->|"implementation done"| PROVE
     PROVE -->|"FAIL/BLOCKED"| CORE
@@ -50,10 +52,11 @@ devflow-core -> [Skill Discovery: scan available environment skills]
   -> devflow chain (brainstorm -> cut -> build -> prove) always runs
   -> CUT_REUSE only when skill fully handles task with no new code needed
 devflow-core -> devflow-brainstorm -> [STOP: Path Gate: user chooses Fast Exit or A/B/C]
-  -> Fast Exit (user-chosen): short design contract -> devflow-cut
-  -> A/B/C (user-chosen): A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct -> devflow-cut
+  -> Fast Exit (user-chosen): short design contract -> devflow-cut -> devflow-build
+  -> A/B/C (user-chosen): A: devflow-spec -> devflow-cut -> /devflow-plan | B: devflow-cut -> /devflow-plan | C: direct -> devflow-cut
 -> devflow-cut [rung 4: does an available skill handle this without new code? -> CUT_REUSE if yes]
--> devflow-build [external skill may guide execution alongside] -> devflow-prove
+  -> CUT_PASS A/B: devflow-plan -> approved plan + Cut-consistency review -> devflow-build
+  -> CUT_PASS C: devflow-build
 devflow-core --> devflow-pua
 devflow-pua --> devflow-brainstorm
 devflow-pua --> devflow-prove
@@ -66,8 +69,8 @@ devflow-core --> external skills (frontend-design, pdf, docx, understand, data-a
 ## Short Rules
 
 - Requirements and behavior changes enter `devflow-brainstorm`, which presents a Path Selection Gate: when Fast Exit conditions are met (small change to existing feature, all boundary gates pass, single plausible path), Fast Exit is offered as a recommended option alongside A/B/C. The user chooses the path — the LLM does not auto-select.
-- Depth A saves a spec via `devflow-spec` then plans via `/devflow-plan`; Depth B plans directly; Depth C goes straight to `devflow-cut`.
-- New implementation structure enters `devflow-cut`.
+- Depth A saves a spec via `devflow-spec`, then runs `devflow-cut`, then writes a construction checklist via `/devflow-plan`; Depth B runs `devflow-cut` then plans directly; Depth C goes from `devflow-cut` straight to Build.
+- A user-approved Plan Pack receives only lightweight Cut-consistency review; changed scope, dependency, abstraction, or file responsibility returns to affected Cut gates.
 - Approved minimal work enters `devflow-build`.
 - Any completion claim enters `devflow-prove`.
 - Verified feature completion loads `devflow-docs-followup`, which asks before creating optional follow-up documents.

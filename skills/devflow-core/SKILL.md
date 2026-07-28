@@ -54,8 +54,8 @@ Do not claim understanding unless the understanding cites facts that were read o
 | Fast | Pure Q&A, fact lookup, verification, or trivial code change (one line, no logic change, no risk). | Sense -> Prove |
 | Problem | User reports "something is wrong" or asks to inspect without asking for a fix. | Sense -> Prove facts; re-route only after the needed change is known |
 | Design-lite | Small change to an existing feature with clear behavior, one plausible path, low risk, local impact, and quick proof. Not for new requirements. | Short goal -> acceptance -> not-doing -> devflow-cut -> devflow-build/devflow-prove if requested |
-| Design | New requirement, behavior change, feature, architecture change, ambiguity, multi-solution decision, or unclear small-feature boundary. Not for documentation writing, config tuning, or clear small changes to existing features. | Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> devflow-cut; continue to devflow-build/devflow-prove when implementation is requested. Skip Brainstorm for doc/config/clear-fix tasks — use Design-lite or Fast |
-| Build | User asks to implement, fix, land, or execute a change. | Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> devflow-cut -> devflow-build -> devflow-prove. Skip Brainstorm/Plan if already completed, if root cause is clear and fix is trivial, or for doc/config work — use Design-lite or Fast |
+| Design | New requirement, behavior change, feature, architecture change, ambiguity, multi-solution decision, or unclear small-feature boundary. Not for documentation writing, config tuning, or clear small changes to existing features. | Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> devflow-cut -> /devflow-plan | B: devflow-cut -> /devflow-plan | C: direct -> devflow-cut) -> devflow-build -> devflow-prove. Skip Brainstorm for doc/config/clear-fix tasks — use Design-lite or Fast |
+| Build | User asks to implement, fix, land, or execute a change. | Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> devflow-cut -> /devflow-plan | B: devflow-cut -> /devflow-plan | C: direct -> devflow-cut) -> devflow-build -> devflow-prove. Skip Brainstorm/Plan if already completed, if root cause is clear and fix is trivial, or for doc/config work — use Design-lite or Fast |
 | Recovery | Repeated failure, user correction, user challenge, missing-piece complaint, repeated "少了这个/少个那个" feedback, quality complaint, changed-wrong result, unexpected verification failure, or giving-up impulse. | Load `devflow-pua` when pressure recovery is needed; diagnose user-view miss -> re-read facts -> 3 hypotheses -> different/opposite method -> changed approach -> Prove |
 
 If the user asks to implement, build, fix, or land a change, continue through Build and Prove. Steps scale to task size — Cut and Prove are never skipped, but Brainstorm/Plan may be skipped when already completed or when the task is trivial enough for Fast/Design-lite.
@@ -80,7 +80,7 @@ Before routing, classify the incoming work:
 | Incoming word shape | Treat as | Skill path |
 |---|---|---|
 | "problem report", "check what is wrong", "why broken", "investigate" | Problem investigation | `devflow-core -> devflow-prove` for facts; if a change is needed, re-route to Design or Build. |
-| "requirement", "feature request", "add support", "implement" | Requirement | `devflow-core -> devflow-brainstorm -> devflow-cut`; continue to Build only when implementation is requested. For documentation, config, or clear small fixes, use Design-lite or Fast instead of Brainstorm. |
+| "requirement", "feature request", "add support", "implement" | Requirement | `devflow-core -> devflow-brainstorm -> devflow-cut`; after `CUT_PASS`, Depth A/B enter `devflow-plan`, then Build when implementation is requested. For documentation, config, or clear small fixes, use Design-lite or Fast instead of Brainstorm. |
 | "bug report", "error", "failing test", "fix bug", "broken" | Bug fix | Root-Cause Check first. If root cause is clear and fix is trivial → Fast or Design-lite. Otherwise `devflow-core -> devflow-brainstorm -> devflow-cut -> devflow-build -> devflow-prove`. |
 | "wrong", "not like that", "changed wrong", "your code is wrong", "you wrote it wrong", "has a problem", "not right", "missing", "incomplete", "still missing", "quality complaint", "user dissatisfied", "有问题", "不对", "写错了", "改歪了", "没改对", "不是我要的", "理解错了", "改了几次", "少了", "少个", "缺少", "缺漏", "遗漏", "漏了" | Pressure recovery | `devflow-core -> devflow-pua -> devflow-brainstorm`; quarantine prior wrong assumptions, diagnose user-view miss, ask what is wrong and what result is wanted, then switch method/approach before more edits. |
 
@@ -178,8 +178,8 @@ Verification: ...
 ## Handoff
 
 - Design route -> `devflow-brainstorm`
-- Before adding structure -> `devflow-cut`
-- Approved work -> `devflow-build`
+- Before new structure -> `devflow-cut`; after `CUT_PASS`, Depth A/B -> `devflow-plan`, Depth C -> `devflow-build`
+- Approved construction plan -> `devflow-build`
 - Task matches available external skill -> suggest loading that skill alongside the devflow route; devflow manages scope/risk, external skill guides execution quality; devflow chain always runs
 - Explicit independent manual adversarial review -> `devflow-adversarial`; explicit independent find-fault review -> `devflow-find-fault`. Both end after reporting findings and do not create a lifecycle handoff.
 - Before completion -> `devflow-prove -> devflow-learn` (every PASS reviews useful knowledge; candidate business facts wait for user confirmation before `devflow-project-knowledge`)
