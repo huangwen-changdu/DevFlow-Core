@@ -1,11 +1,19 @@
 ---
 name: devflow-pua
-description: "Use when the user challenges the result, says wrong/not like that/changed wrong/quality complaint/user dissatisfied/your code is wrong/you wrote it wrong/has a problem/not right/missing/incomplete/still missing/有问题/不对/写错了/改歪了/没改对/不是我要的/理解错了/改了几次/少了/少个/缺少/缺漏/遗漏/漏了, when repeated fixes miss the target, when the user keeps adding missing pieces, or when Recovery needs pressure to stop the current approach and realign before more edits."
+description: "Use when the user repeatedly points out that the same function or result has a problem in one task lifecycle, repeatedly identifies missing coverage for the same function, or Recovery needs pressure to stop the current approach and realign before more edits."
 ---
 
 # DevFlow PUA
 
-Apply pressure as accountability: stop the wrong path, quarantine the wrong working context, diagnose why the user thinks the result is wrong, load the local methodology router, display the active flavor/method, restart `devflow-brainstorm`, ask what is wrong and what result is wanted, switch method when the current one failed, and prove the next result. Do not use persona theater or insults.
+Apply pressure as accountability: stop the wrong path, quarantine the wrong working context, diagnose why the user thinks the result is wrong, load the local methodology router, display the active flavor/method, return recovery facts to `devflow-core`, switch method when the current one failed, and let Core decide whether request re-confirmation or any later lifecycle work is needed. Do not use persona theater or insults.
+
+## Repeated Same-Function Trigger
+
+Trigger this skill only when the user repeatedly points out that the **same function, result, or requested capability** has a problem in one task lifecycle. Evidence may be repeated “不对/有问题/还是不对/还有缺漏” feedback about that same target, including after an attempted correction.
+
+Do not infer pressure recovery from an isolated phrase alone. The decisive fact is repeated dissatisfaction with the same target, not whether a message is labeled as a first correction.
+
+The direct `/devflow-pua` command remains an explicit opt-in and may activate this skill immediately.
 
 ## Methodology Assets
 
@@ -19,20 +27,20 @@ These files are the runtime method source. Do not link out to the original PUA p
 
 ## Process
 
-1. **Stop the current path**: do not keep editing with the same assumption after a challenge, repeated miss, failed proof, or quality complaint.
-2. **Name the pressure signal**: user challenge, changed wrong, repeated miss, explicit wrong-code signal, missing-piece complaint, repeated "少了这个/少个那个" feedback, failed proof, vague target, or giving-up impulse.
+1. **Stop the current path**: do not keep editing with the same assumption when the user repeatedly reports that the same function, result, or requested capability remains wrong, incomplete, or missing.
+2. **Name the pressure signal**: repeated same-target dissatisfaction in one task lifecycle, including after an attempted correction; record the function/result/capability that the user keeps identifying as problematic.
 3. **Quarantine wrong context**: keep only verified facts and user-stated constraints; discard the previous solution hypothesis, implementation path, and "almost fixed" assumptions.
 4. **Load methodology**: read `references/methodology-router.md`, `references/methodology-library.md`, and `references/flavor-display.md`.
 5. **Route flavor/method**: choose the starting or switched flavor from the pressure signal and failure pattern.
 6. **Display method**: output one compact visible line: `METHOD: {flavor} / {method}`. If the method changed, add one `SWITCH:` line.
 7. **Diagnose the user-view miss**: classify why the user would still feel unsatisfied before proposing another patch.
-8. **Restart `devflow-brainstorm`**: for multiple challenges, repeated missing-piece complaints, or explicit "you wrote it wrong / 有问题 / 不对", do not continue editing before a fresh Brainstorm pass.
+8. **Request re-confirmation facts**: when the repeated same-target trigger applies, do not continue editing; return the need for fresh request confirmation to `devflow-core`, which alone may select `devflow-brainstorm`.
 9. **Ask what is wrong and what result is wanted**: ask the smallest concrete set when the answer is not already explicit.
 10. **Restate the goal**: say what you now believe the user wants and what result they should see.
 11. **List 3 hypotheses**: include at least one hypothesis that the previous approach was solving the wrong problem.
 12. **Switch method if needed**: if the last guiding method still missed, mark it failed, choose a different or opposite method lens, and restart checks from facts before editing again.
 13. **Change approach**: name the old approach being abandoned and the materially different path now chosen.
-14. **Continue through DevFlow**: after Brainstorm realignment, route to `devflow-cut`, `devflow-build`, and `devflow-prove` as needed.
+14. **Return to Core routing**: return recovery facts, including any request re-confirmation need, to `devflow-core`; only Core selects `devflow-brainstorm`, Cut, Plan, Build, Prove, Recovery, or no further lifecycle work.
 15. **Close learning**: if the miss is reusable, load `devflow-learn` before claiming completion.
 
 ## Guiding Principles
@@ -58,18 +66,6 @@ Classify the miss before changing files:
 | UX/result gap | The result works technically but is unclear, hard to distinguish, incomplete, or not satisfying. | Customer Backwards + Blue-Team user review. |
 
 Treat repeated "少了/少个/缺少/缺漏/遗漏/漏了/still missing/incomplete" as a pressure signal. It usually means Missing coverage or UX/result gap, not a normal feature add.
-
-## Repeated Missing-Piece Trigger
-
-Do not treat repeated "this feature is missing X / missing Y" feedback as ordinary incremental scope until recovery proves it is new scope.
-
-Trigger `devflow-pua` checks when any of these happen:
-
-- the user points out two missing pieces in one task lifecycle
-- the user says the same problem is still unresolved after a fix
-- the user says "少了这个", "少个那个", "还有缺漏", "遗漏了", or similar wording after a prior attempt
-
-Required action: classify whether the miss is Missing coverage, Goal mismatch, Artifact mismatch, or UX/result gap; build a Coverage Map of expected surfaces; then restart `devflow-brainstorm` with a new success contract.
 
 ## Method Switch Rule
 
@@ -101,27 +97,9 @@ If the switched method also fails once, stop editing and ask the user to confirm
 
 ## Hard Restart Rule
 
-Trigger this rule when any of these appear:
+Trigger this rule when, in one task lifecycle, the user repeatedly points out that the same function, result, or requested capability remains wrong, incomplete, or missing, including after an attempted correction.
 
-- the user challenges the result twice in one task lifecycle
-- the user says "your code is wrong", "you wrote it wrong", "has a problem", "not right", or "not what I wanted"
-- the user says "missing", "incomplete", "still missing", "有问题", "不对", "写错了", "改歪了", "没改对", "不是我要的", "理解错了", "改了几次", "少了", "少个", "缺少", "缺漏", "遗漏", or "漏了"
-- the user repeatedly says the work is missing this or missing that
-- the agent has already modified once and the user says the result is still wrong
-
-Required behavior:
-
-```text
-Restart Brainstorm: yes
-Discarded context: <old assumption / old implementation path / old proof claim>
-Keep only verified facts: <facts still safe to use>
-Ask user: where is it wrong; what result do you want; what must stay unchanged; how should we verify it
-User-view miss: <miss category from taxonomy>
-New success contract: <expected result + proof + not-doing>
-Next skill: devflow-brainstorm
-```
-
-Do not reuse the previous erroneous context to repeat the same modification. Use the old attempt only as failure evidence.
+The trigger is repeated dissatisfaction with the same target; do not infer it from an isolated keyword or from message count alone.
 
 ## Pointed Questions
 
@@ -140,7 +118,7 @@ If code, backend behavior, existing UI, docs, or prior messages answer the quest
 
 ```text
 Pressure check: <signal and why normal Recovery is not enough>
-Restart Brainstorm: <yes/no; yes for repeated challenge or explicit wrong-code signal>
+Restart Brainstorm: <re-confirmation required / not required; Core selects whether to invoke it>
 Discarded context: <old assumption/path not reused>
 Keep only verified facts: <facts retained from prior work>
 METHOD: {flavor} / {method}
@@ -160,9 +138,9 @@ Learning closure: <none or devflow-learn handoff>
 
 ## Escalation Rules
 
-- After two corrected, challenged, or failed attempts in one task lifecycle, stop editing and restart `devflow-brainstorm`; ask the pointed questions unless the answers are directly inferable from facts.
-- If the user says "your code is wrong", "you wrote it wrong", "missing", "incomplete", "still missing", "有问题", "不对", "写错了", "改歪了", "没改对", "不是我要的", "理解错了", "改了几次", "少了", "少个", "缺少", "缺漏", "遗漏", or "漏了", treat it as a hard Recovery signal and restart Brainstorm.
-- If the user repeatedly adds "this is missing / that is missing", run Missing coverage diagnosis and Coverage Map before Build.
+- After two corrected, challenged, or failed attempts in one task lifecycle, stop editing and return re-confirmation facts to `devflow-core`; ask the pointed questions unless the answers are directly inferable from facts.
+- When the user repeatedly reports that the same function, result, or requested capability remains wrong, incomplete, or missing in one task lifecycle, return the Brainstorm re-confirmation need to Core.
+- If the user repeatedly adds missing details for the same target, run Missing coverage diagnosis and Coverage Map before Build.
 - If the selected guiding method still fails once, switch to a different or opposite method and restart the checks from facts; if it fails twice, stop and ask the user to confirm the new success contract before editing.
 - If the same proof fails twice, do not rerun it unchanged; change the hypothesis or implementation path first.
 - If the previous approach only changed wording, parameters, or nearby files, that is not a materially different approach.
@@ -176,26 +154,28 @@ Learning closure: <none or devflow-learn handoff>
 | "I'll just tweak it once more." | Repeated tweaks are the failure pattern. Stop and re-align. |
 | "The user is unhappy, so I should rush." | Pressure means more facts and sharper questions, not faster guessing. |
 | "I changed something, so the approach changed." | A new approach changes the hypothesis, target, or proof path. |
-| "The old context is probably close." | The old context produced the wrong result. Quarantine it and restart Brainstorm. |
+| "The old context is probably close." | The old context produced the wrong result. Quarantine it and return re-confirmation facts to Core. |
 | "The user is just adding scope." | Repeated "missing" feedback is a satisfaction gap until coverage and goal are rechecked. |
 | "The same method should work if I try harder." | If the method already failed, switch method or prove why it still fits. |
 | "Learning can wait." | Reusable misses must become a next-time intercept before completion. |
 
 ## Handoff Gate
 
-After pressure recovery:
+After pressure recovery, return only the clarified request or recovery facts to Core:
 
 ```text
-Next skill: devflow-brainstorm / devflow-cut / devflow-build / devflow-prove / devflow-learn
-Reason: <why this is now the right next move>
+Next skill: devflow-core
+Reason: Brainstorm re-confirmed the request or recovery facts require Core lifecycle routing
 ```
+
+`devflow-pua` never selects Cut, Plan, Build, Prove, or another lifecycle skill.
 
 ## Verification
 
 Before leaving this skill, confirm:
 
 - [ ] The previous path was stopped or explicitly kept with evidence.
-- [ ] Repeated challenge or explicit wrong-code signal restarted `devflow-brainstorm`.
+- [ ] Repeated dissatisfaction with the same function, result, or requested capability returned a Brainstorm re-confirmation need to `devflow-core`.
 - [ ] Previous erroneous context was quarantined and not reused as the next solution basis.
 - [ ] Local methodology references were read before selecting method.
 - [ ] The compact methodology line `METHOD: {flavor} / {method}` was output.

@@ -1,6 +1,6 @@
 description = "Create a reviewed, executable implementation plan from an approved DevFlow spec or design."
 prompt = '''
-Load `skills/devflow-plan/SKILL.md` and create the single DevFlow Plan Pack from `CUT_PASS` plus its approved design or saved spec.
+Load `skills/devflow-plan/SKILL.md` only after `devflow-core` selects planning. Create the single DevFlow Plan Pack from Core-selected `CUT_PASS` plus its approved design or confirmed spec.
 
 `CUT_PASS` must state the allowed scope, reuse conclusion, exclusions, and verification constraints. Do not create a construction plan before Cut returns `CUT_PASS`.
 
@@ -19,29 +19,39 @@ Tech Stack: <relevant existing stack>
 Source: <docs/specs/YYYY-MM-DD-<short-kebab-name>.md or approved design>
 Spec coverage: <requirements mapped to tasks, or design-only>
 Cut Decision: <CUT_PASS allowed scope, reuse conclusion, exclusions, verification constraints>
+External Skills: <skill-name> (role: guides execution) / none
 ```
+
+Inherit `External Skills` from the Cut Decision unchanged. When a guidance skill is declared, merge its core quality checks into the affected tasks' `Acceptance`/`Verify` fields; the Plan Pack is the only channel that carries external-skill quality requirements into Build and Prove.
 
 Each independently understandable task must contain:
 
 ```text
 Task: <short title>
+Task type: Code change | Documentation-only
 Files:
-- Create: <path> | <responsibility>
-- Modify: <path> | <responsibility>
-- Test: <path> | <behavior proved>  # only when applicable
+- Create: <path> | new file | <responsibility>
+- Modify: <path> | <symbol or stable anchor> | <responsibility>
+- Test: <path> | <test symbol or stable anchor> | <behavior proved>  # only when applicable
 Interfaces:
-- Consumes: <input or documentation-only exception>
-- Produces: <output or documentation-only exception>
+- Consumes: <exact symbol/API input and type/shape, or documentation-only exception>
+- Produces: <exact symbol/API output and type/shape, or documentation-only exception>
+Current behavior: <observable current state>  # Code change only
+Target behavior: <observable outcome>  # Code change only
+Change mechanics: <minimal code snippet, pseudocode, or exact replacement rule>  # Code change only
+Call impact: <known callers/downstream effect, or no runtime impact>  # Code change only
 Steps:
-- [ ] <concrete file + symbol/behavior/command + expected result>
-- [ ] <concrete file + symbol/behavior/command + expected result>
+- [ ] <one file + symbol/anchor + executable action; include code snippet, pseudocode, or exact replacement for code logic>
+- [ ] <one verification action with trigger/input, expected result, and command or manual scenario>
 Acceptance: <specific condition>
-Verify: <exact command or manual scenario>
+Verify: <exact command or manual scenario, trigger/input, and expected result>
 Comments: <required code comments or "none — trivial change">
 Not doing: <scope removed>
 ```
 
-Run `node scripts/devflow-plan.js <plan-file>` when it exists; otherwise use the user-level fallback specified in `core-methods.md`. Self-review source coverage, interfaces, concrete steps, placeholders, and file-operation labels before presenting the plan.
+For `Code change`, every existing-file row must name a symbol or stable anchor; every `Create` row uses `new file`. Require `Current behavior`, `Target behavior`, `Change mechanics`, and `Call impact`. `Change mechanics` must contain the smallest code snippet, pseudocode, or exact replacement rule that removes implementation inference. Interfaces name exact symbols and input/output shape. The verification step and `Verify` field name trigger/input, expected result, and runnable command or manual scenario. `Documentation-only` is allowed only when no runtime code changes; both interface entries must explicitly say `documentation-only` and it cannot be used for a code-file task.
 
-STOP after writing and validating the plan: request user review. After approval, perform a lightweight Cut-consistency review and hand off to `devflow-build` when the plan remains within `CUT_PASS`. Return to `devflow-cut` only to re-run affected gates when the plan adds scope, dependencies, abstractions, or file responsibilities. Do not perform Cut, Build, Prove, test-first workflow, version-control task steps, independent review, or automatic execution here.
+Run `node scripts/devflow-plan.js <plan-file>` when it exists; otherwise use the user-level fallback specified in `core-methods.md`. Self-review source coverage, interfaces, precise locations, behavior changes, mechanics, call impact, verification expectations, placeholders, and file-operation labels before presenting the plan.
+
+STOP after writing and validating the plan: request user review. After approval, perform a lightweight Cut-consistency review and return the confirmed Plan plus any scope-drift facts to `devflow-core`. Core alone selects `devflow-build` or any other later lifecycle work. Do not perform Cut, Build, Prove, test-first workflow, version-control task steps, independent review, or automatic execution here.
 '''

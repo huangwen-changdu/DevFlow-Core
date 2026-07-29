@@ -6,11 +6,11 @@ It is not a link collection. The useful parts are built into this repo as rules,
 
 ## What It Gives Developers
 
-- A default flow that stays light: `Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> devflow-cut -> /devflow-plan | B: devflow-cut -> /devflow-plan | C: direct -> devflow-cut) -> devflow-build -> devflow-prove`
+- A default flow that stays light: `Sense -> Brainstorm clarification -> Confirmed request -> Core route -> Cut Decision -> Core route -> Build -> Prove`
 - A Fast / Design-lite / Design / Build / Recovery router with clear small-request gates and user route choice when the boundary is unclear
 - A Method Lens selector for choosing Root Cause, Working Backwards, First Principles Cut, Data/Proof, or Operational Owner strategy when the route needs more than generic process
 - A Ponytail-style ladder that prefers no-change, reuse existing code, available environment skill, standard library, native platform, installed dependency, one-line/config, then minimum new code
-- Brainstorming that produces 2-3 real options when needed, while Design-lite uses short goal, acceptance proof, and not-doing for clear small features
+- Brainstorming that confirms request fields and re-echoes changed understanding, while Spec compares real options and records the reviewable design contract
 - Anti-overengineering gates before dependencies, abstractions, config, folders, framework layers, and generic engines
 - Karpathy-style minimal change rules so every changed line traces to the user goal
 - Implementation slices with per-slice verification when work spans multiple steps
@@ -85,7 +85,7 @@ When installed into a target project, only the target-runtime scripts are copied
 | Script | Use inside target project |
 |---|---|
 | `node scripts/devflow-spec.js <spec-file>` | Check that a DevFlow spec has required sections, clear content, and the right `docs/specs/` landing path before planning. |
-| `node scripts/devflow-plan.js <plan-file>` | Check that a Plan Pack has executable header fields, categorized `Files`, `Interfaces`, concrete checkbox `Steps`, `Acceptance`, `Verify`, `Comments`, and `Not doing` fields before implementation; it validates structure rather than generating plans or judging architecture. |
+| `node scripts/devflow-plan.js <plan-file>` | Check that a Plan Pack has executable header fields, categorized `Files` with `new file` or a symbol/stable anchor, `Task type`, exact `Interfaces`, code-task `Current behavior` / `Target behavior` / `Change mechanics` / `Call impact`, code-level Steps, and verification triggers, expectations, and commands before implementation. `Documentation-only` tasks retain an explicit non-runtime exception. The checker validates structure rather than generating plans or judging architecture. |
 | `node scripts/devflow-review.js <plan-or-diff-file>` | Check whether a plan or diff includes the required reuse, native, overbuild, diff, and scope gates before detailed review. |
 | `node scripts/devflow-debt.js .` | Harvest intentional `devflow:` simplification markers into a debt report. |
 | `node scripts/devflow-audit.js <target-directory>` | Run a repo-wide audit candidate scan for overengineering, missed reuse, stdlib/native replacements, and YAGNI abstractions. |
@@ -99,9 +99,9 @@ Other `.js` files under `scripts/` are DevFlow-Core maintainer checks, installer
 | Route | Use When | Flow |
 |---|---|---|
 | Fast | Pure Q&A, fact lookup, verification, or trivial code change (one line, no logic change, no risk). | Sense -> Prove |
-| Design | Requirement, behavior change, feature, architecture change, unclear ask, or multi-solution decision | Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> devflow-cut -> /devflow-plan | B: devflow-cut -> /devflow-plan | C: direct -> devflow-cut) -> devflow-build -> devflow-prove |
-| Build | User asks to implement, fix, land, or execute a change | Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> devflow-cut -> /devflow-plan | B: devflow-cut -> /devflow-plan | C: direct -> devflow-cut) -> devflow-build -> devflow-prove (skip Brainstorm/Plan if already done) |
-| Recovery | Failure repeats, user corrects or challenges the result, tests fail unexpectedly, edits go wrong, or the agent is about to give up | devflow-pua when pressure recovery is needed -> re-read facts -> restate goal/result -> 3 hypotheses -> different approach -> Prove |
+| Design | Requirement, behavior change, feature, architecture change, unclear ask, or multi-solution decision | Sense -> Brainstorm clarification -> `Confirmed request` -> Core route -> Spec approach comparison/design confirmation when selected -> confirmed Spec -> Core route -> Cut -> Cut Decision -> Core route -> Plan when selected -> confirmed Plan -> Core route -> Build -> Prove |
+| Build | User asks to implement, fix, land, or execute a change | Sense -> Brainstorm clarification when needed -> `Confirmed request` -> Core-selected Spec/Cut/Plan/Build/Prove work; each confirmed Spec, Cut Decision, confirmed Plan, or recovery fact returns to Core before its next lifecycle selection |
+| Recovery | The user repeatedly points out that the same function, result, or requested capability remains wrong, incomplete, or missing in one task lifecycle; tests fail unexpectedly; edits go wrong; or the agent is about to give up | `devflow-pua` diagnoses recovery -> recovery facts return to Core -> Brainstorm re-confirms only when Core selects it -> Core re-routes |
 
 ## Copyable Workflows
 
@@ -129,7 +129,9 @@ Use this when you want the agent to land a feature without skipping design or cu
 Requirement: implement CSV export for orders.
 ```
 
-Expected route: `Build -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> devflow-cut -> /devflow-plan | B: devflow-cut -> /devflow-plan | C: direct -> devflow-cut) -> devflow-build -> devflow-prove`.
+Expected route: `Build -> Brainstorm clarification -> Confirmed request -> Core route -> devflow-cut -> Cut Decision -> Core route -> devflow-build -> devflow-prove`.
+
+Core selects `devflow-spec` or `/devflow-plan` only when the confirmed request and Cut result require those artifacts.
 
 Local proof:
 
@@ -177,13 +179,13 @@ npm run install:verify
 | Skill | Responsibility |
 |---|---|
 | `devflow-core` | Route the work, load the right next skill, preserve the output contract. |
-| `devflow-brainstorm` | Clarify goal, constraints, success criteria, assumptions, and 2-3 approaches. |
-| `devflow-spec` | Write and validate saved requirements specs for larger or explicitly spec-requested work. |
-| `devflow-plan` | Write one `CUT_PASS`-bounded, reviewed construction Plan Pack with file operations, interface contracts, concrete steps, source tracing, and a `devflow-build` handoff. |
+| `devflow-brainstorm` | 通过 Semantic Echo-Back、Understanding Revision Rule 和逐项澄清确认 Goal、Scope、Out of scope、Constraints、Acceptance 与 Open questions；输出 `Confirmed request` 后停止。 |
+| `devflow-spec` | After Core selects a `Confirmed request`, compare real options, write the reviewable design contract and saved spec, wait for approval, then return the confirmed Spec to Core. |
+| `devflow-plan` | From Core-selected `CUT_PASS`, write one reviewed code-level construction Plan Pack with exact file locations, interface contracts, current/target behavior, change mechanics, call impact, proof-ready steps, and source tracing; after approval, return the confirmed Plan and scope-drift facts to Core. |
 | `devflow-cut` | Apply reuse ladder, root-cause check, platform-native checklist, overbuild gate, cut intensity, and delete-list review. |
 | `devflow-build` | Execute the smallest approved change in verifiable slices. |
 | `devflow-prove` | Run the proof command or scenario, including Skill Activation Check for rule/skill changes, and report command/result/judgment. |
-| `devflow-pua` | Stop wrong-path recovery, re-ask or infer the desired result, switch approach, and hand back to Prove/Learn. |
+| `devflow-pua` | Stop wrong-path recovery when the same function, result, or requested capability is repeatedly reported as wrong, incomplete, or missing; re-ask or infer the desired result, switch approach, and return recovery facts plus any Brainstorm re-confirmation need to Core. |
 | `devflow-learn` | Capture reusable corrections and pitfalls into `.copilot` learning cards. |
 | `devflow-audit` | Run a repo-wide audit for overengineering candidates without applying fixes. |
 
@@ -193,9 +195,9 @@ Development requests still start at `devflow-core`. The one-question interview b
 
 | Need | DevFlow behavior |
 |---|---|
-| Clarify a design | `devflow-brainstorm` asks one question at a time, includes a recommended answer, and ends with the normal design contract. |
-| Preserve requirements | Use `devflow-spec` when the approved design needs a saved requirements source before planning. |
-| Preserve decisions/history | Use feature ledgers for capability history or ADRs for hard-to-reverse trade-offs. |
+| Clarify a request | `devflow-brainstorm` sends a Semantic Echo-Back, applies its Understanding Revision Rule when needed, asks one question at a time, then stops at `Confirmed request`. |
+| Preserve requirements and design | `devflow-core` selects `devflow-spec` when the confirmed request needs approach comparison and a saved design contract; after user approval, Spec returns the confirmed Spec to Core. |
+| Preserve decisions/history | `devflow-core` selects the relevant lifecycle owner after confirmed request or confirmed Spec; feature ledgers preserve capability history. |
 
 ## Design Output Contract
 
@@ -289,7 +291,7 @@ It also checks `--check` mode for matching, missing, and changed target runtime 
 
 `npm run spec:verify` runs `scripts/devflow-spec.js --self-test` and checks required section detection, vague spec blocking, and Spec landing guidance. It prints `DevFlow spec self-test passed` when the checker contract works.
 
-`npm run plan:verify` runs `scripts/devflow-plan.js --self-test` and checks executable plan headers, categorized file operations, interface contracts, concrete checkbox steps, retained task fields, and plan landing guidance. It prints `DevFlow plan self-test passed` when the checker contract works. It does not score architecture or generate plans.
+`npm run plan:verify` runs `scripts/devflow-plan.js --self-test` and checks executable plan headers, task types, categorized file operations with precise locations, interface contracts, code-task behavior/mechanics/call-impact fields, proof-ready verification expectations, the `Documentation-only` exception, and plan landing guidance. It prints `DevFlow plan self-test passed` when the checker contract works. It does not score architecture or generate plans.
 
 `npm run audit:verify` runs `scripts/devflow-audit.js --self-test` and checks reuse, stdlib, native, YAGNI, and delete candidate detection. It prints `DevFlow audit self-test passed` when the scanner contract works.
 

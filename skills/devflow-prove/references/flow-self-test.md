@@ -12,18 +12,29 @@ Add search to the dashboard.
 
 Expected behavior:
 
-- Route: Design
-- Skill path: `devflow-core -> devflow-brainstorm -> devflow-cut`
-- Must read current project context before proposing.
-- Must ask or infer goal, constraints, and success criteria.
-- Must compare 2-3 approaches.
-- Must output the Design output contract.
-- Must not implement until the design contract is approved unless the user explicitly requested implementation and the smallest safe plan is known.
+- Route: Design.
+- Skill path: `devflow-core -> devflow-brainstorm -> Confirmed request -> devflow-core`.
+- Brainstorm must read current project context before clarifying.
+- Brainstorm must send a Semantic Echo-Back, apply the Understanding Revision Rule when a correction changes the request, then ask or infer only goal, scope, exclusions, constraints, acceptance, and open questions.
+- Brainstorm must output the fixed `Confirmed request` summary with `Status: clarified` and stop.
+- Brainstorm must not choose an approach, route, depth, design contract, or handoff.
+- Spec must not directly hand off to Cut.
+- `devflow-core` alone chooses any subsequent lifecycle work; when it selects Spec, Spec compares real options, waits for design approval, and returns the confirmed Spec to Core.
+- Cut must return its Cut Decision to Core before lifecycle selection.
+- Plan must return the confirmed Plan to Core before lifecycle selection.
+- PUA must return recovery facts to Core before lifecycle selection.
 
 Pass check:
 
 ```text
-Goal / Smallest useful plan / Not doing / Impact / Verification
+Confirmed request:
+- Goal:
+- Scope:
+- Out of scope:
+- Constraints:
+- Acceptance:
+- Open questions:
+- Status: clarified
 ```
 
 ## Scenario 1A: Problem Investigation
@@ -65,8 +76,9 @@ Requirement: implement CSV export for orders.
 Expected behavior:
 
 - Route: Build because implementation is requested.
-- Skill path: `devflow-core -> devflow-brainstorm -> devflow-cut -> devflow-build -> devflow-prove`
-- Brainstorm compares 2-3 approaches, including reuse/no-change when plausible.
+- Skill path: `devflow-core -> devflow-brainstorm -> Confirmed request -> devflow-core -> devflow-cut -> Cut Decision -> devflow-core -> devflow-build -> devflow-prove`.
+- Brainstorm confirms only the request and stops at `Status: clarified`.
+- Core chooses the lifecycle path after reading the confirmed request; when no reviewable design contract is needed, it can proceed to Cut.
 - Cut checks existing export helpers, standard library/platform CSV support, dependency need, scope drift, and smallest useful path.
 - Build uses slices if the change spans API/UI/tests.
 - Prove runs the targeted test/build/manual scenario.
@@ -74,8 +86,8 @@ Expected behavior:
 Pass check:
 
 ```text
-Goal: ...
-Approach comparison: A / B / C
+Confirmed request: ...
+Core route: ...
 Reuse Check: ...
 Ponytail Rung: ...
 Implementation Slices: ...
@@ -95,7 +107,9 @@ Bug report: order totals sometimes render as NaN. Fix the bug.
 Expected behavior:
 
 - Route: Build
-- Skill path: `devflow-core -> devflow-brainstorm -> devflow-cut -> devflow-build -> devflow-prove`
+- Skill path: `devflow-core -> devflow-brainstorm -> Confirmed request -> devflow-core -> devflow-cut -> Cut Decision -> devflow-core -> devflow-build -> devflow-prove`
+- Brainstorm confirms only the request and stops at `Status: clarified`.
+- Core chooses the lifecycle path after reading the confirmed request; when no reviewable design contract is needed, it can proceed to Cut.
 - Must identify likely touched formatter/calculation flow from facts.
 - `devflow-cut` must run Root-Cause Check before editing.
 - Must search callers/references and choose shared vs narrow fix intentionally.
@@ -122,8 +136,8 @@ The service layer is too complicated. Redesign the architecture and fix the time
 Expected behavior:
 
 - `devflow-core` selects First Principles Cut because inherited abstractions may hide the real constraint.
-- `devflow-brainstorm` separates verified facts, constraints, invariants, and assumptions before proposing architecture.
-- The recommendation names the smallest necessary mechanism rather than preserving the requested redesign by default.
+- `devflow-brainstorm` confirms the requested outcome, scope, constraints, acceptance, and open questions without proposing an architecture.
+- After `Confirmed request`, Core separates verified facts, constraints, invariants, and assumptions before selecting the smallest necessary mechanism.
 - `devflow-cut` still runs Reuse, Native, Overbuild, Diff, and Scope gates before implementation.
 
 Pass check:
@@ -178,7 +192,7 @@ Expected behavior:
 - Route: Fast verification
 - Skill path: `devflow-core -> devflow-prove`
 - Must check `AGENTS.md`, `CLAUDE.md`, Copilot instructions, VS Code instruction/prompt, CodeBuddy rule, plugin metadata, and Gemini metadata.
-- Must confirm platform adapters preserve `Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> devflow-cut -> devflow-build -> devflow-prove`.
+- Must confirm platform adapters preserve `Sense -> Brainstorm clarification -> Confirmed request -> Core route -> devflow-cut -> Cut Decision -> Core route -> devflow-build -> devflow-prove`.
 - Must confirm plugin metadata includes all shipped skills and commands.
 - Must not rewrite adapter rules unless drift is proven.
 
@@ -358,10 +372,12 @@ Create implementation slices from this approved design and check the plan before
 Expected behavior:
 
 - Route: Build planning before implementation.
-- Skill path: `devflow-core -> devflow-brainstorm -> devflow-cut -> /devflow-plan -> devflow-build -> devflow-prove`.
-- Must run `devflow-cut` before creating a Plan Pack and record `CUT_PASS` with allowed scope, reuse conclusion, exclusions, and verification constraints.
-- Must create a Plan Pack with Task, Files, Acceptance, Verify, and Not doing fields only after `CUT_PASS`.
-- A user-approved Plan Pack receives a lightweight Cut-consistency review; scope, dependency, abstraction, or file-responsibility drift returns only affected gates to Cut.
+- Skill path: `devflow-core -> devflow-brainstorm -> Confirmed request -> devflow-core -> devflow-spec -> confirmed Spec -> devflow-core -> devflow-cut -> Cut Decision -> devflow-core -> /devflow-plan -> confirmed Plan -> devflow-core -> devflow-build -> devflow-prove`.
+- Core must consume `Confirmed request`, select Spec when approach comparison and a reviewable design contract are needed, then consume the confirmed Spec before selecting Cut.
+- Spec must compare real no-change/reuse, direct, and relevant existing-pattern options; it writes the design contract/saved spec, waits for user approval, and must not directly hand off to Cut.
+- Cut must return its Cut Decision to Core; only Core can choose whether the result needs Plan, Build, Prove, or no further lifecycle work.
+- Must create a Plan Pack with Task, Files, Acceptance, Verify, and Not doing fields only after `CUT_PASS` and Core selects planning.
+- A user-approved Plan Pack receives a lightweight Cut-consistency review; it returns the confirmed Plan and any scope-drift facts to Core, which decides whether affected Cut gates or later lifecycle work are needed.
 - Saved plan files default to `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`.
 - Must not save implementation plans under `docs/features/`; that directory is for feature ledgers.
 - Must run `node scripts/devflow-plan.js <plan-file>` when the plan is saved to a file. If not found at `scripts/devflow-plan.js` (project-level), try `~/.codex/scripts/devflow-plan.js` or `~/.claude/scripts/devflow-plan.js` (user-level). Do NOT look under `skills/scripts/`.
@@ -374,21 +390,22 @@ Pass check:
 CUT_PASS: allowed scope / reuse conclusion / exclusions / verification constraints
 Command: node scripts/devflow-plan.js docs/plans/YYYY-MM-DD-<short-kebab-name>.md
 Result: DevFlow plan pack report; Plan landing: ok docs/plans/YYYY-MM-DD-<short-kebab-name>.md; Judgment: PASS
-Next: lightweight Cut-consistency review -> devflow-build
+Next: lightweight Cut-consistency review -> confirmed Plan and scope-drift facts -> devflow-core
 Judgment: PASS / FAIL / BLOCKED
 ```
 
-## Scenario 6: Repeated Failure Or User Correction
+## Scenario 6: Repeated Same-Function Problem
 
 Input:
 
 ```text
-Not like that. You missed the actual skill behavior.
+The CSV export is still wrong. I already pointed out that the same export behavior is missing the required columns.
 ```
 
 Expected behavior:
 
-- Route: Recovery
+- Route: Recovery.
+- Trigger because the user repeatedly identifies the same function (`CSV export`) as wrong or incomplete in one task lifecycle.
 - Re-read facts.
 - List 3 hypotheses.
 - Pick a different approach.
@@ -397,7 +414,8 @@ Expected behavior:
 Pass check:
 
 ```text
-Failure/correction: ...
+Failure/correction: repeated report about the same function/result/capability
+Repeated target evidence: CSV export + prior feedback or correction attempt
 Facts reread: ...
 Hypotheses: 1 / 2 / 3
 Changed approach: ...
@@ -497,23 +515,24 @@ devflow-learn -> user confirmation -> devflow-project-knowledge
 Input:
 
 ```text
-你改的还是不对，有缺漏，少了这个少个那个，用户看起来还是不满意。
+CSV 导出还是不对；我上次已经指出同一个导出缺少必填列。
 ```
 
 Expected behavior:
 
-- Route: Recovery
-- Skill path: `devflow-core -> devflow-pua -> devflow-brainstorm -> devflow-prove -> devflow-learn`
-- Must stop the current approach before more edits.
-- Must set `Restart Brainstorm: yes` for explicit wrong-code signals such as "有问题" and "不对".
-- Must treat repeated "少了/少个/缺漏/遗漏/漏了" feedback as pressure recovery, not normal incremental scope.
+- Route: Recovery.
+- Skill path: `devflow-core -> devflow-pua -> recovery facts -> devflow-core -> devflow-brainstorm when selected -> Confirmed request -> devflow-core -> devflow-prove -> devflow-learn`.
+- Trigger only because the user repeatedly identifies the same function (`CSV export`) as wrong or incomplete in one task lifecycle.
+- `devflow-pua` owns the recovery diagnosis, method switch, hypotheses, and new success contract; it returns recovery facts to Core, which alone decides whether Brainstorm re-confirms the request and which lifecycle work follows.
+- Must mark `Restart Brainstorm: re-confirmation required; Core selects whether to invoke it` when the repeated same-target trigger applies.
+- Must not infer pressure recovery from an isolated keyword or message count alone.
 - Must discard the prior wrong assumption/path/proof claim and keep only verified facts.
 - Must classify `User-view miss` and `Satisfaction gap` before choosing the next fix.
 - Must display the selected recovery method as `METHOD: {flavor} / {method}`.
 - Must switch guiding method when the previously used method still failed.
 - Must switch to a different/opposite method and restart checks from facts when the first recovery method still misses.
-- Must restart `devflow-brainstorm` before changing files again.
-- Must re-read facts from the user challenge, prior edits, proof output, and relevant project files.
+- Must return the Brainstorm re-confirmation need to Core before changing files again.
+- Must re-read facts from the repeated same-target feedback, prior edits, proof output, and relevant project files.
 - Must ask where it is wrong, what result is wanted, what must stay unchanged, and how to verify when those answers cannot be inferred.
 - Must list 3 hypotheses, including that the prior approach solved the wrong problem.
 - Must blue-team attack the new plan from the user's point of view.
@@ -525,8 +544,9 @@ Expected behavior:
 Pass check:
 
 ```text
-Pressure check: user challenge / explicit wrong-code signal / repeated miss
-Restart Brainstorm: yes
+Pressure check: repeated report about the same function/result/capability
+Repeated target evidence: CSV export + prior feedback or correction attempt
+Restart Brainstorm: re-confirmation required; Core selects whether to invoke it
 Discarded context: ...
 Keep only verified facts: ...
 User-view miss: ...

@@ -144,6 +144,20 @@ Next step: devflow-core -> devflow-pua
 
 Do not continue the same approach with only minor wording, parameter, or nearby-file tweaks. `devflow-pua` must stop, restate the goal, ask or infer the desired result, list 3 hypotheses, and choose a materially different approach before the next proof.
 
+## Recovery Proof Contract
+
+After a `devflow-pua` recovery, the first Prove pass must cite the PUA recovery output as evidence that recovery actually ran — triggering the skill alone is not proof. Quote these fields from the PUA output:
+
+```text
+Recovery evidence:
+- METHOD / SWITCH: <flavor/method and any switch line>
+- User-view miss: <classification>
+- New success contract: <expected result + verification>
+- Changed approach: <old path abandoned; new path>
+```
+
+If any field is missing or empty, recovery was not executed. Report `FAIL` and return to `devflow-pua`; a bare `METHOD:` line without diagnosis, quarantine, and a changed approach is not recovery.
+
 ## Evidence Rules
 
 - Do not write "should work" as a result.
@@ -196,3 +210,4 @@ Before leaving this skill, confirm:
 - [ ] Result summary cites real output.
 - [ ] Judgment is `PASS`, `FAIL`, or `BLOCKED`.
 - [ ] Coverage and gaps are clear when relevant.
+- [ ] After a `devflow-pua` recovery, the Prove pass cites the Recovery Proof Contract fields (METHOD/SWITCH, User-view miss, New success contract, Changed approach).

@@ -11,11 +11,11 @@ Cut unnecessary work before writing it.
 
 ## Context
 
-Receives an approved design contract (Depth C) or an approved design/saved spec (Depth A/B). Cut decides the smallest implementation boundary before a Plan Pack is written; do not use a future plan as the evidence for these gates.
+Receives a `devflow-core`-selected, approved design or confirmed Spec. Cut decides the smallest implementation boundary before any construction plan; do not use a future plan as evidence for these gates.
 
-- Depth A/B: `CUT_PASS` produces the Cut Decision consumed by `devflow-plan`.
-- Depth C: `CUT_PASS` hands the approved design and Cut Decision directly to `devflow-build`.
-- A user-approved Plan Pack receives only a lightweight Cut-consistency review. If it adds scope, dependencies, abstractions, or file responsibilities outside the Cut Decision, re-run only the affected Cut gates before Build.
+- `CUT_PASS` produces a Cut Decision and returns it to `devflow-core`.
+- Core alone decides whether the Cut Decision needs `devflow-plan`, `devflow-build`, `devflow-prove`, or no further lifecycle work.
+- A user-approved Plan Pack receives only a lightweight Cut-consistency review. If it adds scope, dependencies, abstractions, or file responsibilities outside the Cut Decision, return the affected-gate facts to Core before any further lifecycle choice.
 
 ## Cut Intensity
 
@@ -42,6 +42,8 @@ After reading the touched flow, stop at the first rung that works:
 9. Only then write the minimum new code.
 
 If two rungs both work, take the earlier rung and move on. The ladder is not permission to skip reading; first trace the real flow the change touches.
+
+External guidance skills complement the chain but never widen it. Under conflict the priority is: Cut Decision > Plan Pack > external skill guidance. When a matched skill (e.g., `frontend-design`) recommends structure outside the allowed scope, keep the Cut scope and return the broader recommendation as scope-drift facts to `devflow-core`.
 
 ## Root-Cause Fix Check
 
@@ -81,6 +83,7 @@ Native Check: is platform or standard-library capability enough?
 Overbuild Check: any new dependency/abstraction/config/directory/framework layer/generic engine? why needed now?
 Diff Check: how does each planned change trace to the goal?
 Scope Check: what unrequested behavior was cut?
+External Skills: <skill-name> (role: guides execution) / none — matched at Sense via Skill Discovery; inherited by the Plan Pack and loaded by Build.
 ```
 
 ## Overengineering Review Tags
@@ -155,15 +158,15 @@ Do not remove:
 Output one of:
 
 ```text
-CUT_PASS: smallest scope holds; Depth A/B enter `devflow-plan`, Depth C enters `devflow-build`
+CUT_PASS: smallest scope holds; return the Cut Decision to `devflow-core`
 CUT_REDUCE: proposed scope is too heavy; reduce to <smaller option>
 CUT_REUSE: existing capability can be reused; do not write new implementation
-CUT_BLOCKED: missing facts or risk too high; cannot enter Plan or Build
+CUT_BLOCKED: missing facts or risk too high; return the blocking facts to `devflow-core`
 ```
 
-When `CUT_REDUCE` or `CUT_REUSE` occurs, **STOP — present the reduction or reuse finding to the user**. Explain what was cut, what existing capability replaces it, and why the smaller option is sufficient. Wait for the user to confirm before updating the design contract and entering Build.
+When `CUT_REDUCE` or `CUT_REUSE` occurs, **STOP — present the reduction or reuse finding to the user**. Explain what was cut, what existing capability replaces it, and why the smaller option is sufficient. After confirmation, return the confirmed result to `devflow-core`; only Core selects any further lifecycle work.
 
-When `CUT_BLOCKED` occurs, hand back to `devflow-brainstorm` to re-explore the goal and constraints with the user. Include the depth that was selected so brainstorm can resume at the right point.
+When `CUT_BLOCKED` occurs, return the blocking facts to `devflow-core`. Core decides whether it must restart `devflow-brainstorm` to re-explore the goal and constraints.
 
 ## Anti-Rationalization
 
@@ -189,12 +192,9 @@ When `CUT_BLOCKED` occurs, hand back to `devflow-brainstorm` to re-explore the g
 
 ## Handoff
 
-After `CUT_PASS`, record a Cut Decision containing the allowed scope, reuse conclusion, exclusions, and required verification:
+After `CUT_PASS`, record a Cut Decision containing the allowed scope, reuse conclusion, exclusions, required verification, and the `External Skills` declaration, then return it to `devflow-core`.
 
-- Depth A/B: load `devflow-plan` to create the construction checklist.
-- Depth C: load `devflow-build` with the approved design and Cut Decision.
-
-Do not hand a `CUT_REDUCE` or `CUT_REUSE` result forward until the user confirms it. Do not let a Plan Pack broaden the Cut Decision without re-running the affected gates.
+Core alone selects whether the result needs `devflow-plan`, `devflow-build`, `devflow-prove`, or no further lifecycle work. Do not hand a `CUT_REDUCE` or `CUT_REUSE` result forward until the user confirms it. Do not let a Plan Pack broaden the Cut Decision without returning the affected-gate facts to Core.
 
 ## Verification
 

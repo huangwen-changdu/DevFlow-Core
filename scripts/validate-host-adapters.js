@@ -62,12 +62,12 @@ const adapters = [
   {
     name: "Codex / shared agents",
     file: "AGENTS.md",
-    terms: ["Sense -> Brainstorm -> [STOP: Path Selection Gate]", "devflow-spec -> devflow-cut -> /devflow-plan", "devflow-cut -> /devflow-plan", "problem report", "devflow-pua", "Completion proof", "STOP gates are mandatory", "Skills enforce their own gates", "use First Principles Cut", "run adversarial review against acceptance criteria"]
+    terms: ["Brainstorm clarification", "Understanding Revision Rule", "Confirmed request", "confirmed Spec returns to Core", "problem report", "devflow-pua", "Completion proof", "STOP gates are mandatory", "Skills enforce their own gates", "use First Principles Cut", "run adversarial review against acceptance criteria"]
   },
   {
     name: "Claude Code",
     file: "CLAUDE.md",
-    terms: ["devflow-core", "devflow-pua", "AGENTS.md", "Required completion proof"]
+    terms: ["devflow-core", "devflow-pua", "AGENTS.md", "Understanding Revision Rule", "confirmed Spec", "Required completion proof"]
   },
   {
     name: "Claude Code hooks",
@@ -87,32 +87,45 @@ const adapters = [
   {
     name: "Claude DevFlow command",
     file: ".claude/commands/devflow-core.md",
-    terms: ["skills/devflow-core/SKILL.md", "skills/devflow-brainstorm/SKILL.md", "skills/devflow-pua/SKILL.md", "methodology-router.md", "methodology-library.md", "flavor-display.md", "restart `skills/devflow-brainstorm/SKILL.md`", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Ask exactly one smallest blocking question"]
+    terms: ["skills/devflow-core/SKILL.md", "skills/devflow-brainstorm/SKILL.md", "skills/devflow-pua/SKILL.md", "methodology-router.md", "methodology-library.md", "flavor-display.md", "same function, result, or requested capability", "repeatedly points out", "return recovery facts to `devflow-core`", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "different/opposite method", "Understanding Revision Rule", "confirmed Spec returns to Core", "Confirmed request", "Status: clarified"]
   },
   {
     name: "GitHub Copilot",
     file: ".github/copilot-instructions.md",
-    terms: ["AGENTS.md", "Sense", "Brainstorm", "Cut", "Prove", "changed wrong", "restart devflow-brainstorm", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Never claim done without proof", "First Principles Cut", "perform adversarial review against acceptance criteria"]
+    terms: ["AGENTS.md", "Sense", "Brainstorm", "Understanding Revision Rule", "confirmed Spec to Core", "Cut", "Prove", "same function, result, or requested capability", "repeatedly points out", "return recovery facts to Core", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "Never claim done without proof", "First Principles Cut", "perform adversarial review against acceptance criteria"]
   },
   {
     name: "VS Code instruction",
     file: ".github/instructions/devflow.instructions.md",
-    terms: ["Every platform entry must preserve the same core contract", "Sense", "Brainstorm", "Cut", "Prove", "devflow-pua", "restart `devflow-brainstorm`", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "npm test", "First Principles Cut", "require adversarial review against acceptance criteria"]
+    terms: ["Every platform entry must preserve the same core contract", "Sense", "Brainstorm", "Understanding Revision Rule", "confirmed Spec returning to Core", "Cut", "Prove", "devflow-pua", "same function, result, or requested capability", "repeatedly points out", "return recovery facts to Core", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "npm test", "First Principles Cut", "require adversarial review against acceptance criteria"]
   },
   {
     name: "VS Code prompt",
     file: ".github/prompts/devflow.prompt.md",
-    terms: ["Select route: Fast, Design-lite, Design, Build, or Recovery", "Problem: Sense -> Prove facts", "devflow-pua", "restart `devflow-brainstorm`", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Root-Cause Check"]
+    terms: ["Select route: Fast, Design-lite, Design, Build, or Recovery", "Problem: Sense -> Prove facts", "Understanding Revision Rule", "confirmed Spec returns to Core", "devflow-pua", "same function, result, or requested capability", "repeatedly points out", "return recovery facts to Core", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "Root-Cause Check"]
   },
   {
     name: "CodeBuddy",
     file: ".codebuddy/rules/devflow-core/RULE.mdc",
-    terms: ["Sense -> Brainstorm -> [STOP: Depth A/B/C]", "devflow-spec -> devflow-cut -> /devflow-plan", "devflow-cut -> /devflow-plan", "devflow-pua", "restart `devflow-brainstorm`", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "缺漏", "少了", "少个", "有问题", "不对", "写错了", "Authoritative method source", "PASS / FAIL / BLOCKED", "STOP gates are mandatory", "First Principles Cut", "run verification and adversarial review against acceptance criteria"]
+    terms: ["Brainstorm clarification", "Understanding Revision Rule", "Confirmed request", "confirmed Spec -> Core route", "devflow-pua", "same function, result, or requested capability", "repeatedly points out", "return recovery facts to Core", "User-view miss", "Satisfaction gap", "METHOD: {flavor} / {method}", "methodology-library", "different/opposite method", "Authoritative method source", "PASS / FAIL / BLOCKED", "STOP gates are mandatory", "First Principles Cut", "run verification and adversarial review against acceptance criteria"]
   }
 ];
 
 for (const adapter of adapters) {
   assertTerms(adapter.name, read(adapter.file), adapter.terms);
+}
+
+for (const [file, terms] of [
+  ["AGENTS.md", ["Cut returns its result to Core", "confirmed Plan and any scope-drift facts to Core", "recovery facts"]],
+  ["CLAUDE.md", ["Cut Decision", "confirmed Plan", "recovery facts"]],
+  [".github/copilot-instructions.md", ["Every Cut result returns to Core", "returns its reviewed, Cut-consistent Plan to Core", "return recovery facts to Core"]],
+  [".github/instructions/devflow.instructions.md", ["Cut returning its result to Core", "optional Plan returning its confirmed Plan to Core", "return recovery facts to Core"]],
+  [".github/prompts/devflow.prompt.md", ["Every result returns to Core", "return recovery facts to Core"]],
+  [".codebuddy/rules/devflow-core/RULE.mdc", ["Cut and Plan likewise return their decisions to Core", "return recovery facts to Core"]],
+  [".claude/commands/devflow-core.md", ["Return all Cut results to Core", "return recovery facts to `devflow-core`"]],
+  ["hooks/devflow-session-start.js", ["Cut and Plan likewise return their decisions to Core", "return recovery facts to Core"]]
+]) {
+  assertTerms(`Core-exclusive routing surface ${file}`, read(file), terms);
 }
 
 for (const [file, terms] of Object.entries({
@@ -195,8 +208,8 @@ assert(
   "devflow-session-start.js must inject DevFlow context"
 );
 assert(
-  hookPayload.hookSpecificOutput?.additionalContext?.includes("Depth A/B create an implementation plan only after CUT_PASS"),
-  "devflow-session-start.js must inject Cut-before-Plan context"
+  hookPayload.hookSpecificOutput?.additionalContext?.includes("Spec compares approaches, writes and confirms the design contract, then returns the confirmed Spec to Core"),
+  "devflow-session-start.js must inject confirmed-Spec-to-Core routing context"
 );
 assert(
   hookPayload.hookSpecificOutput?.additionalContext?.includes("devflow-pua"),

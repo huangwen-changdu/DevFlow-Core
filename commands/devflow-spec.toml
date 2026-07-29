@@ -1,6 +1,8 @@
 description = "Create and validate a DevFlow spec document before implementation planning."
 prompt = '''
-Create a DevFlow spec from the current request or approved design.
+Create a DevFlow spec from the `Confirmed request` that `devflow-core` selected for Spec work.
+
+Compare real no-change/reuse, direct implementation, and relevant existing-pattern options before writing the chosen design contract. Record their trade-offs in `Approach`; do not re-confirm request fields and do not select any later lifecycle skill.
 
 Default landing for saved specs is:
 
@@ -24,7 +26,7 @@ node ~/.codex/scripts/devflow-spec.js <spec-file>
 node ~/.claude/scripts/devflow-spec.js <spec-file>
 ```
 
-Use the script output as the required-section, unresolved-marker, and spec-landing check before `devflow-cut`.
+Use the script output as the required-section, unresolved-marker, and spec-landing check.
 
 Required sections (headers must remain in English for checker validation; content can be in the user's language):
 Goal:
@@ -38,10 +40,10 @@ Verification:
 Code Documentation:
 Open Questions:
 
-After `CUT_PASS`, create the plan with:
-Source: <spec path or approved design>
+If Core later selects Cut and it returns `CUT_PASS`, any resulting plan cites:
+Source: <confirmed spec path or approved design>
 Spec coverage: <which requirements map to which tasks>
 Cut Decision: <allowed scope, reuse conclusion, exclusions, verification constraints>
 
-Next: devflow-cut -> `CUT_PASS` -> /devflow-plan with Source, Spec coverage, and Cut Decision -> devflow-build -> devflow-prove.
+After the user reviews and approves the design contract/spec, return the confirmed Spec to `devflow-core`. Core alone selects whether Cut, `/devflow-plan`, Build, Prove, or no further work is needed.
 '''

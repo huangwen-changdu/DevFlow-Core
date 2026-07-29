@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current Version: v30
+- Current Version: v33
 - Status: active
-- Last Change: cut-before-plan-lifecycle-validation
+- Last Change: core-exclusive-lifecycle-routing-validation
 - Product Area: local validation, evidence commands, coverage reports
 
 ## Feature Background
@@ -36,7 +36,8 @@ This ledger exists because validation behavior now changes independently from th
 - `npm run review:verify` validates required review gate detection and missing-gate reporting.
 - `npm run spec:verify` validates required section detection, vague spec blocking, and spec landing guidance.
 - `npm run plan:verify` validates executable plan headers, categorized file operations, `Consumes`/`Produces` interface contracts, concrete checkbox steps, retained task fields, and plan landing guidance; it does not generate plans, judge architecture, or prove lifecycle state.
-- Package, trigger, host, and scenario validation assert that Depth A/B run Cut before Plan and that Plan review only performs lightweight Cut-consistency review.
+- Package, trigger, host, target-installer, and user-installer validation assert Brainstorm's Understanding Revision Rule, fixed `Confirmed request` summary, and absence of removed design/lifecycle responsibilities; they also assert Spec option comparison/design confirmation plus Core's exclusive routing after confirmed requests, confirmed Specs, Cut Decisions, confirmed Plans, and PUA recovery facts.
+- Plan validation remains limited to static Plan Pack structure after `devflow-cut` returns `CUT_PASS`; Core decides whether planning is needed and receives the confirmed Plan plus scope-drift facts after review.
 - `npm run audit:verify` validates repo-wide audit scanner candidate detection for reuse, stdlib, native, YAGNI, and delete tags.
 - `npm test` validates Skill Activation Check wording and `reuse` tag coverage in skills and scripts.
 - `npm run verify:all` runs the full local verification matrix in one command.
@@ -56,6 +57,9 @@ This ledger exists because validation behavior now changes independently from th
 
 | Version | Change | Type | Date | Status | Summary |
 |---|---|---|---|---|---|
+| v33 | core-exclusive-lifecycle-routing-validation | boundary regression | 2026-07-28 | active | Extended package, trigger, host, target-install, and user-install regression coverage to require Cut Decisions, confirmed Plans, and PUA recovery facts to return to Core. Self-tests and capability scenarios now reject direct Cut/Plan/PUA lifecycle handoffs. |
+| v32 | brainstorm-spec-responsibility-split-validation | boundary regression | 2026-07-28 | active | Added positive checks for Brainstorm's Understanding Revision Rule, Spec real-option comparison/design confirmation, and both Core routing boundaries; negative checks reject Brainstorm design/lifecycle recovery and Spec direct Cut handoff. Extended self-test, capability, host, target-install, and user-install evidence. |
+| v31 | brainstorm-clarification-boundary-validation | boundary regression | 2026-07-28 | active | Added positive checks for Semantic Echo-Back, one-at-a-time questions, and the fixed `Confirmed request` summary; negative checks reject former Brainstorm design, lifecycle, recovery, documentation, and visual-expression responsibilities. Updated trigger, host, scenario, target-install, and user-install evidence for Core-owned routing. |
 | v30 | cut-before-plan-lifecycle-validation | lifecycle validation | 2026-07-28 | active | Added validation that Depth A/B run Cut before Plan and that the plan checker remains limited to static Plan Pack structure rather than lifecycle state. |
 | v29 | unified-plan-contract-validation | plan contract hardening | 2026-07-28 | active | Added package, trigger, host-adapter, target-installer, and user-installer coverage for the sole `devflow-plan` skill. Expanded the plan checker self-test from basic task fields to executable headers, categorized file operations, interface contracts, and concrete checkbox steps while preserving source tracing and landing checks. |
 | v28 | local-capability-evaluation | capability regression | 2026-07-24 | active | Added versioned scenario contracts and a zero-dependency evaluator that maps fixed self-test evidence to deduplicated local command results, with per-scenario reporting and explicit non-benchmark boundaries. |

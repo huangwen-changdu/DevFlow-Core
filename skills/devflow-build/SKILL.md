@@ -15,6 +15,19 @@ Receives a `CUT_PASS` Cut Decision from `devflow-cut`.
 - Depth C input: `CUT_PASS` plus the approved design contract; no Plan Pack is required.
 
 When no plan file exists, the approved design and Cut Decision form the Build Contract basis; skip the plan checker.
+## Plan Review
+
+Before editing, reconcile the plan against the current codebase — executability review, not redesign:
+
+1. Anchors: every `Modify` symbol/anchor and interface in the plan still exists and matches.
+2. Behavior: each task's `Current behavior` still describes the code.
+3. Steps: unambiguous, with verification commands that can run in this environment.
+4. Skills: every skill declared in `External Skills` (Cut Decision or plan header) is actually loaded through the platform's skill mechanism, or the reason it does not apply is recorded.
+
+Any failed check, unclear instruction, or critical gap: stop and return `BUILD_BLOCKED` with the facts to `devflow-core`. Do not guess, do not silently repair the plan. Reviewing fidelity is not re-deciding the mechanism.
+
+For Depth C (no Plan Pack), run the same review against the approved design contract: confirm the symbols and behaviors it names still exist. Depth C keeps Build freedom inside the Cut Decision; it does not skip this review or the Stop Protocol.
+
 ## Build Contract
 
 Before editing, state:
@@ -23,6 +36,7 @@ Before editing, state:
 Goal: ...
 Will touch: <files/modules>
 Not doing: ...
+Skills loaded: <skill-name> / none
 Narrowest verification: ...
 ```
 
@@ -41,24 +55,30 @@ Tech Stack: <relevant existing stack>
 Source: <docs/specs/YYYY-MM-DD-<short-kebab-name>.md or approved design>
 Spec coverage: <which requirement(s) this plan covers, or design-only>
 Cut Decision: <CUT_PASS allowed scope, reuse conclusion, exclusions, verification constraints>
+External Skills: <skill-name> (role: guides execution) / none
 Task: <short title>
+Task type: Code change | Documentation-only
 Files:
-- Create: <path> | <responsibility>
-- Modify: <path> | <responsibility>
-- Test: <path> | <behavior proved>  # only when applicable
+- Create: <path> | new file | <responsibility>
+- Modify: <path> | <symbol or stable anchor> | <responsibility>
+- Test: <path> | <test symbol or stable anchor> | <behavior proved>  # only when applicable
 Interfaces:
-- Consumes: <input/API/module or documentation-only exception>
-- Produces: <output/API/module or documentation-only exception>
+- Consumes: <exact symbol/API input and type/shape, or documentation-only exception>
+- Produces: <exact symbol/API output and type/shape, or documentation-only exception>
+Current behavior: <observable current state>  # Code change only
+Target behavior: <observable outcome>  # Code change only
+Change mechanics: <minimal code snippet, pseudocode, or exact replacement rule>  # Code change only
+Call impact: <known callers/downstream effect, or no runtime impact>  # Code change only
 Steps:
-- [ ] <concrete file + symbol/behavior/command + expected result>
-- [ ] <concrete file + symbol/behavior/command + expected result>
+- [ ] <one file + symbol/anchor + executable action; include code snippet, pseudocode, or exact replacement for code logic>
+- [ ] <one verification action with trigger/input, expected result, and command or manual scenario>
 Acceptance: <specific condition>
-Verify: <exact command or manual scenario>
+Verify: <exact command or manual scenario, trigger/input, and expected result>
 Comments: <what code comments are required — which functions need function-level comments, which non-obvious logic needs inline comments explaining WHY; or "none — trivial change">
 Not doing: <scope removed>
 ```
 
-No unresolved markers. No "add tests" without naming the behavior. No "handle edge cases" without naming the edge case. No "similar to Task N" shortcuts; repeat enough detail for each task to stand alone.
+No unresolved markers. For `Code change`, follow the recorded file symbol/anchor, `Current behavior`, `Target behavior`, `Change mechanics`, and `Call impact`; do not re-decide the implementation mechanism in Build. The verification step must retain its trigger/input, expected result, and command or manual scenario. `Documentation-only` applies only to tasks with no runtime code files and explicit `documentation-only` interfaces. No "add tests" without naming the behavior. No "handle edge cases" without naming the edge case. No "similar to Task N" shortcuts; repeat enough detail for each task to stand alone.
 
 Before Build, run `node scripts/devflow-plan.js <plan-file>` when a plan is saved to a file. If not found at `scripts/devflow-plan.js` (project-level), try `~/.codex/scripts/devflow-plan.js` or `~/.claude/scripts/devflow-plan.js` (user-level). Do NOT look under `skills/scripts/`. See `core-methods.md` Script Path Resolution.
 
@@ -175,10 +195,23 @@ If any file has no goal link, remove that change.
 | "We'll verify everything at the end." | Verify slices when focused checks exist. |
 | "Docs changes do not need proof." | Docs/rules/skills need validation just like code. |
 | "The issue only mentions one caller." | Check sibling callers before choosing the fix location. |
+| "The plan is approved, so I just execute." | Plan Review comes first: stale anchors or unclear steps return `BUILD_BLOCKED` to Core. |
+| "I'll infer the missing step." | Guessing past a gap is forbidden; unclear instructions return `BUILD_BLOCKED` facts. |
 | "The code is self-explanatory." | Code tells you WHAT it does. Comments tell you WHY. Future developers and LLMs need the WHY. |
 | "Comments will get stale." | Stale comments are a maintenance issue. Missing comments are worse. Write them now, update them when code changes. |
 | "I'll add comments after it works." | Comments are part of the implementation. If the code works but has no comments, the implementation is incomplete. |
 | "The function name is clear enough." | Names describe WHAT. Comments capture WHY — the decision, the constraint, the business rule. |
+
+## Stop Protocol
+
+Stop executing immediately and return `BUILD_BLOCKED` with the blocking facts to `devflow-core` when:
+
+- a Plan Review check fails (dead anchor, stale behavior, missing interface, unclear step)
+- a dependency, tool, or declared external skill is missing and the task depends on it
+- verification fails repeatedly for the same task
+- the plan has a critical gap that prevents starting or continuing
+
+Do not guess, do not force through blockers, and do not broaden scope to escape. Core decides whether to revise the plan, re-clarify with `devflow-brainstorm`, or enter `devflow-pua`.
 
 ## Handoff Gate
 
@@ -194,6 +227,8 @@ Known unverified: ...
 
 Before leaving this skill, confirm:
 
+- [ ] Plan Review passed or concerns were returned to `devflow-core` as `BUILD_BLOCKED`.
+- [ ] Declared external skills were loaded, or the exception reason was recorded in `Skills loaded`.
 - [ ] Build contract exists.
 - [ ] Cut gates passed or were run.
 - [ ] Slices exist when work is multi-step.

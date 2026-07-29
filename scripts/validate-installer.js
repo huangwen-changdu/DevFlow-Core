@@ -50,6 +50,94 @@ function walkFiles(dir) {
   });
 }
 
+/**
+ * Ensures a target installation preserves the Brainstorm, Spec, and Core split.
+ */
+function assertInstalledResponsibilitySplitContract(targetRoot) {
+  const brainstormFiles = [
+    "skills/devflow-brainstorm/SKILL.md",
+    "skills/devflow-brainstorm/references/interview-discipline.md"
+  ];
+  const requiredBrainstormTerms = [
+    "Semantic Echo-Back",
+    "one question at a time",
+    "Understanding Revision Rule",
+    "Confirmed request",
+    "Goal:",
+    "Scope:",
+    "Out of scope:",
+    "Constraints:",
+    "Acceptance:",
+    "Open questions:",
+    "Status: clarified"
+  ];
+  const removedResponsibilities = [
+    "Fast Exit",
+    "Path Selection Gate",
+    "Depth Selection Gate",
+    "Design Contract",
+    "Approach comparison",
+    "Method Lens",
+    "Coverage Map",
+    "Documentation Landing",
+    "Visual Expression",
+    "Re-Ask After Challenge"
+  ];
+
+  for (const rel of brainstormFiles) {
+    const body = fs.readFileSync(path.join(targetRoot, rel), "utf8");
+    for (const term of requiredBrainstormTerms) {
+      assert(body.includes(term), `Installed ${rel} missing clarification contract: ${term}`);
+    }
+    for (const term of removedResponsibilities) {
+      assert(!body.includes(term), `Installed ${rel} regained removed Brainstorm responsibility: ${term}`);
+    }
+  }
+
+  const spec = fs.readFileSync(path.join(targetRoot, "skills/devflow-spec/SKILL.md"), "utf8");
+  for (const term of [
+    "Confirmed request",
+    "Compare the smallest real options",
+    "design contract",
+    "returns the confirmed Spec to `devflow-core`"
+  ]) {
+    assert(spec.includes(term), `Installed Spec missing design-contract behavior: ${term}`);
+  }
+  assert(!spec.includes("Next: `devflow-cut`"), "Installed Spec must not directly hand off to Cut");
+
+  const core = fs.readFileSync(path.join(targetRoot, "skills/devflow-core/SKILL.md"), "utf8");
+  for (const term of [
+    "Core decides whether the request needs `devflow-spec`",
+    "returns the confirmed Spec to Core",
+    "Only Core then selects"
+  ]) {
+    assert(core.includes(term), `Installed Core missing responsibility routing: ${term}`);
+  }
+  const cut = fs.readFileSync(path.join(targetRoot, "skills/devflow-cut/SKILL.md"), "utf8");
+  for (const term of [
+    "CUT_PASS: smallest scope holds; return the Cut Decision to `devflow-core`",
+    "Core alone decides whether the Cut Decision needs `devflow-plan`, `devflow-build`, `devflow-prove`, or no further lifecycle work."
+  ]) {
+    assert(cut.includes(term), `Installed Cut missing Core return contract: ${term}`);
+  }
+
+  const plan = fs.readFileSync(path.join(targetRoot, "skills/devflow-plan/SKILL.md"), "utf8");
+  for (const term of [
+    "returns the confirmed Plan to `devflow-core`",
+    "only Core selects `devflow-build` or any other later lifecycle work"
+  ]) {
+    assert(plan.includes(term), `Installed Plan missing Core return contract: ${term}`);
+  }
+
+  const pua = fs.readFileSync(path.join(targetRoot, "skills/devflow-pua/SKILL.md"), "utf8");
+  for (const term of [
+    "return recovery facts to `devflow-core`",
+    "`devflow-pua` never selects Cut, Plan, Build, Prove, or another lifecycle skill."
+  ]) {
+    assert(pua.includes(term), `Installed PUA missing Core return contract: ${term}`);
+  }
+}
+
 function assertInstalledRuntimeIsSelfContained(targetRoot) {
   const installed = new Set(runtimeEntries);
   const optionalReferenceHints = [
@@ -180,6 +268,7 @@ assert(fs.existsSync(path.join(createTarget, "hooks/devflow-session-start.js")),
 assert(fs.existsSync(path.join(createTarget, ".claude/settings.json")), "Write mode must create Claude project hook settings");
 assert(fs.existsSync(path.join(createTarget, ".claude/commands/devflow-core.md")), "Write mode must create Claude DevFlow command");
 assert(fs.existsSync(path.join(createTarget, "skills/devflow-audit/SKILL.md")), "Write mode must create audit skill");
+assertInstalledResponsibilitySplitContract(createTarget);
 assertInstalledRuntimeIsSelfContained(createTarget);
 
 const checkOutput = runInstaller([createTarget, "--check"]);

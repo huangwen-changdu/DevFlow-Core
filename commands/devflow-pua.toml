@@ -2,13 +2,13 @@ description = "Run DevFlow PUA pressure recovery when a result is wrong, challen
 prompt = '''
 Run DevFlow PUA.
 
-Use this when the user says wrong, not like that, changed wrong, your code is wrong, you wrote it wrong, has a problem, not right, missing, incomplete, still missing, quality complaint, user dissatisfied, 有问题, 不对, 写错了, 改歪了, 没改对, 不是我要的, 理解错了, 改了几次, 少了, 少个, 缺少, 缺漏, 遗漏, 漏了, or when repeated fixes miss the target.
+Use this when the user repeatedly points out that the same function, result, or requested capability has a problem in one task lifecycle, repeatedly identifies missing coverage for that same target, or explicitly invokes `/devflow-pua`.
 
 Stop the current approach before more edits. Re-read the request, correction, relevant files, and proof output.
 
 Read `skills/devflow-pua/references/methodology-router.md`, `skills/devflow-pua/references/methodology-library.md`, and `skills/devflow-pua/references/flavor-display.md` before selecting the recovery method. Do not link out to the original PUA project at runtime; use these local methodology files.
 
-For repeated challenge, explicit wrong-code signals, or repeated missing-piece complaints such as 少了这个/少个那个, set `Restart Brainstorm: yes`, quarantine the previous wrong assumption/path/proof claim, keep only verified facts, diagnose why the user thinks it is still wrong, and hand off to `devflow-brainstorm` before more edits. Ask where it is wrong, what result the user wants, what is missing, what must stay unchanged, and how to verify it when those answers are not inferable.
+For repeated reports that the same function, result, or requested capability remains wrong, incomplete, or missing, record `Restart Brainstorm: re-confirmation required; Core selects whether to invoke it`, quarantine the previous wrong assumption/path/proof claim, keep only verified facts, diagnose why the user thinks that target is still wrong, and return recovery facts to `devflow-core` before more edits.
 
 This command is not permission to continue the old patch. First classify the user-view miss, display the active flavor/method as `METHOD: {flavor} / {method}`, then switch to a different/opposite method if the prior method failed.
 
@@ -31,7 +31,7 @@ Changed approach:
 Verification:
 Learning closure:
 
-Ask 2-4 pointed questions only when the desired result cannot be inferred from facts. If the result is inferable, state the evidence and continue through `devflow-brainstorm`, then the needed DevFlow skill.
+Ask 2-4 pointed questions only when the desired result cannot be inferred from facts. If the result is inferable, state the evidence and return the recovery facts to `devflow-core`. `devflow-core` may select `devflow-brainstorm` only to re-confirm the request; Brainstorm then returns the clarified request to `devflow-core`. Core alone selects the needed lifecycle skill.
 
 Completion still requires:
 Command:

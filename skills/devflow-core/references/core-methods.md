@@ -47,15 +47,15 @@ This method is always active. It shapes how every other method is applied.
 | Lifecycle Router | Choose Fast, Design-lite, Design, Build, or Recovery by task shape and risk. | One-size-fits-all ceremony and silent risk escalation. |
 | Small Request Boundary | Classify tiny work by risk, impact, uncertainty, and proof before choosing Fast or Design-lite. | Treating every "small" feature as Fast Path or forcing heavy Design on trivial work. |
 | Method Lens | Select the working strategy for Design, Recovery, problem solving (问题解决), bug fixing, architecture design (架构设计), or high-risk proof before choosing artifacts. | Generic process with no task-specific brain. |
-| Brainstorm First | Clarify goal, constraints, success criteria, assumptions, and 2-3 approaches. When Fast Exit conditions are met (small change to existing feature, all boundary gates pass, single plausible path), offer Fast Exit as a recommended option at the Path Selection Gate — the user chooses, not the LLM. | Building the first suggested implementation without checking the real goal. Auto-selecting Fast Exit without user confirmation. |
+| Brainstorm Clarification | Confirm goal, scope, exclusions, constraints, acceptance, and open questions through a Semantic Echo-Back and one question at a time; return a fixed `Confirmed request` summary to Core. | Building or selecting an implementation from an unconfirmed request. |
 | Minimal Solution Ladder | Prefer no-change, reuse, available environment skill, stdlib, platform, installed dependency, one-line/config, then minimum new code. | Rewriting existing capability, ignoring available skills, adding dependencies too early. |
 | Native Capability Check | Scan platform and standard-library alternatives before adding libraries or custom code. | Wrapper packages for things the runtime already provides. |
 | Anti-Overengineering Gate | Require a current reason for abstractions, dependencies, config, folders, framework layers, or generic engines. | Future-proofing, one-caller abstractions, speculative extension points. |
 | Root-Cause Fix Check | For bugs, search callers and fix the shared entry when that is the smaller correct change. | Per-caller symptom patches that leave sibling paths broken. |
 | Intentional Simplification Ledger | Mark accepted shortcuts with a ceiling and revisit trigger, then harvest them with a debt command. | "Later" shortcuts that silently become permanent. |
-| Spec Document | Write a saved requirements source for larger or explicitly spec-requested work before planning tasks. | Requirements drift across plans and implementation without a reviewable source. |
+| Spec Document | After Core selects it for a confirmed request, compare real options, write a reviewable design contract and saved requirements source, wait for user approval, then return the confirmed Spec to Core. | Requirements drift, unreviewed design decisions, or Spec directly routing implementation. |
 | Plan Pack | Convert approved design or spec into small tasks with source coverage, files, acceptance, and verification. | Big-bang patches and task lists with no proof. |
-| Surgical Build Discipline | Touch only files required by the goal and match project style. | Opportunistic cleanup, broad refactors, unrelated formatting churn. |
+| Surgical Build Discipline | Touch only files required by the goal and match project style. Run Plan Review before editing (anchors alive, `Current behavior` holds, steps unambiguous, declared external skills loaded); on failure or blocker return `BUILD_BLOCKED` facts to `devflow-core` instead of guessing. | Opportunistic cleanup, broad refactors, unrelated formatting churn. Guessing past an unclear or stale plan step. |
 | Implementation Slices | Build one verifiable slice at a time. | Late testing and unreviewable patches. |
 | Proof Gate | Run fresh command or scenario evidence before completion claims. | "Looks good", old output, or partial checks presented as full proof. |
 | Recovery Switch | After failure or correction, re-read facts, list 3 hypotheses, and try a materially different approach. | Retrying the same idea, blaming environment without evidence. |
@@ -64,7 +64,7 @@ This method is always active. It shapes how every other method is applied.
 | Skill Activation Chain Check | After rule, command, prompt, entry, or skill changes, verify trigger wording, runtime load action, and downstream evidence. | Editing skill text while the skill is still unreachable. |
 | Knowledge Recall | Probe existing learning and business knowledge indexes, then read only task-matched records. | Context bloat, stale bulk reads, and knowledge that is written but never used. |
 | Learning Capture | When user correction or repeat failure happens, load `devflow-learn` and capture the next-time intercept rule. | Repeating the same preventable mistake. |
-| Skill Discovery | Scan available skills in the environment (platform skill registry, `use_skill` listing, local skill directories) before and during the devflow route. External skills are complementary: devflow manages scope and risk; external skills guide execution quality. Suggest loading matched skills alongside the devflow route. `CUT_REUSE` applies only when a skill fully handles the task with no new code needed. | Ignoring available skills that could assist execution. Forcing devflow-only routing when an external skill could guide implementation quality. Treating external skills as replacements for the devflow chain when they are complementary. |
+| Skill Discovery | Scan available skills in the environment (platform skill registry, `use_skill` listing, local skill directories) before and during the devflow route. External skills are complementary: devflow manages scope and risk; external skills guide execution quality. Suggest loading matched skills alongside the devflow route. Matched guidance skills travel down the chain as `External Skills`: recorded in the Cut Decision, inherited by the Plan Pack header, loaded by Build before editing. Re-scan when the task enters a new domain mid-route (e.g., the first frontend file appears in plan `Files`) or a `devflow-pua` method switch changes the approach. `CUT_REUSE` applies only when a skill fully handles the task with no new code needed. | Ignoring available skills that could assist execution. Forcing devflow-only routing when an external skill could guide implementation quality. Treating external skills as replacements for the devflow chain when they are complementary. Recording a skill match without ever loading it. |
 
 ## Method 1: Context Map
 
@@ -79,7 +79,7 @@ Before deciding, inspect the narrowest useful context:
 5. Probe `docs/project-knowledge/`. When present, read `AI-START-HERE.md`; fall back to `index.md`; then use `registry.json` when present to select only task-relevant domain, module, risk, or entry-point documents.
 6. If either location, index, entry, or registry is absent, record the absence and continue. Recall alone must not create `.copilot/` or `docs/project-knowledge/`.
 7. If architecture or impact is involved, read `graphify-out/GRAPH_REPORT.md` when present.
-8. Scan available skills in the current environment — platform skill registry (e.g., `use_skill` tool listing), local skill directories (`~/.claude/skills/`, `~/.codex/skills/`, `.github/skills/`, `.codebuddy/skills/`), or any other skill source the platform exposes. Match by description keywords against the task. External skills are complementary to the devflow route: devflow manages scope and risk; external skills guide execution quality. Record matched skills for alongside-route loading. Missing or unavailable skills are non-blocking.
+8. Scan available skills in the current environment — platform skill registry (e.g., `use_skill` tool listing), local skill directories (`~/.claude/skills/`, `~/.codex/skills/`, `.github/skills/`, `.codebuddy/skills/`), or any other skill source the platform exposes. Match by description keywords against the task. External skills are complementary to the devflow route: devflow manages scope and risk; external skills guide execution quality. Record matched skills for alongside-route loading; guidance matches travel down the chain as `External Skills` (Cut Decision -> Plan Pack header -> Build loads them). Missing or unavailable skills are non-blocking. Re-run this scan when the task enters a new domain mid-route or a `devflow-pua` method switch changes the approach.
 
 Output evidence:
 
@@ -92,41 +92,36 @@ Unknowns: <still unknown, or none>
 
 Do not claim understanding unless the understanding cites facts that were read or checked.
 
-## Method 2: Brainstorm First
+## Method 2: Brainstorm Clarification
 
-Purpose: prevent building the wrong thing.
+Purpose: prevent building the wrong thing by confirming the request before lifecycle routing.
 
 Use for new requirements, behavior changes, features, architecture changes, ambiguous requests, and multi-solution decisions. Do NOT use for documentation writing, config tuning, trivial code changes, or clear bug fixes with known root cause — those go through Fast or Design-lite.
 
-**Fast Exit**: When a task enters Brainstorm but is a small change to an existing feature (not a new requirement), all four Small Request Boundary gates pass, and only one plausible implementation path exists, offer Fast Exit as a recommended option at the Path Selection Gate. The user chooses Fast Exit or full A/B/C — the LLM does not auto-select. If the user chooses Fast Exit, present a short design contract directly, get approval, and hand off to `devflow-cut`. This prevents forcing spec/plan ceremony on simple tasks while keeping the user in control.
-
 Actions:
 
-1. Restate the goal in one sentence.
-2. Name constraints: compatibility, data, security, UX, performance, platform, deadline.
-3. Define visible success criteria.
-4. Challenge hidden assumptions.
-5. Generate 2-3 approaches with tradeoffs.
-6. Recommend one approach and explain why it is the smallest useful path.
-7. Produce the design output contract.
+1. Read the smallest useful facts.
+2. Send a Semantic Echo-Back with known facts, assumptions, and understanding gaps.
+3. Wait for confirmation or correction.
+4. Ask one real missing question at a time about goal, scope, exclusions, constraints, acceptance, or open questions.
+5. Apply the Understanding Revision Rule: when a correction changes the current understanding, stop the question chain, update facts, assumptions, and gaps, then re-echo and wait for confirmation.
+6. Return the fixed `Confirmed request` summary and stop.
+7. Let `devflow-core` consume the summary and select the next lifecycle skill from task facts and the user request.
 
 Required output:
 
 ```text
-Goal: ...
-Motivation: why now, what triggered this need
-Facts: read/confirmed ...
-Constraints: ...
-Acceptance: ...
-Hidden assumptions: 1 / 2 / 3
-Approaches:
-- A: does / does not / cost / verification
-- B: does / does not / cost / verification
-- C: does / does not / cost / verification, optional
-Recommendation: ...
+Confirmed request:
+- Goal: ...
+- Scope: ...
+- Out of scope: ...
+- Constraints: ...
+- Acceptance: ...
+- Open questions: ...
+- Status: clarified
 ```
 
-Do not ask five vague questions at once. Ask the smallest question that unlocks the next decision.
+Do not ask five vague questions at once. Do not compare approaches, select a route, create a design, or hand off directly from Brainstorm.
 
 ## Method 3: Small Request Boundary
 
@@ -312,7 +307,9 @@ Debt Marker: <none/added>; reason <why>
 
 Purpose: keep requirements and implementation tasks separate, reviewable, and traceable.
 
-Use a saved spec when the user asks for a spec/design document, when the work is too large for a short design contract, or when requirements can drift across multiple tasks.
+Use a saved spec when `devflow-core` selects it for a confirmed request because the user asks for a spec/design document, the work needs approach comparison and a reviewable design contract, or requirements can drift across multiple tasks.
+
+Spec consumes the `Confirmed request`, compares no-change/reuse, direct implementation, and relevant existing patterns when they are real options, records their trade-offs, writes the chosen design contract into the saved spec, and waits for user approval. After approval, Spec returns the confirmed Spec to `devflow-core`; it must not select or directly hand off to Cut, Plan, Build, Prove, or Recovery.
 
 When saving a spec file, use `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` from the current target project's root by default unless that project already documents another specs path. Do not put generated specs under `docs/features/`; that directory is for feature ledgers. Do not put specs under `docs/plans/`; that directory is for implementation plans.
 
@@ -350,24 +347,32 @@ Tech Stack: <relevant existing stack>
 Source: <docs/specs/YYYY-MM-DD-<short-kebab-name>.md or approved design>
 Spec coverage: <which requirements map to which tasks, or design-only>
 Cut Decision: <CUT_PASS allowed scope, reuse conclusion, exclusions, verification constraints>
+External Skills: <skill-name> (role: guides execution) / none
 ```
+
+`External Skills` is inherited from the Cut Decision unchanged; when a guidance skill is declared, its core quality checks must be merged into the affected tasks' `Acceptance`/`Verify` fields, and Build loads the skill before editing. Under conflict the priority is: Cut Decision > Plan Pack > external skill guidance.
 
 Each task must include:
 
 ```text
 Task: <short title>
+Task type: Code change | Documentation-only
 Files:
-- Create: <path> | <responsibility>
-- Modify: <path> | <responsibility>
-- Test: <path> | <behavior proved>  # only when applicable
+- Create: <path> | new file | <responsibility>
+- Modify: <path> | <symbol or stable anchor> | <responsibility>
+- Test: <path> | <test symbol or stable anchor> | <behavior proved>  # only when applicable
 Interfaces:
-- Consumes: <input/API/module or documentation-only exception>
-- Produces: <output/API/module or documentation-only exception>
+- Consumes: <exact symbol/API input and type/shape, or documentation-only exception>
+- Produces: <exact symbol/API output and type/shape, or documentation-only exception>
+Current behavior: <observable current state>  # Code change only
+Target behavior: <observable outcome>  # Code change only
+Change mechanics: <minimal code snippet, pseudocode, or exact replacement rule>  # Code change only
+Call impact: <known callers/downstream effect, or no runtime impact>  # Code change only
 Steps:
-- [ ] <concrete file + symbol/behavior/command + expected result>
-- [ ] <concrete file + symbol/behavior/command + expected result>
+- [ ] <one file + symbol/anchor + executable action; include code snippet, pseudocode, or exact replacement for code logic>
+- [ ] <one verification action with trigger/input, expected result, and command or manual scenario>
 Acceptance: <specific condition>
-Verify: <exact command or manual scenario>
+Verify: <exact command or manual scenario, trigger/input, and expected result>
 Comments: <what code comments are required — which functions need function-level comments, which non-obvious logic needs inline comments explaining WHY; or "none — trivial change">
 Not doing: <scope removed>
 ```
@@ -379,7 +384,7 @@ Task sizing:
 - M: 3-5 files, one feature slice
 - L: 5+ files, split before execution
 
-No unresolved markers, vague "add tests" tasks, "handle edge cases" items without naming the case, or "similar to Task N" shortcuts. The checker validates static task structure; source coverage and architecture judgment remain the author’s review responsibility.
+No unresolved markers, vague "add tests" tasks, "handle edge cases" items without naming the case, or "similar to Task N" shortcuts. For a `Code change`, existing-file entries must name a symbol or stable anchor, `Create` entries use `new file`, interfaces name exact symbols with input/output shape, and each task records `Current behavior`, `Target behavior`, `Change mechanics`, and `Call impact`. Code logic steps must include the smallest snippet, pseudocode, or exact replacement rule; verification names trigger/input, expected result, and command or manual scenario. `Documentation-only` is allowed only for tasks without runtime code files and with explicit `documentation-only` interfaces. The checker validates static task structure; source coverage and architecture judgment remain the author’s review responsibility.
 
 ## Method 11: Karpathy Minimal Change
 

@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current Version: v45
+- Current Version: v48
 - Status: active
-- Last Change: cut-before-plan-construction-flow
+- Last Change: core-exclusive-lifecycle-routing
 - Product Area: runtime flow, skill routing, validation, learning loop
 
 ## Feature Background
@@ -12,7 +12,7 @@
 DevFlow Core Runtime is the central product capability of DevFlow-Core. It turns developer requests into a lightweight but verified agent workflow:
 
 ```text
-Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> devflow-cut -> /devflow-plan | B: devflow-cut -> /devflow-plan | C: direct -> devflow-cut) -> devflow-build -> devflow-prove -> devflow-learn when needed
+Sense -> Brainstorm clarification -> Confirmed request -> Core route -> [Spec design contract when selected -> confirmed Spec -> Core route] -> devflow-cut -> Cut Decision -> Core route -> [devflow-plan when selected -> confirmed Plan -> Core route] -> devflow-build -> devflow-prove -> devflow-learn when needed
 ```
 
 This ledger exists so future changes do not lose why the runtime is shaped this way, which reference-project ideas were absorbed, and which boundaries must not drift.
@@ -25,16 +25,18 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - Codex and Claude Code `SessionStart` hook artifacts for project-level activation reminders, plus Claude plugin-style activation.
 - Claude Code `/devflow-core` command under `.claude/commands/` that explicitly bridges requirements, UI/page ambiguity, prompt distinction issues, and server-backed implementation requests to `devflow-brainstorm`.
 - `devflow-core` route selection for Fast, Problem, Design-lite, Design, Build, and Recovery.
-- `devflow-pua` pressure recovery for user challenge, explicit wrong-code signals, repeated missing-piece complaints such as "少了这个/少个那个", changed-wrong results, repeated misses, quality complaints, local PUA methodology assets, compact `METHOD: {flavor} / {method}` display, concise method switch line, hard `devflow-brainstorm` restart, user-view miss diagnosis, method switching after failed methods, opposite-method recovery when a method still misses, wrong-context quarantine, pointed goal/result questions, changed approach, proof, and learning handoff.
+- `devflow-brainstorm` is a single request clarifier: it reads minimum facts, sends Semantic Echo-Back, applies the Understanding Revision Rule when a correction changes the request, resolves only goal, scope, exclusions, constraints, acceptance, and open questions one at a time, outputs fixed `Confirmed request` with `Status: clarified`, then stops.
+- `devflow-spec`, when selected by Core, compares real options, writes the reviewable design contract and saved spec, waits for approval, then returns the confirmed Spec to Core.
+- `devflow-core` owns all lifecycle selection boundaries: from `Confirmed request`, `Confirmed Spec`, Cut Decision, confirmed Plan, or PUA recovery facts it alone chooses the next lifecycle work.
+- `devflow-pua` retains pressure diagnosis, method switching, hypotheses, and new success-contract ownership when the user repeatedly reports that the same function, result, or requested capability is wrong, incomplete, or missing in one task lifecycle. It returns recovery facts to Core, which may select `devflow-brainstorm` only to re-confirm the request before routing again.
 - `devflow-prove` Skill Activation Chain Check for rule, command, prompt, entry, and skill changes.
 - Small Request Boundary gates for Fast and Design-lite: impact, risk, uncertainty, and proof.
 - Method Lens selection for Design, Recovery, problem solving (问题解决), bug fixing, architecture design (架构设计), and high-risk proof: Root Cause, Working Backwards, First Principles Cut (第一性原理), Data/Proof, and Operational Owner.
 - `devflow-prove` adversarial review (对抗式审查) before completion for development work, checking whether the result is still wrong, incomplete, unreachable, over-broad, or under-verified before any done/fixed/ready claim.
 - `devflow-adversarial` and `devflow-find-fault` as explicitly requested, independent manual review skills: they may inspect any current task material, but do not read, require, modify, or hand off to lifecycle skills or completion state. `devflow-adversarial` first warns that review may take a long time and waits for explicit confirmation before reading materials.
 - `devflow-brainstorm`, `devflow-spec`, `devflow-cut`, `devflow-build`, `devflow-prove`, `devflow-pua`, `devflow-learn`, and `devflow-audit` as focused lifecycle or audit skills.
-- `devflow-brainstorm` interview discipline as core behavior: one question at a time, recommended answers, fact reads before asking, and documentation landing decisions through `devflow-spec`, feature ledgers, or ADRs when needed.
-- `devflow-brainstorm` Depth Selection Gate: three design depths (A: Full Spec with 3 confirmations, B: Simplified Spec with 2 confirmations, C: Dialogue Confirmation with 1 confirmation). Depth is user-chosen based on Small Request Boundary gates.
-- `devflow-plan` is the single plan-generation skill behind the unchanged `/devflow-plan` command: after `devflow-cut` returns `CUT_PASS`, it writes reviewed construction Plan Packs with source coverage, categorized file operations, input/output interface contracts, concrete checkbox steps, task acceptance and verification, code-comment requirements, and an approval stop before `devflow-build`; plan review performs only a lightweight Cut-consistency check and re-runs affected Cut gates only on scope drift. It does not prescribe test-first development, version-control task steps, independent review, or plan execution.
+- `devflow-core` owns lifecycle selection at both boundaries: from `Confirmed request` it can choose `devflow-spec` or the smallest safe direct path; after Spec approval returns a confirmed Spec, it alone chooses `devflow-cut`, `devflow-plan`, `devflow-build`, `devflow-prove`, or no further lifecycle work.
+- `devflow-plan` is the single plan-generation skill behind the unchanged `/devflow-plan` command: Core selects it only after `devflow-cut` returns `CUT_PASS`; it writes reviewed construction Plan Packs with source coverage, categorized file operations, input/output interface contracts, concrete checkbox steps, task acceptance and verification, code-comment requirements, and an approval stop. Plan review performs only a lightweight Cut-consistency check, then returns the confirmed Plan and scope-drift facts to Core; only Core selects affected Cut gates, Build, Prove, or any other later lifecycle work. It does not prescribe test-first development, version-control task steps, independent review, or plan execution.
 - Commands for route, spec, plan, review, debt, prove, pua, learn, audit, independent adversarial review, and find-fault review; `/devflow-spec` can use the bundled `scripts/devflow-spec.js` checker, `/devflow-plan` can use the bundled `scripts/devflow-plan.js` plan-pack checker, `/devflow-review` can use the bundled `scripts/devflow-review.js` gate scanner, `/devflow-debt` can use the bundled `scripts/devflow-debt.js` scanner, and `/devflow-audit` can use the bundled `scripts/devflow-audit.js` repo-wide audit scanner.
 - Saved specs default to `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`; saved plans default to `docs/plans/YYYY-MM-DD-<short-kebab-name>.md` and must cite `Source:` plus `Spec coverage:`.
 - `npm test` validation for required files, skills, commands, PRD, learning cards, and stale paths.
@@ -62,6 +64,9 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 
 | Version | Change | Type | Date | Status | Summary |
 |---|---|---|---|---|---|
+| v48 | core-exclusive-lifecycle-routing | lifecycle boundary | 2026-07-28 | active | Extended Core's unique lifecycle routing from `Confirmed request` and `Confirmed Spec` to Cut Decisions, confirmed Plans, and PUA recovery facts. Cut, Plan, and PUA now return facts only; Core selects every later lifecycle stage. Synchronized all host entries, diagrams, self-tests, trigger paths, and target/user installer regressions. |
+| v47 | brainstorm-spec-responsibility-split | lifecycle boundary | 2026-07-28 | active | Restored Brainstorm's independent Understanding Revision Rule. Moved real option comparison, reviewable design contract, and design approval to `devflow-spec`; after approval it returns the confirmed Spec to `devflow-core`, which remains the only lifecycle router at both boundaries. Added cross-host, self-test, trigger, and installer regression coverage. |
+| v46 | brainstorm-clarification-boundary | lifecycle boundary | 2026-07-28 | active | Reduced `devflow-brainstorm` to Semantic Echo-Back, one-at-a-time request clarification, and fixed `Confirmed request` output. Removed approach, depth, design, lifecycle, recovery, documentation, and visual-expression ownership; `devflow-core` now consumes the summary and selects subsequent lifecycle work. Added static boundary, host, trigger, scenario, and installation propagation coverage. |
 | v45 | cut-before-plan-construction-flow | lifecycle routing | 2026-07-28 | active | Reordered Depth A/B to run `devflow-cut` before the sole `devflow-plan` skill. `CUT_PASS` now provides allowed scope, reuse conclusions, exclusions, and verification constraints to the construction plan; approved plans receive only a lightweight Cut-consistency review, returning to affected Cut gates only when their scope drifts. Depth C remains Cut -> Build, and `devflow-prove` remains the final validation and code-review layer. |
 | v44 | unified-devflow-plan-writing-discipline | plan generation | 2026-07-28 | active | Added `devflow-plan` as the sole plan-generation skill behind the unchanged `/devflow-plan` command. It absorbs writing-plans discipline through categorized file operations, interface contracts, concrete steps, and static checker coverage while preserving DevFlow source tracing and the approval -> `devflow-cut` handoff. It intentionally excludes test-first workflow, version-control task steps, independent reviewer skills, and plan execution. |
 | v43 | adversarial-review-confirmation-pause | manual review safety | 2026-07-27 | active | Added a confirmation pause inside `devflow-adversarial`: every run warns that the review may take a long time, and does not inspect materials or begin the five-angle review until the user explicitly confirms. |

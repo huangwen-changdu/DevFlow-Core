@@ -15,7 +15,7 @@ The product is not a theory collection and not a set of links to Ponytail, Agent
 One sentence:
 
 ```text
-DevFlow-Core helps coding agents turn problems and requirements into small verified changes through Sense, Brainstorm, [STOP: Depth A/B/C], (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct), Cut, Build, Prove, and Learn.
+DevFlow-Core helps coding agents turn problems and requirements into small verified changes through Sense, Brainstorm clarification, `Confirmed request`, Core lifecycle routing, Cut, Build, Prove, and Learn.
 ```
 
 ## 2. Target Users
@@ -72,7 +72,7 @@ flowchart TD
 | Agent Skills | Skills need anatomy, triggers, anti-rationalization, verification | Every `SKILL.md` must be executable and validated by `npm test` |
 | Superpowers | Brainstorm, spec, plan, execute, verify, and pressure-test skill behavior | `devflow-spec`, `docs/specs/`, plan `Source` / `Spec coverage`, and flow self-tests must cover real scenarios, not just file presence |
 | PUA-Driven Spec Engineering | Project memory, gated routing, skill activation checks, completion proof, Codex compatibility | `devflow-core`, `devflow-prove`, `devflow-learn`, and platform entries must stay aligned |
-| PUA | Pressure recovery separates user challenge, re-alignment, proof, and learning | `devflow-pua` must stop wrong-path edits, re-ask or infer the desired result, switch approach, then prove |
+| PUA | Pressure recovery separates user challenge, re-alignment, Core rerouting, proof, and learning | `devflow-pua` must stop wrong-path edits, re-ask or infer the desired result, switch approach, and return recovery facts to Core |
 
 ## 6. Current Product State
 
@@ -115,16 +115,21 @@ Acceptance:
 - Bug fixes run Root-Cause Check before edits.
 - Repeated failure, user challenge, changed-wrong result, or user correction enters Recovery; pressure cases load `devflow-pua` and Learn when reusable.
 
-### R3. Brainstorm And Plan
+### R3. Brainstorm Clarification And Planning
 
-The framework must make ambiguous work concrete without forcing full ceremony on small tasks.
+The framework must make ambiguous work concrete without assigning design or lifecycle control to the clarification skill.
 
 Acceptance:
 
-- Brainstorm outputs goal, constraints, success criteria, assumptions, 2-3 approaches, and recommendation.
-- Larger or explicitly spec-requested work writes a saved spec under `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`.
-- /devflow-plan outputs smallest useful plan, not doing, impact, and verification.
-- For implementation requests, the plan must continue into Build and Prove.
+- Brainstorm reads minimum facts, sends Semantic Echo-Back, applies the Understanding Revision Rule when a correction changes the request, and confirms goal, scope, exclusions, constraints, acceptance, and open questions one at a time.
+- Brainstorm outputs fixed `Confirmed request` with `Status: clarified`, then stops without an approach, route, depth, design contract, or handoff.
+- `devflow-core` consumes the confirmed request and decides whether a saved Spec/design contract is needed.
+- When selected, `devflow-spec` compares real options, writes a reviewable design contract and saved spec under `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`, waits for user approval, and returns the confirmed Spec to Core.
+- `devflow-core` alone selects Cut, planning, implementation, proof, or no further lifecycle work after a confirmed request, confirmed Spec, Cut Decision, confirmed Plan, or PUA recovery facts.
+- `devflow-cut` returns each result to Core; `CUT_PASS` does not directly invoke Plan, Build, or Prove.
+- `/devflow-plan` outputs smallest useful plan, not doing, impact, and verification only after Core selects it and Cut permits it; after user review, it returns the confirmed Plan and scope-drift facts to Core.
+- `devflow-pua` returns recovery facts to Core; only Core decides whether Brainstorm must re-confirm the request.
+- For implementation requests, the selected lifecycle continues into Build and Prove.
 
 ### R4. Cut / Anti-Overengineering
 

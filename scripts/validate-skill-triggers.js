@@ -69,7 +69,7 @@ const cases = [
     name: "requirement implementation",
     input: "Requirement: implement CSV export for orders.",
     route: "Build",
-    skillPath: "devflow-core -> devflow-brainstorm -> devflow-cut -> devflow-build -> devflow-prove",
+    skillPath: "devflow-core -> devflow-brainstorm -> Confirmed request -> devflow-core -> devflow-cut -> Cut Decision -> devflow-core -> devflow-build -> devflow-prove",
     checks: [
       ["AGENTS.md", files.agents, "requirement"],
       ["AGENTS.md", files.agents, "implement"],
@@ -82,7 +82,7 @@ const cases = [
     name: "small feature design-lite",
     input: "Small feature: rename one dashboard label. Implement it if the route is lightweight.",
     route: "Design-lite",
-    skillPath: "devflow-core -> devflow-cut -> devflow-build -> devflow-prove",
+    skillPath: "devflow-core -> devflow-cut -> Cut Decision -> devflow-core -> devflow-build -> devflow-prove",
     checks: [
       ["AGENTS.md", files.agents, "Design-lite"],
       ["AGENTS.md", files.agents, "low risk, local impact, and quick proof"],
@@ -95,24 +95,25 @@ const cases = [
     name: "interviewed build request with spec",
     input: "Implement CSV export for orders; clarify the design and write a spec before implementation.",
     route: "Build",
-    skillPath: "devflow-core -> devflow-brainstorm -> devflow-spec -> devflow-cut -> /devflow-plan -> devflow-build -> devflow-prove",
+    skillPath: "devflow-core -> devflow-brainstorm -> Confirmed request -> devflow-core -> devflow-spec -> confirmed Spec -> devflow-core -> devflow-cut -> Cut Decision -> devflow-core -> /devflow-plan -> confirmed Plan -> devflow-core -> devflow-build -> devflow-prove",
     checks: [
       ["AGENTS.md", files.agents, "interview-discipline.md"],
-      ["devflow-core", files.core, "Brainstorm Interview Discipline"],
-      ["devflow-brainstorm description", description(files.brainstorm), "documentation capture"],
-      ["devflow-brainstorm", files.brainstorm, "interview-discipline.md"],
-      ["interview discipline reference", files.interviewDiscipline, "one-question-at-a-time"],
-      ["interview discipline reference", files.interviewDiscipline, "DevFlow design contract"],
-      ["devflow-brainstorm", files.brainstorm, "devflow-spec → devflow-cut → /devflow-plan"],
-      ["devflow-spec", files.spec, "Next: `devflow-cut` with Source and Spec coverage; after `CUT_PASS`, `devflow-plan` / `/devflow-plan`"],
-      ["devflow command", files.devflowCommand, "interview-discipline.md"]
+      ["devflow-core", files.core, "Brainstorm Clarification"],
+      ["devflow-brainstorm description", description(files.brainstorm), "Confirmed request"],
+      ["devflow-brainstorm", files.brainstorm, "Status: clarified"],
+      ["interview discipline reference", files.interviewDiscipline, "One-Question Discipline"],
+      ["interview discipline reference", files.interviewDiscipline, "Fixed Summary"],
+      ["devflow-core", files.core, "Core decides whether the request needs `devflow-spec`"],
+      ["devflow-spec", files.spec, "Compare the smallest real options"],
+      ["devflow-spec", files.spec, "returns the confirmed Spec to `devflow-core`"],
+      ["devflow command", files.devflowCommand, "confirmed Spec to Core"]
     ]
   },
   {
     name: "bug fix",
     input: "Bug report: order totals sometimes render as NaN. Fix the bug.",
     route: "Build",
-    skillPath: "devflow-core -> devflow-brainstorm -> devflow-cut -> devflow-build -> devflow-prove",
+    skillPath: "devflow-core -> devflow-brainstorm -> Confirmed request -> devflow-core -> devflow-cut -> Cut Decision -> devflow-core -> devflow-build -> devflow-prove",
     checks: [
       ["AGENTS.md", files.agents, "bug report"],
       ["AGENTS.md", files.agents, "fix bug"],
@@ -125,12 +126,12 @@ const cases = [
     name: "first principles architecture problem",
     input: "The service layer is too complicated. Redesign the architecture and fix the timeout issue.",
     route: "Build",
-    skillPath: "devflow-core -> devflow-brainstorm -> devflow-cut -> devflow-build -> devflow-prove",
+    skillPath: "devflow-core -> devflow-brainstorm -> Confirmed request -> devflow-core -> devflow-cut -> Cut Decision -> devflow-core -> devflow-build -> devflow-prove",
     checks: [
       ["devflow-core", files.core, "use First Principles Cut"],
       ["AGENTS.md", files.agents, "use First Principles Cut"],
-      ["devflow-brainstorm", files.brainstorm, "What remains true from first principles"],
-      ["devflow-brainstorm", files.brainstorm, "facts, constraints, invariants"],
+      ["devflow-brainstorm", files.brainstorm, "Confirmed request"],
+      ["devflow-core", files.core, "First Principles Cut"],
       ["first-principles self-test", files.flowSelfTest, "Scenario 1C-A: First Principles Cut"],
       ["first-principles self-test", files.flowSelfTest, "Smallest necessary mechanism:"]
     ]
@@ -200,7 +201,7 @@ const cases = [
     name: "progressive knowledge recall",
     input: "Implement an order export change using existing project conventions.",
     route: "Build",
-    skillPath: "devflow-core -> selective knowledge recall -> devflow-brainstorm -> devflow-cut -> devflow-build -> devflow-prove",
+    skillPath: "devflow-core -> selective knowledge recall -> devflow-brainstorm -> Confirmed request -> devflow-core -> devflow-cut -> Cut Decision -> devflow-core -> devflow-build -> devflow-prove",
     checks: [
       ["AGENTS.md", files.agents, "probe existing `.copilot/LEARNING_INDEX.md` and `docs/project-knowledge/`"],
       ["devflow-core", files.core, "Execution recall"],
@@ -236,69 +237,20 @@ const cases = [
     ]
   },
   {
-    name: "pressure recovery challenge",
-    input: "你改的还是不对，有缺漏，少了这个少个那个，用户看起来还是不满意。",
+    name: "repeated same-function problem pressure recovery",
+    input: "CSV 导出还是有问题，我上次已经指出同一个导出缺少必填列。",
     route: "Recovery",
-    skillPath: "devflow-core -> devflow-pua -> devflow-brainstorm -> devflow-prove -> devflow-learn",
+    skillPath: "devflow-core -> devflow-pua -> recovery facts -> devflow-core",
     checks: [
-      ["AGENTS.md", files.agents, "devflow-pua"],
-      ["AGENTS.md", files.agents, "有问题"],
-      ["AGENTS.md", files.agents, "不对"],
-      ["AGENTS.md", files.agents, "缺漏"],
-      ["AGENTS.md", files.agents, "少个"],
-      ["AGENTS.md", files.agents, "missing-piece complaint"],
-      ["AGENTS.md", files.agents, "different/opposite method"],
-      ["AGENTS.md", files.agents, "restart devflow-brainstorm"],
-      ["devflow-core", files.core, "Pressure Recovery Gate"],
-      ["devflow-core", files.core, "explicit wrong-code signal"],
-      ["devflow-core", files.core, "missing-piece complaint"],
-      ["devflow-core", files.core, "少个"],
-      ["devflow-core", files.core, "User-view miss"],
-      ["devflow-core", files.core, "different/opposite method"],
-      ["devflow-core", files.core, "quarantine previous wrong assumptions"],
-      ["devflow-pua description", description(files.pua), "有问题"],
-      ["devflow-pua description", description(files.pua), "不对"],
-      ["devflow-pua description", description(files.pua), "缺漏"],
-      ["devflow-pua description", description(files.pua), "少个"],
-      ["devflow-pua", files.pua, "Repeated Missing-Piece Trigger"],
-      ["devflow-pua", files.pua, "Methodology Assets"],
-      ["devflow-pua", files.pua, "methodology-router.md"],
-      ["devflow-pua", files.pua, "methodology-library.md"],
-      ["devflow-pua", files.pua, "flavor-display.md"],
-      ["devflow-pua", files.pua, "METHOD: {flavor} / {method}"],
-      ["devflow-pua", files.pua, "SWITCH:"],
-      ["devflow-pua router", files.puaRouter, "Starting Route"],
-      ["devflow-pua router", files.puaRouter, "Failure Switch"],
-      ["devflow-pua library", files.puaLibrary, "Huawei: RCA + Blue-Team"],
-      ["devflow-pua library", files.puaLibrary, "Amazon: Customer Backwards"],
-      ["devflow-pua display", files.puaDisplay, "METHOD: {flavor} / {method}"],
-      ["devflow-pua", files.pua, "Restart Brainstorm"],
-      ["devflow-pua", files.pua, "Discarded context"],
-      ["devflow-pua", files.pua, "Keep only verified facts"],
-      ["devflow-pua", files.pua, "User-view miss"],
-      ["devflow-pua", files.pua, "Satisfaction gap"],
-      ["devflow-pua", files.pua, "Guiding Principles"],
-      ["devflow-pua", files.pua, "Blue-team attack"],
-      ["devflow-pua", files.pua, "New success contract"],
-      ["devflow-pua", files.pua, "SWITCH:"],
-      ["devflow-pua", files.pua, "Coverage Map"],
-      ["devflow-pua", files.pua, "different or opposite method"],
-      ["devflow-pua", files.pua, "Opposite method switching"],
-      ["devflow-pua", files.pua, "少了这个"],
-      ["devflow-pua", files.pua, "少个那个"],
-      ["devflow-pua", files.pua, "User goal restated"],
-      ["devflow-pua", files.pua, "Next skill: devflow-brainstorm"],
-      ["devflow-brainstorm", files.brainstorm, "Re-Ask After Challenge"],
-      ["devflow-brainstorm", files.brainstorm, "failure evidence only"],
-      ["devflow-brainstorm", files.brainstorm, "Coverage Map"],
-      ["devflow-brainstorm", files.brainstorm, "METHOD: {flavor} / {method}"],
-      ["devflow-brainstorm", files.brainstorm, "少个那个"],
-      ["devflow-prove", files.prove, "Pressure Recovery Check"],
-      ["devflow-learn", files.learn, "repeated user challenge"],
-      ["devflow-learn", files.learn, "repeated missing-piece complaint"],
-      ["devflow-learn", files.learn, "different/opposite method"]
+      ["AGENTS.md", files.agents, "same function, result, or requested capability has a problem"],
+      ["devflow-core", files.core, "same function, result, or requested capability remains wrong, incomplete, or missing"],
+      ["devflow-pua", files.pua, "Repeated Same-Function Trigger"],
+      ["devflow-pua", files.pua, "same function, result, or requested capability"],
+      ["devflow-pua", files.pua, "repeated dissatisfaction with the same target"],
+      ["flow self-test", files.flowSelfTest, "Scenario 6: Repeated Same-Function Problem"],
+      ["flow self-test", files.flowSelfTest, "Repeated target evidence: CSV export + prior feedback or correction attempt"]
     ]
-  }
+  },
 ];
 
 const commandCases = [
@@ -311,7 +263,9 @@ const commandCases = [
       ["devflow-spec command", files.specCommand, "scripts/devflow-spec.js"],
       ["devflow-spec command", files.specCommand, "docs/specs/YYYY-MM-DD-<short-kebab-name>.md"],
       ["devflow-spec command", files.specCommand, "Required sections"],
-      ["devflow-spec", files.spec, "Next: `devflow-cut` with Source and Spec coverage; after `CUT_PASS`, `devflow-plan` / `/devflow-plan`"]
+      ["devflow-spec", files.spec, "Compare the smallest real options"],
+      ["devflow-spec", files.spec, "returns the confirmed Spec to `devflow-core`"],
+      ["devflow-spec command", files.specCommand, "confirmed Spec to `devflow-core`"]
     ]
   },
   {
@@ -323,12 +277,22 @@ const commandCases = [
       ["devflow-plan command", files.planCommand, "CUT_PASS"],
       ["devflow-plan command", files.planCommand, "scripts/devflow-plan.js"],
       ["devflow-plan command", files.planCommand, "lightweight Cut-consistency review"],
-      ["devflow-plan command", files.planCommand, "devflow-build"],
+      ["devflow-plan command", files.planCommand, "Core alone selects `devflow-build` or any other later lifecycle work"],
       ["devflow-plan command", files.planCommand, "docs/plans/YYYY-MM-DD-<short-kebab-name>.md"],
       ["devflow-plan command", files.planCommand, "Interfaces:"],
-      ["devflow-plan command", files.planCommand, "concrete file + symbol/behavior/command + expected result"],
+      ["devflow-plan command", files.planCommand, "Task type: Code change | Documentation-only"],
+      ["devflow-plan command", files.planCommand, "Current behavior:"],
+      ["devflow-plan command", files.planCommand, "Target behavior:"],
+      ["devflow-plan command", files.planCommand, "Change mechanics:"],
+      ["devflow-plan command", files.planCommand, "Call impact:"],
+      ["devflow-plan command", files.planCommand, "trigger/input, expected result"],
+      ["devflow-plan command", files.planCommand, "External Skills:"],
       ["devflow-plan skill", files.plan, "only DevFlow plan-generation skill"],
-      ["devflow-build", files.build, "Plan Pack"]
+      ["devflow-plan skill", files.plan, "Documentation-only"],
+      ["devflow-plan skill", files.plan, "External Skills: <skill-name> (role: guides execution) / none"],
+      ["devflow-build", files.build, "do not re-decide the implementation mechanism in Build"],
+      ["devflow-build", files.build, "Plan Review"],
+      ["devflow-build", files.build, "BUILD_BLOCKED"]
     ]
   },
   {
@@ -373,7 +337,6 @@ const commandCases = [
       ["devflow-pua command", files.puaCommand, "Blue-team attack:"],
       ["devflow-pua command", files.puaCommand, "New success contract:"],
       ["devflow-pua command", files.puaCommand, "different/opposite method"],
-      ["devflow-pua command", files.puaCommand, "少个"],
       ["devflow-pua command", files.puaCommand, "Judgment: PASS / FAIL / BLOCKED"],
       ["devflow-pua", files.pua, "Changed approach"]
     ]

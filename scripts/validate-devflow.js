@@ -79,8 +79,10 @@ const requiredFiles = [
 ];
 
 const requiredTerms = [
-  "Sense -> Brainstorm -> [STOP: Depth A/B/C]",
-  "Depth Selection Gate",
+  "Sense -> Brainstorm clarification -> Confirmed request -> Core route",
+  "Confirmed request",
+  "Status: clarified",
+  "Semantic Echo-Back",
   "Ponytail",
   "Karpathy",
   "Proof Before Done",
@@ -115,10 +117,9 @@ const requiredTerms = [
   "methodology-router.md",
   "methodology-library.md",
   "flavor-display.md",
-  "Repeated Missing-Piece Trigger",
+  "Repeated Same-Function Trigger",
   "Opposite method switching",
   "different/opposite method",
-  "少个",
   "Repeat Correction Gate",
   "Scenario 6A: Repeated Correction Learning Closure",
   "Scenario 6B: New Reusable Pitfall Card",
@@ -194,7 +195,6 @@ const requiredTerms = [
   "Route Choice Needed",
   "impact, risk, uncertainty, and proof",
   "Interview Discipline",
-  "documentation capture",
   "interview-discipline.md",
   "small-request-boundary-routing",
   "Method Lens",
@@ -297,6 +297,109 @@ for (const name of skillNames) {
   assert(body.includes("Anti-Rationalization"), `${rel} missing anti-rationalization section`);
 }
 
+const brainstormSkill = read("skills/devflow-brainstorm/SKILL.md");
+const interviewDiscipline = read("skills/devflow-brainstorm/references/interview-discipline.md");
+
+/**
+ * Guards the responsibility split: Brainstorm confirms and revises request
+ * understanding, Spec owns design comparison/approval, and Core owns routing.
+ */
+function assertResponsibilitySplitContract() {
+  for (const [label, body] of [
+    ["skills/devflow-brainstorm/SKILL.md", brainstormSkill],
+    ["skills/devflow-brainstorm/references/interview-discipline.md", interviewDiscipline]
+  ]) {
+    for (const term of [
+      "Semantic Echo-Back",
+      "one question at a time",
+      "Understanding Revision Rule",
+      "Confirmed request",
+      "Goal:",
+      "Scope:",
+      "Out of scope:",
+      "Constraints:",
+      "Acceptance:",
+      "Open questions:",
+      "Status: clarified"
+    ]) {
+      assert(body.includes(term), `${label} missing clarification contract: ${term}`);
+    }
+  }
+
+  // These terms previously made Brainstorm a design and lifecycle controller.
+  const prohibitedBrainstormTerms = [
+    "Fast Exit",
+    "Path Selection Gate",
+    "Depth Selection Gate",
+    "Design Contract",
+    "Approach comparison",
+    "Method Lens",
+    "Coverage Map",
+    "Documentation Landing",
+    "Visual Expression",
+    "Re-Ask After Challenge"
+  ];
+  for (const term of prohibitedBrainstormTerms) {
+    assert(!brainstormSkill.includes(term), `Brainstorm must not regain removed responsibility: ${term}`);
+    assert(!interviewDiscipline.includes(term), `Interview discipline must not regain removed responsibility: ${term}`);
+  }
+
+  const spec = read("skills/devflow-spec/SKILL.md");
+  for (const term of [
+    "Confirmed request",
+    "Compare the smallest real options",
+    "design contract",
+    "Wait for user approval",
+    "returns the confirmed Spec to `devflow-core`"
+  ]) {
+    assert(spec.includes(term), `devflow-spec missing design-contract behavior: ${term}`);
+  }
+  assert(!spec.includes("Next: `devflow-cut`"), "devflow-spec must not directly hand off to Cut");
+
+  const cut = read("skills/devflow-cut/SKILL.md");
+  for (const term of [
+    "CUT_PASS: smallest scope holds; return the Cut Decision to `devflow-core`",
+    "Core alone decides whether the Cut Decision needs `devflow-plan`, `devflow-build`, `devflow-prove`, or no further lifecycle work.",
+    "External Skills: <skill-name> (role: guides execution) / none",
+    "Cut Decision > Plan Pack > external skill guidance"
+  ]) {
+    assert(cut.includes(term), `devflow-cut missing Core return contract: ${term}`);
+  }
+
+  const plan = read("skills/devflow-plan/SKILL.md");
+  for (const term of [
+    "returns the confirmed Plan to `devflow-core`",
+    "only Core selects `devflow-build` or any other later lifecycle work",
+    "Task type: Code change | Documentation-only",
+    "Current behavior:",
+    "Target behavior:",
+    "Change mechanics:",
+    "Call impact:",
+    "External Skills: <skill-name> (role: guides execution) / none"
+  ]) {
+    assert(plan.includes(term), `devflow-plan missing Core return contract: ${term}`);
+  }
+
+  const pua = read("skills/devflow-pua/SKILL.md");
+  for (const term of [
+    "return recovery facts to `devflow-core`",
+    "`devflow-pua` never selects Cut, Plan, Build, Prove, or another lifecycle skill."
+  ]) {
+    assert(pua.includes(term), `devflow-pua missing Core return contract: ${term}`);
+  }
+
+  const core = read("skills/devflow-core/SKILL.md");
+  for (const term of [
+    "Core decides whether the request needs `devflow-spec`",
+    "returns the confirmed Spec to Core",
+    "Only Core then selects"
+  ]) {
+    assert(core.includes(term), `devflow-core missing responsibility routing: ${term}`);
+  }
+}
+
+assertResponsibilitySplitContract();
+
 const docsFollowupSkill = read("skills/devflow-docs-followup/SKILL.md");
 for (const term of [
   "verified feature completion",
@@ -375,19 +478,13 @@ for (const [file, terms] of [
 
 const flowSelfTest = read("skills/devflow-prove/references/flow-self-test.md");
 for (const term of [
-  "Scenario 1C-A: First Principles Cut",
-  "Facts:",
-  "Constraints:",
-  "Invariants:",
-  "Smallest necessary mechanism:",
-  "Scenario 7A: Adversarial Review Rejects Completion",
-  "Scenario 5A: Plan Pack Check",
-  "CUT_PASS",
-  "lightweight Cut-consistency review",
-  "Adversarial review:",
-  "Judgment: FAIL"
+  "Scenario 6: Repeated Same-Function Problem",
+  "repeatedly identifies the same function (`CSV export`) as wrong or incomplete",
+  "Failure/correction: repeated report about the same function/result/capability",
+  "Repeated target evidence: CSV export + prior feedback or correction attempt",
+  "Scenario 6C: User Challenge Pressure Recovery"
 ]) {
-  assert(flowSelfTest.includes(term), `flow-self-test missing method/proof behavior: ${term}`);
+  assert(flowSelfTest.includes(term), `flow-self-test missing PUA trigger behavior: ${term}`);
 }
 
 const packageJson = JSON.parse(read("package.json"));
@@ -471,18 +568,37 @@ for (const term of [
 }
 
 const planScriptBody = read("scripts/devflow-plan.js");
+const buildSkillBody = read("skills/devflow-build/SKILL.md");
 for (const term of [
   "DevFlow plan self-test passed",
   "Missing: at least one Task field",
   "Judgment: FAIL",
-  "Not doing",
-  "Interfaces",
-  "file-operation categories",
-  "concrete checkbox steps",
-  "plan landing guidance",
+  "Task type",
+  "Current behavior",
+  "Target behavior",
+  "Change mechanics",
+  "Call impact",
+  "precise file locations",
+  "mechanics evidence",
+  "verification expectations",
+  "documentation-only exception",
+  "external-skill declaration",
   "Plan landing"
 ]) {
   assert(planScriptBody.includes(term), `scripts/devflow-plan.js missing plan verifier term: ${term}`);
+}
+
+for (const term of [
+  "Current behavior",
+  "Change mechanics",
+  "Call impact",
+  "do not re-decide the implementation mechanism in Build",
+  "Plan Review",
+  "BUILD_BLOCKED",
+  "Skills loaded: <skill-name> / none",
+  "External Skills: <skill-name> (role: guides execution) / none"
+]) {
+  assert(buildSkillBody.includes(term), `skills/devflow-build/SKILL.md missing code-level Plan consumption: ${term}`);
 }
 
 const specScriptBody = read("scripts/devflow-spec.js");
@@ -544,7 +660,11 @@ for (const term of [
   "Check passed",
   "changed: AGENTS.md",
   "skipped existing: AGENTS.md",
-  "overwrote: AGENTS.md"
+  "overwrote: AGENTS.md",
+  "assertInstalledResponsibilitySplitContract",
+  "Understanding Revision Rule",
+  "Compare the smallest real options",
+  "returns the confirmed Spec to `devflow-core`",
 ]) {
   assert(installerValidationBody.includes(term), `scripts/validate-installer.js missing regression term: ${term}`);
 }
@@ -580,7 +700,11 @@ for (const term of [
   "User installer validation passed",
   "skip-existing",
   "user scope boundaries",
-  "User installer must not install AGENTS.md"
+  "User installer must not install AGENTS.md",
+  "assertInstalledResponsibilitySplitContract",
+  "Understanding Revision Rule",
+  "Compare the smallest real options",
+  "returns the confirmed Spec to `devflow-core`",
 ]) {
   assert(userInstallerValidationBody.includes(term), `scripts/validate-user-installer.js missing regression term: ${term}`);
 }
@@ -591,8 +715,7 @@ for (const term of [
   "SessionStart",
   "devflow-pua",
   "docs/specs/YYYY-MM-DD-<short-kebab-name>.md",
-  "docs/plans/YYYY-MM-DD-<short-kebab-name>.md",
-  "Command, Result, Adversarial review, and Judgment: PASS / FAIL / BLOCKED"
+  "Spec compares approaches, writes and confirms the design contract, then returns the confirmed Spec to Core",
 ]) {
   assert(hookBody.includes(term), `hooks/devflow-session-start.js missing hook term: ${term}`);
 }
@@ -627,7 +750,8 @@ for (const term of [
   "skills/devflow-core/SKILL.md",
   "skills/devflow-brainstorm/SKILL.md",
   "skills/devflow-pua/SKILL.md",
-  "Ask exactly one smallest blocking question",
+  "Confirmed request",
+  "Status: clarified",
   "page cannot clearly distinguish prompts from quick questions"
 ]) {
   assert(claudeDevflowCommand.includes(term), `.claude/commands/devflow-core.md missing command trigger term: ${term}`);
@@ -665,30 +789,29 @@ const codexTriggerChecks = [
   ["AGENTS.md", "requirement"],
   ["AGENTS.md", "interview-discipline.md"],
   ["AGENTS.md", "bug report"],
-  ["AGENTS.md", "changed wrong"],
-  ["AGENTS.md", "有问题"],
-  ["AGENTS.md", "不对"],
-  ["AGENTS.md", "写错了"],
-  ["AGENTS.md", "缺漏"],
-  ["AGENTS.md", "少个"],
+  ["AGENTS.md", "same function, result, or requested capability has a problem"],
+  ["AGENTS.md", "repeatedly points out"],
   ["AGENTS.md", "different/opposite method"],
-  ["AGENTS.md", "missing-piece complaint"],
   ["AGENTS.md", "done"],
   ["skills/devflow-core/SKILL.md", "investigating issues"],
   ["skills/devflow-core/SKILL.md", "requirements or bugs"],
-  ["skills/devflow-core/SKILL.md", "Brainstorm Interview Discipline"],
-  ["skills/devflow-brainstorm/SKILL.md", "requirement"],
-  ["skills/devflow-brainstorm/SKILL.md", "documentation capture"],
+  ["skills/devflow-core/SKILL.md", "Brainstorm Clarification"],
+  ["skills/devflow-brainstorm/SKILL.md", "Semantic Echo-Back"],
+  ["skills/devflow-brainstorm/SKILL.md", "Confirmed request"],
+  ["skills/devflow-brainstorm/SKILL.md", "Status: clarified"],
   ["skills/devflow-brainstorm/SKILL.md", "interview-discipline.md"],
-  ["skills/devflow-brainstorm/references/interview-discipline.md", "one-question-at-a-time"],
-  ["skills/devflow-brainstorm/references/interview-discipline.md", "DevFlow design contract"],
+  ["skills/devflow-brainstorm/references/interview-discipline.md", "One-Question Discipline"],
+  ["skills/devflow-brainstorm/references/interview-discipline.md", "Fixed Summary"],
+  ["skills/devflow-core/SKILL.md", "Core decides whether the request needs `devflow-spec`"],
   ["skills/devflow-spec/SKILL.md", "docs/specs"],
   ["commands/devflow-spec.toml", "Create a DevFlow spec"],
   ["commands/devflow-spec.toml", "scripts/devflow-spec.js"],
   ["skills/devflow-cut/SKILL.md", "root-cause fixes"],
   ["skills/devflow-prove/SKILL.md", "done, fixed, complete"],
   ["skills/devflow-prove/SKILL.md", "Skill Activation Chain Check"],
-  ["skills/devflow-pua/SKILL.md", "changed wrong"],
+  ["skills/devflow-prove/SKILL.md", "Recovery Proof Contract"],
+  ["skills/devflow-prove/SKILL.md", "Recovery evidence"],
+  ["skills/devflow-pua/SKILL.md", "Repeated Same-Function Trigger"],
   ["skills/devflow-pua/SKILL.md", "Restart Brainstorm"],
   ["skills/devflow-pua/SKILL.md", "Discarded context"],
   ["skills/devflow-pua/SKILL.md", "Keep only verified facts"],
@@ -712,12 +835,10 @@ const codexTriggerChecks = [
   ["skills/devflow-pua/references/flavor-display.md", "Required Lines"],
   ["skills/devflow-pua/references/flavor-display.md", "METHOD: {flavor} / {method}"],
   ["skills/devflow-pua/references/flavor-display.md", "SWITCH:"],
-  ["skills/devflow-pua/SKILL.md", "Repeated Missing-Piece Trigger"],
+  ["skills/devflow-pua/SKILL.md", "Repeated Same-Function Trigger"],
   ["skills/devflow-pua/SKILL.md", "Opposite method switching"],
   ["skills/devflow-pua/SKILL.md", "different or opposite method"],
-  ["skills/devflow-pua/SKILL.md", "少个"],
-  ["skills/devflow-brainstorm/SKILL.md", "Coverage Map"],
-  ["skills/devflow-brainstorm/SKILL.md", "METHOD: {flavor} / {method}"],
+
   ["skills/devflow-learn/SKILL.md", "repeated missing-piece complaint"],
   ["skills/devflow-learn/SKILL.md", "different/opposite method"],
   ["skills/devflow-core/SKILL.md", "Business recall"],

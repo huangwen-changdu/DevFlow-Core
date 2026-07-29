@@ -29,6 +29,94 @@ function runInstaller(home, args) {
   return `${result.stdout}${result.stderr}`;
 }
 
+/**
+ * Ensures a user-level installation preserves the Brainstorm, Spec, and Core split.
+ */
+function assertInstalledResponsibilitySplitContract(home) {
+  const brainstormFiles = [
+    "skills/devflow-brainstorm/SKILL.md",
+    "skills/devflow-brainstorm/references/interview-discipline.md"
+  ];
+  const requiredBrainstormTerms = [
+    "Semantic Echo-Back",
+    "one question at a time",
+    "Understanding Revision Rule",
+    "Confirmed request",
+    "Goal:",
+    "Scope:",
+    "Out of scope:",
+    "Constraints:",
+    "Acceptance:",
+    "Open questions:",
+    "Status: clarified"
+  ];
+  const removedResponsibilities = [
+    "Fast Exit",
+    "Path Selection Gate",
+    "Depth Selection Gate",
+    "Design Contract",
+    "Approach comparison",
+    "Method Lens",
+    "Coverage Map",
+    "Documentation Landing",
+    "Visual Expression",
+    "Re-Ask After Challenge"
+  ];
+
+  for (const rel of brainstormFiles) {
+    const body = fs.readFileSync(path.join(home, rel), "utf8");
+    for (const term of requiredBrainstormTerms) {
+      assert(body.includes(term), `Installed ${rel} missing clarification contract: ${term}`);
+    }
+    for (const term of removedResponsibilities) {
+      assert(!body.includes(term), `Installed ${rel} regained removed Brainstorm responsibility: ${term}`);
+    }
+  }
+
+  const spec = fs.readFileSync(path.join(home, "skills/devflow-spec/SKILL.md"), "utf8");
+  for (const term of [
+    "Confirmed request",
+    "Compare the smallest real options",
+    "design contract",
+    "returns the confirmed Spec to `devflow-core`"
+  ]) {
+    assert(spec.includes(term), `Installed Spec missing design-contract behavior: ${term}`);
+  }
+  assert(!spec.includes("Next: `devflow-cut`"), "Installed Spec must not directly hand off to Cut");
+
+  const core = fs.readFileSync(path.join(home, "skills/devflow-core/SKILL.md"), "utf8");
+  for (const term of [
+    "Core decides whether the request needs `devflow-spec`",
+    "returns the confirmed Spec to Core",
+    "Only Core then selects"
+  ]) {
+    assert(core.includes(term), `Installed Core missing responsibility routing: ${term}`);
+  }
+  const cut = fs.readFileSync(path.join(home, "skills/devflow-cut/SKILL.md"), "utf8");
+  for (const term of [
+    "CUT_PASS: smallest scope holds; return the Cut Decision to `devflow-core`",
+    "Core alone decides whether the Cut Decision needs `devflow-plan`, `devflow-build`, `devflow-prove`, or no further lifecycle work."
+  ]) {
+    assert(cut.includes(term), `Installed Cut missing Core return contract: ${term}`);
+  }
+
+  const plan = fs.readFileSync(path.join(home, "skills/devflow-plan/SKILL.md"), "utf8");
+  for (const term of [
+    "returns the confirmed Plan to `devflow-core`",
+    "only Core selects `devflow-build` or any other later lifecycle work"
+  ]) {
+    assert(plan.includes(term), `Installed Plan missing Core return contract: ${term}`);
+  }
+
+  const pua = fs.readFileSync(path.join(home, "skills/devflow-pua/SKILL.md"), "utf8");
+  for (const term of [
+    "return recovery facts to `devflow-core`",
+    "`devflow-pua` never selects Cut, Plan, Build, Prove, or another lifecycle skill."
+  ]) {
+    assert(pua.includes(term), `Installed PUA missing Core return contract: ${term}`);
+  }
+}
+
 function readInstallerEntries() {
   const body = fs.readFileSync(installer, "utf8");
   const match = body.match(/const userEntries = \[([\s\S]*?)\];/);
@@ -102,6 +190,7 @@ assert(fs.existsSync(path.join(createHome, "commands/devflow-audit.toml")), "Wri
 assert(fs.existsSync(path.join(createHome, "scripts/devflow-plan.js")), "Write mode must create script file");
 assert(fs.existsSync(path.join(createHome, "scripts/devflow-spec.js")), "Write mode must create spec script file");
 assert(fs.existsSync(path.join(createHome, "scripts/devflow-audit.js")), "Write mode must create audit script file");
+assertInstalledResponsibilitySplitContract(createHome);
 
 const checkOutput = runInstaller(createHome, ["--check"]);
 assert(checkOutput.includes("DevFlow user install check"), "Check mode must identify user check mode");

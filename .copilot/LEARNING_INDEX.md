@@ -12,3 +12,4 @@ Read this index first. Only read a card when its trigger matches the current tas
 | [Reference Project Absorption Proof](cards/reference-project-absorption-proof.md) | reference project, Ponytail, agent-skills, superpowers, pua, skill migration, adapt a skill to DevFlow, absorbed capability, actual usage, not just mentioned | project | 0.8 |
 | [AGENTS Runtime Prompt Boundary](cards/agents-runtime-prompt-boundary.md) | AGENTS.md, runtime prompt, prompt file, unrelated explanation, README-like content, long method details, wrong place, misplaced content, repeated correction | project | 0.7 |
 | [Problem Reports Need Triage](cards/problem-reports-need-triage.md) | 问题, 有问题, 检查一下, 哪里不对, investigate issue, problem report without fix request | project | 0.6 |
+| [PUA Same-Target Trigger](cards/pua-same-target-trigger.md) | devflow-pua, PUA trigger, Recovery trigger, same function, same result, repeated dissatisfaction, repeated target, 首次反馈, 同一功能, 重复指出 | project | 0.5 |

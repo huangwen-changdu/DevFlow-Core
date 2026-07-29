@@ -7,11 +7,13 @@
     "command": "trigger:verify",
     "scenarioEvidence": [
       "Route: Design",
-      "Skill path: `devflow-core -> devflow-brainstorm -> devflow-cut`",
-      "Must compare 2-3 approaches."
+      "Skill path: `devflow-core -> devflow-brainstorm -> Confirmed request -> devflow-core`",
+      "Brainstorm must send a Semantic Echo-Back, apply the Understanding Revision Rule when a correction changes the request, then ask or infer only goal, scope, exclusions, constraints, acceptance, and open questions.",
+      "Brainstorm must output the fixed `Confirmed request` summary with `Status: clarified` and stop.",
+      "`devflow-core` alone chooses any subsequent lifecycle work; when it selects Spec, Spec compares real options, waits for design approval, and returns the confirmed Spec to Core."
     ],
     "commandEvidence": ["Skill Trigger Verification Report"],
-    "negativeConstraints": ["Must not implement until the design contract is approved"]
+    "negativeConstraints": ["Brainstorm must output the fixed `Confirmed request` summary with `Status: clarified` and stop.", "Brainstorm must not choose an approach, route, depth, design contract, or handoff.", "Spec must not directly hand off to Cut.", "Cut must return its Cut Decision to Core before lifecycle selection.", "Plan must return the confirmed Plan to Core before lifecycle selection.", "PUA must return recovery facts to Core before lifecycle selection."]
   },
   {
     "id": "first-principles-cut",
@@ -25,7 +27,7 @@
       "Smallest necessary mechanism"
     ],
     "commandEvidence": ["first principles architecture problem: Build"],
-    "negativeConstraints": ["preserving the requested redesign by default"]
+    "negativeConstraints": ["without proposing an architecture."]
   },
   {
     "id": "host-adapter-drift",
@@ -93,12 +95,15 @@
     "expectedRoute": "Recovery",
     "command": "trigger:verify",
     "scenarioEvidence": [
-      "Route: Recovery",
-      "Must stop the current approach before more edits.",
-      "Must switch to a different/opposite method"
+      "Route: Recovery.",
+      "Trigger only because the user repeatedly identifies the same function (`CSV export`) as wrong or incomplete in one task lifecycle.",
+      "Must not infer pressure recovery from an isolated keyword or message count alone.",
+      "Must discard the prior wrong assumption/path/proof claim and keep only verified facts.",
+      "Must switch to a different/opposite method",
+      "it returns recovery facts to Core"
     ],
-    "commandEvidence": ["pressure recovery challenge: Recovery"],
-    "negativeConstraints": ["Must stop the current approach before more edits."]
+    "commandEvidence": ["repeated same-function problem pressure recovery: Recovery"],
+    "negativeConstraints": ["Must discard the prior wrong assumption/path/proof claim and keep only verified facts."]
   },
   {
     "id": "completion-proof",

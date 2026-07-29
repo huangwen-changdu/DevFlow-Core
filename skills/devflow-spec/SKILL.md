@@ -1,6 +1,6 @@
 ---
 name: devflow-spec
-description: "Use when writing a requirements/spec document, turning an approved design into a saved spec, planning from specs, or creating docs/specs artifacts before implementation."
+description: "Use after devflow-core selects a saved spec for a confirmed request that needs approach comparison, a reviewable design contract, and a requirements document before implementation."
 ---
 
 # DevFlow Spec
@@ -22,9 +22,10 @@ Do not force a spec for Design-lite work where a short design contract and quick
 
 ## Process
 
-1. Read the approved design contract from `devflow-brainstorm` and the relevant project facts. Do not re-confirm goal, constraints, or approaches — those were already settled and user-approved in Brainstorm.
-2. Write the spec under `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`, resolved from the current target project's root, unless that project already documents another specs path.
-3. Include the required sections with English headers:
+1. Consume the `Confirmed request` that `devflow-core` selected for Spec work, then read the relevant project facts. Do not re-confirm settled request fields or route the lifecycle.
+2. Compare the smallest real options before writing: no change/reuse when it can meet the request, direct implementation, and any existing project pattern that materially changes the decision. State trade-offs and why the selected approach is the smallest useful one.
+3. Write the design contract and saved spec under `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`, resolved from the current target project's root, unless that project already documents another specs path.
+4. Include the required sections with English headers:
    - Goal
    - Context
    - Requirements
@@ -36,7 +37,7 @@ Do not force a spec for Design-lite work where a short design contract and quick
    - Code Documentation
    - Open Questions
 
-   Section content should be written in the user's language (e.g., Chinese for Chinese users), but section headers must remain in English so `scripts/devflow-spec.js` can validate them.
+   In `Approach`, record the compared options, trade-offs, chosen design, boundaries, and why rejected options do not meet the current request. Section content should be written in the user's language, but section headers must remain in English so `scripts/devflow-spec.js` can validate them.
 
    The **Code Documentation** section specifies what code comments are required for this feature:
    - Which modules/files need file-level comments (what the file does, key exports)
@@ -44,21 +45,22 @@ Do not force a spec for Design-lite work where a short design contract and quick
    - Which non-obvious logic needs inline comments (explain WHY, not WHAT)
    - Reference to existing project comment conventions if any
    - For trivial changes (one-line fix, config tweak), state "none — trivial change" explicitly
-4. Run the spec self-review:
+5. Run the design/spec self-review:
    - Unresolved-marker scan: no draft markers, unresolved question marks, or unresolved angle values.
-   - Consistency: requirements, approach, impact, acceptance, and verification do not contradict.
+   - Consistency: requirements, chosen approach, impact, acceptance, and verification do not contradict.
    - Scope: if multiple independent subsystems appear, split into separate specs.
-   - Ambiguity: pick an explicit interpretation or mark the open question before planning.
-5. Run `node scripts/devflow-spec.js <spec-file>` when the script exists. If not found at `scripts/devflow-spec.js` (project-level), try `~/.codex/scripts/devflow-spec.js` or `~/.claude/scripts/devflow-spec.js` (user-level). Do NOT look under `skills/scripts/`. See `core-methods.md` Script Path Resolution.
-6. **STOP — Ask the user to review the spec**: Tell the user the spec file path and ask them to review it before proceeding. If they request changes, make them and re-run the spec self-review. Only proceed once the user approves.
+   - Design: the comparison names the real alternatives and the selected approach has an explicit trade-off.
+6. Run `node scripts/devflow-spec.js <spec-file>` when the script exists. If not found at `scripts/devflow-spec.js` (project-level), try `~/.codex/scripts/devflow-spec.js` or `~/.claude/scripts/devflow-spec.js` (user-level). Do NOT look under `skills/scripts/`. See `core-methods.md` Script Path Resolution.
+7. **STOP — Wait for user approval of the design contract and spec.** Tell the user the spec path and review result. If they request changes, revise the comparison/design contract and re-run self-review. After approval, Spec returns the confirmed Spec to `devflow-core` and stops; only Core selects Cut, Plan, Build, Prove, Recovery, or no further lifecycle work.
 
 ## Output
 
 ```text
 Spec: docs/specs/YYYY-MM-DD-<short-kebab-name>.md
-Source: <approved design from devflow-brainstorm>
-Review: unresolved-marker scan <pass/fail>; consistency <pass/fail>; scope <pass/fail>; ambiguity <pass/fail>
-Next: `devflow-cut` with Source and Spec coverage; after `CUT_PASS`, `devflow-plan` / `/devflow-plan`; then devflow-build
+Source: <Confirmed request selected by devflow-core>
+Design: options compared <pass/fail>; selected approach and trade-off <pass/fail>
+Review: unresolved-marker scan <pass/fail>; consistency <pass/fail>; scope <pass/fail>; design <pass/fail>
+Next: confirmed Spec -> `devflow-core` selects any needed Cut, Plan, Build, Prove, Recovery, or no further lifecycle work
 ```
 
 ## Anti-Rationalization
@@ -67,6 +69,8 @@ Next: `devflow-cut` with Source and Spec coverage; after `CUT_PASS`, `devflow-pl
 |---|---|
 | "A plan is enough." | If requirements can drift across tasks, write the spec first. |
 | "The spec can be vague; the plan will decide." | Vague specs create wrong plans. Resolve or mark the question before planning. |
+| "Brainstorm already chose the approach." | Brainstorm confirms what the user wants; Spec compares how to satisfy it and records the design contract. |
+| "The user approved the spec, so hand off directly to Cut." | Approval returns the confirmed Spec to Core; only Core chooses the next lifecycle skill. |
 | "This belongs in docs/features." | `docs/features/` is product ledger memory, not a generated implementation spec. |
 | "The user said implement, so skip approval." | Implementation requests still need the lightest useful design/spec source before Build. |
 | "Code Documentation is unnecessary, the code is self-explanatory." | Code tells you WHAT it does. Comments tell you WHY it does it. Future developers (and LLMs) need the WHY. |
@@ -78,11 +82,11 @@ Next: `devflow-cut` with Source and Spec coverage; after `CUT_PASS`, `devflow-pl
 Before leaving this skill, confirm:
 
 - [ ] Spec scope was named.
+- [ ] Real options, trade-offs, and the chosen approach are recorded in the design contract.
 - [ ] Required sections exist, including Code Documentation.
 - [ ] Spec landed under the current project's `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` path or a documented target-project specs path.
-- [ ] Unresolved-marker, consistency, scope, and ambiguity checks ran.
+- [ ] Unresolved-marker, consistency, scope, and design checks ran.
 - [ ] Code Documentation section specifies what needs comments (or explicitly states "none — trivial change").
 - [ ] `scripts/devflow-spec.js` ran when available.
-- [ ] User reviewed the written spec and approved it.
-- [ ] The next plan will cite the spec or approved design as `Source`.
-- [ ] Handoff target is `/devflow-plan` (not directly to `devflow-build`).
+- [ ] User reviewed and approved the design contract and written spec.
+- [ ] The confirmed Spec was returned to `devflow-core`; Spec did not select or hand off to Cut, Plan, Build, Prove, or Recovery.
