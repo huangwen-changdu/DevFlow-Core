@@ -5,3 +5,5 @@
 - Next action: Next time syncing rules, use overlay copy to `C:\Users\huangwen\.codebuddy\rules` and `C:\Users\huangwen\.workbuddy\rules`, then verify every source rule hash matches each target.
 - Scope: project
 - Related: `.codebuddy/rules/`, `C:\Users\huangwen\.codebuddy\rules`, `C:\Users\huangwen\.workbuddy\rules`
+- Evidence: overlay synchronization procedure and source-hash verification rule.
+- Invalidation: Revise when managed target locations or merge semantics change.

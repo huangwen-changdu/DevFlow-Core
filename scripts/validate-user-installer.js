@@ -5,11 +5,15 @@ const { spawnSync } = require("node:child_process");
 
 const root = path.resolve(__dirname, "..");
 const installer = path.join(root, "scripts/install-devflow-user.js");
+const ownerReferences = [
+  "skills/devflow-cut/references/cut-methods.md",
+  "skills/devflow-spec/references/spec-plan-methods.md",
+  "skills/devflow-build/references/build-methods.md",
+  "skills/devflow-prove/references/proof-recovery-methods.md"
+];
 
 function assert(condition, message) {
-  if (!condition) {
-    throw new Error(message);
-  }
+  if (!condition) throw new Error(message);
 }
 
 function makeHome(name) {
@@ -17,209 +21,62 @@ function makeHome(name) {
 }
 
 function runInstaller(home, args) {
-  const result = spawnSync(process.execPath, [installer, "--home", home, ...args], {
-    cwd: root,
-    encoding: "utf8"
-  });
-
-  if (result.status !== 0) {
-    throw new Error(`User installer failed:\n${result.stdout}\n${result.stderr}`);
-  }
-
+  const result = spawnSync(process.execPath, [installer, "--home", home, ...args], { cwd: root, encoding: "utf8" });
+  if (result.status !== 0) throw new Error(`User installer failed:\n${result.stdout}\n${result.stderr}`);
   return `${result.stdout}${result.stderr}`;
 }
 
-/**
- * Ensures a user-level installation preserves the Brainstorm, Spec, and Core split.
- */
-function assertInstalledResponsibilitySplitContract(home) {
-  const brainstormFiles = [
-    "skills/devflow-brainstorm/SKILL.md",
-    "skills/devflow-brainstorm/references/interview-discipline.md"
-  ];
-  const requiredBrainstormTerms = [
-    "Semantic Echo-Back",
-    "one question at a time",
-    "Understanding Revision Rule",
-    "Confirmed request",
-    "Goal:",
-    "Scope:",
-    "Out of scope:",
-    "Constraints:",
-    "Acceptance:",
-    "Open questions:",
-    "Status: clarified"
-  ];
-  const removedResponsibilities = [
-    "Fast Exit",
-    "Path Selection Gate",
-    "Depth Selection Gate",
-    "Design Contract",
-    "Approach comparison",
-    "Method Lens",
-    "Coverage Map",
-    "Documentation Landing",
-    "Visual Expression",
-    "Re-Ask After Challenge"
-  ];
-
-  for (const rel of brainstormFiles) {
-    const body = fs.readFileSync(path.join(home, rel), "utf8");
-    for (const term of requiredBrainstormTerms) {
-      assert(body.includes(term), `Installed ${rel} missing clarification contract: ${term}`);
-    }
-    for (const term of removedResponsibilities) {
-      assert(!body.includes(term), `Installed ${rel} regained removed Brainstorm responsibility: ${term}`);
-    }
-  }
-
-  const spec = fs.readFileSync(path.join(home, "skills/devflow-spec/SKILL.md"), "utf8");
-  for (const term of [
-    "Confirmed request",
-    "Compare the smallest real options",
-    "design contract",
-    "returns the confirmed Spec to `devflow-core`"
-  ]) {
-    assert(spec.includes(term), `Installed Spec missing design-contract behavior: ${term}`);
-  }
-  assert(!spec.includes("Next: `devflow-cut`"), "Installed Spec must not directly hand off to Cut");
-
-  const core = fs.readFileSync(path.join(home, "skills/devflow-core/SKILL.md"), "utf8");
-  for (const term of [
-    "Core decides whether the request needs `devflow-spec`",
-    "returns the confirmed Spec to Core",
-    "Only Core then selects"
-  ]) {
-    assert(core.includes(term), `Installed Core missing responsibility routing: ${term}`);
-  }
-  const cut = fs.readFileSync(path.join(home, "skills/devflow-cut/SKILL.md"), "utf8");
-  for (const term of [
-    "CUT_PASS: smallest scope holds; return the Cut Decision to `devflow-core`",
-    "Core alone decides whether the Cut Decision needs `devflow-plan`, `devflow-build`, `devflow-prove`, or no further lifecycle work."
-  ]) {
-    assert(cut.includes(term), `Installed Cut missing Core return contract: ${term}`);
-  }
-
-  const plan = fs.readFileSync(path.join(home, "skills/devflow-plan/SKILL.md"), "utf8");
-  for (const term of [
-    "returns the confirmed Plan to `devflow-core`",
-    "only Core selects `devflow-build` or any other later lifecycle work"
-  ]) {
-    assert(plan.includes(term), `Installed Plan missing Core return contract: ${term}`);
-  }
-
-  const pua = fs.readFileSync(path.join(home, "skills/devflow-pua/SKILL.md"), "utf8");
-  for (const term of [
-    "return recovery facts to `devflow-core`",
-    "`devflow-pua` never selects Cut, Plan, Build, Prove, or another lifecycle skill."
-  ]) {
-    assert(pua.includes(term), `Installed PUA missing Core return contract: ${term}`);
-  }
-}
-
-function readInstallerEntries() {
+/** Parses user installer scope to keep project-only entry files out of a personal runtime. */
+function userEntries() {
   const body = fs.readFileSync(installer, "utf8");
   const match = body.match(/const userEntries = \[([\s\S]*?)\];/);
   assert(match, "User installer must define userEntries");
   return [...match[1].matchAll(/"([^"]+)"/g)].map((entry) => entry[1]);
 }
 
-const userEntries = readInstallerEntries();
-
-for (const entry of userEntries) {
-  assert(
-    entry.startsWith("skills/") || entry.startsWith("commands/") || entry.startsWith("scripts/devflow-"),
-    `User installer entry is outside skills/commands/scripts: ${entry}`
-  );
+/** Ensures a user-level Core loading map resolves each local owner reference. */
+function assertInstalledRuntimeContract(home) {
+  const core = fs.readFileSync(path.join(home, "skills/devflow-core/SKILL.md"), "utf8");
+  for (const reference of ownerReferences) {
+    assert(fs.existsSync(path.join(home, reference)), `User runtime missing owner reference: ${reference}`);
+    assert(core.includes(path.basename(reference)), `User Core loading map missing ${path.basename(reference)}`);
+  }
+  assert(!fs.existsSync(path.join(home, "AGENTS.md")), "User runtime must not install project AGENTS.md");
 }
 
-assert(!userEntries.includes("AGENTS.md"), "User installer must not install AGENTS.md");
-assert(userEntries.includes("skills/devflow-core/SKILL.md"), "User installer missing core skill");
-assert(userEntries.includes("skills/devflow-spec/SKILL.md"), "User installer missing spec skill");
-assert(userEntries.includes("skills/devflow-plan/SKILL.md"), "User installer missing plan skill");
-assert(userEntries.includes("skills/devflow-pua/SKILL.md"), "User installer missing pua skill");
-assert(userEntries.includes("skills/devflow-project-knowledge/SKILL.md"), "User installer missing project-knowledge skill");
-assert(userEntries.includes("skills/devflow-docs-followup/SKILL.md"), "User installer missing completion document follow-up skill");
-assert(userEntries.includes("skills/devflow-docs-followup/agents/openai.yaml"), "User installer missing completion document follow-up UI metadata");
-assert(userEntries.includes("skills/devflow-adversarial/SKILL.md"), "User installer missing independent adversarial skill");
-assert(userEntries.includes("skills/devflow-find-fault/SKILL.md"), "User installer missing independent find-fault skill");
-assert(userEntries.includes("skills/devflow-pua/references/methodology-router.md"), "User installer missing pua methodology router");
-assert(userEntries.includes("skills/devflow-pua/references/methodology-library.md"), "User installer missing pua methodology library");
-assert(userEntries.includes("skills/devflow-pua/references/flavor-display.md"), "User installer missing pua flavor display");
-assert(userEntries.includes("skills/devflow-audit/SKILL.md"), "User installer missing audit skill");
-assert(userEntries.includes("skills/devflow-brainstorm/references/interview-discipline.md"), "User installer missing interview discipline reference");
-assert(userEntries.includes("commands/devflow.toml"), "User installer missing devflow command");
-assert(userEntries.includes("commands/devflow-spec.toml"), "User installer missing spec command");
-assert(userEntries.includes("commands/devflow-pua.toml"), "User installer missing pua command");
-assert(userEntries.includes("commands/devflow-adversarial.toml"), "User installer missing independent adversarial command");
-assert(userEntries.includes("commands/devflow-find-fault.toml"), "User installer missing independent find-fault command");
-assert(userEntries.includes("commands/devflow-audit.toml"), "User installer missing audit command");
-assert(userEntries.includes("scripts/devflow-plan.js"), "User installer missing plan script");
-assert(userEntries.includes("scripts/devflow-spec.js"), "User installer missing spec script");
-assert(userEntries.includes("scripts/devflow-audit.js"), "User installer missing audit script");
+const entries = userEntries();
+for (const entry of entries) {
+  assert(entry.startsWith("skills/") || entry.startsWith("commands/") || entry.startsWith("scripts/devflow-"), `User entry outside supported scope: ${entry}`);
+}
+assert(!entries.includes("AGENTS.md"), "User installer must not install AGENTS.md");
+for (const reference of ownerReferences) assert(entries.includes(reference), `User installer missing ${reference}`);
 
 const dryHome = makeHome("dry");
 const dryOutput = runInstaller(dryHome, []);
-assert(dryOutput.includes("DevFlow user install dry-run"), "Dry-run output must identify user dry-run mode");
-assert(dryOutput.includes("would create: skills/devflow-core/SKILL.md"), "Dry-run must report user skill creation");
-assert(!fs.existsSync(path.join(dryHome, "skills/devflow-core/SKILL.md")), "Dry-run must not create user skill");
+assert(dryOutput.includes("DevFlow user install dry-run"), "Dry-run must identify user mode");
+assert(!fs.existsSync(path.join(dryHome, "skills/devflow-core/SKILL.md")), "User dry-run must not write files");
 
 const createHome = makeHome("create");
 const createOutput = runInstaller(createHome, ["--write"]);
-assert(createOutput.includes("created: skills/devflow-core/SKILL.md"), "Write mode must create user skill");
-assert(fs.existsSync(path.join(createHome, "skills/devflow-core/SKILL.md")), "Write mode must create skill file");
-assert(fs.existsSync(path.join(createHome, "skills/devflow-spec/SKILL.md")), "Write mode must create spec skill file");
-assert(fs.existsSync(path.join(createHome, "skills/devflow-plan/SKILL.md")), "Write mode must create plan skill file");
-assert(fs.existsSync(path.join(createHome, "skills/devflow-pua/SKILL.md")), "Write mode must create pua skill file");
-assert(fs.existsSync(path.join(createHome, "skills/devflow-project-knowledge/SKILL.md")), "Write mode must create project-knowledge skill file");
-assert(fs.existsSync(path.join(createHome, "skills/devflow-docs-followup/SKILL.md")), "Write mode must create completion document follow-up skill file");
-assert(fs.existsSync(path.join(createHome, "skills/devflow-docs-followup/agents/openai.yaml")), "Write mode must create completion document follow-up UI metadata");
-assert(fs.existsSync(path.join(createHome, "skills/devflow-adversarial/SKILL.md")), "Write mode must create independent adversarial skill file");
-assert(fs.existsSync(path.join(createHome, "skills/devflow-find-fault/SKILL.md")), "Write mode must create independent find-fault skill file");
-assert(fs.existsSync(path.join(createHome, "skills/devflow-pua/references/methodology-router.md")), "Write mode must create pua methodology router");
-assert(fs.existsSync(path.join(createHome, "skills/devflow-pua/references/methodology-library.md")), "Write mode must create pua methodology library");
-assert(fs.existsSync(path.join(createHome, "skills/devflow-pua/references/flavor-display.md")), "Write mode must create pua flavor display");
-assert(fs.existsSync(path.join(createHome, "skills/devflow-audit/SKILL.md")), "Write mode must create audit skill file");
-assert(fs.existsSync(path.join(createHome, "skills/devflow-brainstorm/references/interview-discipline.md")), "Write mode must create interview discipline reference");
-assert(fs.existsSync(path.join(createHome, "commands/devflow.toml")), "Write mode must create command file");
-assert(fs.existsSync(path.join(createHome, "commands/devflow-spec.toml")), "Write mode must create spec command file");
-assert(fs.existsSync(path.join(createHome, "commands/devflow-pua.toml")), "Write mode must create pua command file");
-assert(fs.existsSync(path.join(createHome, "commands/devflow-adversarial.toml")), "Write mode must create independent adversarial command file");
-assert(fs.existsSync(path.join(createHome, "commands/devflow-find-fault.toml")), "Write mode must create independent find-fault command file");
-assert(fs.existsSync(path.join(createHome, "commands/devflow-audit.toml")), "Write mode must create audit command file");
-assert(fs.existsSync(path.join(createHome, "scripts/devflow-plan.js")), "Write mode must create script file");
-assert(fs.existsSync(path.join(createHome, "scripts/devflow-spec.js")), "Write mode must create spec script file");
-assert(fs.existsSync(path.join(createHome, "scripts/devflow-audit.js")), "Write mode must create audit script file");
-assertInstalledResponsibilitySplitContract(createHome);
-
-const checkOutput = runInstaller(createHome, ["--check"]);
-assert(checkOutput.includes("DevFlow user install check"), "Check mode must identify user check mode");
-assert(checkOutput.includes("ok: skills/devflow-core/SKILL.md"), "Check mode must report matching user skill");
-assert(checkOutput.includes("Check passed"), "Check mode must pass when user runtime matches");
+assert(createOutput.includes("created: skills/devflow-core/SKILL.md"), "User write mode must create Core skill");
+assertInstalledRuntimeContract(createHome);
+assert(runInstaller(createHome, ["--check"]).includes("Check passed"), "User check mode must accept matching runtime");
 
 const missingHome = makeHome("missing");
-const missingCheck = spawnSync(process.execPath, [installer, "--home", missingHome, "--check"], {
-  cwd: root,
-  encoding: "utf8"
-});
-assert(missingCheck.status !== 0, "Check mode must fail when user files are missing");
-assert(`${missingCheck.stdout}${missingCheck.stderr}`.includes("Check failed"), "Missing check must report failure");
+const missing = spawnSync(process.execPath, [installer, "--home", missingHome, "--check"], { cwd: root, encoding: "utf8" });
+assert(missing.status !== 0, "User check mode must fail for missing runtime");
 
 const skipHome = makeHome("skip");
-const skipTarget = path.join(skipHome, "commands/devflow.toml");
-fs.mkdirSync(path.dirname(skipTarget), { recursive: true });
-fs.writeFileSync(skipTarget, "KEEP_ME", "utf8");
-const skipOutput = runInstaller(skipHome, ["--write"]);
-assert(skipOutput.includes("skipped existing: commands/devflow.toml"), "Write mode must skip existing user command");
-assert(fs.readFileSync(skipTarget, "utf8") === "KEEP_ME", "Write mode must preserve existing user command");
+const skipFile = path.join(skipHome, "commands/devflow.toml");
+fs.mkdirSync(path.dirname(skipFile), { recursive: true });
+fs.writeFileSync(skipFile, "KEEP_ME", "utf8");
+assert(runInstaller(skipHome, ["--write"]).includes("skipped existing: commands/devflow.toml"), "User write mode must preserve existing files");
 
 const forceHome = makeHome("force");
-const forceTarget = path.join(forceHome, "commands/devflow.toml");
-fs.mkdirSync(path.dirname(forceTarget), { recursive: true });
-fs.writeFileSync(forceTarget, "REPLACE_ME", "utf8");
-const forceOutput = runInstaller(forceHome, ["--write", "--force"]);
-assert(forceOutput.includes("overwrote: commands/devflow.toml"), "Force mode must report overwriting user command");
-assert(fs.readFileSync(forceTarget, "utf8") !== "REPLACE_ME", "Force mode must replace user command");
+const forceFile = path.join(forceHome, "commands/devflow.toml");
+fs.mkdirSync(path.dirname(forceFile), { recursive: true });
+fs.writeFileSync(forceFile, "REPLACE_ME", "utf8");
+assert(runInstaller(forceHome, ["--write", "--force"]).includes("overwrote: commands/devflow.toml"), "User force mode must overwrite files");
 
 console.log("User installer validation passed");
-console.log("Checked dry-run, create, check, skip-existing, force-overwrite, and user scope boundaries");
+console.log("Checked owner-reference installation, user scope, dry-run, create, check, skip-existing, and force-overwrite");

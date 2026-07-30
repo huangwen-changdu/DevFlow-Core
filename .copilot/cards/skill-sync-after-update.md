@@ -5,3 +5,5 @@
 - Next action: Next time completing a skills, commands, or runtime-script update, overlay-sync `skills/`, `commands/`, and `scripts/devflow-*.js` to `C:\Users\huangwen\.claude`, `C:\Users\huangwen\.codebuddy`, `C:\Users\huangwen\.codex`, and `C:\Users\huangwen\.workbuddy`; do not delete target-only files or copy maintainer-only scripts.
 - Scope: project
 - Related: `skills/`, `commands/`, `scripts/devflow-*.js`, `scripts/install-devflow-user.js`, `npm run install:user -- --home <target>`
+- Evidence: user installer entry list and user-install verification command.
+- Invalidation: Revise when user-level runtime scope or installer behavior changes.

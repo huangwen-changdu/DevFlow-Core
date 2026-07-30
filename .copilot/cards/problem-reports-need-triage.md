@@ -5,3 +5,5 @@
 - Next action: Next time the user reports a problem without explicitly asking for a fix, first run Problem: Sense -> Prove facts, then re-route to Design or Build only after the needed change is known; put ASCII trigger words in AGENTS.md, skill descriptions, commands, and validation.
 - Scope: project
 - Related: `skills/devflow-core/SKILL.md`, `skills/devflow-prove/references/flow-self-test.md`
+- Evidence: Core Problem route and the matching flow self-test scenario.
+- Invalidation: Revise when Problem routing or its proof contract changes.

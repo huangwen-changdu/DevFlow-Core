@@ -27,6 +27,8 @@ These files are the runtime method source. Do not link out to the original PUA p
 
 ## Process
 
+Load `skills/devflow-prove/references/proof-recovery-methods.md` before applying recovery proof rules. Keep the PUA methodology router, library, and flavor-display assets as the owner of method selection and output display.
+
 1. **Stop the current path**: do not keep editing with the same assumption when the user repeatedly reports that the same function, result, or requested capability remains wrong, incomplete, or missing.
 2. **Name the pressure signal**: repeated same-target dissatisfaction in one task lifecycle, including after an attempted correction; record the function/result/capability that the user keeps identifying as problematic.
 3. **Quarantine wrong context**: keep only verified facts and user-stated constraints; discard the previous solution hypothesis, implementation path, and "almost fixed" assumptions.

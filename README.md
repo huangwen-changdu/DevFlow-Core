@@ -233,6 +233,9 @@ If verification is partial, say what is not covered. If verification cannot run,
 | Superpowers | Brainstorm-to-spec-to-plan-to-build handoff, `devflow-spec`, date-prefixed specs under `docs/specs/`, bite-sized tasks, `Source` / `Spec coverage` tracing, and verification-before-completion gate. |
 | PUA-Driven Spec Engineering | Fast/Design/Recovery gating, project memory checks, skill activation evidence, Codex proof contract, and Method Lens routing. |
 | PUA | `devflow-pua` pressure recovery, verifier role, multi-platform packaging, explicit command routing, and lightweight local flavor-method routing without full persona theater. |
+| Harness-inspired context governance | A three-layer runtime contract: host adapters identify the route and provide their fallback, `devflow-core` loads shared routing methods, and the selected lifecycle owner loads only its local reference. |
+
+Host entry files are startup interfaces, not copies of the full lifecycle. This keeps no-auto-load hosts executable while detailed method ownership and runtime context remain with the selected skill.
 
 ## Product Direction
 
@@ -299,8 +302,12 @@ It also checks `--check` mode for matching, missing, and changed target runtime 
 
 Runtime reference material lives beside the skill that uses it:
 
-- [skills/devflow-core/references/core-methods.md](skills/devflow-core/references/core-methods.md): authoritative method rules
-- [skills/devflow-core/SKILL.md](skills/devflow-core/SKILL.md): route table, small-request boundary, and capability dispatch
+- [skills/devflow-core/references/core-methods.md](skills/devflow-core/references/core-methods.md): shared method invariants, routing rules, and owner map
+- [skills/devflow-core/SKILL.md](skills/devflow-core/SKILL.md): Core route table and selected-reference loading map
+- [skills/devflow-cut/references/cut-methods.md](skills/devflow-cut/references/cut-methods.md): Cut-specific reuse, native, root-cause, and scope gates
+- [skills/devflow-spec/references/spec-plan-methods.md](skills/devflow-spec/references/spec-plan-methods.md): Spec and Plan method details
+- [skills/devflow-build/references/build-methods.md](skills/devflow-build/references/build-methods.md): Build minimal-change and slice discipline
+- [skills/devflow-prove/references/proof-recovery-methods.md](skills/devflow-prove/references/proof-recovery-methods.md): Proof and recovery method details
 - [skills/devflow-cut/references/native-capability-checklist.md](skills/devflow-cut/references/native-capability-checklist.md): platform/stdlib alternatives before new code
 - [skills/devflow-prove/references/flow-self-test.md](skills/devflow-prove/references/flow-self-test.md): end-to-end scenario tests
 - [skills/devflow-core/references/skill-guide.md](skills/devflow-core/references/skill-guide.md): how skills are structured

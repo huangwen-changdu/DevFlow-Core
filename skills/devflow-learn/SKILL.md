@@ -110,6 +110,8 @@ Handoff: `devflow-prove PASS` -> `devflow-learn` review -> project-knowledge can
 - Next action: Next time encountering <X>, first do <Y>, do not do <Z>.
 - Scope: session | project | global | skill | module
 - Related: <files or commands>
+- Evidence: <checked source, command, or verified correction that supports this card>
+- Invalidation: <changed contract, failed proof, or review trigger that requires this card to be revised or retired>
 ```
 
 ## Index Format
@@ -169,6 +171,6 @@ Before leaving this skill, confirm:
 - [ ] `LEARNING_INDEX.md` was checked or created.
 - [ ] Only matched cards were read.
 - [ ] Repeated user corrections, repeated user challenges, and misplaced content were recorded or explicitly classified as already covered.
-- [ ] New or updated card has trigger, lesson, next action, scope, and related files.
+- [ ] New or updated card has trigger, lesson, next action, scope, related files, evidence, and invalidation condition.
 - [ ] Business-semantic changes were reported as candidates and await user confirmation before knowledge-package maintenance.
 - [ ] Completion output includes learning closure.

@@ -17,6 +17,8 @@ Receives a `CUT_PASS` Cut Decision from `devflow-cut`.
 When no plan file exists, the approved design and Cut Decision form the Build Contract basis; skip the plan checker.
 ## Plan Review
 
+Load `skills/devflow-build/references/build-methods.md` after this review and before implementation slices. It owns the detailed minimal-change and slice discipline.
+
 Before editing, reconcile the plan against the current codebase — executability review, not redesign:
 
 1. Anchors: every `Modify` symbol/anchor and interface in the plan still exists and matches.

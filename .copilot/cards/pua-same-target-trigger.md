@@ -5,3 +5,5 @@
 - Next action: Next time changing PUA triggers, first state the same-target invariant, then synchronize skills, host entries, self-tests, and validators; do not retain parallel trigger conditions.
 - Scope: project
 - Related: `skills/devflow-pua/SKILL.md`, `skills/devflow-prove/references/flow-self-test.md`, `scripts/validate-skill-triggers.js`, `scripts/validate-host-adapters.js`
+- Evidence: PUA same-target contract plus trigger and host validation scenarios.
+- Invalidation: Revise when Recovery activation stops using the same-target invariant.

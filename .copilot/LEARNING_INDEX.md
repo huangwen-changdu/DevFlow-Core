@@ -1,6 +1,6 @@
 # Learning Index
 
-Read this index first. Only read a card when its trigger matches the current task.
+Read this index first. Only read a card when its trigger and scope match the current task. Evidence and invalidation remain in the selected card body so the index stays small.
 
 | Card | Trigger | Scope | Confidence |
 |---|---|---|---:|

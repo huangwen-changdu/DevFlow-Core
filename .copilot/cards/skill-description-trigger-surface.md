@@ -5,3 +5,5 @@
 - Next action: Next time a skill description is edited, first write a `Use when` / `Use before` trigger phrase, and do not write `DevFlow-Core` or generic brand-summary copy in the description.
 - Scope: project
 - Related: `skills/*/SKILL.md`, `scripts/validate-devflow.js`
+- Evidence: skill frontmatter convention and package validation of skill descriptions.
+- Invalidation: Revise when the host activation mechanism no longer reads descriptions.

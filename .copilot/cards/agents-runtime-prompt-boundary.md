@@ -5,3 +5,5 @@
 - Next action: Next time editing AGENTS.md, first check that the content belongs in a runtime prompt, keep only directive behavior rules, and move long explanations to README or `skills/*/references/*`, not AGENTS.md.
 - Scope: project
 - Related: `AGENTS.md`, `scripts/validate-devflow.js`, `skills/devflow-core/references/core-methods.md`
+- Evidence: `AGENTS.md` startup contract and `node scripts/validate-devflow.js` prompt-size assertion.
+- Invalidation: Revise when the startup contract or prompt-size validation changes.

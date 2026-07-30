@@ -15,7 +15,7 @@ Turn a `devflow-core`-selected, `CUT_PASS`-bounded approved design or confirmed 
 
 ## Authoring Process
 
-1. Read only source material, code, tests, and conventions relevant to the approved scope.
+1. Read only source material, code, tests, and conventions relevant to the approved scope. Load `skills/devflow-spec/references/spec-plan-methods.md` before applying Plan Pack mechanics.
 2. Map exact affected file responsibilities before writing tasks. Reuse existing modules and name the intended file operation.
 3. Split independent deliverables into small, reviewable tasks. Each task should be understandable without referring to another task.
 4. Write the plan using the required header and task contract below.

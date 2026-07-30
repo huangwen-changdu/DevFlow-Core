@@ -13,6 +13,8 @@ Cut unnecessary work before writing it.
 
 Receives a `devflow-core`-selected, approved design or confirmed Spec. Cut decides the smallest implementation boundary before any construction plan; do not use a future plan as evidence for these gates.
 
+Before applying the Minimal Solution Ladder or Required Gates, load `skills/devflow-cut/references/cut-methods.md`. That reference owns the detailed reuse, root-cause, native, overbuild, and debt rules.
+
 - `CUT_PASS` produces a Cut Decision and returns it to `devflow-core`.
 - Core alone decides whether the Cut Decision needs `devflow-plan`, `devflow-build`, `devflow-prove`, or no further lifecycle work.
 - A user-approved Plan Pack receives only a lightweight Cut-consistency review. If it adds scope, dependencies, abstractions, or file responsibilities outside the Cut Decision, return the affected-gate facts to Core before any further lifecycle choice.

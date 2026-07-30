@@ -53,10 +53,16 @@ DevFlow-Core/
     |-- devflow-brainstorm/SKILL.md
     |-- devflow-spec/SKILL.md
     |-- devflow-cut/SKILL.md
-    |-- devflow-cut/references/native-capability-checklist.md
+    |-- devflow-cut/references/
+    |   |-- cut-methods.md
+    |   `-- native-capability-checklist.md
+    |-- devflow-spec/references/spec-plan-methods.md
     |-- devflow-build/SKILL.md
+    |-- devflow-build/references/build-methods.md
     |-- devflow-prove/SKILL.md
-    |-- devflow-prove/references/flow-self-test.md
+    |-- devflow-prove/references/
+    |   |-- flow-self-test.md
+    |   `-- proof-recovery-methods.md
     |-- devflow-pua/SKILL.md
     |-- devflow-learn/SKILL.md
     |-- devflow-audit/SKILL.md
@@ -80,11 +86,11 @@ DevFlow-Core/
 - `docs/PRD.md`: product direction, architecture model, roadmap, and release gates.
 - `docs/specs/*.md`: generated requirements specs created during actual use.
 - `docs/plans/*.md`: generated implementation plans created during actual use.
-- `skills/devflow-*`: skill-capable runtime workflows.
-- `skills/devflow-*/references/*`: skill-local runtime reference material.
+- `skills/devflow-*`: skill-capable runtime workflows; `devflow-core` is the only lifecycle router.
+- `skills/devflow-*/references/*`: installed runtime artifacts. Core reads its shared map, then the selected skill reads the reference that owns its detailed method.
 
 ## Packaging Rule
 
-Platform entry files are thin adapters. The durable method source stays in `skills/devflow-core/references/core-methods.md`; runtime skill behavior stays in `skills/devflow-*/SKILL.md`.
+Platform entry files are thin startup adapters: route signal, Core or explicit owner location, host fallback/load action, and proof exit. `core-methods.md` owns shared routing; selected owner references own detailed lifecycle methods. Target and user installers copy these runtime references with their skills.
 
 `docs/` is reserved for product and generated DevFlow artifacts. Use `docs/specs/` for saved requirements specs and `docs/plans/` for saved implementation plans created during actual use. Do not place runtime framework methods there.

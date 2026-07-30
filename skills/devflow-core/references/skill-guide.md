@@ -6,8 +6,8 @@
 devflow-core
   -> devflow-brainstorm
   -> devflow-spec (when saved requirements source is needed)
-  -> /devflow-plan (create Plan Pack from spec or approved design)
   -> devflow-cut
+  -> devflow-plan (when Core selects a Plan Pack after CUT_PASS)
   -> devflow-build
   -> devflow-prove
   -> devflow-pua (when user challenge/repeated miss appears)
@@ -19,10 +19,10 @@ devflow-core
 
 | Skill | Responsibility |
 |---|---|
-| `devflow-core` | Route the task and preserve the overall contract. |
+| `devflow-core` | Route the task, load shared methods, select the next owner, and preserve the overall contract. |
 | `devflow-brainstorm` | Clarify intent and compare approaches. |
 | `devflow-spec` | Write and validate saved requirements specs under `docs/specs/` before implementation planning. |
-| `/devflow-plan` | Create a Plan Pack from a spec or approved design. |
+| `devflow-plan` | Create a Plan Pack from a `CUT_PASS`-bounded spec or approved design. |
 | `devflow-cut` | Prevent overengineering and force reuse checks. |
 | `devflow-build` | Implement the approved smallest useful change. |
 | `devflow-prove` | Verify and report evidence before completion. |
@@ -36,9 +36,9 @@ devflow-core
 - Put trigger phrases in `description`.
 - Prefer imperative steps over explanation.
 - Do not duplicate all framework rules inside every skill.
-- Each skill must name its handoff target.
+- Each skill must return an artifact or facts to Core, or state an independent stop boundary.
 - Each skill must be executable: trigger, action steps, anti-rationalization check, stop/handoff, proof.
-- For method details, point to `skills/devflow-core/references/core-methods.md` instead of restating vague philosophy.
+- Put shared routing details in `skills/devflow-core/references/core-methods.md`; put detailed lifecycle methods in the selected owner's local reference.
 
 ## Minimum Skill Contract
 

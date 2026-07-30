@@ -18,6 +18,8 @@ When this skill activates, read these local references before choosing or runnin
 
 ## Process
 
+Load `skills/devflow-prove/references/proof-recovery-methods.md` before selecting proof. It owns the shared proof and recovery method details used by Prove and PUA.
+
 1. Identify the command, test, build, lint, diff check, validation script, or manual scenario that proves the claim.
 2. Run the narrowest sufficient check now.
 3. Run adversarial review (对抗式审查) before completion for development work: try to disprove the result from the user's acceptance criteria, touched files, likely regressions, missing activation path, and skipped proof.

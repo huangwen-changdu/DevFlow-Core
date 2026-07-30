@@ -37,7 +37,7 @@ Files the project installer syncs (identical for every platform — you get one 
 
 ## Codex
 
-Entry surface: `AGENTS.md` at the project root. Codex reads it as the runtime prompt; skill bodies are not auto-loaded, so `AGENTS.md` carries the workflow contract and its trigger words point to commands and scripts.
+Entry surface: `AGENTS.md` at the project root. Codex reads it as the runtime prompt, but does not automatically load skill bodies. `AGENTS.md` therefore provides the minimal route-to-Core fallback; Core then reads the shared method map and only the reference owned by the selected lifecycle skill.
 
 Install into a target project:
 
@@ -102,7 +102,7 @@ Project-level install:
 npm run install:target -- <project> --write
 ```
 
-This gives opencode its primary entry (`AGENTS.md`) plus `skills/` and `scripts/devflow-*.js` as on-disk reference material the agent can read on demand.
+This gives opencode its primary entry (`AGENTS.md`) plus `skills/` and `scripts/devflow-*.js` as on-disk reference material. The entry routes to Core; Core and its selected lifecycle owner are read on demand.
 
 Two honest limitations:
 
@@ -119,7 +119,7 @@ Two honest limitations:
 
    Save as `<project>/.opencode/commands/devflow.md`; invoke with `/devflow`.
 
-2. **Skills are not auto-loaded.** `skills/` still earns its place: `AGENTS.md` names each `devflow-*` skill path, and the agent reads the matching `SKILL.md` when the route calls for it (progressive disclosure by hand instead of by runtime).
+2. **Skills are not auto-loaded.** `skills/` still earns its place: `AGENTS.md` identifies Core and its fallback, then the agent reads the matching `SKILL.md` and owner reference when the route calls for them (progressive disclosure by hand instead of by runtime).
 
 What gets synced for opencode: the full pack, but the load-bearing files are `AGENTS.md`, `skills/`, and `scripts/devflow-*.js`. `.claude/`, `.codebuddy/`, and `.github/` surfaces are inert in opencode (harmless to keep; other teammates may use those platforms).
 
@@ -147,7 +147,7 @@ Daily use:
 
 - The always-on rule routes automatically; skill-capable CodeBuddy loads `devflow-core` and the focused `devflow-*` skills.
 - Slash commands from `commands/*.toml` are available to command-capable CodeBuddy surfaces.
-- The rule file points at `skills/devflow-core/references/core-methods.md` as the authoritative method source, so keep `skills/` in the project.
+- The rule file points at `devflow-core`; Core loads `skills/devflow-core/references/core-methods.md` first, then the selected owner's local reference. Keep the full `skills/` tree in the project.
 
 ## WorkBuddy
 
@@ -156,7 +156,7 @@ WorkBuddy (Tencent cloud CodeBuddy desktop agent) manages projects and skills th
 Project rules (instructions):
 
 1. In WorkBuddy, open 项目 (Projects) and create or edit your project.
-2. In the 指令 (instructions) field, paste the core contract from this repo's `AGENTS.md` — the Route section, STOP gates paragraph, and the two output contracts (design output, completion proof) are the load-bearing parts.
+2. In the 指令 (instructions) field, paste the current startup contract from this repo's `AGENTS.md`. It identifies Core, direct-review exceptions, and the proof boundary; import skills separately for the detailed lifecycle behavior.
 3. Every task in the project now inherits the DevFlow routing rules automatically.
 
 Skills:

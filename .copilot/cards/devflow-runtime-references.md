@@ -5,3 +5,5 @@
 - Next action: Next time adding or changing a DevFlow runtime skill or cross-skill handoff, first check `plugin.json`, `gemini-extension.json`, `scripts/install-devflow.js`, `scripts/install-devflow-user.js`, and both installer validators; then run package, trigger, host, plan, and user-runtime checks. Do not validate source rules alone or couple static plan validation to lifecycle state.
 - Scope: project
 - Related: `skills/devflow-core/references/project-structure.md`, `scripts/install-devflow.js`, `scripts/validate-devflow.js`
+- Evidence: installed-runtime arrays and installer validation commands in this repository.
+- Invalidation: Revise when a runtime owner, installer boundary, or validation contract changes.

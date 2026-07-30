@@ -6,3 +6,5 @@
 - Encoding: Read and write both source and target explicitly as UTF-8; do not rely on PowerShell `Get-Content` default decoding for non-ASCII prompt text.
 - Scope: project
 - Related: `AGENTS.md`, `C:\Users\huangwen\.codex\AGENTS.md`
+- Evidence: user-global and repository AGENTS files inspected during synchronization work.
+- Invalidation: Revise when the user-global extension locations or merge policy changes.

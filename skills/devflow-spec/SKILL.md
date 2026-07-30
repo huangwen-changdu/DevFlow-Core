@@ -23,7 +23,7 @@ Do not force a spec for Design-lite work where a short design contract and quick
 ## Process
 
 1. Consume the `Confirmed request` that `devflow-core` selected for Spec work, then read the relevant project facts. Do not re-confirm settled request fields or route the lifecycle.
-2. Compare the smallest real options before writing: no change/reuse when it can meet the request, direct implementation, and any existing project pattern that materially changes the decision. State trade-offs and why the selected approach is the smallest useful one.
+2. Load `skills/devflow-spec/references/spec-plan-methods.md`, then compare the smallest real options before writing: no change/reuse when it can meet the request, direct implementation, and any existing project pattern that materially changes the decision. State trade-offs and why the selected approach is the smallest useful one.
 3. Write the design contract and saved spec under `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`, resolved from the current target project's root, unless that project already documents another specs path.
 4. Include the required sections with English headers:
    - Goal

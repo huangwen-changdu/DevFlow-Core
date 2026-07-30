@@ -7,7 +7,7 @@
           {
             "type": "command",
             "command": "node hooks/devflow-session-start.js",
-            "timeout": 5
+            "timeout": 10
           }
         ]
       }

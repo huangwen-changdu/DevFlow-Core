@@ -5,3 +5,5 @@
 - Next action: Next time asked to migrate or absorb a reference skill, first read the source project's real entry files/SKILL.md/references, then decide whether the behavior belongs inside an existing DevFlow skill or as a new skill. Prefer adapting the behavior into the current DevFlow route when the user asks it to "work with this project's flow"; land a local runtime asset under `skills/*/references/*`, require the existing skill or command to read it, include it in target/user installers and manifests, and add validation checks.
 - Scope: project
 - Related: `skills/devflow-core/references/reference-projects.md`, `skills/devflow-brainstorm/references/interview-discipline.md`, `skills/devflow-pua/references/methodology-router.md`, `skills/devflow-pua/references/methodology-library.md`, `skills/devflow-pua/references/flavor-display.md`, `skills/devflow-cut/SKILL.md`, `commands/devflow-*.toml`, `scripts/install-devflow*.js`, `scripts/validate-devflow.js`
+- Evidence: local reference-project audit and installed runtime contracts.
+- Invalidation: Revise when a source capability is removed or its local owner changes.
