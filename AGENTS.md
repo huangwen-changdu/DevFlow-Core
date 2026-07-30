@@ -16,11 +16,9 @@ When skills are unavailable, use the route table and hard boundaries below as th
 
 | Signal | Owner | Required artifact | Return boundary |
 |---|---|---|---|
-| `problem report`, `investigate`, `check what is wrong`, `why broken` | `devflow-core` -> Prove facts | verified symptom and unknowns | Core selects any change only after facts |
-| pure Q&A, lookup, verification, trivial local change | `devflow-core` Fast | narrow evidence | completion requires proof |
-| existing low-risk feature change | `devflow-core` -> Cut | goal, acceptance, exclusions | Cut returns to Core |
-| `requirement`, `feature request`, behavior or architecture change, ambiguity | `devflow-core` -> Brainstorm | Confirmed request | Core selects next work |
-| `implement`, `fix`, `land`, `bug report`, `error`, `failing test`, `broken` | `devflow-core` -> Cut -> Build | approved scope and proof | every artifact returns to Core |
+| any creative work: creating features, building components, adding functionality, modifying behavior, or defining an unapproved problem-directed change | `devflow-core` -> Brainstorm | Confirmed request | STOP; Core selects next work after confirmation |
+| investigation-only problem report, pure Q&A, lookup, or verification | `devflow-core` -> Prove facts / Fast | verified facts or narrow evidence | Core selects any later change after facts |
+| existing low-risk feature change, `implement`, `fix`, `land`, `bug report`, `error`, `failing test`, `broken` with an already approved scope | `devflow-core` -> Cut -> Build | approved scope and proof | every artifact returns to Core |
 | `spec`, `spec doc`, `requirements doc`, `design doc` | `devflow-spec` after Core selection | approved Spec | confirmed Spec returns to Core |
 | `plan`, `implementation plan`, `task breakdown` | `devflow-plan` after `CUT_PASS` | approved Plan | confirmed Plan returns to Core |
 | `done`, `fixed`, `complete`, `ready`, `passed` | `devflow-prove` | fresh command, result, adversarial review, judgment | PASS enters Learn review |

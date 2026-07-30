@@ -20,24 +20,38 @@ function assertScenario(scenario) {
 
 const scenarios = [
   {
-    name: "problem investigation",
-    route: "Problem",
-    input: "Problem report: check what is wrong without fixing it.",
+    name: "creative-work clarification",
+    route: "Design",
+    input: "Add an order export feature and modify its delivery behavior.",
     evidence: [
-      ["AGENTS.md", "problem report"],
-      ["skills/devflow-core/SKILL.md", "Problem"],
-      ["skills/devflow-prove/SKILL.md", "Process"]
+      ["AGENTS.md", "any creative work"],
+      ["skills/devflow-core/SKILL.md", "Before any creative work"],
+      ["skills/devflow-core/references/core-methods.md", "Before any creative work"],
+      ["skills/devflow-brainstorm/SKILL.md", "You MUST use this before any creative work"],
+      ["skills/devflow-brainstorm/SKILL.md", "Confirmed request"],
+      ["commands/devflow.toml", "Before creative work"]
     ]
   },
   {
-    name: "requirement clarification",
+    name: "problem-directed creative change clarification",
     route: "Design",
-    input: "Requirement: add an order export feature.",
+    input: "The export delivery behavior is wrong; define the needed change.",
     evidence: [
-      ["AGENTS.md", "requirement"],
-      ["skills/devflow-core/SKILL.md", "devflow-brainstorm"],
-      ["skills/devflow-brainstorm/SKILL.md", "Confirmed request"],
-      ["skills/devflow-brainstorm/references/interview-discipline.md", "One-Question Discipline"]
+      ["AGENTS.md", "unapproved problem-directed change"],
+      ["skills/devflow-core/SKILL.md", "unapproved problem-directed change"],
+      ["skills/devflow-brainstorm/SKILL.md", "problem-directed change"],
+      ["commands/devflow.toml", "unapproved problem-directed change"]
+    ]
+  },
+  {
+    name: "investigation-only problem exception",
+    route: "Problem",
+    input: "Problem report: check what is wrong without fixing it.",
+    evidence: [
+      ["AGENTS.md", "investigation-only problem report"],
+      ["skills/devflow-core/SKILL.md", "investigation-only reports"],
+      ["skills/devflow-prove/SKILL.md", "Process"],
+      ["commands/devflow.toml", "investigation-only problem report"]
     ]
   },
   {
@@ -45,11 +59,12 @@ const scenarios = [
     route: "Build",
     input: "Implement the approved export change.",
     evidence: [
-      ["AGENTS.md", "implement"],
+      ["AGENTS.md", "approved scope"],
       ["skills/devflow-core/SKILL.md", "devflow-cut"],
       ["skills/devflow-cut/SKILL.md", "cut-methods.md"],
       ["skills/devflow-cut/references/cut-methods.md", "Minimal Solution Ladder"],
-      ["skills/devflow-build/SKILL.md", "build-methods.md"]
+      ["skills/devflow-build/SKILL.md", "build-methods.md"],
+      ["commands/devflow.toml", "already approved scope"]
     ]
   },
   {

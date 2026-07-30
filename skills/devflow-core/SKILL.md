@@ -1,6 +1,6 @@
 ---
 name: devflow-core
-description: "Use when starting development work, routing Problem, Fast, Design-lite, Design, Build, or Recovery work, investigating issues, handling requirements or bugs, or deciding which DevFlow skill owns the next lifecycle step."
+description: "Use when starting development work, routing Problem, Fast, Design-lite, Design, Build, or Recovery work, investigating issues, handling requirements or bugs, or deciding which DevFlow skill owns the next lifecycle step. Before any creative work — creating features, building components, adding functionality, modifying behavior, or defining an unapproved problem-directed change — select devflow-brainstorm for a Confirmed request; pure Q&A, lookup, verification, and investigation-only reports remain exceptions."
 ---
 
 # DevFlow Core

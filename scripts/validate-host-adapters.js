@@ -27,7 +27,8 @@ const hosts = [
     name: "Codex/shared fallback",
     file: "AGENTS.md",
     capabilities: {
-      route: ["problem report", "requirement", "implement"],
+      route: ["any creative work"],
+      brainstorm: ["Brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["When skills are unavailable"],
       proof: ["devflow-prove", "Judgment: PASS / FAIL / BLOCKED"]
@@ -38,6 +39,7 @@ const hosts = [
     file: "CLAUDE.md",
     capabilities: {
       route: ["AGENTS.md"],
+      brainstorm: ["creative work", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["selected lifecycle reference"],
       proof: ["devflow-prove"]
@@ -48,6 +50,7 @@ const hosts = [
     file: ".claude/commands/devflow-core.md",
     capabilities: {
       route: ["Route the request through Core"],
+      brainstorm: ["Before creative work", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["AGENTS.md"],
       proof: ["devflow-prove"]
@@ -58,6 +61,7 @@ const hosts = [
     file: "hooks/devflow-session-start.js",
     capabilities: {
       route: ["Problem, Fast, Design-lite, Design, Build, or Recovery"],
+      brainstorm: ["Creative work", "Brainstorm"],
       owner: ["devflow-core"],
       loadOrFallback: ["selected lifecycle reference"],
       proof: ["Prove evidence"]
@@ -68,6 +72,7 @@ const hosts = [
     file: ".github/copilot-instructions.md",
     capabilities: {
       route: ["AGENTS.md"],
+      brainstorm: ["creative work", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["no-skill fallback"],
       proof: ["Prove"]
@@ -78,6 +83,7 @@ const hosts = [
     file: ".github/instructions/devflow.instructions.md",
     capabilities: {
       route: ["AGENTS.md"],
+      brainstorm: ["creative work", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["host capability"],
       proof: ["Prove before completion"]
@@ -88,6 +94,7 @@ const hosts = [
     file: ".github/prompts/devflow.prompt.md",
     capabilities: {
       route: ["Problem, Fast, Design-lite, Design, Build, or Recovery"],
+      brainstorm: ["Before creative work", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["owner skill"],
       proof: ["devflow-prove"]
@@ -98,6 +105,7 @@ const hosts = [
     file: ".codebuddy/rules/devflow-core/RULE.mdc",
     capabilities: {
       route: ["AGENTS.md"],
+      brainstorm: ["creative work", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["Without skills"],
       proof: ["Prove before completion"]
@@ -142,5 +150,5 @@ assert(read(".claude/settings.json").includes("node hooks/devflow-session-start.
 
 console.log("Host Adapter Verification Report");
 console.log(`Adapters checked: ${hosts.length}`);
-console.log("Capabilities: route, owner, load-or-fallback, proof");
+console.log("Capabilities: route, brainstorm, owner, load-or-fallback, proof");
 console.log("Judgment: PASS");

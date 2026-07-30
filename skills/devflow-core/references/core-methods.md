@@ -52,7 +52,9 @@ Unknowns: <none or specific unknown>
 
 ## Method 2: Brainstorm Clarification
 
-For a new requirement, behavior change, architecture choice, or genuine ambiguity: read minimum facts, send a Semantic Echo-Back, resolve one real uncertainty at a time, and stop after this fixed artifact:
+Before any creative work — creating features, building components, adding functionality, modifying behavior, or defining an unapproved problem-directed change — select `devflow-brainstorm`. This applies even when the request appears clear or low risk. Pure Q&A, lookup, verification, investigation-only reports, and already approved changes remain outside this entry gate.
+
+Read minimum facts, send a Semantic Echo-Back, resolve one real uncertainty at a time, and stop after this fixed artifact:
 
 ```text
 Confirmed request:

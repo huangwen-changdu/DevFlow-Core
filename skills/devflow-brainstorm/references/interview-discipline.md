@@ -7,12 +7,11 @@ Use this reference only while `devflow-brainstorm` clarifies and explores a requ
 ```text
 User request
 -> read minimum relevant facts
--> select clarification depth (light / standard / deep)
--> Semantic Echo-Back
+-> Semantic Echo-Back (all fields, even when none)
 -> wait for confirm or correction
--> one theme at a time, always with a recommended answer
--> multi-angle exploration and problem-space recommendation (standard/deep)
--> tiered revision: major correction -> corrected echo-back; minor -> acknowledge
+-> one question at a time, each with a recommended answer
+-> mandatory multi-angle exploration and problem-space recommendation
+-> corrected echo-back when understanding changes
 -> fixed Confirmed request summary
 -> stop
 ```
@@ -21,13 +20,14 @@ User request
 
 ## Clarification Depth
 
-| Tier | Signals | Moves |
-|---|---|---|
-| `light` | Request nearly clear; narrow or no ambiguity; facts cover most fields. | Echo-Back -> confirm -> summary. |
-| `standard` | Normal requirement; several real gaps. | Echo-Back -> themed questions -> fitting multi-angle checks -> summary. |
-| `deep` | Vague goal, high stakes, multiple actors, conflicting constraints, or the user asks for ideas. | Echo-Back -> themed questions -> full multi-angle checklist -> directions with trade-offs + recommendation -> summary. |
+Depth governs **analysis breadth only**. It never skips the echo-back, the confirm gates, the question discipline, or the recommendation duty.
 
-Depth governs how thoroughly the request is explored, never which lifecycle step follows. Escalate when new facts raise complexity; de-escalate when gaps close early.
+| Tier | Entry condition | Moves |
+|---|---|---|
+| `deep` (default) | Every request, unless the user explicitly asks for a lighter pass. | Full multi-angle checklist with a per-angle report; directions with trade-offs; recommendation. |
+| `standard` | Only on explicit user request for a lighter pass. | Fitting angles instead of the full checklist; every other duty unchanged. |
+
+There is no fast lane. When the user asks for speed, compress wording, never gates.
 
 ## Semantic Echo-Back
 
@@ -46,15 +46,15 @@ Is this right? (correct me / confirm)
 Rules:
 
 - It is its own message and ends with the confirm-or-correct question.
-- Every field is required content; when a field has no content, write `none` inline and move on — do not pad empty fields into filler sentences.
+- Include all fields, even when a field is `none`.
 - If multiple interpretations are plausible, present the alternatives in the echo-back; do not choose one.
 - Facts from code, configuration, tests, or documentation are stated rather than asked.
 - Business intent and user-visible boundaries are confirmed rather than inferred.
-- If the user corrects the understanding, apply the tiered revision rule below.
+- If the user corrects the understanding, apply the Understanding Revision Rule below.
 
 ## Multi-Angle Checklist
 
-At `standard`, run the angles that fit the request. At `deep`, walk every angle and report what each found, including "nothing found here":
+Mandatory on every request (default `deep`). Walk every angle and report what each found, including "nothing found here" — an explicit negative finding is what makes the summary a reliable anti-hallucination basis:
 
 | Angle | Ask yourself |
 |---|---|
@@ -65,11 +65,11 @@ At `standard`, run the angles that fit the request. At `deep`, walk every angle 
 | Proportionality | Is the ask sized to the value? Over- or under-scoped? |
 | Hidden assumptions | What must be true for this request to make sense? Is any of it doubtful? |
 
-Findings feed the summary: gaps and risks go to `Identified gaps/risks`; direction thinking goes to `Directions considered` and `Recommended direction`.
+Findings feed the summary: gaps and risks go to `Identified gaps/risks`; direction thinking goes to `Directions considered` and `Recommended direction`. When every angle finds nothing, write `none` in those fields — do not invent findings.
 
 ## Problem-Space Recommendation
 
-Allowed and expected here:
+Expected on every request, not only when asked:
 
 - naming gaps, contradictions, risks, and missing stakeholders in the user's request;
 - offering directions the user has not considered, each with trade-offs;
@@ -86,20 +86,18 @@ Recommendations are disposable conversation material that helps the user decide 
 
 ## Understanding Revision Rule
 
-A **major correction** changes the goal, scope, exclusions, constraints, acceptance, terminology, actor, or a load-bearing assumption. It interrupts the current clarification chain:
+When a user correction changes the goal, scope, exclusions, constraints, acceptance, terminology, actor, or a load-bearing assumption, it interrupts the current clarification chain:
 
 1. stop the pending question;
 2. update facts, assumptions, and understanding gaps;
 3. send a complete corrected Semantic Echo-Back; and
 4. wait for confirmation before asking another question or producing `Confirmed request`.
 
-A **minor correction** changes none of those: acknowledge it in one line, fold it into the understanding, and continue.
-
-Either way, do not silently absorb a correction into a later question or the summary. An acknowledged minor correction is not by itself a confirmed request.
+A correction that changes none of those may receive a direct one-line acknowledgement, but it must not be treated as a confirmed request. Do not silently absorb a correction into a later question or the summary.
 
 ## One-Question Discipline
 
-Ask one theme at a time, only when a real gap remains. Resolve gaps in this order:
+Ask exactly one question at a time only when a real gap remains. Resolve gaps in this order:
 
 1. goal ambiguity;
 2. scope boundary;
@@ -108,12 +106,15 @@ Ask one theme at a time, only when a real gap remains. Resolve gaps in this orde
 5. acceptance;
 6. remaining open question.
 
-Rules:
+Use this shape for every question:
 
-- One theme per message; wait for the answer before the next theme. Tightly coupled sub-questions of the same theme may share one message when splitting them would force artificial back-and-forth.
-- Always attach a recommended answer and why it matters. Phrase them naturally inside the conversation; a rigid `Question / Recommended answer / Why now` block is available when precision needs it, not mandatory attire.
-- Do not ask for an answer that project facts establish. Do not ask a later-category question while an earlier category remains unclear.
-- Use the user's language; avoid unexplained technical terms.
+```text
+Question: <one question>
+Recommended answer: <answer and rationale>
+Why now: <risk or dependency this resolves>
+```
+
+Do not ask for an answer that project facts establish. Do not ask a later-category question while an earlier category remains unclear. Use the user's language; avoid unexplained technical terms.
 
 ## Ambiguity Signals
 
@@ -155,20 +156,20 @@ This summary is the factual basis downstream skills — starting with `devflow-s
 | Excuse | Reality |
 |---|---|
 | "A paraphrase is enough." | Surface assumptions and specific gaps. |
-| "Ask everything at once." | One theme per message, then wait. |
+| "Ask everything at once." | Ask one question, then wait. |
 | "The codebase answers user intent." | Code answers current facts, not desired behavior. |
 | "Clarification should pick the next skill." | The summary stops here; Core owns routing. |
 | "A design or document belongs in the summary." | Record the request and exploration findings only. |
-| "Templates must be filled verbatim." | Fields are required, filler is not; conversation beats form. |
-| "Recommending is spec's job." | Problem-space recommendation is this skill's duty; spec owns how-to-build. |
+| "The request looks simple, so the checklist can be skipped." | Simple-looking requests hide the most assumptions; report per-angle findings even when they are `none`. |
+| "The user wants speed, so skip a gate." | Compress wording, never gates. Speed comes from fewer real gaps, not skipped structure. |
 
 ## Verification
 
-- [ ] A clarification tier was selected and was not treated as lifecycle routing.
-- [ ] Semantic Echo-Back included facts, assumptions, and gaps where they exist, with `none` where they do not.
-- [ ] Questions were one theme at a time, fact-backed, and each carried a recommended answer.
-- [ ] Multi-angle exploration ran at `standard`/`deep` and its findings reached the summary.
+- [ ] Semantic Echo-Back included all fields, with `none` where a field had no content.
+- [ ] The echo-back was confirmed or corrected before further clarification.
+- [ ] Questions were one at a time, fact-backed, and each used the `Question / Recommended answer / Why now` shape.
+- [ ] The multi-angle checklist ran with per-angle findings, and those findings reached the summary.
 - [ ] Recommendations stayed inside the problem space.
-- [ ] Major corrections were re-echoed; minor corrections were acknowledged explicitly.
+- [ ] Changed understanding was re-echoed and confirmed before proceeding.
 - [ ] `Confirmed request` includes every fixed field.
 - [ ] The summary contains no design, route, handoff, documentation, recovery, or implementation instruction.
