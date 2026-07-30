@@ -50,7 +50,19 @@ Scope Check: what tempting but unrequested feature was removed?
 Diff Check: which user goal does each changed file serve?
 ```
 
-## Method 9: Intentional Simplification Ledger
+## Method 8A: Contextual Design Quality Check
+
+For changes that introduce or relocate code, alter module responsibilities, or add performance behavior, inspect the nearest comparable project code before selecting a shape. Record the decision without requiring a fixed layer, class count, interface, or cache:
+
+```text
+Convention Check: compared <nearby files/patterns>; followed <convention> / deviated because <current reason>; impact <none or specific>
+Responsibility Check: <type/module> owns <dominant responsibility>; split/merge/abstraction <not needed or reason tied to dependencies/lifecycle/change reason>
+Performance Check: workload/failure evidence <facts or none>; cache/optimization/concurrency <not needed or chosen>; benefit, ownership, invalidation, consistency <when chosen>
+Readability Check: local names/structure expose <intent, key rules, failure paths, side effects>; remaining trade-off <none or specific>
+```
+
+A simpler solution may replace a nearby pattern when it improves correctness, readability, maintainability, or measured performance without breaking an accepted contract. Do not add a structure merely to satisfy a principle name.
+
 
 When a safe, deliberate shortcut has a known ceiling, mark it near the choice:
 

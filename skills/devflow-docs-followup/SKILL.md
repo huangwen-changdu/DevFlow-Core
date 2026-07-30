@@ -1,17 +1,19 @@
 ---
 name: devflow-docs-followup
-description: "Use after a verified feature completion, when a user asks whether to record or create completion documentation, or when technical solution, frontend API handoff, or feature-flow troubleshooting documentation may be needed. Ask the current Codex user which documents to create; never create any until explicitly confirmed."
+description: "Use when the user explicitly asks to create or discuss completion documentation, or automatically only after a verified feature implementation with an actual source-behavior or interface-contract change. Do not automatically ask for documentation after validation-only, documentation-only, rule-only, skill-only, or no-diff PASS results. Ask the current Codex user which documents to create; never create any until explicitly confirmed."
 ---
 
 # DevFlow Docs Follow-Up
 
-Ask the current Codex user whether the verified feature needs follow-up documentation. Do not create any document until the user explicitly confirms it.
+Ask the current Codex user whether a verified feature implementation needs follow-up documentation. Do not create any document until the user explicitly confirms it.
 
 ## Entry Gate
 
-1. Confirm the feature has current completion evidence, such as a `devflow-prove` `PASS` result or user-provided equivalent proof.
-2. If completion evidence is absent, stop and return to the appropriate proof route. Do not ask about documentation for an unverified feature.
-3. Address the current Codex user, not the feature's eventual end user.
+1. For a direct user request to create or discuss completion documentation, proceed with the requested documentation flow; a feature implementation diff is not required.
+2. For an automatic completion handoff, confirm both current `devflow-prove` `PASS` evidence and task evidence of an actual feature implementation that changes source behavior or an interface contract. Inspect the task diff, touched files, or equivalent user-provided baseline.
+3. Do not automatically ask about documentation for validation-only, documentation-only, rule-only, skill-only, or no-diff `PASS` results. Stop without an inquiry.
+4. If completion evidence is absent, stop and return to the appropriate proof route. Do not ask about documentation for an unverified feature.
+5. Address the current Codex user, not the feature's eventual end user.
 
 ## Inquiry
 
@@ -123,7 +125,7 @@ Documentation follow-up:
 Before leaving this skill, confirm:
 
 - [ ] Completion evidence exists.
-- [ ] The current Codex user received the four-option inquiry.
+- [ ] The current Codex user received the four-option inquiry only after the automatic gate passed or for a direct documentation request.
 - [ ] Every created document had explicit user approval.
 - [ ] Every document statement is supported by current evidence.
 - [ ] Unselected documents were not created.

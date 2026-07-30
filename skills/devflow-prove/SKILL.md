@@ -24,7 +24,7 @@ Load `skills/devflow-prove/references/proof-recovery-methods.md` before selectin
 2. Run the narrowest sufficient check now.
 3. Run adversarial review (对抗式审查) before completion for development work: try to disprove the result from the user's acceptance criteria, touched files, likely regressions, missing activation path, and skipped proof.
 4. Read the real output and exit status.
-5. For code changes: run the **Code Quality Review** (General Engineering Review + Language-Specific Checklist from `code-review-checklist.md`), then generate a **Code Review Report** (see format below). If the report finds issues, **STOP** — present the report and wait for user confirmation before fixing. Do not silently fix and claim PASS.
+5. For code changes: run the **Code Quality Review** (General Engineering Review + Language-Specific Checklist from `code-review-checklist.md`), then generate a **Code Review Report** (see format below). Classify findings as blockers, approved-contract gaps, or recommendations. A blocker or contract gap returns `FAIL` facts to Core; recommendations do not block an otherwise proven result.
 6. If it fails, report `FAIL` and return to Recovery; use `devflow-pua` when the failure includes user challenge, repeated miss, or changed-wrong behavior.
 7. If it cannot run, report `BLOCKED` and name the missing condition.
 8. On `PASS`, load `devflow-learn` for its mandatory proactive completion review before final completion reporting. The review may yield a learning card, a project-knowledge candidate pending user confirmation, or no useful record.
@@ -35,8 +35,8 @@ Load `skills/devflow-prove/references/proof-recovery-methods.md` before selectin
 | Work type | Proof |
 |---|---|
 | Docs/rules/skills | File presence, frontmatter, required wording, command entries, path consistency, scenario checklist. |
-| Code | Targeted test, build, lint, typecheck, or runtime scenario. **Plus: comment verification — check that new/changed functions have comments explaining WHY, non-obvious logic has inline comments, and comment style matches the project.** **Plus: language-specific code quality review — detect language from file extensions, apply the matching checklist in `skills/devflow-prove/references/code-review-checklist.md`, and flag any item that would fail a senior developer's review.** |
-| Bug fix | Original symptom reproduction or regression check. **Plus: the fix location has a comment explaining what was broken and what the fix does.** |
+| Code | Targeted test, build, lint, typecheck, or runtime scenario. **Plus: comment verification — check requirements recorded by the Spec/Plan or local convention, and any non-obvious decision, business, security, or compatibility boundary.** **Plus: language-specific code quality review — detect language from file extensions, apply the matching checklist in `skills/devflow-prove/references/code-review-checklist.md`, and classify findings using its applicability and risk rules.** |
+| Bug fix | Original symptom reproduction or regression check. **Plus: verify any documented fix rationale and any non-obvious failure condition that needs preservation.** |
 | Framework design | Native capability coverage, anti-pattern gates, skill behavior, and output contracts. |
 | Productized skill pack | `npm test` or equivalent package validation. |
 
@@ -51,8 +51,8 @@ Adversarial review checklist for code changes:
 - **Activation path**: Is the new code actually reachable? Can the user/trigger reach it?
 - **Scope creep**: Does the diff include unrequested behavior or drive-by refactors?
 - **Proof coverage**: Is the verification narrow enough to be meaningful, or is it a rubber-stamp?
-- **Code comments**: Do new/changed functions have comments explaining WHY? Is non-obvious logic documented? Is the fix location commented for bug fixes? If comments are missing, the implementation is incomplete — report `FAIL` or add comments before claiming `PASS`.
-- **Code Quality**: Two-layer review. The adversarial review items above (Correctness, Regression, Activation path, Scope creep) already cover functional correctness. Then run the **General Engineering Review** from `skills/devflow-prove/references/code-review-checklist.md` for the remaining dimensions: requirements understanding, code quality (readability, maintainability, testability), performance, security, error handling. Finally, detect language(s) from file extensions and apply the matching **Language-Specific Checklist**. **Generate a Code Review Report (see format below) listing all findings. If issues are found, STOP — present the report and wait for user confirmation before fixing. Do not silently fix and claim PASS.**
+- **Code comments**: Are all Spec/Plan/local-convention requirements present? Are non-obvious decisions, business rules, security, or compatibility boundaries documented where needed? A missing triggered comment is an approved-contract gap; absence of untriggered narration is not.
+- **Code Quality**: Two-layer review. The adversarial review items above (Correctness, Regression, Activation path, Scope creep) already cover functional correctness. Then run the **General Engineering Review** from `skills/devflow-prove/references/code-review-checklist.md` for the remaining dimensions: requirements understanding, code quality (readability, maintainability, testability), performance, security, error handling. Finally, detect language(s) from file extensions and apply the matching **Language-Specific Checklist**. **Generate a Code Review Report (see format below) classifying blockers, contract gaps, and recommendations; only the first two block PASS.**
 
 After agent rule, command, prompt, entry, or `SKILL.md` changes, run a Skill Activation Chain Check before completion:
 
@@ -86,7 +86,7 @@ Not covered: <none or explicit gap>
 
 ## Code Review Report
 
-For code changes, after running the Code Quality Review (General Engineering Review + Language-Specific Checklist), generate this report before claiming PASS or FAIL. If issues are found, **STOP** — present the report and wait for user confirmation before fixing.
+For code changes, after running the Code Quality Review (General Engineering Review + Language-Specific Checklist), generate this report before claiming PASS or FAIL. A blocker or approved-contract gap returns `FAIL` facts to Core; recommendations remain visible but do not independently prevent PASS.
 
 ```text
 Code Review Report:
@@ -101,18 +101,18 @@ Code Review Report:
 ─ Language-Specific (<detected language>):
   [PASS/FAIL] <checklist item> — <note if FAIL, omit if PASS>
   ...
-─ Issues found: <count>
-  1. [Critical/Warning] <file>:<line> — <problem> → <suggested fix>
-  2. [Critical/Warning] <file>:<line> — <problem> → <suggested fix>
-  ...
-─ Judgment: PASS (no issues) / FAIL (fix required, awaiting user confirmation)
+─ Blockers / contract gaps: <count>
+  1. [Blocker/Contract gap] <file>:<line> — <problem> → <suggested fix>
+─ Recommendations: <count>
+  1. [Recommendation] <file>:<line> — <contextual improvement> → <suggested option>
+─ Judgment: PASS (no blockers or contract gaps) / FAIL (blocker or contract gap)
 ```
 
 Rules:
 - List every FAIL item with file, line, problem, and suggested fix.
 - Severity: `Critical` = must fix before PASS (security, correctness, data loss). `Warning` = should fix (readability, convention, minor pattern).
 - If all items PASS, the report is still generated (shows all green) — this is evidence, not theater.
-- **STOP gate**: when issues are found, do not fix immediately. Present the report, let the user decide which issues to fix, then fix and re-verify.
+- **STOP gate**: when a blocker or approved-contract gap is found, do not claim `PASS`; return the facts to Core for the next lifecycle decision. Recommendations remain visible in the report but do not independently stop an otherwise proven result.
 
 ## Learning Check
 
@@ -188,8 +188,8 @@ Recovery requires re-reading facts, listing 3 hypotheses, and trying a materiall
 | "A partial check is enough." | Partial proof must be labeled partial. |
 | "The tool said success." | Tool claims are data. Verify the actual artifact/output. |
 | "I am confident." | Confidence is not evidence. |
-| "Comments are optional, the code works." | Code without comments is incomplete implementation. The spec/plan defined what needs comments — verify they exist. |
-| "The code is self-explanatory." | If the spec or plan required comments, they are not optional. If the logic is non-obvious, it needs a comment regardless of spec. |
+| "Comments are optional, the code works." | Comments required by the Spec, Plan, project convention, or a non-obvious boundary are implementation requirements; verify them. |
+| "The code is self-explanatory." | Clear code can avoid redundant narration, but it cannot waive an approved documentation requirement or an important non-obvious reason. |
 
 ## Red Flags — STOP
 
@@ -199,8 +199,7 @@ Recovery requires re-reading facts, listing 3 hypotheses, and trying a materiall
 - Reusing old output as proof
 - Expressing satisfaction before verification runs
 - Skipping the Skill Activation Chain Check after rule/skill/command changes
-- Claiming PASS when new/changed functions have no comments and the spec/plan required them
-- Claiming PASS when non-obvious logic has no inline comments
+- Claiming PASS when an approved documentation requirement or an important non-obvious boundary is unaddressed
 
 **All of these mean: run the command, read the output, then claim.**
 

@@ -36,13 +36,13 @@ Load `skills/devflow-prove/references/proof-recovery-methods.md` before applying
 5. **Route flavor/method**: choose the starting or switched flavor from the pressure signal and failure pattern.
 6. **Display method**: output one compact visible line: `METHOD: {flavor} / {method}`. If the method changed, add one `SWITCH:` line.
 7. **Diagnose the user-view miss**: classify why the user would still feel unsatisfied before proposing another patch.
-8. **Request re-confirmation facts**: when the repeated same-target trigger applies, do not continue editing; return the need for fresh request confirmation to `devflow-core`, which alone may select `devflow-brainstorm`.
+8. **Request re-confirmation facts**: when the repeated same-target trigger applies, do not continue editing; include the need for fresh request confirmation in the recovery facts.
 9. **Ask what is wrong and what result is wanted**: ask the smallest concrete set when the answer is not already explicit.
 10. **Restate the goal**: say what you now believe the user wants and what result they should see.
 11. **List 3 hypotheses**: include at least one hypothesis that the previous approach was solving the wrong problem.
 12. **Switch method if needed**: if the last guiding method still missed, mark it failed, choose a different or opposite method lens, and restart checks from facts before editing again.
 13. **Change approach**: name the old approach being abandoned and the materially different path now chosen.
-14. **Return to Core routing**: return recovery facts, including any request re-confirmation need, to `devflow-core`; only Core selects `devflow-brainstorm`, Cut, Plan, Build, Prove, Recovery, or no further lifecycle work.
+14. **Prepare the handoff**: include the recovery facts, including any request re-confirmation need, in the required output.
 15. **Close learning**: if the miss is reusable, load `devflow-learn` before claiming completion.
 
 ## Guiding Principles
@@ -170,7 +170,7 @@ Next skill: devflow-core
 Reason: Brainstorm re-confirmed the request or recovery facts require Core lifecycle routing
 ```
 
-`devflow-pua` never selects Cut, Plan, Build, Prove, or another lifecycle skill.
+This is PUA's sole handoff: return recovery facts to `devflow-core`, which alone selects any later lifecycle work.
 
 ## Verification
 

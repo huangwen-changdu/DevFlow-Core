@@ -19,7 +19,22 @@ Verification:
 
 Split multi-step work into one to five testable slices. Each slice names files, user-visible or contract behavior, verification, and comment requirements. Verify a slice before moving on whenever a focused check exists.
 
+## Readability Outcome Check
+
+Before handoff, review changed code from the perspective of a maintainer familiar with the project but not this change. Use names, structure, extraction, comments, and tests as appropriate; do not apply any technique mechanically.
+
+```text
+Readability Check:
+- Intent: each changed unit has a business-purpose name or locally clear role
+- Rules: important conditions use domain terms or small named predicates
+- Failure paths: invalid, exceptional, and boundary behavior is locally visible
+- Side effects: authorization, persistence, cache changes, remote calls, and response mapping are not hidden in an opaque block
+- Convention: naming, layering, errors, logging, cache, and tests follow the nearest comparable project code, or the deviation is recorded
+- Trade-off: <none or concise reason why this is the clearest safe option>
+```
+
+A function may contain several steps when they form one coherent business narrative. Extract or split only when doing so makes responsibility, testing, reuse, or local understanding materially better.
+
 ## Build Comments
 
-New or materially changed Node functions need comments that explain the protected contract and failure condition. Inline comments explain non-obvious reasons, not syntax. Markdown runtime contracts use headings and fixed output shapes rather than narrative comments.
-
+The approved Spec/Plan and local project convention define required code comments. Add a comment when it records a protected contract, failure condition, business rule, compatibility boundary, or other non-obvious reason; inline comments explain reasons, not syntax. Markdown runtime contracts use headings and fixed output shapes rather than narrative comments.

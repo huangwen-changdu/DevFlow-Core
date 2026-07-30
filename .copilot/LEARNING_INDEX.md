@@ -5,6 +5,7 @@ Read this index first. Only read a card when its trigger and scope match the cur
 | Card | Trigger | Scope | Confidence |
 |---|---|---|---:|
 | [DevFlow Runtime References](cards/devflow-runtime-references.md) | DevFlow-Core structure, skill framework layout, docs vs references, runtime method source, generated plan docs, Codex onboarding, install file map, target runtime files, user-level runtime files, project-knowledge skill, published skill manifest, script execution model, hooks, global config vs project runtime, project-only AGENTS and CLAUDE | project | 0.8 |
+| [Constraint Rule Calibration](cards/constraint-rule-calibration.md) | hard rule, absolute prohibition, Do not, Never, Always, mandatory comment, code-review gate, duplicated lifecycle boundary, rule calibration | project | 0.4 |
 | [Skill Description Trigger Surface](cards/skill-description-trigger-surface.md) | skill description, SKILL.md frontmatter, trigger wording, brand text in description, DevFlow-Core in description | project | 0.5 |
 | [Skill Sync After Update](cards/skill-sync-after-update.md) | skills updated, commands updated, runtime scripts updated, SKILL.md changed, update complete, sync latest skills, user-level skills directories, .claude skills, .codebuddy skills, .codex skills, .workbuddy skills | project | 0.5 |
 | [Global AGENTS Sync Preservation](cards/global-agents-sync-preservation.md) | sync AGENTS, user-level AGENTS, .codex AGENTS, restore global blocks, CodeGraph, Graphify | project | 0.5 |

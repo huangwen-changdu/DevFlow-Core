@@ -251,6 +251,8 @@ Expected behavior:
 - Skill path: explicit user request -> `devflow-find-fault`.
 - Must run only because the user explicitly requested it; it may inspect materials from any task stage.
 - Must answer biggest omission, unrecognized blind spot, and least certain point, plus every explicit user follow-up question.
+- When target material contains implemented work, a diff, or a completion-ready result, must also run the post-implementation unease check: find materially unconfirmed business decisions, show the encoded assumption and alternatives, then classify high/medium/low risk with rationale, a user confirmation question, and temporary recommendation.
+- High-risk unease decisions must prevent a claim that the feature fully meets requirements; medium-risk decisions must be marked `pending confirmation`.
 - Each answer must separate facts, inference, and unknowns, then state confidence and a next step; findings must use `Critical`, `Important`, or `Observation` with evidence and context limitations.
 - Must not read, require, modify, or hand off to `devflow-prove`, PUA, Build, Learn, or any completion state.
 - Must not edit code, create a task, invoke another skill, or declare global task status.
@@ -261,6 +263,8 @@ Pass check:
 Find-fault target: ...
 Questions and answers: biggest omission / unrecognized blind spot / least certain point / user questions
 Facts / inference / unknowns / confidence / next step
+Unease check: run / not applicable — <why>
+Decision: current implementation / assumption / alternative interpretations / risk / evidence / confirmation needed / temporary recommendation
 Findings: Critical / Important / Observation
 Context limitations: ...
 Suggested next action: manual only
@@ -358,6 +362,33 @@ Implementation Slices:
 - Slice 2: files / change / per-slice verification
 Command: ...
 Result: ...
+Judgment: PASS / FAIL / BLOCKED
+```
+
+## Scenario 5B: Contextual Engineering Quality
+
+Input:
+
+```text
+Implement an approved order-history change. Match project conventions, keep the code readable, and add caching only if it is justified.
+```
+
+Expected behavior:
+
+- Route: Build through Cut and Prove.
+- Cut compares nearest order-history patterns and records convention, responsibility, performance, and readability checks.
+- It must not require a Service split, interface, cache, or fixed function length without current evidence.
+- Build makes business intent, key rules, failure paths, and side effects locally understandable, then records a Readability Check.
+- Prove reviews project-convention alignment, local understandability, responsibility boundaries, and any cache benefit/invalidation/consistency claim.
+
+Pass check:
+
+```text
+Convention Check: compared ...
+Responsibility Check: ...
+Performance Check: workload/failure evidence ...; cache/optimization/concurrency ...
+Readability Check: intent / rules / failure paths / side effects / convention / trade-off
+Code Review Report: ...
 Judgment: PASS / FAIL / BLOCKED
 ```
 

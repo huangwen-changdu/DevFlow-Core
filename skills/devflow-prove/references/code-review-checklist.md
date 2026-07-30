@@ -8,13 +8,15 @@ Two-layer review: general engineering dimensions (all languages) + language-spec
 2. Detect the language(s) from changed file extensions.
 3. Apply the matching **Language-Specific Checklist** below.
 4. For full-stack changes, apply all relevant language checklists.
-5. If any item fails, the code would not pass a senior developer's review — report `FAIL` or fix before `PASS`.
+5. Classify each item with evidence: an unmet approved requirement, active security/data/authorization risk, correctness regression, or demonstrated operational failure is a blocker; an applicable project convention is a contract gap; all other language and design guidance is a recommendation. Only blockers and contract gaps prevent `PASS`.
 
 > **Note**: Functional correctness, regression, activation path, scope creep, and proof coverage are already covered by the adversarial review checklist in `SKILL.md`. The General Engineering Review below covers the remaining dimensions that the adversarial review does not.
 
+> **Applicability**: Treat the following design, framework, and language items as context checks, not universal prescriptions. Apply one when the approved scope, existing project convention, measured workload, public contract, or concrete failure mode makes it relevant. Security, authorization, data protection, injection prevention, resource safety, and an explicit project rule remain hard checks.
+
 ## General Engineering Review
 
-Applies to all code changes. Each item is a hard gate — failing any one means the code is not production-ready.
+Applies to all code changes. Review the items proportionately to the changed behavior and classify them with the rules above; do not fail a small change merely because it omits a speculative abstraction or style preference.
 
 ### 1. Requirements Understanding
 
@@ -26,32 +28,30 @@ Applies to all code changes. Each item is a hard gate — failing any one means 
 
 #### 2.1 Readability
 
-- [ ] Naming is clear and intent-revealing (functions, variables, classes).
-- [ ] Functions have single responsibility.
-- [ ] Code is self-explanatory; comments explain WHY, not WHAT.
-- [ ] Cyclomatic complexity is reasonable (< 10 per function).
+- [ ] A maintainer can identify business intent, key rules, failure paths, and side effects from local names and structure.
+- [ ] Types and functions have one dominant, coherent responsibility; boundaries are changed only when dependencies, lifecycle, or change reasons justify it.
+- [ ] Important conditions use domain language; code avoids unexplained flags, magic values, and opaque control flow where a clearer local expression is warranted.
+- [ ] Comments explain WHY, not WHAT; names and structure carry ordinary explanation.
 
 #### 2.2 Maintainability
 
-- [ ] Dependency injection used where appropriate.
-- [ ] Configuration is externalized; no hardcoded values that belong in config.
-- [ ] Duplicate code has been extracted into shared functions.
-- [ ] Extension points follow open-closed principle where applicable.
+- [ ] The nearest applicable project convention for naming, layering, errors, logging, caching, and tests is followed, or a deliberate deviation has reason, impact, and proof.
+- [ ] Dependencies, configuration, and extension points are introduced only when current scope or evidence makes them useful.
+- [ ] Meaningful duplication is consolidated only when shared code improves local understanding, correctness, or a demonstrated reuse need.
+- [ ] New abstraction preserves a current boundary, replacement need, test need, or multiple real implementations; it is not added only to satisfy a design principle.
 
 #### 2.3 Testability
 
-- [ ] Dependencies are mockable (interfaces, DI, pure functions).
-- [ ] Side effects are controlled and isolated.
-- [ ] Tests cover main paths and edge cases.
-- [ ] Boundary conditions have dedicated tests.
+- [ ] State and side effects have an appropriate test seam for the changed behavior; use interfaces, dependency injection, pure functions, or existing project mechanisms only when they improve that seam.
+- [ ] Side effects are controlled and isolated where the current risk or project convention requires it.
+- [ ] Tests cover changed main paths, edge cases, and boundary conditions proportionately to risk.
 
 ### 3. Performance
 
-- [ ] Time complexity is reasonable for expected data volume.
-- [ ] Space complexity is reasonable.
-- [ ] No N+1 query problems.
-- [ ] Caching strategy is appropriate (not over-cached, not missing where needed).
-- [ ] Async/parallel processing used where beneficial.
+- [ ] Time and space complexity fit the expected data volume or measured workload.
+- [ ] No N+1 query problems or repeated expensive work on an identified hot path.
+- [ ] Caching, optimization, and concurrency are assessed when workload or a concrete failure mode makes them relevant; any chosen cache has measurable benefit, ownership, invalidation, and consistency behavior.
+- [ ] Performance techniques are not added speculatively where the simpler path is sufficient.
 
 ### 4. Security
 

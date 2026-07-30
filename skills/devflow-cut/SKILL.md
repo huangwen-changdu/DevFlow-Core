@@ -16,7 +16,6 @@ Receives a `devflow-core`-selected, approved design or confirmed Spec. Cut decid
 Before applying the Minimal Solution Ladder or Required Gates, load `skills/devflow-cut/references/cut-methods.md`. That reference owns the detailed reuse, root-cause, native, overbuild, and debt rules.
 
 - `CUT_PASS` produces a Cut Decision and returns it to `devflow-core`.
-- Core alone decides whether the Cut Decision needs `devflow-plan`, `devflow-build`, `devflow-prove`, or no further lifecycle work.
 - A user-approved Plan Pack receives only a lightweight Cut-consistency review. If it adds scope, dependencies, abstractions, or file responsibilities outside the Cut Decision, return the affected-gate facts to Core before any further lifecycle choice.
 
 ## Cut Intensity
@@ -166,7 +165,7 @@ CUT_REUSE: existing capability can be reused; do not write new implementation
 CUT_BLOCKED: missing facts or risk too high; return the blocking facts to `devflow-core`
 ```
 
-When `CUT_REDUCE` or `CUT_REUSE` occurs, **STOP — present the reduction or reuse finding to the user**. Explain what was cut, what existing capability replaces it, and why the smaller option is sufficient. After confirmation, return the confirmed result to `devflow-core`; only Core selects any further lifecycle work.
+When `CUT_REDUCE` or `CUT_REUSE` occurs, **STOP — present the reduction or reuse finding to the user**. Explain what was cut, what existing capability replaces it, and why the smaller option is sufficient. After confirmation, return the confirmed result to `devflow-core`.
 
 When `CUT_BLOCKED` occurs, return the blocking facts to `devflow-core`. Core decides whether it must restart `devflow-brainstorm` to re-explore the goal and constraints.
 
@@ -194,9 +193,7 @@ When `CUT_BLOCKED` occurs, return the blocking facts to `devflow-core`. Core dec
 
 ## Handoff
 
-After `CUT_PASS`, record a Cut Decision containing the allowed scope, reuse conclusion, exclusions, required verification, and the `External Skills` declaration, then return it to `devflow-core`.
-
-Core alone selects whether the result needs `devflow-plan`, `devflow-build`, `devflow-prove`, or no further lifecycle work. Do not hand a `CUT_REDUCE` or `CUT_REUSE` result forward until the user confirms it. Do not let a Plan Pack broaden the Cut Decision without returning the affected-gate facts to Core.
+After `CUT_PASS`, record a Cut Decision containing the allowed scope, reuse conclusion, exclusions, required verification, and the `External Skills` declaration. This is Cut's sole handoff: return the result to `devflow-core`, which alone selects later lifecycle work. `CUT_REDUCE` and `CUT_REUSE` remain stopped until user confirmation; a Plan Pack that broadens scope returns affected-gate facts here before any later selection.
 
 ## Verification
 

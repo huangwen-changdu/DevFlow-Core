@@ -39,12 +39,12 @@ Do not force a spec for Design-lite work where a short design contract and quick
 
    In `Approach`, record the compared options, trade-offs, chosen design, boundaries, and why rejected options do not meet the current request. Section content should be written in the user's language, but section headers must remain in English so `scripts/devflow-spec.js` can validate them.
 
-   The **Code Documentation** section specifies what code comments are required for this feature:
-   - Which modules/files need file-level comments (what the file does, key exports)
-   - Which functions/classes need function-level comments (params, return value, purpose, side effects)
-   - Which non-obvious logic needs inline comments (explain WHY, not WHAT)
-   - Reference to existing project comment conventions if any
-   - For trivial changes (one-line fix, config tweak), state "none — trivial change" explicitly
+   The **Code Documentation** section records the documentation requirements this feature actually creates:
+   - Which modules/files or public interfaces need an explanation, and why
+   - Which functions/classes need a comment because their contract, failure behavior, or decision is not evident from code
+   - Which non-obvious, business, security, or compatibility boundaries need inline WHY comments
+   - Reference to existing project comment conventions when they apply
+   - For trivial changes or self-explanatory code with no triggered requirement, state "none — trivial change" explicitly
 5. Run the design/spec self-review:
    - Unresolved-marker scan: no draft markers, unresolved question marks, or unresolved angle values.
    - Consistency: requirements, chosen approach, impact, acceptance, and verification do not contradict.
@@ -73,9 +73,9 @@ Next: confirmed Spec -> `devflow-core` selects any needed Cut, Plan, Build, Prov
 | "The user approved the spec, so hand off directly to Cut." | Approval returns the confirmed Spec to Core; only Core chooses the next lifecycle skill. |
 | "This belongs in docs/features." | `docs/features/` is product ledger memory, not a generated implementation spec. |
 | "The user said implement, so skip approval." | Implementation requests still need the lightest useful design/spec source before Build. |
-| "Code Documentation is unnecessary, the code is self-explanatory." | Code tells you WHAT it does. Comments tell you WHY it does it. Future developers (and LLMs) need the WHY. |
-| "Comments will get stale." | Stale comments are a maintenance issue, not a reason to skip documentation. Undocumented code is worse than stale comments. |
-| "I'll add comments later." | Later never comes. Comments are part of the implementation, not an afterthought. |
+| "Code Documentation is unnecessary, the code is self-explanatory." | Record the actual decision: `none — trivial change` is valid only when no project convention, public boundary, or non-obvious WHY needs preservation. |
+| "Comments will get stale." | Keep required documentation accurate; stale wording is not a reason to omit a needed contract or decision record. |
+| "I'll add comments later." | Name required documentation in the Spec so Plan and Build can verify it with the implementation. |
 
 ## Verification
 
@@ -86,7 +86,7 @@ Before leaving this skill, confirm:
 - [ ] Required sections exist, including Code Documentation.
 - [ ] Spec landed under the current project's `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` path or a documented target-project specs path.
 - [ ] Unresolved-marker, consistency, scope, and design checks ran.
-- [ ] Code Documentation section specifies what needs comments (or explicitly states "none — trivial change").
+- [ ] Code Documentation section names triggered documentation requirements and locations (or explicitly states "none — trivial change").
 - [ ] `scripts/devflow-spec.js` ran when available.
 - [ ] User reviewed and approved the design contract and written spec.
 - [ ] The confirmed Spec was returned to `devflow-core`; Spec did not select or hand off to Cut, Plan, Build, Prove, or Recovery.

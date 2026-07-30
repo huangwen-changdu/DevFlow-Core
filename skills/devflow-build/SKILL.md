@@ -76,7 +76,7 @@ Steps:
 - [ ] <one verification action with trigger/input, expected result, and command or manual scenario>
 Acceptance: <specific condition>
 Verify: <exact command or manual scenario, trigger/input, and expected result>
-Comments: <what code comments are required — which functions need function-level comments, which non-obvious logic needs inline comments explaining WHY; or "none — trivial change">
+Comments: <locations and reasons required by Code Documentation, project convention, or non-obvious boundaries; or "none — trivial change">
 Not doing: <scope removed>
 ```
 
@@ -135,9 +135,8 @@ Comments are part of the implementation, not an afterthought. The spec's Code Do
 
 | Code element | When | What to write |
 |---|---|---|
-| New file | Always | File-level comment: what this file does, key exports, why it exists |
-| New function/method | Always | Function comment: purpose, params, return value, side effects, exceptions |
-| Changed function (logic change) | When logic changes | Update existing comment or add one; explain what changed and why |
+| New file or function | When the approved Spec/Plan, project convention, public contract, or a non-obvious decision requires explanation | Explain the decision, protected contract, failure condition, or purpose that code alone does not make clear |
+| Changed function (logic change) | When it changes an existing documented contract or introduces a non-obvious reason | Update the relevant explanation or add a concise WHY comment |
 | Non-obvious logic | When the WHY is not clear from the code | Inline comment: explain the reasoning, not the mechanics |
 | Business rule in code | When code encodes a domain rule | Inline comment: which business rule, who defined it, link to spec if possible |
 | Workaround/fix | When fixing a bug or working around a limitation | Inline comment: what was broken, what the fix does, link to issue if possible |
@@ -147,9 +146,9 @@ Comments are part of the implementation, not an afterthought. The spec's Code Do
 
 - **Explain WHY, not WHAT.** `// increment counter` is noise. `// retry counter: stop after 3 to avoid locking the account` is useful.
 - **Match the project's existing comment style and language.** If the project uses JSDoc, use JSDoc. If comments are in Chinese, write in Chinese.
-- **Comments must survive code reading.** A developer or LLM reading the code 6 months later should understand the decision from the comment alone.
+- **Make required comments durable.** A developer or LLM reading the code later should understand the documented decision and boundary without reconstructing it from history.
 - **Do not comment obvious code.** `let x = 1` does not need a comment. But `let x = 1 // start from 1, not 0, because the API is 1-indexed` is useful if the 1-indexing is non-obvious.
-- **Update comments when you change the code they describe.** Stale comments are worse than no comments — but missing comments are worse than stale ones.
+- **Update comments when you change the code they describe.** Remove or correct stale comments; do not preserve incorrect explanations merely because a comment once existed.
 
 ### Comment output check
 
@@ -157,16 +156,14 @@ After implementation, before Diff Self-Check, verify:
 
 ```text
 Comment Check:
-- New files: <list, or none>
-  - File-level comment: <yes/no>
-- New/changed functions: <list, or none>
-  - Function comment: <yes/no per function>
-- Non-obvious logic: <list, or none>
-  - Inline comment: <yes/no per location>
+- Required by Spec/Plan/project convention: <locations and reason, or none>
+  - Required comment present: <yes/no per location>
+- Non-obvious decisions or boundaries: <locations and reason, or none>
+  - Inline comment present: <yes/no per location>
 - Comment style: matches project / N/A
 ```
 
-If any required comment is missing, add it before proceeding to Diff Self-Check.
+If a specified or triggered comment is missing, add it before proceeding to Diff Self-Check.
 
 ## Testing Rule
 
@@ -199,10 +196,10 @@ If any file has no goal link, remove that change.
 | "The issue only mentions one caller." | Check sibling callers before choosing the fix location. |
 | "The plan is approved, so I just execute." | Plan Review comes first: stale anchors or unclear steps return `BUILD_BLOCKED` to Core. |
 | "I'll infer the missing step." | Guessing past a gap is forbidden; unclear instructions return `BUILD_BLOCKED` facts. |
-| "The code is self-explanatory." | Code tells you WHAT it does. Comments tell you WHY. Future developers and LLMs need the WHY. |
-| "Comments will get stale." | Stale comments are a maintenance issue. Missing comments are worse. Write them now, update them when code changes. |
-| "I'll add comments after it works." | Comments are part of the implementation. If the code works but has no comments, the implementation is incomplete. |
-| "The function name is clear enough." | Names describe WHAT. Comments capture WHY — the decision, the constraint, the business rule. |
+| "The code is self-explanatory." | That does not waive a comment required by the approved contract, project convention, or a non-obvious boundary. |
+| "Comments will get stale." | Keep a required comment accurate or remove a stale one; a stale explanation is not a reason to skip a needed decision record. |
+| "I'll add comments after it works." | Add required comments in the same slice so implementation and its stated constraints stay aligned. |
+| "The function name is clear enough." | A clear name can make extra narration unnecessary, but it cannot replace a required WHY, business rule, or compatibility constraint. |
 
 ## Stop Protocol
 
@@ -234,6 +231,6 @@ Before leaving this skill, confirm:
 - [ ] Build contract exists.
 - [ ] Cut gates passed or were run.
 - [ ] Slices exist when work is multi-step.
-- [ ] Code Comment Discipline check is complete — required comments exist for new files, new/changed functions, and non-obvious logic.
+- [ ] Code Comment Discipline check is complete — every Spec/Plan/project-convention or non-obvious-boundary comment requirement is satisfied.
 - [ ] Diff self-check is complete.
 - [ ] Proof command/scenario is ready for `devflow-prove`.

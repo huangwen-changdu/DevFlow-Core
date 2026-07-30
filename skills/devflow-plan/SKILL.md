@@ -67,7 +67,7 @@ Steps:
 - [ ] <one verification action with trigger/input, expected result, and command or manual scenario>
 Acceptance: <specific observable condition>
 Verify: <exact command or manual scenario, trigger/input, and expected result>
-Comments: <required function/inline comments, or "none — trivial change">
+Comments: <locations and reasons required by Code Documentation, project convention, or non-obvious boundaries; or "none — trivial change">
 Not doing: <scope excluded>
 ```
 
@@ -98,7 +98,7 @@ Before leaving this skill, confirm:
 - [ ] `External Skills` is inherited from the Cut Decision; declared skills' quality checks are merged into task `Acceptance`/`Verify`.
 - [ ] Approved design or saved spec is cited as `Source`.
 - [ ] `Spec coverage` maps the source to plan tasks.
-- [ ] Header, constraints, file map, interfaces, concrete steps, acceptance, verification, comments, and exclusions are present.
+- [ ] Header, constraints, file map, interfaces, concrete steps, acceptance, verification, context-specific comments, and exclusions are present.
 - [ ] Every task is independently understandable and has no unresolved or vague placeholder.
 - [ ] The checker passed when available.
 - [ ] The user reviewed the written plan.

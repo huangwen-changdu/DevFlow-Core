@@ -29,7 +29,6 @@ graph TD
     PLAN -->|"confirmed Plan + Cut-consistent"| CORE
     CORE -->|"CUT_PASS + implementation needed"| BUILD
     CORE -->|"Fast route"| PROVE
-    CORE -->|"verified feature completion"| DOCS
     CORE -->|"Recovery pressure"| PUA
     PUA -->|"recovery facts + re-confirmation need"| CORE
     CORE -->|"/devflow-audit or audit request"| AUDIT
@@ -42,6 +41,7 @@ graph TD
     PROVE -->|"FAIL/BLOCKED"| CORE
     CORE -->|"correction or pitfall"| LEARN
     PROVE -->|"learning signal"| LEARN
+    LEARN -->|"verified feature implementation with source-behavior or interface-contract change"| DOCS
 ```
 
 ## Runtime Chain
@@ -62,8 +62,7 @@ devflow-core -> devflow-brainstorm -> Confirmed request (Status: clarified) -> d
   -> Core selects: `CUT_PASS` + implementation needed -> devflow-build
 devflow-core -> devflow-pua -> recovery facts + re-confirmation need -> devflow-core
   -> Core may select devflow-brainstorm for clarification only
-devflow-prove -> devflow-learn
-devflow-core -> devflow-docs-followup (after verified feature completion)
+devflow-prove -> devflow-learn -> devflow-docs-followup (only after a verified feature implementation with a source-behavior or interface-contract change)
 devflow-core -> devflow-audit
 devflow-core -> external skills (frontend-design, pdf, docx, understand, data-analysis, etc.) loaded alongside the devflow route
 ```
@@ -76,7 +75,7 @@ devflow-core -> external skills (frontend-design, pdf, docx, understand, data-an
 - Core alone decides whether the confirmed request or confirmed Spec needs `devflow-cut`, `devflow-plan`, `devflow-build`, `devflow-prove`, or no further lifecycle work.
 - A Plan Pack is created only after `devflow-cut` returns `CUT_PASS` and Core determines that file-level construction planning is needed.
 - Any completion claim enters `devflow-prove`.
-- Verified feature completion loads `devflow-docs-followup`, which asks before creating optional follow-up documents.
+- Only a verified feature implementation with a source-behavior or interface-contract change loads `devflow-docs-followup`; validation-only, documentation-only, rule-only, skill-only, and no-diff `PASS` results do not prompt for optional follow-up documents.
 - User challenge, changed-wrong result, repeated miss, or quality complaint enters `devflow-pua`; it returns recovery facts and any re-confirmation need to Core, which alone may select Brainstorm.
 - Corrections and reusable pitfalls enter `devflow-learn`.
 - Repo-wide overengineering audits enter `devflow-audit`.

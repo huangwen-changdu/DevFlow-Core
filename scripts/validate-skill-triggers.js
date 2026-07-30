@@ -53,6 +53,18 @@ const scenarios = [
     ]
   },
   {
+    name: "contextual engineering quality",
+    route: "Build",
+    input: "Implement an approved order-history change that matches project conventions and uses caching only when justified.",
+    evidence: [
+      ["skills/devflow-core/references/core-methods.md", "Optimize for local understanding"],
+      ["skills/devflow-cut/references/cut-methods.md", "Contextual Design Quality Check"],
+      ["skills/devflow-build/references/build-methods.md", "Readability Outcome Check"],
+      ["skills/devflow-prove/references/code-review-checklist.md", "A maintainer can identify business intent"],
+      ["skills/devflow-prove/references/flow-self-test.md", "Scenario 5B: Contextual Engineering Quality"]
+    ]
+  },
+  {
     name: "first principles architecture problem",
     route: "Build",
     input: "The service layer is too complicated. Redesign the architecture and fix the timeout issue.",
@@ -113,6 +125,27 @@ const scenarios = [
       ["AGENTS.md", "repeated same-target miss"],
       ["skills/devflow-core/SKILL.md", "devflow-pua"],
       ["skills/devflow-pua/SKILL.md", "Changed approach"]
+    ]
+  },
+  {
+    name: "docs follow-up only after implementation change",
+    route: "Learn -> Docs",
+    input: "A feature implementation with a source-behavior or interface-contract change passes proof.",
+    evidence: [
+      ["skills/devflow-learn/SKILL.md", "Do not automatically hand off validation-only, documentation-only, rule-only, skill-only, or no-diff `PASS` results."],
+      ["skills/devflow-docs-followup/SKILL.md", "Do not automatically ask about documentation for validation-only, documentation-only, rule-only, skill-only, or no-diff `PASS` results."],
+      ["skills/skill-call-diagram.md", "verified feature implementation with source-behavior or interface-contract change"]
+    ]
+  },
+  {
+    name: "post-implementation unease check",
+    route: "Independent manual",
+    input: "Run an unease check on the completed feature: which requirements details remain unconfirmed?",
+    evidence: [
+      ["skills/devflow-find-fault/SKILL.md", "不安感检查"],
+      ["skills/devflow-find-fault/SKILL.md", "Unease Risk Classification"],
+      ["commands/devflow-find-fault.toml", "post-implementation unease check"],
+      ["skills/devflow-prove/references/flow-self-test.md", "post-implementation unease check"]
     ]
   },
   {

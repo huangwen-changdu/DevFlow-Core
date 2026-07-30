@@ -13,6 +13,11 @@ Apply these principles to every route:
 5. Scale ceremony to reversibility and failure modes.
 6. Treat complexity as a limited budget.
 7. Use fresh evidence, not intuition, for completion claims.
+8. Prefer the nearest established project convention before introducing a new pattern; a deliberate deviation states its reason, impact, and proof.
+9. Give each type or module one dominant responsibility; split, merge, or abstract only when responsibilities, dependencies, lifecycle, or likely change reasons materially differ.
+10. Evaluate caching, optimization, and concurrency against demonstrated workload or a concrete failure mode; add them only with measurable benefit plus clear ownership, invalidation, and consistency behavior.
+11. Optimize for local understanding: a maintainer familiar with the project should be able to identify business intent, key rules, failure paths, and side effects from nearby names and structure.
+12. Apply SOLID and platform best practices as decision lenses, not mandatory patterns. A simpler solution is preferred when it preserves correctness, readability, maintainability, contracts, and required performance.
 
 ## Capability Map
 

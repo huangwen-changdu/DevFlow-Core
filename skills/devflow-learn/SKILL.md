@@ -98,7 +98,7 @@ Learning storage is lazily created only by this skill after a qualifying reusabl
 | `.copilot/cards/` | Execution experience, intercept rules, and proven work patterns | Business reference documentation |
 | `docs/project-knowledge/` | Curated, code-backed business facts, boundaries, and task entry points | Agent mistakes or raw implementation history |
 
-Handoff: `devflow-prove PASS` -> `devflow-learn` review -> project-knowledge candidate -> user confirmation -> `devflow-project-knowledge` lazy maintenance of `docs/project-knowledge/`. After verified feature completion, `devflow-learn` hands off to `devflow-docs-followup` to ask the user which optional follow-up documents to create.
+Handoff: `devflow-prove PASS` -> `devflow-learn` review -> project-knowledge candidate -> user confirmation -> `devflow-project-knowledge` lazy maintenance of `docs/project-knowledge/`. Only after a verified feature implementation with an actual source-behavior or interface-contract change may `devflow-learn` hand off to `devflow-docs-followup` for an optional documentation inquiry. Do not automatically hand off validation-only, documentation-only, rule-only, skill-only, or no-diff `PASS` results.
 
 ## Card Format
 
