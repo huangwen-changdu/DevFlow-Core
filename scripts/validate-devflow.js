@@ -182,6 +182,8 @@ for (const card of cards) {
 
 runVerifier("scripts/validate-host-adapters.js");
 runVerifier("scripts/validate-skill-triggers.js");
+runVerifier("scripts/devflow-budget.js");
+runVerifier("scripts/validate-route-consistency.js");
 
 console.log("DevFlow validation passed");
 console.log(`Checked ${requiredFiles.length} runtime files, ${cards.length} learning cards, and selected host and trigger contracts`);

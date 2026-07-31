@@ -146,5 +146,21 @@
     ],
     "commandEvidence": ["Installer validation passed"],
     "negativeConstraints": ["Must not copy product docs"]
+  },
+  {
+    "id": "subagent-plan-handoff",
+    "scenario": "Scenario 7B: Delegated Continuation and Scope Drift",
+    "layers": ["Harness/Validation", "Context", "Orchestration/Slices", "Eval/Verifier"],
+    "expectedRoute": "Build",
+    "command": "plan:verify",
+    "scenarioEvidence": [
+      "Build reads the latest Execution Trace, re-reads only the current anchors and directly changed neighbor, and does not restart a broad repository review.",
+      "It returns observed policy, affected anchor, invalidated trace/handoff fact, blocked work-item verification, and the smallest replan decision to Core."
+    ],
+    "commandEvidence": ["DevFlow plan self-test passed"],
+    "negativeConstraints": [
+      "Build stops instead of silently applying the rule to the easiest existing file or expanding the touch set.",
+      "does not restart a broad repository review"
+    ]
   }
 ]

@@ -5,6 +5,8 @@
   "license": "MIT",
   "scripts": {
     "test": "node scripts/validate-devflow.js",
+    "budget:verify": "node scripts/devflow-budget.js",
+    "route:verify": "node scripts/validate-route-consistency.js",
     "learn:verify": "node scripts/validate-learning-loop.js",
     "scenario:coverage": "node scripts/report-scenario-coverage.js",
     "capability:eval": "node scripts/capability-eval.js",
@@ -18,7 +20,7 @@
     "spec:verify": "node scripts/devflow-spec.js --self-test",
     "plan:verify": "node scripts/devflow-plan.js --self-test",
     "audit:verify": "node scripts/devflow-audit.js --self-test",
-    "verify:all": "npm test && npm run learn:verify && npm run scenario:coverage && npm run trigger:verify && npm run host:verify && npm run install:verify && npm run user:verify && npm run debt:verify && npm run review:verify && npm run spec:verify && npm run plan:verify && npm run audit:verify && npm run capability:verify && npm run capability:eval",
+    "verify:all": "npm test && npm run learn:verify && npm run scenario:coverage && npm run trigger:verify && npm run host:verify && npm run install:verify && npm run user:verify && npm run debt:verify && npm run review:verify && npm run spec:verify && npm run plan:verify && npm run audit:verify && npm run capability:verify && npm run capability:eval && npm run budget:verify && npm run route:verify",
     "install:target": "node scripts/install-devflow.js",
     "install:user": "node scripts/install-devflow-user.js"
   },

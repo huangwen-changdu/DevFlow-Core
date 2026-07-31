@@ -67,7 +67,7 @@ const patternChecks = [
 ];
 
 function usage() {
-  console.log("Usage: node scripts/devflow-audit.js [target-directory] [--self-test]");
+  console.log("Usage: node scripts/devflow-audit.js [target-directory] [--self-test] [--json]");
   console.log("Scans code for overengineering candidates. Findings are candidates; confirm by reading code before editing.");
 }
 
@@ -115,6 +115,39 @@ function scan(root) {
 
     const rel = path.relative(root, file).replaceAll(path.sep, "/");
     const lines = fs.readFileSync(file, "utf8").split(/\r?\n/);
+    const fullText = lines.join("\n");
+
+    // 文件级结构候选：仅启发式提示，人工确认后编辑，不构成缺失证据（judgment 恒 PASS）。
+    const hasController = /\bclass\s+\w*Controller\b/.test(fullText);
+    const hasEntity = /\bclass\s+\w*(?:Entity|Model|Dto|DTO)\b/.test(fullText);
+    if (hasController && hasEntity) {
+      findings.push({
+        rel,
+        line: 1,
+        tag: "layering",
+        message: "Controller 与实体同文件候选",
+        replacement: "检查 Controller 是否直接持有实体/模型定义；建议分层。"
+      });
+    }
+    if (lines.length > 400) {
+      findings.push({
+        rel,
+        line: 1,
+        tag: "megaclass",
+        message: "单文件超长候选",
+        replacement: "检查是否需要拆分。"
+      });
+    }
+    // no-cache：仅提示读路径是否应查缓存，不宣称一定缺失（数据流无法静态证明）。
+    if (/\b(?:get|fetch|find|list|query)\w*\s*\(/.test(fullText) && !/\bcache\b/i.test(fullText)) {
+      findings.push({
+        rel,
+        line: 1,
+        tag: "no-cache",
+        message: "读路径无缓存候选（启发式）",
+        replacement: "检查高频读路径是否应查缓存；仅提示不构成缺失证据。"
+      });
+    }
 
     lines.forEach((line, index) => {
       const declaredName = declarationName(line);
@@ -160,8 +193,14 @@ function scan(root) {
   return findings;
 }
 
-function report(root) {
+function report(root, json) {
   const findings = scan(root);
+  const judgment = "PASS";
+
+  if (json) {
+    console.log(JSON.stringify({ checker: "audit", findings, count: findings.length, judgment }));
+    return 0;
+  }
 
   if (findings.length === 0) {
     console.log("Lean already. Ship.");
@@ -186,7 +225,10 @@ function selfTest() {
       "import moment from 'moment';",
       "interface IReportFactory {}",
       "const enableExperimental = false;",
-      "function formatTotal(value) { return String(value); }"
+      "function formatTotal(value) { return String(value); }",
+      "class ReportController { entityId = 1; }",
+      "class OrderEntity {}",
+      "function getOrderData() { return String(value); }"
     ].join("\n"),
     "utf8"
   );
@@ -195,17 +237,22 @@ function selfTest() {
     "function formatTotal(value) { return value.toString(); }",
     "utf8"
   );
+  fs.writeFileSync(
+    path.join(tmp, "megaclass.ts"),
+    Array.from({ length: 401 }, (_, index) => `// line ${index + 1}`).join("\n"),
+    "utf8"
+  );
 
   const findings = scan(tmp);
   const tags = new Set(findings.map((finding) => finding.tag));
-  for (const tag of ["reuse", "stdlib", "native", "yagni", "delete"]) {
+  for (const tag of ["reuse", "stdlib", "native", "yagni", "delete", "layering", "megaclass", "no-cache"]) {
     if (!tags.has(tag)) {
       throw new Error(`Self-test expected ${tag} finding`);
     }
   }
 
   console.log("DevFlow audit self-test passed");
-  console.log("Checked reuse, stdlib, native, yagni, and delete candidate detection");
+  console.log("Checked reuse, stdlib, native, yagni, delete, layering, megaclass, and no-cache candidate detection");
 }
 
 const args = process.argv.slice(2);
@@ -225,4 +272,4 @@ if (!fs.existsSync(targetRoot) || !fs.statSync(targetRoot).isDirectory()) {
   throw new Error(`Target directory does not exist: ${targetRoot}`);
 }
 
-process.exitCode = report(targetRoot);
+process.exitCode = report(targetRoot, args.includes("--json"));

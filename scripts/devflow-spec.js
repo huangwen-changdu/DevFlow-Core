@@ -32,10 +32,14 @@ const vaguePatterns = [
   /\bfigure out\b/i,
   /\bmake it work\b/i
 ];
+// 可选生命周期状态字段：缺失视为 legacy（向后兼容），存在时值域受限；checker 只校验格式，不裁决状态转换。
+const validStatuses = ["draft", "approved", "in-progress", "done"];
+const statusPattern = /^\s*(?:\*\*)?Status(?:\*\*)?\s*:\s*([^\n]+)/im;
 
 function usage() {
-  console.log("Usage: node scripts/devflow-spec.js [spec-file] [--self-test]");
+  console.log("Usage: node scripts/devflow-spec.js [spec-file] [--self-test] [--json]");
   console.log("Checks whether a DevFlow spec has required sections, clear content, and the right landing path.");
+  console.log("--json prints a single-line machine-readable summary; optional Status header values: " + validStatuses.join(" | "));
 }
 
 function findMatches(body, patterns) {
@@ -49,12 +53,17 @@ function checkSpec(body) {
   const missing = requiredFields.filter((field) => !fieldPatterns[field].test(body));
   const unresolved = findMatches(body, unresolvedPatterns);
   const vague = findMatches(body, vaguePatterns);
+  const statusMatch = body.match(statusPattern);
+  const status = statusMatch ? statusMatch[1].trim() : "legacy";
+  const invalidStatus = statusMatch ? !validStatuses.includes(status) : false;
 
   return {
     missing,
     unresolved,
     vague,
-    ok: missing.length === 0 && unresolved.length === 0 && vague.length === 0
+    status,
+    invalidStatus,
+    ok: missing.length === 0 && unresolved.length === 0 && vague.length === 0 && !invalidStatus
   };
 }
 
@@ -92,12 +101,30 @@ function checkSpecLanding(filePath) {
   };
 }
 
-function report(body, filePath) {
+function report(body, filePath, json) {
   const result = checkSpec(body);
   const landing = checkSpecLanding(filePath);
+  const judgment = !result.ok || !landing.ok ? "FAIL" : "PASS";
+
+  if (json) {
+    console.log(
+      JSON.stringify({
+        checker: "spec",
+        landing: landing.message,
+        status: result.status,
+        invalidStatus: result.invalidStatus,
+        missing: result.missing,
+        unresolved: result.unresolved,
+        vague: result.vague,
+        judgment
+      })
+    );
+    return judgment === "PASS" ? 0 : 1;
+  }
 
   console.log("DevFlow spec report");
   console.log(landing.message);
+  console.log(`Status: ${result.invalidStatus ? "invalid" : result.status}`);
   console.log(`Missing sections: ${result.missing.join(", ") || "none"}`);
   console.log(`Unresolved markers: ${result.unresolved.join(", ") || "none"}`);
   console.log(`Vague terms: ${result.vague.join(", ") || "none"}`);
@@ -169,6 +196,18 @@ function selfTest() {
     throw new Error("Self-test expected docs/specs landing to pass");
   }
 
+  const withValidStatusSpec = validSpec.replace(
+    "Goal: Add spec validation",
+    "Status: draft\nGoal: Add spec validation"
+  );
+  const withInvalidStatusSpec = validSpec.replace(
+    "Goal: Add spec validation",
+    "Status: shipped\nGoal: Add spec validation"
+  );
+  if (!checkSpec(withValidStatusSpec).ok) throw new Error("Self-test expected valid Status to pass");
+  if (checkSpec(withInvalidStatusSpec).ok) throw new Error("Self-test expected invalid Status to fail");
+  if (checkSpec(validSpec).status !== "legacy") throw new Error("Self-test expected missing Status to stay legacy");
+
   const badPlanLanding = checkSpecLanding("docs/plans/2026-07-14-add-spec-scanner.md");
   if (badPlanLanding.ok) {
     throw new Error("Self-test expected docs/plans spec landing to fail");
@@ -196,4 +235,4 @@ if (args.includes("--self-test")) {
 
 const targetArg = args.find((arg) => !arg.startsWith("-"));
 const body = readInput(args);
-process.exitCode = report(body, targetArg);
+process.exitCode = report(body, targetArg, args.includes("--json"));

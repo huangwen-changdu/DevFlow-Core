@@ -1,0 +1,1 @@
+{"checker":"plan","landing":"Plan landing: ok docs/plans/YYYY-MM-DD-<short-kebab-name>.md","status":"draft","invalidStatus":false,"missingGlobal":[],"globalUnresolved":[],"fileStructure":"missing or invalid","tasks":[{"number":1,"ok":false},{"number":2,"ok":true}],"judgment":"FAIL"}

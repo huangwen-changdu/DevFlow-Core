@@ -53,7 +53,8 @@ docs/project-knowledge/
 ├── 09-invariants-and-risk-notes.md ← 不变量与风险红线
 ├── 10-task-harness-playbook.md ← 任务组装 Playbook（接需求后先读什么）
 ├── 11-change-log.md          ← 知识包变更日志
-└── {NN}-{domain}-deep-dive.md ← 业务域深挖（按需追加，从 12 开始编号）
+├── 12-code-standards.md      ← 编码规范（分层红线 / 缓存策略 / 可读性红线 / 项目约定）
+└── {NN}-{domain}-deep-dive.md ← 业务域深挖（按需追加，从 13 开始编号）
 ```
 
 ---
@@ -106,8 +107,9 @@ docs/project-knowledge/
 5. `04-module-responsibility-map.md` — 模块职责（最高价值，优先完成）
 6. `09-invariants-and-risk-notes.md` — 风险红线（第二高价值）
 7. `08-reuse-extension-map.md` — 复用点
-8. `registry.json` — 机器可读索引
-9. 其余文件按需生成（`02/03/05/06/07/10/11`）
+8. `12-code-standards.md` — 编码规范（分层红线、缓存策略、可读性红线、项目约定）
+9. `registry.json` — 机器可读索引
+10. 其余文件按需生成（`02/03/05/06/07/10/11`）
 
 **Step 3：生成 `registry.json`**
 
@@ -133,6 +135,7 @@ docs/project-knowledge/
 - 项目是什么（一句话 + 技术栈）
 - 进入任务前先冻结的 5 个问题
 - 第一次进入仓库的阅读顺序（必读 + 按任务类型追加）
+- 12-code-standards.md 为必读——进入任务前先确认项目编码规范（分层/缓存/可读性红线）
 - 最短正确心智模型（项目分层）
 - 绝对优先防的误判点（至少 3 条）
 - 默认执行规则

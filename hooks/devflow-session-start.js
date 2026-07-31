@@ -1,6 +1,21 @@
 #!/usr/bin/env node
 "use strict";
 
+const fs = require("node:fs");
+const path = require("node:path");
+
+// 本地可观测性：仅当 DEVFLOW_OBSERVE=1 时在项目根追加一行会话日志，默认关闭、无网络上报。
+// 写入失败静默，绝不阻断会话注入。
+if (process.env.DEVFLOW_OBSERVE === "1") {
+  try {
+    fs.appendFileSync(
+      path.join(process.cwd(), ".devflow-observe.log"),
+      `${new Date().toISOString()} session-start\n`,
+      "utf8"
+    );
+  } catch {}
+}
+
 // Keep session injection small; skills own execution, Core owns only non-unique routing.
 const context = [
   "[DevFlow Core active]",

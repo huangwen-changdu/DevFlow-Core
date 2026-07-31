@@ -14,4 +14,5 @@ Read this index first. Only read a card when its trigger and scope match the cur
 | [AGENTS Runtime Prompt Boundary](cards/agents-runtime-prompt-boundary.md) | AGENTS.md, runtime prompt, prompt file, unrelated explanation, README-like content, long method details, wrong place, misplaced content, repeated correction | project | 0.7 |
 | [Problem Reports Need Triage](cards/problem-reports-need-triage.md) | 问题, 有问题, 检查一下, 哪里不对, investigate issue, problem report without fix request | project | 0.6 |
 | [PUA Same-Target Trigger](cards/pua-same-target-trigger.md) | devflow-pua, PUA trigger, Recovery trigger, same function, same result, repeated dissatisfaction, repeated target, 首次反馈, 同一功能, 重复指出 | project | 0.5 |
+| [Checker Contract And Route Surface Design](cards/checker-contract-route-surface.md) | checker 脚本改动, --json 输出, Status 字段, budget 阈值, 路由一致性校验, 校验表面, devflow-plan/spec/review/debt/audit/budget/route 校验器 | project | 0.5 |
 | [Subjective Quality Structure vs Behavior](cards/subjective-quality-structure-vs-behavior.md) | 不够灵动, 不好用, 感觉差点, 太死板, subjective quality, skill feels rigid, optional format, fast lane tier, 用户确认处方 | project | 0.4 |

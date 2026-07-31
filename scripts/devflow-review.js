@@ -10,7 +10,7 @@ const requiredGates = [
 ];
 
 function usage() {
-  console.log("Usage: node scripts/devflow-review.js [plan-or-diff-file] [--self-test]");
+  console.log("Usage: node scripts/devflow-review.js [plan-or-diff-file] [--self-test] [--json]");
   console.log("Checks whether a plan or review text includes the DevFlow anti-overengineering gates.");
 }
 
@@ -25,8 +25,14 @@ function reviewText(body) {
   };
 }
 
-function report(body) {
+function report(body, json) {
   const result = reviewText(body);
+  const judgment = result.ok ? "PASS" : "FAIL";
+
+  if (json) {
+    console.log(JSON.stringify({ checker: "review", present: result.present.map((gate) => gate.name), missing: result.missing.map((gate) => gate.name), judgment }));
+    return result.ok ? 0 : 1;
+  }
 
   console.log("DevFlow review gate report");
   console.log(`Present gates: ${result.present.map((gate) => gate.name).join(", ") || "none"}`);
@@ -84,4 +90,4 @@ if (args.includes("--self-test")) {
 }
 
 const body = readInput(args);
-process.exitCode = report(body);
+process.exitCode = report(body, args.includes("--json"));

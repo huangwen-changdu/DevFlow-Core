@@ -1,7 +1,11 @@
 const fs = require("node:fs");
 const path = require("node:path");
+const { createHash } = require("node:crypto");
 
 const root = path.resolve(__dirname, "..");
+const packageJson = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+// 安装 manifest：记录上游包名、版本与每个运行时文件的 sha256，供 --check 检测上游升级。
+const manifestRel = ".devflow-manifest.json";
 
 const runtimeEntries = [
   "AGENTS.md",
@@ -72,6 +76,7 @@ function usage() {
   console.log("Default mode is dry-run. Add --write to copy files.");
   console.log("Existing files are skipped unless --force is passed.");
   console.log("Add --check to verify the target runtime files match this package.");
+  console.log("Write mode records .devflow-manifest.json (version + sha256); --check reports upstream version changes.");
 }
 
 function readJsonFile(file) {
@@ -182,14 +187,31 @@ if (check) {
   const missing = results.filter((result) => result.action === "missing");
   const changed = results.filter((result) => result.action === "changed");
 
+  // 上游版本差检测：manifest 缺失的旧安装视为兼容不失败；版本不一致时给出升级路径并计入失败。
+  let versionChanged = false;
+  const manifestPath = path.join(targetRoot, manifestRel);
+  if (fs.existsSync(manifestPath)) {
+    try {
+      const installed = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+      if (installed.version !== packageJson.version) {
+        versionChanged = true;
+        console.log(
+          `Upstream version changed: installed ${installed.version}, current ${packageJson.version}. Re-run install:target --write --force to upgrade.`
+        );
+      }
+    } catch {
+      // 损坏的 manifest 不阻断 check；字节比较仍覆盖文件级漂移。
+    }
+  }
+
   console.log(`DevFlow install check: ${targetRoot}`);
   for (const result of results) {
     console.log(`${result.action}: ${result.rel}`);
   }
   console.log(`Total files: ${results.length}`);
 
-  if (missing.length > 0 || changed.length > 0) {
-    console.log(`Check failed: ${missing.length} missing, ${changed.length} changed`);
+  if (missing.length > 0 || changed.length > 0 || versionChanged) {
+    console.log(`Check failed: ${missing.length} missing, ${changed.length} changed${versionChanged ? ", upstream version changed" : ""}`);
     process.exit(1);
   }
 
@@ -198,6 +220,18 @@ if (check) {
 }
 
 const results = runtimeEntries.map((rel) => copyFile(rel, targetRoot));
+
+// 安装 manifest：仅 write 模式写入，记录上游版本与文件哈希供后续 --check 使用。
+if (write) {
+  const manifest = {
+    package: packageJson.name,
+    version: packageJson.version,
+    files: Object.fromEntries(
+      runtimeEntries.map((rel) => [rel, createHash("sha256").update(fs.readFileSync(path.join(root, rel))).digest("hex")])
+    )
+  };
+  fs.writeFileSync(path.join(targetRoot, manifestRel), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+}
 
 console.log(`DevFlow install ${write ? "write" : "dry-run"}: ${targetRoot}`);
 for (const result of results) {

@@ -35,6 +35,8 @@ Current Handoff Facts:
 - Current constraints: [observed contract, ordering, error behavior, compatibility; or "none"].
 - Planned touch set: [remaining expected files/symbols and reason].
 - Risks / stop conditions: [facts that require Core replan; or "none beyond ordinary Plan drift"].
+- Read-basis: [已读文件清单——执行者无需重读].
+- Live anchors: [仅需现场确认的锚点——执行者只读这些].
 
 Remaining Structured Worklist:
 - [ ] [one independently completable remaining action with file/symbol and expected outcome].
@@ -59,6 +61,6 @@ Remaining Structured Worklist:
 
 ## Delegated Execution
 
-A delegated executor reads the latest trace, then minimally re-reads the current work item's anchors and directly changed neighbor. It does not repeat File Structure decisions or broadly reread the repository by default.
+A delegated executor reads the latest trace, then minimally re-reads the current work item's anchors and directly changed neighbor. It does not repeat File Structure decisions or broadly reread the repository by default. The executor determines its read set from `Current Handoff Facts`: it must not re-read the `Read-basis` list and only live-verifies the `Live anchors`; anchor contradiction still returns facts to `devflow-core`.
 
 Stop and return facts to `devflow-core` when the minimal reread shows a contradiction in any target anchor, direct caller, contract, local convention, dependency, side effect, affected test, responsibility, or directly necessary touch set. The return identifies the observed mismatch, affected anchor, invalidated handoff fact, blocked verification, and smallest replan decision. An obvious stale line reference may be corrected without returning only when the symbol, contract, responsibility, and intended outcome are unchanged.

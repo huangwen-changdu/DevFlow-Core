@@ -5,6 +5,9 @@ const requiredTaskFields = ["Task", "Task type", "Files", "Interfaces", "Steps",
 const codeChangeFields = ["Current behavior", "Target behavior", "Change mechanics", "Call impact"];
 const allFields = [...requiredGlobalFields, ...requiredTaskFields, ...codeChangeFields];
 const taskTypes = ["Code change", "Documentation-only"];
+// 可选生命周期状态字段：缺失视为 legacy（向后兼容），存在时值域受限；checker 只校验格式，不裁决状态转换。
+const validStatuses = ["draft", "approved", "in-progress", "done"];
+const statusPattern = /^\s*(?:\*\*)?Status(?:\*\*)?\s*:\s*([^\n]+)/im;
 
 const fieldPatterns = Object.fromEntries(
   allFields.map((field) => [field, new RegExp(`^(?:\\*\\*)?${field}(?:\\*\\*)?\\s*:`, "im")])
@@ -27,6 +30,8 @@ const fileStructureHeadingPattern = /^##\s+File Structure\s*$/im;
 const prewalkPattern = /^\s*Prewalk\s*:\s*$/im;
 const prewalkSections = ["Execution Trace", "Current Handoff Facts", "Remaining Structured Worklist"];
 const handoffFactNames = ["Target anchors", "Nearby convention", "Direct path", "Current constraints", "Planned touch set", "Risks / stop conditions"];
+// Read-basis / Live anchors：接力执行减少重读的必需交接字段；文档型任务经 checkTask 豁免（仅 Code change 调用 checkPrewalk）。
+const handoffExtraFactNames = ["Read-basis", "Live anchors"];
 const traceEntryPattern = /^\s*-\s*(Read|Traced|Ran|Edited|Verified):\s*(.+?)\s*→\s*(.+?)\.?\s*$/im;
 const futureTracePattern = /\b(?:will|should|need to|plan to|to be done)\b|(?:将|需要|计划|待完成)/i;
 const worklistItemPattern = /^\s*-\s*\[ \]\s+(.+)$/gim;
@@ -35,9 +40,10 @@ const maximumWorklistItems = 12;
 
 /** Print the checker command contract and default plan landing. */
 function usage() {
-  console.log("Usage: node scripts/devflow-plan.js [plan-file] [--self-test]");
+  console.log("Usage: node scripts/devflow-plan.js [plan-file] [--self-test] [--json]");
   console.log("Checks whether a DevFlow Plan Pack has an executable header, task contracts, and plan landing.");
   console.log("Default plan landing is docs/plans/YYYY-MM-DD-<short-kebab-name>.md unless the project documents another plan path.");
+  console.log("--json prints a single-line machine-readable summary; optional Status header values: " + validStatuses.join(" | "));
 }
 
 /** Split a plan at Task fields so each task can be validated independently. */
@@ -140,7 +146,7 @@ function checkPrewalk(task) {
   const actualEdit = traceEntries.some(({ match }) => match && match[1] === "Edited" && !/^none\b/i.test(match[2]));
   const actualVerification = traceEntries.some(({ match }) => match && match[1] === "Verified" && !/^none\b/i.test(match[2]));
   const completed = actualEdit && actualVerification;
-  const missingFacts = handoffFactNames.filter(
+  const missingFacts = handoffFactNames.concat(handoffExtraFactNames).filter(
     (name) => !new RegExp(`^\\s*-\\s*${name}:\\s+\\S`, "im").test(facts)
   );
   const items = [...worklist.matchAll(worklistItemPattern)];
@@ -313,16 +319,22 @@ function checkPlan(body) {
   const taskResults = tasks.map((task) => checkTask(task, fileStructure));
   const missingGlobal = requiredGlobalFields.filter((field) => !fieldPatterns[field].test(body));
   const globalUnresolved = findMatches(body.split(/\r?\nTask:/i)[0], unresolvedPatterns);
+  const statusMatch = body.match(statusPattern);
+  const status = statusMatch ? statusMatch[1].trim() : "legacy";
+  const invalidStatus = statusMatch ? !validStatuses.includes(status) : false;
 
   return {
     missingGlobal,
     globalUnresolved,
     fileStructure,
     requiresFileStructure,
+    status,
+    invalidStatus,
     tasks: taskResults,
     ok:
       missingGlobal.length === 0 &&
       globalUnresolved.length === 0 &&
+      !invalidStatus &&
       (!requiresFileStructure || fileStructure.ok) &&
       tasks.length > 0 &&
       taskResults.every((task) => task.ok)
@@ -345,12 +357,31 @@ function checkPlanLanding(filePath) {
 }
 
 /** Print actionable field-level failures rather than a generic plan rejection. */
-function report(body, filePath) {
+function report(body, filePath, json) {
   const result = checkPlan(body);
   const landing = checkPlanLanding(filePath);
+  const judgment = !result.ok || !landing.ok ? "FAIL" : "PASS";
+
+  if (json) {
+    console.log(
+      JSON.stringify({
+        checker: "plan",
+        landing: landing.message,
+        status: result.status,
+        invalidStatus: result.invalidStatus,
+        missingGlobal: result.missingGlobal,
+        globalUnresolved: result.globalUnresolved,
+        fileStructure: result.fileStructure.ok ? "ok" : "missing or invalid",
+        tasks: result.tasks.map((task) => ({ number: task.number, ok: task.ok })),
+        judgment
+      })
+    );
+    return judgment === "PASS" ? 0 : 1;
+  }
 
   console.log("DevFlow plan pack report");
   console.log(landing.message);
+  console.log(`Status: ${result.invalidStatus ? "invalid" : result.status}`);
   for (const field of requiredGlobalFields) console.log(`${field}: ${result.missingGlobal.includes(field) ? "missing" : "ok"}`);
   console.log(`Global unresolved markers: ${result.globalUnresolved.join(", ") || "none"}`);
   console.log(
@@ -461,6 +492,8 @@ function selfTest() {
     "- Current constraints: documentation-only tasks stay exempt.",
     "- Planned touch set: `scripts/devflow-plan.js` / `checkTask`.",
     "- Risks / stop conditions: parser boundary contradiction returns to Core.",
+    "- Read-basis: scripts/devflow-plan.js.",
+    "- Live anchors: scripts/devflow-plan.js / checkTask.",
     "",
     "Remaining Structured Worklist:",
     "- [ ] Modify `scripts/devflow-plan.js` / `checkTask` using pseudocode: validate handoff fields.",
@@ -545,8 +578,22 @@ function selfTest() {
     ).join("\n")
   );
 
+  const missingReadBasisPlan = validPlan.replace("- Read-basis: scripts/devflow-plan.js.\n", "");
+  const missingLiveAnchorsPlan = validPlan.replace("- Live anchors: scripts/devflow-plan.js / checkTask.\n", "");
+
   if (!checkPlan(validPlan).ok) throw new Error("Self-test expected complete code-level plan to pass");
   if (!checkPlan(validDocumentationPlan).ok) throw new Error("Self-test expected documentation-only plan to pass");
+  const withValidStatusPlan = validPlan.replace(
+    "Goal: Validate a code-level plan contract",
+    "Status: approved\nGoal: Validate a code-level plan contract"
+  );
+  const withInvalidStatusPlan = validPlan.replace(
+    "Goal: Validate a code-level plan contract",
+    "Status: shipped\nGoal: Validate a code-level plan contract"
+  );
+  if (!checkPlan(withValidStatusPlan).ok) throw new Error("Self-test expected valid Status to pass");
+  if (checkPlan(withInvalidStatusPlan).ok) throw new Error("Self-test expected invalid Status to fail");
+  if (checkPlan(validPlan).status !== "legacy") throw new Error("Self-test expected missing Status to stay legacy");
   if (checkPlan(genericLocationPlan).ok) throw new Error("Self-test expected generic location to fail");
   if (checkPlan(missingCurrentBehaviorPlan).ok) throw new Error("Self-test expected missing Current behavior to fail");
   if (checkPlan(missingTargetBehaviorPlan).ok) throw new Error("Self-test expected missing Target behavior to fail");
@@ -567,13 +614,15 @@ function selfTest() {
   if (checkPlan(missingFileStructurePlan).ok) throw new Error("Self-test expected missing File Structure to fail");
   if (checkPlan(futureTracePlan).ok) throw new Error("Self-test expected future-tense trace to fail");
   if (checkPlan(missingTraceResultPlan).ok) throw new Error("Self-test expected trace without observed result to fail");
+  if (checkPlan(missingReadBasisPlan).ok) throw new Error("Self-test expected missing Read-basis handoff fact to fail");
+  if (checkPlan(missingLiveAnchorsPlan).ok) throw new Error("Self-test expected missing Live anchors handoff fact to fail");
   if (checkPlan(incompleteWorklistPlan).ok) throw new Error("Self-test expected incomplete structured worklist to fail");
   if (checkPlan(overCapWorklistPlan).ok) throw new Error("Self-test expected over-cap structured worklist to fail");
   if (!checkPlanLanding("docs/plans/2026-07-14-add-plan-scanner.md").ok) throw new Error("Self-test expected docs/plans landing to pass");
   if (checkPlanLanding("docs/features/add-plan-scanner.md").ok) throw new Error("Self-test expected docs/features plan landing to fail");
 
   console.log("DevFlow plan self-test passed");
-  console.log("Checked code-level fields, precise file locations, mechanics evidence, verification expectations, documentation-only exception, external-skill declaration, and plan landing guidance");
+  console.log("Checked code-level fields, precise file locations, mechanics evidence, verification expectations, Read-basis/Live anchors handoff facts, documentation-only exception, external-skill declaration, and plan landing guidance");
 }
 
 const args = process.argv.slice(2);
@@ -586,4 +635,4 @@ if (args.includes("--self-test")) {
   process.exit(0);
 }
 const targetArg = args.find((arg) => !arg.startsWith("-"));
-process.exitCode = report(readInput(args), targetArg);
+process.exitCode = report(readInput(args), targetArg, args.includes("--json"));

@@ -19,7 +19,7 @@ const ignoreDirs = new Set([
 const markerPattern = /^\s*(?:(?:\/\/|#|--|;|\*)\s*|<!--\s*)?devflow:\s*(.+?)(?:\s*-->)?\s*$/i;
 
 function usage() {
-  console.log("Usage: node scripts/devflow-debt.js [target-directory] [--self-test]");
+  console.log("Usage: node scripts/devflow-debt.js [target-directory] [--self-test] [--json]");
   console.log("Scans for devflow: intentional-simplification markers and reports ceiling/revisit gaps.");
 }
 
@@ -119,9 +119,22 @@ function scan(root) {
   return markers;
 }
 
-function report(root) {
+function report(root, json) {
   const markers = scan(root);
   const invalid = markers.filter((marker) => marker.status !== "ok");
+
+  if (json) {
+    console.log(
+      JSON.stringify({
+        checker: "debt",
+        markers,
+        count: markers.length,
+        invalidCount: invalid.length,
+        judgment: invalid.length === 0 ? "PASS" : "FAIL"
+      })
+    );
+    return invalid.length === 0 ? 0 : 1;
+  }
 
   if (markers.length === 0) {
     console.log("No devflow debt markers found.");
@@ -180,4 +193,4 @@ if (!fs.existsSync(targetRoot) || !fs.statSync(targetRoot).isDirectory()) {
   throw new Error(`Target directory does not exist: ${targetRoot}`);
 }
 
-process.exitCode = report(targetRoot);
+process.exitCode = report(targetRoot, args.includes("--json"));

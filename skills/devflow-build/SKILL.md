@@ -39,6 +39,7 @@ Goal: ...
 Will touch: <files/modules>
 Not doing: ...
 Skills loaded: <skill-name> / none
+Standards: 可选——引用 code-standards 条目编号
 Narrowest verification: ...
 ```
 
@@ -98,6 +99,19 @@ Rules:
 - Prefer a slice that can run a focused check before the next slice.
 - Merge slices that cannot be verified separately.
 - Do not add work removed by `devflow-cut`.
+
+#### Slice 自检清单
+
+每个 slice 输出后逐项自检（八大原则）：
+
+1. 最小切片——一次只改一件事，本 slice 可独立理解。
+2. 参考项目规范——声明遵循的 code-standards 条目（如分层红线/缓存策略）。
+3. 复用现有能力——不重复造轮子，先查项目复用点。
+4. 分层清晰——实体/服务/控制分离，不越层。
+5. 缓存语义正确——读查缓存、写失效缓存。
+6. 可读性——方法短、命名表意。
+7. 副作用隔离——授权/持久化/缓存/远程调用不隐藏在无标注块内。
+8. 可证明——本 slice 有可运行的最小验证。
 
 ## Source Check
 

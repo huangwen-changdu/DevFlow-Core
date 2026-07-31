@@ -92,6 +92,10 @@ When installed into a target project, only the target-runtime scripts are copied
 
 Saved specs should land in the current target project's `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` unless that project already documents another specs path. Saved implementation plans should land in the current target project's `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`. `docs/features/` is for feature ledgers, not generated specs or task plans.
 
+Specs and plans may carry an optional `Status: draft | approved | in-progress | done` header for cross-session lifecycle tracking; `node scripts/devflow-spec.js` and `node scripts/devflow-plan.js` validate the value and treat a missing field as legacy. Long-term iteration planning for DevFlow-Core itself lives in [docs/iteration-plan.md](docs/iteration-plan.md).
+
+All checker scripts accept `--json` for a single-line machine-readable summary. `npm run install:target -- <project> --write` records `.devflow-manifest.json` (package version + file hashes) in the target; `--check` then reports upstream version changes with an upgrade command.
+
 Other `.js` files under `scripts/` are DevFlow-Core maintainer checks, installer tests, and coverage reports. They stay in this package and are not the daily runtime surface for target projects.
 
 ## Runtime Flow
