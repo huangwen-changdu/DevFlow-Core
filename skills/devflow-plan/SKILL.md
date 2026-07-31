@@ -39,7 +39,7 @@ Tech Stack: <relevant existing stack>
 Source: <approved design or docs/specs/YYYY-MM-DD-<short-kebab-name>.md>
 Spec coverage: <requirements mapped to tasks, or design-only>
 Cut Decision: <CUT_PASS allowed scope, reuse conclusion, exclusions, verification constraints>
-External Skills: <skill-name> (role: guides execution) / none
+External Skills: <skill-name>; role: <bounded specialist work>; expected evidence: <result needed by that node>; return facts: <result / not-applicable / failure> / none
 
 ## Global Constraints
 - <applicable boundary>
@@ -51,7 +51,7 @@ External Skills: <skill-name> (role: guides execution) / none
 | <path and stable anchor> | Create / Modify / Test | <one responsibility> | <placement rationale> | <explicit boundary> |
 ```
 
-Inherit `External Skills` from the Cut Decision unchanged. When a guidance skill is declared, merge its core quality checks into the affected tasks' `Acceptance` and `Verify` fields — the Plan Pack is the only channel that carries external-skill quality requirements into Build and Prove. A declared skill never widens the Cut scope; if its recommendation exceeds the Cut Decision, return the scope-drift facts to `devflow-core`.
+Inherit `External Skills` from the Cut Decision unchanged; the Plan Pack carries the specialist role, expected evidence, and return facts into Build and Prove. When a specialist skill is declared, merge its core quality checks into the affected tasks' `Acceptance` and `Verify` fields — the Plan Pack is the only channel that carries external-skill quality requirements into Build and Prove. A declared skill never widens the Cut scope; if its recommendation exceeds the Cut Decision, return the scope-drift facts to `devflow-core`.
 
 ## Required Task Contract
 

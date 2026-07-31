@@ -24,7 +24,7 @@ Before editing, reconcile the plan against the current codebase — executabilit
 1. Anchors: every `Modify` symbol/anchor and interface in the plan still exists and matches.
 2. Behavior: each task's `Current behavior` still describes the code.
 3. Steps: unambiguous, with verification commands that can run in this environment.
-4. Skills: every skill declared in `External Skills` (Cut Decision or plan header) is actually loaded through the platform's skill mechanism, or the reason it does not apply is recorded.
+4. Skills: every skill declared in `External Skills` (Cut Decision or plan header) is actually loaded through the platform's skill mechanism, or the reason it does not apply is recorded; loading alone is not completion — Build requires the specialist's returned result, not-applicable, or failure facts. A specialist result implying structure outside the approved scope returns scope-drift facts to `devflow-core`, not silent adoption.
 
 Any failed check, unclear instruction, or critical gap: stop and return `BUILD_BLOCKED` with the facts to `devflow-core`. Do not guess, do not silently repair the plan. Reviewing fidelity is not re-deciding the mechanism.
 
@@ -57,7 +57,7 @@ Tech Stack: <relevant existing stack>
 Source: <docs/specs/YYYY-MM-DD-<short-kebab-name>.md or approved design>
 Spec coverage: <which requirement(s) this plan covers, or design-only>
 Cut Decision: <CUT_PASS allowed scope, reuse conclusion, exclusions, verification constraints>
-External Skills: <skill-name> (role: guides execution) / none
+External Skills: <skill-name>; role: <bounded specialist work>; expected evidence: <result needed by that node>; return facts: <result / not-applicable / failure> / none
 Task: <short title>
 Task type: Code change | Documentation-only
 Files:
@@ -206,7 +206,7 @@ If any file has no goal link, remove that change.
 Stop executing immediately and return `BUILD_BLOCKED` with the blocking facts to `devflow-core` when:
 
 - a Plan Review check fails (dead anchor, stale behavior, missing interface, unclear step)
-- a dependency, tool, or declared external skill is missing and the task depends on it
+- a dependency, tool, or declared external skill is missing and the task depends on it, or its returned failure facts block the approved work
 - verification fails repeatedly for the same task
 - the plan has a critical gap that prevents starting or continuing
 

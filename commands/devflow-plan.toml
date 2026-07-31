@@ -19,10 +19,10 @@ Tech Stack: <relevant existing stack>
 Source: <docs/specs/YYYY-MM-DD-<short-kebab-name>.md or approved design>
 Spec coverage: <requirements mapped to tasks, or design-only>
 Cut Decision: <CUT_PASS allowed scope, reuse conclusion, exclusions, verification constraints>
-External Skills: <skill-name> (role: guides execution) / none
+External Skills: <skill-name>; role: <bounded specialist work>; expected evidence: <result needed by that node>; return facts: <result / not-applicable / failure> / none
 ```
 
-Inherit `External Skills` from the Cut Decision unchanged. When a guidance skill is declared, merge its core quality checks into the affected tasks' `Acceptance`/`Verify` fields; the Plan Pack is the only channel that carries external-skill quality requirements into Build and Prove.
+Inherit `External Skills` from the Cut Decision unchanged; the Plan Pack carries the specialist role, expected evidence, and return facts into Build and Prove. When a specialist skill is declared, merge its core quality checks into the affected tasks' `Acceptance`/`Verify` fields; the Plan Pack is the only channel that carries external-skill quality requirements into Build and Prove.
 
 Each independently understandable task must contain:
 

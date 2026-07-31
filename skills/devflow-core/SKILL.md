@@ -20,7 +20,7 @@ Next skill: <skill name or none>
 
 Read `skills/devflow-core/references/core-methods.md` before route selection. It supplies Method 0, shared route rules, and the owner map. Do not load all lifecycle references by default.
 
-Read the narrowest relevant project facts, then progressively recall learning and project knowledge. Scan available skills and record a matching external guidance skill when one applies.
+Read the narrowest relevant project facts, then progressively recall learning and project knowledge. Scan available skills and record a matching external specialist skill; a specialist may perform bounded specialist work inside the current node while DevFlow retains route and node ownership.
 
 Before a route-specific decision, load only the selected owner reference:
 
@@ -83,6 +83,7 @@ Core selects only after a returned non-unique artifact. `CUT_REDUCE` and `CUT_RE
 - Completion claim: select `devflow-prove` and require fresh evidence plus adversarial review.
 - Repeated same-target correction: select `devflow-pua`, then re-read facts and switch approach.
 - Reusable correction or verified PASS: select `devflow-learn` for a selective review.
+- Matched external specialist: perform bounded work inside the current owner's node and return result, not-applicable, or failure facts; a specialist never selects a lifecycle owner, depth, or final status.
 
 ## Verification
 

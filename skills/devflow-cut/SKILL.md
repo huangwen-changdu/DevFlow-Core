@@ -35,7 +35,7 @@ After reading the touched flow, stop at the first rung that works:
 1. Does this need to exist?
 2. Can the user goal be met by not changing code?
 3. Does it already exist in this codebase?
-4. Does an available skill in the environment handle this without writing new code? (e.g., `pdf` for reading a PDF, `understand` for codebase analysis. If a skill like `frontend-design` guides how to implement, load it alongside the devflow route — it complements, not replaces, the devflow chain. Produce `CUT_REUSE` only when the skill fully handles the task with no new code needed.)
+4. Does an available skill in the environment handle this without writing new code? (e.g., `pdf` for reading a PDF, `understand` for codebase analysis. If a skill like `frontend-design` can perform bounded specialist work, load it alongside the devflow route — it complements, not replaces, the devflow chain. Produce `CUT_REUSE` only when the skill fully handles the task with no new code needed.)
 5. Does the standard library do it?
 6. Does the native platform do it?
 7. Does an already-installed dependency do it?
@@ -44,7 +44,7 @@ After reading the touched flow, stop at the first rung that works:
 
 If two rungs both work, take the earlier rung and move on. The ladder is not permission to skip reading; first trace the real flow the change touches.
 
-External guidance skills complement the chain but never widen it. Under conflict the priority is: Cut Decision > Plan Pack > external skill guidance. When a matched skill (e.g., `frontend-design`) recommends structure outside the allowed scope, keep the Cut scope and return the broader recommendation as scope-drift facts to `devflow-core`.
+External specialist skills complement the chain but never widen it. Under conflict the priority is: Cut Decision > Plan Pack > external skill guidance. When a matched skill (e.g., `frontend-design`) recommends structure outside the allowed scope, keep the Cut scope and return the broader recommendation as scope-drift facts to `devflow-core`.
 
 ## Root-Cause Fix Check
 
@@ -84,7 +84,7 @@ Native Check: is platform or standard-library capability enough?
 Overbuild Check: any new dependency/abstraction/config/directory/framework layer/generic engine? why needed now?
 Diff Check: how does each planned change trace to the goal?
 Scope Check: what unrequested behavior was cut?
-External Skills: <skill-name> (role: guides execution) / none — matched at Sense via Skill Discovery; inherited by the Plan Pack and loaded by Build.
+External Skills: <skill-name>; role: <bounded specialist work>; expected evidence: <result needed by this node>; return facts: <result / not-applicable / failure> / none — matched at Sense via Skill Discovery; inherited by the Plan Pack and loaded by Build.
 ```
 
 ## Overengineering Review Tags
@@ -193,7 +193,7 @@ When `CUT_BLOCKED` occurs, return the blocking facts to `devflow-core`. Core dec
 
 ## Handoff
 
-After `CUT_PASS`, record a Cut Decision containing the allowed scope, reuse conclusion, exclusions, required verification, `External Skills`, and `Depth`. A/B directly enter `devflow-plan`; C directly enters `devflow-build`. `CUT_REDUCE`, `CUT_REUSE`, and `CUT_BLOCKED` return facts to `devflow-core`; `CUT_REDUCE` and `CUT_REUSE` remain stopped until user confirmation. A Plan Pack that broadens scope returns affected-gate facts to Core before any later selection.
+After `CUT_PASS`, record a Cut Decision containing the allowed scope, reuse conclusion, exclusions, required verification, `External Skills`, and `Depth`. A recorded specialist role performs bounded work only; Cut retains reuse and scope authority, and `CUT_PASS` is never delegated. A/B directly enter `devflow-plan`; C directly enters `devflow-build`. `CUT_REDUCE`, `CUT_REUSE`, and `CUT_BLOCKED` return facts to `devflow-core`; `CUT_REDUCE` and `CUT_REUSE` remain stopped until user confirmation. A Plan Pack that broadens scope returns affected-gate facts to Core before any later selection.
 
 ## Verification
 

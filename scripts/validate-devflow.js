@@ -79,6 +79,24 @@ for (const reference of [
 assert(!core.includes("Method 0-15 + Capability Matrix"), "Core must not require full lifecycle methods at route start");
 assertHybridLifecycleContract(core);
 
+/** Guards the meta-skill capability contract: specialist roles stay bounded and result-bearing, never guidance-only. */
+function assertCapabilityContract(coreMethods, handoffSurfaces) {
+  assert(coreMethods.includes("Owner: current DevFlow node"), "core-methods.md must own the capability-call record");
+  assert(coreMethods.includes("Role: bounded specialist work"), "core-methods.md must define the bounded specialist role");
+  assert(coreMethods.includes("Return: result / not-applicable / failure facts"), "core-methods.md must define specialist return facts");
+  for (const [rel, body] of handoffSurfaces) {
+    assert(!body.includes("(role: guides execution)"), `${rel} must not fix External Skills to guidance-only`);
+  }
+}
+
+const coreMethods = read("skills/devflow-core/references/core-methods.md");
+assertCapabilityContract(coreMethods, [
+  ["skills/devflow-cut/SKILL.md", read("skills/devflow-cut/SKILL.md")],
+  ["skills/devflow-plan/SKILL.md", read("skills/devflow-plan/SKILL.md")],
+  ["commands/devflow-plan.toml", read("commands/devflow-plan.toml")],
+  ["skills/devflow-build/SKILL.md", read("skills/devflow-build/SKILL.md")]
+]);
+
 /** Protects Brainstorm from regressing to either premature completion or category-by-category interrogation. */
 function assertBrainstormFollowUpContract(skill, discipline) {
   for (const body of [skill, discipline]) {

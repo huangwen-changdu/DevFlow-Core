@@ -38,7 +38,18 @@ Read the narrowest useful facts:
 2. `.copilot/LEARNING_INDEX.md`, then only cards whose Trigger and Scope match.
 3. `docs/project-knowledge/AI-START-HERE.md` or `index.md`, then only navigation-selected documents.
 4. `graphify-out/GRAPH_REPORT.md` when architecture impact is in scope.
-5. Available environment skills; record a matching guidance skill without widening DevFlow scope.
+5. Available environment skills; record a matching specialist skill without widening DevFlow scope. For a matched specialist, record the bounded-work contract:
+
+```text
+Owner: current DevFlow node
+Role: bounded specialist work
+Expected evidence: result needed by that node
+Return: result / not-applicable / failure facts
+
+The current owner evaluates the return using its existing gate.
+```
+
+A specialist result cannot alter depth, approval, direct-success, or Core-return rules; DevFlow remains the lifecycle meta-skill.
 
 Missing indexes or references are non-blocking and must not create storage.
 
