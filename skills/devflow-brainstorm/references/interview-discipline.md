@@ -13,10 +13,11 @@ User request
 -> mandatory multi-angle exploration and problem-space recommendation
 -> corrected echo-back when understanding changes
 -> fixed Confirmed request summary
--> stop
+-> user-selected A/B/C gate
+-> A starts Spec; B/C start Cut; missing depth returns facts to Core
 ```
 
-`devflow-core` consumes the summary and chooses any later lifecycle work. This reference must not select or describe that later work.
+`devflow-core` consumes only missing-depth, exception, and non-unique facts. This reference presents A/B/C but never selects the depth; the selected branch starts directly.
 
 ## Clarification Depth
 
@@ -65,7 +66,7 @@ Mandatory on every request (default `deep`). Walk every angle and report what ea
 | Proportionality | Is the ask sized to the value? Over- or under-scoped? |
 | Hidden assumptions | What must be true for this request to make sense? Is any of it doubtful? |
 
-Findings feed the summary: gaps and risks go to `Identified gaps/risks`; direction thinking goes to `Directions considered` and `Recommended direction`. When every angle finds nothing, write `none` in those fields — do not invent findings.
+Findings feed the summary: gaps and risks go to `Identified gaps/risks`; direction thinking goes to `Directions considered` and `Recommended direction`. When every angle finds nothing, write `none` in those fields — do not invent findings. If an angle exposes a new decision-impact gap, return to One-Question Discipline and resolve it before producing `Confirmed request`.
 
 ## Problem-Space Recommendation
 
@@ -97,7 +98,7 @@ A correction that changes none of those may receive a direct one-line acknowledg
 
 ## One-Question Discipline
 
-Ask exactly one question at a time only when a real gap remains. Resolve gaps in this order:
+Ask exactly one question at a time only when a decision-impact gap remains. A question qualifies only when its answer could change scope, a constraint, acceptance, or a subsequent problem-space decision. Resolve qualifying gaps in this order:
 
 1. goal ambiguity;
 2. scope boundary;
@@ -105,6 +106,8 @@ Ask exactly one question at a time only when a real gap remains. Resolve gaps in
 4. constraint;
 5. acceptance;
 6. remaining open question.
+
+Do not ask merely because a category is unfilled: record a fact-backed `none` or non-blocking unknown instead. Stop asking when no decision-impact gap remains and every non-blocking unknown is recorded in `Confirmed request`.
 
 Use this shape for every question:
 
@@ -114,7 +117,9 @@ Recommended answer: <answer and rationale>
 Why now: <risk or dependency this resolves>
 ```
 
-Do not ask for an answer that project facts establish. Do not ask a later-category question while an earlier category remains unclear. Use the user's language; avoid unexplained technical terms.
+After every answer, compare it with confirmed facts and the current request. An answer that introduces a load-bearing assumption, exposes a contradiction, or changes goal, scope, exclusions, constraints, acceptance, terminology, or actor triggers the Understanding Revision Rule before another question or summary. Otherwise, record the answer and continue only if another decision-impact gap remains.
+
+Do not ask for an answer that project facts establish. Do not ask a later-category question while an earlier qualifying category remains unclear. Use the user's language; avoid unexplained technical terms.
 
 ## Ambiguity Signals
 
@@ -151,6 +156,10 @@ Confirmed request:
 
 This summary is the factual basis downstream skills — starting with `devflow-spec` — build on; record findings faithfully. It carries no implementation plan, solution-space design, lifecycle route, or handoff.
 
+## A/B/C Gate
+
+After the fixed summary, present A, B, and C and wait for the user's explicit depth choice. Record the selected `Depth` with the branch input: A starts Spec and B/C start Cut. A missing or changed depth returns facts to Core.
+
 ## Anti-Rationalization
 
 | Excuse | Reality |
@@ -158,7 +167,7 @@ This summary is the factual basis downstream skills — starting with `devflow-s
 | "A paraphrase is enough." | Surface assumptions and specific gaps. |
 | "Ask everything at once." | Ask one question, then wait. |
 | "The codebase answers user intent." | Code answers current facts, not desired behavior. |
-| "Clarification should pick the next skill." | The summary stops here; Core owns routing. |
+| "Clarification should pick the next skill." | The summary does not choose. Brainstorm presents A/B/C and starts only the user's selected branch. |
 | "A design or document belongs in the summary." | Record the request and exploration findings only. |
 | "The request looks simple, so the checklist can be skipped." | Simple-looking requests hide the most assumptions; report per-angle findings even when they are `none`. |
 | "The user wants speed, so skip a gate." | Compress wording, never gates. Speed comes from fewer real gaps, not skipped structure. |
@@ -171,5 +180,5 @@ This summary is the factual basis downstream skills — starting with `devflow-s
 - [ ] The multi-angle checklist ran with per-angle findings, and those findings reached the summary.
 - [ ] Recommendations stayed inside the problem space.
 - [ ] Changed understanding was re-echoed and confirmed before proceeding.
-- [ ] `Confirmed request` includes every fixed field.
+- [ ] `Confirmed request` includes every fixed field, followed by an explicit A/B/C user gate.
 - [ ] The summary contains no design, route, handoff, documentation, recovery, or implementation instruction.

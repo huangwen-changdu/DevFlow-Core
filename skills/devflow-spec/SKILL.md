@@ -51,7 +51,7 @@ Do not force a spec for Design-lite work where a short design contract and quick
    - Scope: if multiple independent subsystems appear, split into separate specs.
    - Design: the comparison names the real alternatives and the selected approach has an explicit trade-off.
 6. Run `node scripts/devflow-spec.js <spec-file>` when the script exists. If not found at `scripts/devflow-spec.js` (project-level), try `~/.codex/scripts/devflow-spec.js` or `~/.claude/scripts/devflow-spec.js` (user-level). Do NOT look under `skills/scripts/`. See `core-methods.md` Script Path Resolution.
-7. **STOP — Wait for user approval of the design contract and spec.** Tell the user the spec path and review result. If they request changes, revise the comparison/design contract and re-run self-review. After approval, Spec returns the confirmed Spec to `devflow-core` and stops; only Core selects Cut, Plan, Build, Prove, Recovery, or no further lifecycle work.
+7. **STOP — Wait for user approval of the design contract and spec.** Tell the user the spec path and review result. If they request changes, revise the comparison/design contract and re-run self-review. An approved A-branch Spec directly enters `devflow-cut`; any non-success state returns facts to `devflow-core`.
 
 ## Output
 
@@ -60,7 +60,7 @@ Spec: docs/specs/YYYY-MM-DD-<short-kebab-name>.md
 Source: <Confirmed request selected by devflow-core>
 Design: options compared <pass/fail>; selected approach and trade-off <pass/fail>
 Review: unresolved-marker scan <pass/fail>; consistency <pass/fail>; scope <pass/fail>; design <pass/fail>
-Next: confirmed Spec -> `devflow-core` selects any needed Cut, Plan, Build, Prove, Recovery, or no further lifecycle work
+Next: approved A-branch Spec -> `devflow-cut`; non-success facts -> `devflow-core`
 ```
 
 ## Anti-Rationalization
@@ -70,7 +70,7 @@ Next: confirmed Spec -> `devflow-core` selects any needed Cut, Plan, Build, Prov
 | "A plan is enough." | If requirements can drift across tasks, write the spec first. |
 | "The spec can be vague; the plan will decide." | Vague specs create wrong plans. Resolve or mark the question before planning. |
 | "Brainstorm already chose the approach." | Brainstorm confirms what the user wants; Spec compares how to satisfy it and records the design contract. |
-| "The user approved the spec, so hand off directly to Cut." | Approval returns the confirmed Spec to Core; only Core chooses the next lifecycle skill. |
+| "The user approved the spec, so Core must route it." | An approved A-branch Spec has one successor and directly enters Cut; exceptions still return Core facts. |
 | "This belongs in docs/features." | `docs/features/` is product ledger memory, not a generated implementation spec. |
 | "The user said implement, so skip approval." | Implementation requests still need the lightest useful design/spec source before Build. |
 | "Code Documentation is unnecessary, the code is self-explanatory." | Record the actual decision: `none — trivial change` is valid only when no project convention, public boundary, or non-obvious WHY needs preservation. |
@@ -89,4 +89,4 @@ Before leaving this skill, confirm:
 - [ ] Code Documentation section names triggered documentation requirements and locations (or explicitly states "none — trivial change").
 - [ ] `scripts/devflow-spec.js` ran when available.
 - [ ] User reviewed and approved the design contract and written spec.
-- [ ] The confirmed Spec was returned to `devflow-core`; Spec did not select or hand off to Cut, Plan, Build, Prove, or Recovery.
+- [ ] An approved A-branch Spec entered `devflow-cut`; any non-success facts returned to `devflow-core`.

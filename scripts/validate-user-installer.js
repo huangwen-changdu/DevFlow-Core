@@ -34,12 +34,18 @@ function userEntries() {
   return [...match[1].matchAll(/"([^"]+)"/g)].map((entry) => entry[1]);
 }
 
-/** Ensures a user-level Core loading map resolves each local owner reference. */
+/** Ensures a user-level Core loading map resolves owner references and hybrid lifecycle boundaries. */
 function assertInstalledRuntimeContract(home) {
   const core = fs.readFileSync(path.join(home, "skills/devflow-core/SKILL.md"), "utf8");
   for (const reference of ownerReferences) {
     assert(fs.existsSync(path.join(home, reference)), `User runtime missing owner reference: ${reference}`);
     assert(core.includes(path.basename(reference)), `User Core loading map missing ${path.basename(reference)}`);
+  }
+  for (const edge of ["A direct success", "B direct success", "C direct success"]) {
+    assert(core.includes(edge), `User Core missing direct success edge: ${edge}`);
+  }
+  for (const exception of ["CUT_REDUCE", "CUT_REUSE", "CUT_BLOCKED", "scope drift", "BUILD_BLOCKED", "Proof FAIL or BLOCKED", "PUA recovery"]) {
+    assert(core.includes(exception), `User Core missing Core-return exception: ${exception}`);
   }
   assert(!fs.existsSync(path.join(home, "AGENTS.md")), "User runtime must not install project AGENTS.md");
 }

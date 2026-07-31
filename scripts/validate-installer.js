@@ -34,7 +34,7 @@ function installerEntries() {
   return [...match[1].matchAll(/"([^"]+)"/g)].map((entry) => entry[1]);
 }
 
-/** Ensures an installed runtime can resolve every owner reference declared by Core. */
+/** Ensures an installed runtime resolves owner references and preserves hybrid direct/Core boundaries. */
 function assertInstalledRuntimeContract(target) {
   const core = fs.readFileSync(path.join(target, "skills/devflow-core/SKILL.md"), "utf8");
   for (const reference of ownerReferences) {
@@ -42,8 +42,15 @@ function assertInstalledRuntimeContract(target) {
     assert(core.includes(path.basename(reference)), `Installed Core loading map missing ${path.basename(reference)}`);
   }
 
-  for (const boundary of ["Confirmed request", "confirmed Spec", "Cut returns", "confirmed Plan", "BUILD_BLOCKED", "recovery facts", "Only Core selects"]) {
-    assert(core.includes(boundary), `Installed Core missing return boundary: ${boundary}`);
+  for (const edge of [
+    "A direct success: Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove",
+    "B direct success: Brainstorm -> Cut -> Plan -> Build -> Prove",
+    "C direct success: Brainstorm -> Cut -> Build -> Prove"
+  ]) {
+    assert(core.includes(edge), `Installed Core missing direct success edge: ${edge}`);
+  }
+  for (const exception of ["CUT_REDUCE", "CUT_REUSE", "CUT_BLOCKED", "scope drift", "BUILD_BLOCKED", "Proof FAIL or BLOCKED", "PUA recovery"]) {
+    assert(core.includes(exception), `Installed Core missing Core-return exception: ${exception}`);
   }
 
   const agents = fs.readFileSync(path.join(target, "AGENTS.md"), "utf8");

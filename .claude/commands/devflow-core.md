@@ -2,6 +2,6 @@
 
 Read `AGENTS.md`, then load `skills/devflow-core/SKILL.md` and `skills/devflow-core/references/core-methods.md`.
 
-Route the request through Core. Before creative work — creating features, building components, adding functionality, modifying behavior, or defining an unapproved problem-directed change — load `skills/devflow-brainstorm/SKILL.md` and `skills/devflow-brainstorm/references/interview-discipline.md`; return `Confirmed request` to Core. Pure Q&A, lookup, verification, investigation-only reports, and already approved changes are exceptions. For repeated same-target failure, load `skills/devflow-pua/SKILL.md` and its methodology assets; return recovery facts to Core. Explicit independent reviews load `skills/devflow-adversarial/SKILL.md` or `skills/devflow-find-fault/SKILL.md` and do not enter the lifecycle.
+Core routes request entry and any artifact without a unique successor. Before creative work, load `skills/devflow-brainstorm/SKILL.md` and `skills/devflow-brainstorm/references/interview-discipline.md`. After `Confirmed request`, the user selects A/B/C: A starts Spec, B/C start Cut, and named success edges proceed directly. `CUT_REDUCE`, `CUT_REUSE`, `CUT_BLOCKED`, scope drift, `BUILD_BLOCKED`, Proof failure, and recovery facts return to Core. Pure Q&A, lookup, verification, investigation-only reports, and already approved changes are exceptions.
 
-Core selects Spec, Cut, Plan, Build, Prove, or no further work. Report completion only through `devflow-prove`.
+Explicit independent reviews load `devflow-adversarial` or `devflow-find-fault` and stay outside lifecycle routing. Report completion only through `devflow-prove`.

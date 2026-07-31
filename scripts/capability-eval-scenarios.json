@@ -7,13 +7,14 @@
     "command": "trigger:verify",
     "scenarioEvidence": [
       "Route: Design",
-      "Skill path: `devflow-core -> devflow-brainstorm -> Confirmed request -> devflow-core`",
+      "Skill path: `devflow-core -> devflow-brainstorm -> Confirmed request -> user-selected A/B/C direct branch`",
       "Brainstorm must send a Semantic Echo-Back, apply the Understanding Revision Rule when a correction changes the request, then ask or infer only goal, scope, exclusions, constraints, acceptance, and open questions.",
-      "Brainstorm must output the fixed `Confirmed request` summary with `Status: clarified` and stop.",
-      "`devflow-core` alone chooses any subsequent lifecycle work; when it selects Spec, Spec compares real options, waits for design approval, and returns the confirmed Spec to Core."
+      "Brainstorm must output the fixed `Confirmed request` summary with `Status: clarified`, present A/B/C, and wait for explicit user selection.",
+      "A directly follows Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove; B directly follows Brainstorm -> Cut -> Plan -> Build -> Prove; C directly follows Brainstorm -> Cut -> Build -> Prove.",
+      "`devflow-core` alone selects after non-unique facts: missing or changed depth, `CUT_REDUCE`, `CUT_REUSE`, `CUT_BLOCKED`, scope drift, `BUILD_BLOCKED`, Proof `FAIL`/`BLOCKED`, changed intent, or PUA recovery."
     ],
     "commandEvidence": ["Skill Trigger Verification Report"],
-    "negativeConstraints": ["Brainstorm must output the fixed `Confirmed request` summary with `Status: clarified` and stop.", "Brainstorm must not choose an approach, route, depth, design contract, or handoff.", "Spec must not directly hand off to Cut.", "Cut must return its Cut Decision to Core before lifecycle selection.", "Plan must return the confirmed Plan to Core before lifecycle selection.", "PUA must return recovery facts to Core before lifecycle selection."]
+    "negativeConstraints": ["Brainstorm must not choose an approach, route, depth, design contract, or handoff; it starts only the user-selected direct branch.", "`devflow-core` alone selects after non-unique facts: missing or changed depth, `CUT_REDUCE`, `CUT_REUSE`, `CUT_BLOCKED`, scope drift, `BUILD_BLOCKED`, Proof `FAIL`/`BLOCKED`, changed intent, or PUA recovery.", "PUA returns recovery facts to Core before lifecycle selection."]
   },
   {
     "id": "first-principles-cut",

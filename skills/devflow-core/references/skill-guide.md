@@ -3,13 +3,11 @@
 ## Skill Chain
 
 ```text
-devflow-core
-  -> devflow-brainstorm
-  -> devflow-spec (when saved requirements source is needed)
-  -> devflow-cut
-  -> devflow-plan (when Core selects a Plan Pack after CUT_PASS)
-  -> devflow-build
-  -> devflow-prove
+devflow-core -> devflow-brainstorm -> user-selected A/B/C
+  -> A: devflow-spec -> devflow-cut -> devflow-plan -> devflow-build -> devflow-prove
+  -> B: devflow-cut -> devflow-plan -> devflow-build -> devflow-prove
+  -> C: devflow-cut -> devflow-build -> devflow-prove
+  -> non-unique artifact: return facts to devflow-core
   -> devflow-pua (when user challenge/repeated miss appears)
   -> devflow-learn (when correction/pitfall appears)
   -> devflow-audit (when repo-wide overengineering audit is requested)
@@ -19,8 +17,8 @@ devflow-core
 
 | Skill | Responsibility |
 |---|---|
-| `devflow-core` | Route the task, load shared methods, select the next owner, and preserve the overall contract. |
-| `devflow-brainstorm` | Clarify intent and compare approaches. |
+| `devflow-core` | Route entry and any non-unique artifact, load shared methods, and maintain the compact flow map. |
+| `devflow-brainstorm` | Clarify intent, then let the user select A/B/C and start its direct branch. |
 | `devflow-spec` | Write and validate saved requirements specs under `docs/specs/` before implementation planning. |
 | `devflow-plan` | Create a Plan Pack from a `CUT_PASS`-bounded spec or approved design. |
 | `devflow-cut` | Prevent overengineering and force reuse checks. |
@@ -36,7 +34,7 @@ devflow-core
 - Put trigger phrases in `description`.
 - Prefer imperative steps over explanation.
 - Do not duplicate all framework rules inside every skill.
-- Each skill must return an artifact or facts to Core, or state an independent stop boundary.
+- A skill directly follows only its named A/B/C success edge; every other artifact returns facts to Core or states an independent stop boundary.
 - Each skill must be executable: trigger, action steps, anti-rationalization check, stop/handoff, proof.
 - Put shared routing details in `skills/devflow-core/references/core-methods.md`; put detailed lifecycle methods in the selected owner's local reference.
 

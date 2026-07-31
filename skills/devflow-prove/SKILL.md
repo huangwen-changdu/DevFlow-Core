@@ -21,28 +21,33 @@ When this skill activates, read these local references before choosing or runnin
 Load `skills/devflow-prove/references/proof-recovery-methods.md` before selecting proof. It owns the shared proof and recovery method details used by Prove and PUA.
 
 1. Identify the command, test, build, lint, diff check, validation script, or manual scenario that proves the claim.
-2. Run the narrowest sufficient check now.
-3. Run adversarial review (对抗式审查) before completion for development work: try to disprove the result from the user's acceptance criteria, touched files, likely regressions, missing activation path, and skipped proof.
-4. Read the real output and exit status.
-5. For code changes: run the **Code Quality Review** (General Engineering Review + Language-Specific Checklist from `code-review-checklist.md`), then generate a **Code Review Report** (see format below). Classify findings as blockers, approved-contract gaps, or recommendations. A blocker or contract gap returns `FAIL` facts to Core; recommendations do not block an otherwise proven result.
-6. If it fails, report `FAIL` and return to Recovery; use `devflow-pua` when the failure includes user challenge, repeated miss, or changed-wrong behavior.
-7. If it cannot run, report `BLOCKED` and name the missing condition.
-8. On `PASS`, load `devflow-learn` for its mandatory proactive completion review before final completion reporting. The review may yield a learning card, a project-knowledge candidate pending user confirmation, or no useful record.
-9. Only then report completion or `candidate_pass`.
+2. Confirm the exact changed files, approved File Structure/Plan boundary, latest Prewalk Execution Trace and Current Handoff Facts. Read the task's remaining-work completion evidence plus the nearest comparable code.
+3. Run the narrowest sufficient check now, then independently inspect the actual implementation diff before interpreting test results.
+4. Run adversarial review (对抗式审查) against the approved responsibility boundary, Prewalk facts, direct contracts, nearby convention, and likely regressions.
+5. For code changes: run the **Code Quality Review** (General Engineering Review + Language-Specific Checklist from `code-review-checklist.md`), then generate a **Code Review Report** (see format below). Classify each evidence-backed finding as Blocker, Warning, or Recommendation. An unresolved Blocker or Warning returns `FAIL` facts to Core; recommendations do not block an otherwise proven result.
+6. Read the real output and exit status.
+7. If it fails, report `FAIL` facts to `devflow-core`; Core selects Recovery or another owner. Use `devflow-pua` when the failure includes user challenge, repeated miss, or changed-wrong behavior.
+8. If it cannot run, report `BLOCKED` facts to `devflow-core` and name the missing condition.
+9. On `PASS`, load `devflow-learn` for its mandatory proactive completion review before final completion reporting. The review may yield a learning card, a project-knowledge candidate pending user confirmation, or no useful record.
+10. Only then report completion or `candidate_pass`.
+
+## Exception Return Boundary
+
+Prove is the terminal direct-success step. `PASS` completes only after the Learn review. `FAIL`, `BLOCKED`, an adversarial gap, an unresolved Code Review Blocker/Warning, or a missing recovery-proof field are non-unique facts and return to `devflow-core`; Prove does not select the repair, recovery, or re-clarification skill.
 
 ## Proof Selection
 
 | Work type | Proof |
 |---|---|
 | Docs/rules/skills | File presence, frontmatter, required wording, command entries, path consistency, scenario checklist. |
-| Code | Targeted test, build, lint, typecheck, or runtime scenario. **Plus: comment verification — check requirements recorded by the Spec/Plan or local convention, and any non-obvious decision, business, security, or compatibility boundary.** **Plus: language-specific code quality review — detect language from file extensions, apply the matching checklist in `skills/devflow-prove/references/code-review-checklist.md`, and classify findings using its applicability and risk rules.** |
+| Code | Targeted test, build, lint, typecheck, or runtime scenario. **Plus: inspect the actual implementation diff against the approved File Structure/Plan boundary, Prewalk evidence, and nearest comparable code before interpreting test results.** **Plus: comment verification — check requirements recorded by the Spec/Plan or local convention, and any non-obvious decision, business, security, or compatibility boundary.** **Plus: language-specific code quality review — detect language from file extensions, apply the matching checklist in `skills/devflow-prove/references/code-review-checklist.md`, and classify evidence-backed Blockers, Warnings, and Recommendations.** |
 | Bug fix | Original symptom reproduction or regression check. **Plus: verify any documented fix rationale and any non-obvious failure condition that needs preservation.** |
 | Framework design | Native capability coverage, anti-pattern gates, skill behavior, and output contracts. |
 | Productized skill pack | `npm test` or equivalent package validation. |
 
 ## Adversarial Review
 
-After development work, adversarial review (对抗式审查) is mandatory before completion: check the strongest plausible reason the change is still wrong, incomplete, unreachable, over-broad, or under-verified. If the adversarial review finds a real gap, report `FAIL` or continue the appropriate DevFlow route before claiming completion.
+After development work, adversarial review (对抗式审查) is mandatory before completion: check the strongest plausible reason the change is still wrong, incomplete, unreachable, over-broad, or under-verified. If the adversarial review finds a real gap, report `FAIL` facts to `devflow-core` before claiming completion.
 
 Adversarial review checklist for code changes:
 
@@ -52,7 +57,7 @@ Adversarial review checklist for code changes:
 - **Scope creep**: Does the diff include unrequested behavior or drive-by refactors?
 - **Proof coverage**: Is the verification narrow enough to be meaningful, or is it a rubber-stamp?
 - **Code comments**: Are all Spec/Plan/local-convention requirements present? Are non-obvious decisions, business rules, security, or compatibility boundaries documented where needed? A missing triggered comment is an approved-contract gap; absence of untriggered narration is not.
-- **Code Quality**: Two-layer review. The adversarial review items above (Correctness, Regression, Activation path, Scope creep) already cover functional correctness. Then run the **General Engineering Review** from `skills/devflow-prove/references/code-review-checklist.md` for the remaining dimensions: requirements understanding, code quality (readability, maintainability, testability), performance, security, error handling. Finally, detect language(s) from file extensions and apply the matching **Language-Specific Checklist**. **Generate a Code Review Report (see format below) classifying blockers, contract gaps, and recommendations; only the first two block PASS.**
+- **Code Quality**: Two-layer review. The adversarial review items above (Correctness, Regression, Activation path, Scope creep) already cover functional correctness. Then run the **General Engineering Review** from `skills/devflow-prove/references/code-review-checklist.md` for the remaining dimensions: requirements understanding, code quality (readability, maintainability, testability), performance, security, error handling. Finally, detect language(s) from file extensions and apply the matching **Language-Specific Checklist**. **Generate a diff-first Code Review Report (see format below) with actual changed-code evidence, Plan boundary, Prewalk evidence, Blockers, Warnings, Recommendations, and Boundary verdict; unresolved Blockers or Warnings block PASS.**
 
 After agent rule, command, prompt, entry, or `SKILL.md` changes, run a Skill Activation Chain Check before completion:
 
@@ -86,33 +91,29 @@ Not covered: <none or explicit gap>
 
 ## Code Review Report
 
-For code changes, after running the Code Quality Review (General Engineering Review + Language-Specific Checklist), generate this report before claiming PASS or FAIL. A blocker or approved-contract gap returns `FAIL` facts to Core; recommendations remain visible but do not independently prevent PASS.
+For code changes, after running the Code Quality Review (General Engineering Review + Language-Specific Checklist), generate this report before claiming PASS or FAIL. Review the actual diff before relying on test results. A Blocker or unresolved Warning returns `FAIL` facts to Core; Recommendations remain visible but do not independently prevent PASS.
 
 ```text
 Code Review Report:
-─ General Engineering Review:
-  [PASS/FAIL] Requirements Understanding — <note or ok>
-  [PASS/FAIL] Code Quality: Readability — <note or ok>
-  [PASS/FAIL] Code Quality: Maintainability — <note or ok>
-  [PASS/FAIL] Code Quality: Testability — <note or ok>
-  [PASS/FAIL] Performance — <note or ok>
-  [PASS/FAIL] Security — <note or ok>
-  [PASS/FAIL] Error Handling — <note or ok>
-─ Language-Specific (<detected language>):
-  [PASS/FAIL] <checklist item> — <note if FAIL, omit if PASS>
-  ...
-─ Blockers / contract gaps: <count>
-  1. [Blocker/Contract gap] <file>:<line> — <problem> → <suggested fix>
-─ Recommendations: <count>
-  1. [Recommendation] <file>:<line> — <contextual improvement> → <suggested option>
-─ Judgment: PASS (no blockers or contract gaps) / FAIL (blocker or contract gap)
+- Diff reviewed: [actual changed files/ranges].
+- Plan boundary: [approved File Structure row(s) and verdict].
+- Prewalk evidence: [Execution Trace, Handoff Facts, remaining-work completion evidence].
+- Comparable code: [nearest inspected file/symbol and observed convention].
+- Blockers: [count].
+  1. [Blocker] [file:line] — [changed-code evidence and concrete risk] → [smallest correction].
+- Warnings: [count].
+  1. [Warning] [file:line] — [evidence-backed issue] → [required closure].
+- Recommendations: [count].
+  1. [Recommendation] [file:line] — [contextual improvement] → [optional choice].
+- Boundary verdict: [within approved responsibility/touch set or drift facts returned to Core].
+- Judgment: PASS (no unresolved Blockers or Warnings) / FAIL (Blocker or Warning remains).
 ```
 
 Rules:
-- List every FAIL item with file, line, problem, and suggested fix.
-- Severity: `Critical` = must fix before PASS (security, correctness, data loss). `Warning` = should fix (readability, convention, minor pattern).
-- If all items PASS, the report is still generated (shows all green) — this is evidence, not theater.
-- **STOP gate**: when a blocker or approved-contract gap is found, do not claim `PASS`; return the facts to Core for the next lifecycle decision. Recommendations remain visible in the report but do not independently stop an otherwise proven result.
+- Every Blocker or Warning identifies an actual changed-code location, evidence, concrete risk, and smallest correction.
+- A pattern preference, function size, class name, dependency count, missing cache, or fixed architectural shape cannot block by itself.
+- Re-review the new diff after every quality repair and explicitly close or persist each prior Blocker/Warning.
+- **STOP gate**: when a Blocker or Warning remains, do not claim `PASS`; return the facts to Core for the next lifecycle decision. Recommendations remain visible but do not independently stop an otherwise proven result.
 
 ## Learning Check
 
@@ -158,7 +159,7 @@ Recovery evidence:
 - Changed approach: <old path abandoned; new path>
 ```
 
-If any field is missing or empty, recovery was not executed. Report `FAIL` and return to `devflow-pua`; a bare `METHOD:` line without diagnosis, quarantine, and a changed approach is not recovery.
+If any field is missing or empty, recovery was not executed. Report `FAIL` facts to `devflow-core`, which may select `devflow-pua`; a bare `METHOD:` line without diagnosis, quarantine, and a changed approach is not recovery.
 
 ## Evidence Rules
 

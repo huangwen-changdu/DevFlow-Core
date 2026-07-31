@@ -68,6 +68,32 @@ const scenarios = [
     ]
   },
   {
+    name: "A/B/C direct-success branches",
+    route: "Design",
+    input: "Confirm the request, then I choose A, B, or C.",
+    evidence: [
+      ["skills/devflow-brainstorm/SKILL.md", "A/B/C Gate"],
+      ["skills/devflow-brainstorm/SKILL.md", "only by the user-selected direct branch"],
+      ["skills/devflow-spec/SKILL.md", "approved A-branch Spec directly enters `devflow-cut`"],
+      ["skills/devflow-cut/SKILL.md", "A/B directly enter `devflow-plan`; C directly enters `devflow-build`"],
+      ["skills/devflow-plan/SKILL.md", "approved A/B Plan directly enters `devflow-build`"],
+      ["skills/devflow-build/SKILL.md", "completed Build directly enters `devflow-prove`"]
+    ]
+  },
+  {
+    name: "hybrid exception return",
+    route: "Recovery",
+    input: "Cut reduces scope, the plan drifts, Build blocks, or Proof fails.",
+    evidence: [
+      ["skills/devflow-core/SKILL.md", "Core Return Boundaries"],
+      ["skills/devflow-cut/SKILL.md", "CUT_REDUCE`, `CUT_REUSE`, and `CUT_BLOCKED` return facts to `devflow-core`"],
+      ["skills/devflow-plan/SKILL.md", "scope-drift facts return to `devflow-core`"],
+      ["skills/devflow-build/SKILL.md", "return `BUILD_BLOCKED` with the facts to `devflow-core`"],
+      ["skills/devflow-prove/SKILL.md", "Exception Return Boundary"],
+      ["skills/devflow-pua/SKILL.md", "PUA never selects the replacement execution skill"]
+    ]
+  },
+  {
     name: "contextual engineering quality",
     route: "Build",
     input: "Implement an approved order-history change that matches project conventions and uses caching only when justified.",
@@ -105,9 +131,23 @@ const scenarios = [
     input: "Create implementation slices from this approved design after Cut passes.",
     evidence: [
       ["skills/devflow-core/SKILL.md", "Spec or Plan"],
-      ["skills/devflow-plan/SKILL.md", "confirmed Plan"],
+      ["skills/devflow-plan/SKILL.md", "approved A/B Plan"],
       ["skills/devflow-plan/SKILL.md", "spec-plan-methods.md"],
       ["skills/devflow-spec/references/spec-plan-methods.md", "Plan Pack"]
+    ]
+  },
+  {
+    name: "plan-owned handoff and diff-first proof",
+    route: "Build -> Prove",
+    input: "Implement the approved export plan, then verify the actual change before calling it ready.",
+    evidence: [
+      ["skills/devflow-plan/SKILL.md", "## File Structure"],
+      ["skills/devflow-plan/SKILL.md", "Execution Trace"],
+      ["skills/devflow-plan/SKILL.md", "Remaining Structured Worklist"],
+      ["scripts/devflow-plan.js", "maximumWorklistItems"],
+      ["skills/devflow-prove/SKILL.md", "actual implementation diff"],
+      ["skills/devflow-prove/SKILL.md", "unresolved Blocker or Warning"],
+      ["skills/devflow-prove/references/flow-self-test.md", "Scenario 5C: Diff-First Prove Quality Gate"]
     ]
   },
   {

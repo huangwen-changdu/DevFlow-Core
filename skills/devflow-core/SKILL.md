@@ -5,7 +5,7 @@ description: "Use when starting development work, routing Problem, Fast, Design-
 
 # DevFlow Core
 
-Route work through the smallest reliable lifecycle. Core owns every next-step selection; specialist skills return artifacts or facts to Core.
+Route work through the smallest reliable lifecycle. Core owns next-step selection only when an artifact has no unique successor; skills directly execute the A/B/C success edges defined below.
 
 ## Activation Evidence
 
@@ -47,28 +47,39 @@ Unknowns: <none or specific unknown>
 | Problem | A reported problem has no explicit fix request. | Prove facts first, then select later work only if a change is known. |
 | Fast | Pure answer, lookup, verification, or one local low-risk change. | Sense, then narrow proof. |
 | Design-lite | Existing feature, one clear low-risk path, quick proof. | State goal, acceptance, exclusions; select Cut before Build. |
-| Design | New requirement, behavior or architecture change, ambiguity, or multiple options. | Select Brainstorm, consume Confirmed request, then select the smallest next work. |
+| Design | New requirement, behavior or architecture change, ambiguity, or multiple options. | Select Brainstorm; after confirmation its user-selected A/B/C path directly starts Spec or Cut. |
 | Build | User asks to implement, fix, build, or land an approved change. | Select Cut, then Plan when construction needs several steps, then Build and Prove. |
 | Recovery | Same target remains wrong after correction or proof failure. | Select PUA, consume recovery facts, then choose a different path. |
 
+## Core Flow Map
+
+```text
+A direct success: Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove
+B direct success: Brainstorm -> Cut -> Plan -> Build -> Prove
+C direct success: Brainstorm -> Cut -> Build -> Prove
+
+CUT_REDUCE, CUT_REUSE, CUT_BLOCKED, scope drift, BUILD_BLOCKED,
+Proof FAIL or BLOCKED, and PUA recovery -> Core selects the next owner or stop.
+```
+
 ## Core Return Boundaries
 
-- Brainstorm returns `Confirmed request` and `Status: clarified`.
-- Spec returns a confirmed Spec after user approval.
-- Cut returns `CUT_PASS`, `CUT_REDUCE`, `CUT_REUSE`, or `CUT_BLOCKED`.
-- Plan returns a confirmed Plan and scope-drift facts after user review.
+- Brainstorm returns only clarification or missing-depth facts; a selected depth directly starts A -> Spec or B/C -> Cut.
+- Spec directly sends an approved A-branch Spec to Cut; a non-success result returns facts to Core.
+- Cut directly sends `CUT_PASS` A/B to Plan or C to Build; `CUT_REDUCE`, `CUT_REUSE`, and `CUT_BLOCKED` return facts to Core.
+- Plan directly sends an approved A/B Plan to Build; scope-drift facts return to Core.
 - Build returns `BUILD_BLOCKED` facts when its Plan Review or execution is blocked.
 - PUA returns recovery facts after its method switch.
 - Prove returns PASS, FAIL, or BLOCKED and invokes Learn after PASS.
 
-Only Core selects what happens next. `CUT_REDUCE` and `CUT_REUSE` stop for user confirmation. Independent `devflow-adversarial` and `devflow-find-fault` review current material only and do not enter lifecycle routing.
+Core selects only after a returned non-unique artifact. `CUT_REDUCE` and `CUT_REUSE` stop for user confirmation. Independent `devflow-adversarial` and `devflow-find-fault` review current material only and do not enter lifecycle routing.
 
 ## Capability Dispatch
 
 - Unclear requirement, new feature, behavior change, or multiple options: select `devflow-brainstorm` for Semantic Echo-Back and a fixed Confirmed request.
 - Explicit spec or design document: select `devflow-spec` after confirmed request.
 - New structure, dependency, abstraction, configuration, folder, or generic capability: select `devflow-cut`.
-- Approved construction work: select `devflow-build` only after Cut and any Core-selected Plan.
+- Approved construction work: select `devflow-build` when Core receives a non-unique construction artifact; A/B approved Plans and C `CUT_PASS` enter Build directly.
 - Completion claim: select `devflow-prove` and require fresh evidence plus adversarial review.
 - Repeated same-target correction: select `devflow-pua`, then re-read facts and switch approach.
 - Reusable correction or verified PASS: select `devflow-learn` for a selective review.

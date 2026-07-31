@@ -1,6 +1,6 @@
 # DevFlow Cut Methods
 
-Owner: `devflow-cut`. Load this reference only after Core selects Cut.
+Owner: `devflow-cut`. Load this reference after a user-selected A/B/C direct Cut entry or when Core selects Cut for a non-unique artifact.
 
 ## Method 5: Minimal Solution Ladder
 
@@ -71,4 +71,3 @@ devflow: <ceiling>, revisit when <trigger>
 ```
 
 Never use a marker to excuse missing security, data safety, accessibility, or requested behavior.
-

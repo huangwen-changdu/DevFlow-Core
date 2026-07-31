@@ -11,11 +11,11 @@ Cut unnecessary work before writing it.
 
 ## Context
 
-Receives a `devflow-core`-selected, approved design or confirmed Spec. Cut decides the smallest implementation boundary before any construction plan; do not use a future plan as evidence for these gates.
+Receives a Core-selected approved design or an approved A-branch Spec. Cut decides the smallest implementation boundary before any construction plan; do not use a future plan as evidence for these gates.
 
 Before applying the Minimal Solution Ladder or Required Gates, load `skills/devflow-cut/references/cut-methods.md`. That reference owns the detailed reuse, root-cause, native, overbuild, and debt rules.
 
-- `CUT_PASS` produces a Cut Decision and returns it to `devflow-core`.
+- `CUT_PASS` produces a Cut Decision and directly enters Plan for A/B or Build for C.
 - A user-approved Plan Pack receives only a lightweight Cut-consistency review. If it adds scope, dependencies, abstractions, or file responsibilities outside the Cut Decision, return the affected-gate facts to Core before any further lifecycle choice.
 
 ## Cut Intensity
@@ -159,7 +159,7 @@ Do not remove:
 Output one of:
 
 ```text
-CUT_PASS: smallest scope holds; return the Cut Decision to `devflow-core`
+CUT_PASS: smallest scope holds; A/B enter `devflow-plan`, C enters `devflow-build`
 CUT_REDUCE: proposed scope is too heavy; reduce to <smaller option>
 CUT_REUSE: existing capability can be reused; do not write new implementation
 CUT_BLOCKED: missing facts or risk too high; return the blocking facts to `devflow-core`
@@ -193,7 +193,7 @@ When `CUT_BLOCKED` occurs, return the blocking facts to `devflow-core`. Core dec
 
 ## Handoff
 
-After `CUT_PASS`, record a Cut Decision containing the allowed scope, reuse conclusion, exclusions, required verification, and the `External Skills` declaration. This is Cut's sole handoff: return the result to `devflow-core`, which alone selects later lifecycle work. `CUT_REDUCE` and `CUT_REUSE` remain stopped until user confirmation; a Plan Pack that broadens scope returns affected-gate facts here before any later selection.
+After `CUT_PASS`, record a Cut Decision containing the allowed scope, reuse conclusion, exclusions, required verification, `External Skills`, and `Depth`. A/B directly enter `devflow-plan`; C directly enters `devflow-build`. `CUT_REDUCE`, `CUT_REUSE`, and `CUT_BLOCKED` return facts to `devflow-core`; `CUT_REDUCE` and `CUT_REUSE` remain stopped until user confirmation. A Plan Pack that broadens scope returns affected-gate facts to Core before any later selection.
 
 ## Verification
 

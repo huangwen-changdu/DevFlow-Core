@@ -4,15 +4,18 @@ Two-layer review: general engineering dimensions (all languages) + language-spec
 
 ## How to Use
 
-1. Run the **General Engineering Review** first — applies to all code changes regardless of language.
-2. Detect the language(s) from changed file extensions.
-3. Apply the matching **Language-Specific Checklist** below.
-4. For full-stack changes, apply all relevant language checklists.
-5. Classify each item with evidence: an unmet approved requirement, active security/data/authorization risk, correctness regression, or demonstrated operational failure is a blocker; an applicable project convention is a contract gap; all other language and design guidance is a recommendation. Only blockers and contract gaps prevent `PASS`.
+1. Read the approved File Structure/Plan boundary, latest Prewalk Execution Trace, Current Handoff Facts, remaining-work completion evidence, actual changed diff, and nearest comparable code.
+2. Run the **General Engineering Review** first — applies to all code changes regardless of language.
+3. Detect the language(s) from changed file extensions.
+4. Apply the matching **Language-Specific Checklist** below.
+5. For full-stack changes, apply all relevant language checklists.
+6. Classify findings only from actual changed-code evidence and concrete risk: unmet approved requirement, active security/data/authorization risk, correctness regression, or demonstrated operational failure is a `Blocker`; an evidence-backed boundary, contract, local-convention, side-effect, or verification issue requiring closure is a `Warning`; other contextual guidance is a `Recommendation`. Unresolved Blockers and Warnings prevent `PASS`.
 
 > **Note**: Functional correctness, regression, activation path, scope creep, and proof coverage are already covered by the adversarial review checklist in `SKILL.md`. The General Engineering Review below covers the remaining dimensions that the adversarial review does not.
 
 > **Applicability**: Treat the following design, framework, and language items as context checks, not universal prescriptions. Apply one when the approved scope, existing project convention, measured workload, public contract, or concrete failure mode makes it relevant. Security, authorization, data protection, injection prevention, resource safety, and an explicit project rule remain hard checks.
+
+> **Non-blocking by itself**: a pattern preference, function or class size, dependency count, absent cache, or fixed architecture shape is not a Blocker or Warning without changed-code evidence and concrete risk.
 
 ## General Engineering Review
 

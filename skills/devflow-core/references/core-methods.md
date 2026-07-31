@@ -24,11 +24,11 @@ Apply these principles to every route:
 | Need | Runtime owner | Load when |
 |---|---|---|
 | Context, route choice, clarification, small-boundary, method lens, skill contract | this file | every `devflow-core` route |
-| Reuse, root cause, native, overbuild, debt | `skills/devflow-cut/references/cut-methods.md` | Core selects Cut |
-| Spec, Plan, minimal change, implementation slices | `skills/devflow-spec/references/spec-plan-methods.md` | Core selects Spec or Plan |
-| Build minimal change and implementation slices | `skills/devflow-build/references/build-methods.md` | Core selects Build |
-| Proof and recovery | `skills/devflow-prove/references/proof-recovery-methods.md` | Core selects Prove or PUA |
-| Learning-card lifecycle | `skills/devflow-learn/SKILL.md` | Core selects Learn after a PASS or reusable correction |
+| Reuse, root cause, native, overbuild, debt | `skills/devflow-cut/references/cut-methods.md` | user-selected A/B/C direct entry or Core exception selection |
+| Spec, Plan, minimal change, implementation slices | `skills/devflow-spec/references/spec-plan-methods.md` | A direct Spec / A/B direct Plan or Core exception selection |
+| Build minimal change and implementation slices | `skills/devflow-build/references/build-methods.md` | C `CUT_PASS`, approved A/B Plan, or Core exception selection |
+| Proof and recovery | `skills/devflow-prove/references/proof-recovery-methods.md` | completed Build direct Prove or Core exception selection |
+| Learning-card lifecycle | `skills/devflow-learn/SKILL.md` | Prove PASS review or reusable correction |
 
 ## Method 1: Context Map
 
@@ -67,7 +67,7 @@ Confirmed request:
 - Status: clarified
 ```
 
-Brainstorm does not choose downstream lifecycle work. Core consumes the artifact.
+After the fixed summary, Brainstorm presents A/B/C for an explicit user selection. A directly enters Spec; B and C directly enter Cut. Brainstorm never selects the depth itself. All non-success or non-unique artifacts return facts to Core for routing.
 
 ## Method 3: Small Request Boundary
 

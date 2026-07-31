@@ -1,27 +1,28 @@
 ---
 name: devflow-plan
-description: "Use after Core-selected CUT_PASS and an approved design or saved spec to write a reviewed, executable implementation plan that returns to devflow-core."
+description: "Use after A/B CUT_PASS and an approved design or saved spec to write a reviewed, executable implementation plan that directly enters devflow-build after user approval; scope drift returns facts to devflow-core."
 ---
 
 # DevFlow Plan
 
-Turn a `devflow-core`-selected, `CUT_PASS`-bounded approved design or confirmed Spec into one reviewed Plan Pack. This is the only DevFlow plan-generation skill; `/devflow-plan` is its command entry.
+Turn an A/B `CUT_PASS`-bounded approved design or confirmed Spec into one reviewed Plan Pack. This is the only DevFlow plan-generation skill; `/devflow-plan` is its command entry.
 
 ## Inputs And Output
 
-- Consumes: a Core-selected `CUT_PASS` (allowed scope, reuse conclusion, exclusions, verification constraints) plus an approved design or `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`.
-- Produces: one reviewed `docs/plans/YYYY-MM-DD-<short-kebab-name>.md` construction Plan Pack, then returns the confirmed Plan to `devflow-core`.
-- Do not generate a plan without Core selection, `CUT_PASS`, or approved source material. Return the missing fact to Core.
+- Consumes: an A/B `CUT_PASS` (allowed scope, reuse conclusion, exclusions, verification constraints) plus an approved design or `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`.
+- Produces: one reviewed `docs/plans/YYYY-MM-DD-<short-kebab-name>.md` construction Plan Pack, then directly enters `devflow-build` after approval.
+- Do not generate a plan without A/B depth, `CUT_PASS`, or approved source material. Return the missing fact to Core.
 
 ## Authoring Process
 
-1. Read only source material, code, tests, and conventions relevant to the approved scope. Load `skills/devflow-spec/references/spec-plan-methods.md` before applying Plan Pack mechanics.
-2. Map exact affected file responsibilities before writing tasks. Reuse existing modules and name the intended file operation.
-3. Split independent deliverables into small, reviewable tasks. Each task should be understandable without referring to another task.
-4. Write the plan using the required header and task contract below.
-5. Self-review Cut Decision fidelity, source coverage, file-operation classifications, interface consistency, concrete steps, acceptance proof, and scope exclusions.
-6. Run `node scripts/devflow-plan.js <plan-file>` when the project-level checker exists. Otherwise resolve the user-level checker according to `core-methods.md` Script Path Resolution.
-7. **STOP — request user review.** Revise and revalidate when requested. After approval, perform only a lightweight Cut-consistency review. Return the confirmed Plan and any scope-drift facts to `devflow-core`; only Core selects `devflow-build` or any other later lifecycle work.
+1. Read only source material, code, tests, and conventions relevant to the approved scope. Load `skills/devflow-spec/references/spec-plan-methods.md` and `skills/devflow-plan/references/plan-methods.md` before applying Plan Pack mechanics.
+2. Map exact affected file responsibilities once in `## File Structure` before writing tasks. Reuse existing modules and name the intended file operation.
+3. Perform bounded real investigation and record it as task-level `Prewalk`: actual `Execution Trace`, Current Handoff Facts, and only the unfinished `Remaining Structured Worklist`.
+4. Split independent deliverables into small, reviewable tasks. Each task should be understandable without referring to another task.
+5. Write the plan using the required header and task contract below.
+6. Self-review Cut Decision fidelity, source coverage, File Structure, Prewalk evidence, file-operation classifications, interface consistency, concrete steps, acceptance proof, and scope exclusions.
+7. Run `node scripts/devflow-plan.js <plan-file>` when the project-level checker exists. Otherwise resolve the user-level checker according to `core-methods.md` Script Path Resolution.
+8. **STOP — request user review.** Revise and revalidate when requested. After approval, perform only a lightweight Cut-consistency review. An approved A/B Plan directly enters `devflow-build`; scope-drift facts return to `devflow-core`.
 
 Default landing is `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`, resolved from the target project root. Do not place implementation plans in `docs/features/` or `docs/specs/`.
 
@@ -42,6 +43,12 @@ External Skills: <skill-name> (role: guides execution) / none
 
 ## Global Constraints
 - <applicable boundary>
+
+## File Structure
+
+| File / symbol | Operation | Responsibility | Why here | Not responsible for |
+|---|---|---|---|---|
+| <path and stable anchor> | Create / Modify / Test | <one responsibility> | <placement rationale> | <explicit boundary> |
 ```
 
 Inherit `External Skills` from the Cut Decision unchanged. When a guidance skill is declared, merge its core quality checks into the affected tasks' `Acceptance` and `Verify` fields — the Plan Pack is the only channel that carries external-skill quality requirements into Build and Prove. A declared skill never widens the Cut scope; if its recommendation exceeds the Cut Decision, return the scope-drift facts to `devflow-core`.
@@ -69,7 +76,32 @@ Acceptance: <specific observable condition>
 Verify: <exact command or manual scenario, trigger/input, and expected result>
 Comments: <locations and reasons required by Code Documentation, project convention, or non-obvious boundaries; or "none — trivial change">
 Not doing: <scope excluded>
+
+Prewalk:
+
+Execution Trace:
+- Read: <actual file/symbol/range> → <observed fact relevant to this task>.
+- Traced: <actual caller, entry point, collaborator, contract, or test> → <observed path or constraint>.
+- Ran: <actual command or scenario> → <relevant result, including a failure when applicable>.
+- Edited: <actual file/symbol and change> → <reason; or "none yet">.
+- Verified: <actual check> → <observed result; or "none yet">.
+
+Current Handoff Facts:
+- Target anchors: <current file, symbol, or range that Build minimally re-reads>.
+- Nearby convention: <comparable inspected code and observed convention; or "no comparable code found">.
+- Direct path: <traced callers, collaborators, boundaries, affected tests; or "none">.
+- Current constraints: <observed contract, ordering, errors, compatibility; or "none">.
+- Planned touch set: <remaining expected files/symbols and reason>.
+- Risks / stop conditions: <facts requiring Core replan; or "none beyond ordinary Plan drift">.
+
+Remaining Structured Worklist:
+- [ ] <one independently completable remaining action with file/symbol and expected outcome>.
+  Anchors: <minimum current anchors>.
+  Verify: <command, test, call-path check, or observable result>.
+  Done when: <fact proving this action is complete>.
 ```
+
+`File Structure` is one responsibility map, not a fixed architecture rule. For every non-trivial Code change, every task must carry a `Prewalk`. Each trace row records an action actually performed and its observed result; it cannot describe planned work. `Remaining Structured Worklist` contains only unfinished actions. Each item needs `Anchors`, `Verify`, and `Done when`; cap one task at 12 items. Build reads the latest trace first, minimally re-reads the current item's anchors and directly changed neighbor, appends actual evidence after the item, and returns facts to `devflow-core` if anchors, contracts, conventions, direct dependencies, responsibility, or directly necessary touch set contradict the handoff. Documentation-only tasks retain their existing exception.
 
 Use only `Create`, `Modify`, and `Test` file-operation labels. For a `Code change`, every existing-file row must name a symbol or stable anchor; `Create` rows use `new file`. `Current behavior`, `Target behavior`, `Change mechanics`, and `Call impact` are mandatory. `Change mechanics` must contain the smallest code snippet, pseudocode, or exact replacement rule that removes implementation inference. Interfaces name exact symbols and input/output shape. The verification step and `Verify` field name the trigger/input, expected result, and runnable command or manual scenario.
 
@@ -88,7 +120,7 @@ Plan generation does not repeat Cut, perform Build or Prove, prescribe independe
 | "Every task needs a test file." | Name a test only when its behavior needs one; do not prescribe test-first workflow. |
 | "The checker proves the architecture." | It proves structure only; the author must review scope and design consistency. |
 | "The plan is approved, so Cut can be skipped." | Plan generation requires an existing `CUT_PASS`; it cannot replace the earlier reuse and scope decision. |
-| "The task details can broaden the solution." | If a task exceeds the Cut Decision, return the scope-drift facts to `devflow-core`; only Core decides whether affected Cut gates must run before any later lifecycle work. |
+| "The task details can broaden the solution." | If a task exceeds the Cut Decision, return the scope-drift facts to `devflow-core`; do not directly enter Build. |
 
 ## Verification
 
@@ -98,8 +130,9 @@ Before leaving this skill, confirm:
 - [ ] `External Skills` is inherited from the Cut Decision; declared skills' quality checks are merged into task `Acceptance`/`Verify`.
 - [ ] Approved design or saved spec is cited as `Source`.
 - [ ] `Spec coverage` maps the source to plan tasks.
-- [ ] Header, constraints, file map, interfaces, concrete steps, acceptance, verification, context-specific comments, and exclusions are present.
-- [ ] Every task is independently understandable and has no unresolved or vague placeholder.
+- [ ] Header, constraints, File Structure, interfaces, concrete steps, acceptance, verification, context-specific comments, exclusions, and task-level Prewalk records are present.
+- [ ] Each trace entry is an observed past action/result; each remaining worklist item is bounded, verified, and fact-complete.
+- [ ] Every task is independently understandable, requires only minimal anchor reread, and has no unresolved or vague placeholder.
 - [ ] The checker passed when available.
 - [ ] The user reviewed the written plan.
-- [ ] The confirmed Plan and any scope-drift facts return to `devflow-core`; Plan did not select Build or another lifecycle skill.
+- [ ] An approved A/B Plan entered `devflow-build`; any scope-drift facts returned to `devflow-core`.

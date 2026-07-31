@@ -5,7 +5,7 @@ description: "Use when the user repeatedly points out that the same function or 
 
 # DevFlow PUA
 
-Apply pressure as accountability: stop the wrong path, quarantine the wrong working context, diagnose why the user thinks the result is wrong, load the local methodology router, display the active flavor/method, return recovery facts to `devflow-core`, switch method when the current one failed, and let Core decide whether request re-confirmation or any later lifecycle work is needed. Do not use persona theater or insults.
+Apply pressure as accountability: stop the wrong path, quarantine the wrong working context, diagnose why the user thinks the result is wrong, load the local methodology router, display the active flavor/method, return recovery facts to `devflow-core`, switch method when the current one failed, and let Core decide whether request re-confirmation or any later lifecycle work is needed. PUA never selects the replacement execution skill. Do not use persona theater or insults.
 
 ## Repeated Same-Function Trigger
 
@@ -42,7 +42,7 @@ Load `skills/devflow-prove/references/proof-recovery-methods.md` before applying
 11. **List 3 hypotheses**: include at least one hypothesis that the previous approach was solving the wrong problem.
 12. **Switch method if needed**: if the last guiding method still missed, mark it failed, choose a different or opposite method lens, and restart checks from facts before editing again.
 13. **Change approach**: name the old approach being abandoned and the materially different path now chosen.
-14. **Prepare the handoff**: include the recovery facts, including any request re-confirmation need, in the required output.
+14. **Prepare the handoff**: include only recovery facts, including any request re-confirmation need, in the required output for Core selection.
 15. **Close learning**: if the miss is reusable, load `devflow-learn` before claiming completion.
 
 ## Guiding Principles

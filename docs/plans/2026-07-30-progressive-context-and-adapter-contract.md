@@ -1,251 +1,181 @@
-# Progressive Context And Adapter Contract Implementation
+# Hybrid Core And Skill Lifecycle Flow Implementation
 
-Goal: 将 DevFlow-Core 的运行时上下文从多入口重复的长提示，迁移为宿主启动接口、Core 加载地图和按需 lifecycle reference 三层契约。
-Architecture: 入口保留路由与 fallback；`devflow-core` 只加载共享约束和当前 route 的 owner reference；验证器检查能力可达而不是重复句子；学习卡记录可核验来源和失效边界。
-Tech Stack: Markdown runtime contracts, Node.js standard library validation and installer scripts, existing package manifests.
-Source: docs/specs/2026-07-30-progressive-context-and-adapter-contract.md
-Spec coverage: Requirements 1-5 map to Tasks 1-4; Requirements 6-8 map to Tasks 5-7; Requirement 9 maps to Tasks 8-9; Requirement 10 constrains every task.
-Cut Decision: CUT_PASS. Allowed scope is existing runtime entries, existing skill directories, existing Node validators, installer manifests, learning-card schema, and supporting documentation. Reuse conclusion: use current Markdown skills, Node `fs`/`path`, existing installer arrays, and existing validation commands. Exclusions: no dependency, service, database, new host, generic workflow engine, or lifecycle-owner change. Verification constraints: host, trigger, learning, target-install, user-install, full matrix, and diff checks must pass.
+Goal: 保留 `devflow-core` 对非唯一 lifecycle 后继的判断，只让明确的 A/B/C 成功边在当前 skill 内部直接流转。
+Architecture: Core 维护轻量 flow map 并选择异常、阻塞、恢复或其它非唯一后继；`depth: A | B | C` 随请求与成功 artifact 传递，Brainstorm、Spec、Cut、Plan 和 Build 仅在后继唯一时直连。
+Tech Stack: Existing Markdown runtime contracts, Node.js standard library validators and installers, existing package manifests.
+Source: docs/specs/2026-07-31-skill-owned-lifecycle-flow.md
+Spec coverage: Requirements 1-2 map to Task 1; Requirements 3-5 map to Task 2; Requirements 6-7 map to Task 3; Requirements 8-9 map to Tasks 4-6; Requirement 10 constrains every task.
+Cut Decision: CUT_PASS. Allowed scope is existing runtime entries, existing skill/reference directories, existing Node validators, installer validators, manifests, diagrams, and supporting documentation. Reuse conclusion: use current Markdown contracts, existing A/B/C depth terms, Node `fs`/`path`, installer arrays, and validation commands. Exclusions: no dependency, service, database, new host, generic workflow engine, or independent configuration format. Verification constraints: package, trigger, host, capability, target-install, user-install, full matrix, and diff checks must pass.
 External Skills: none
 
 ## Global Constraints
 
-- `devflow-core` remains the sole lifecycle router after every returned artifact.
-- No task may remove explicit safety, user-confirmation, data-protection, Root-Cause, or proof requirements.
-- New Markdown references stay inside existing `skills/devflow-*/references/` directories and must be installed wherever their owner skill runs.
-- Preserve existing user changes in `.claude/settings.json` and `.codex/devflow-prompt-probe.json`.
-- Keep runtime method source outside `docs/`; `docs/` records only this Spec, this Plan, and maintained product documentation.
+- Core keeps a compact map of creative entry, direct A/B/C success edges, return-to-Core statuses, and independent review boundaries; it does not duplicate local skill methods.
+- Direct handoff is legal only when status and `depth` uniquely determine one next skill.
+- A success chain is `Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove`; B is `Brainstorm -> Cut -> Plan -> Build -> Prove`; C is `Brainstorm -> Cut -> Build -> Prove`.
+- `CUT_REDUCE`, `CUT_REUSE`, `CUT_BLOCKED`, Plan scope drift, `BUILD_BLOCKED`, Proof `FAIL` or `BLOCKED`, user corrections, and PUA recovery return facts to Core.
+- Preserve the user change in `.codex/devflow-prompt-probe.json`.
 
-## Task 1: Split Shared And Route-Specific Method Ownership
+## Task 1: Make Core Describe And Route The Hybrid Flow
 
-Task: Split shared and route-specific method ownership
+Task: Make Core describe and route the hybrid flow
 Task type: Code change
 Files:
-- Create: skills/devflow-cut/references/cut-methods.md | new file | own Method 5-9 execution details for reuse, native capability, overbuild, root-cause, and debt decisions.
-- Create: skills/devflow-spec/references/spec-plan-methods.md | new file | own Method 10-12 design, Plan Pack, minimal change, and slice details.
-- Modify: skills/devflow-core/references/core-methods.md | anchor: `## Method 5: Minimal Solution Ladder` | retain Method 0-4, Method 15, shared output contracts, and script resolution; replace migrated method bodies with a route-to-owner loading map.
-- Modify: skills/devflow-core/SKILL.md | anchor: `## Context Map` | require the shared core reference first and only the selected lifecycle reference afterwards.
+- Modify: AGENTS.md | heading ## Route Interface | retain Core route rows for non-unique states and add the compact direct-success map.
+- Modify: skills/devflow-core/SKILL.md | heading ## Routes | distinguish Core-selected non-unique next work from direct deterministic success edges.
+- Modify: skills/devflow-core/references/core-methods.md | heading ## Method 2: Brainstorm Clarification | define the shared direct-edge test and Core-decision boundary.
+- Modify: skills/devflow-core/references/skill-guide.md | heading ## Skill Chain | show Core loops only for non-unique artifacts and direct paths for unique successes.
 Interfaces:
-- Consumes: route: `Fast | Problem | Design-lite | Design | Build | Recovery`, selected owner skill, current project facts.
-- Produces: loading map: `{ shared: string[], selected: string[] }` and existing Core route output.
-Current behavior: every engineering decision requires reading one `core-methods.md` file containing Method 0 through Method 15.
-Target behavior: every route reads the compact shared core source; Cut and Spec/Plan routes additionally load their owner reference before making owner-specific decisions.
-Change mechanics: pseudocode: `shared = [core-methods]; selected = route in {Cut} ? [cut-methods] : route in {Spec, Plan} ? [spec-plan-methods] : []; read(shared); read(selected);` Replace Method 5-12 bodies in `core-methods.md` with concise ownership links and map each route to its selected reference while keeping only shared invariants there.
-Call impact: all future Core starts consume less baseline context; selected Cut and Spec/Plan paths preserve the same behavior through explicit local references.
+- Consumes: request/artifact `{ status, depth, source, scope }`.
+- Produces: `directSuccessor` when one successor is implied, otherwise `coreDecision` with returned facts.
+Current behavior: Core selects all later lifecycle owners, including already determined successful successors.
+Target behavior: Core remains the router for non-unique states and exposes a concise flow map, while identified unique success edges bypass it.
+Change mechanics: pseudocode: `if (directSuccessor[status]?.[depth]) return directSuccessor[status][depth]; return core.selectNext(artifactFacts)`; place the mapping in Core and leave each skill's local method detail local.
+Call impact: all hosts and skills can use one Core map to distinguish allowed direct handoffs from required Core returns.
 Steps:
-- [ ] Create `skills/devflow-cut/references/cut-methods.md` and `skills/devflow-spec/references/spec-plan-methods.md` using exact replacement of the migrated Method 5-12 contracts, preserving required gate names, return artifacts, and proof rules.
-- [ ] Modify `skills/devflow-core/references/core-methods.md` at `## Method 5: Minimal Solution Ladder` using exact replacement: delete migrated detailed bodies, insert owner links plus a table from route to required reference, and retain shared Method 0-4, Method 15, output contracts, and script path resolution.
-- [ ] Modify `skills/devflow-core/SKILL.md` at `## Context Map` using pseudocode: record the shared source in `Methods`, then append only route-selected owner references before route-specific decisions.
-- [ ] Run `node scripts/validate-devflow.js`; expect the runtime source and required-file checks to pass after references and Core contracts are synchronized.
-Acceptance: Core no longer mandates reading all lifecycle methods, while Cut and Spec/Plan still have one executable, locally installed source for every moved rule.
-Verify: Run `node scripts/validate-devflow.js`; expect `DevFlow validation passed` with no missing runtime method source.
-Comments: Markdown owner links explain responsibility; no code comments required.
-Not doing: moving lifecycle routing out of Core, creating a new top-level framework directory, or changing user-visible route names.
+- [ ] Modify `AGENTS.md`, `skills/devflow-core/SKILL.md`, `skills/devflow-core/references/core-methods.md`, and `skills/devflow-core/references/skill-guide.md` using exact replacement: retain Core routing for non-unique states and add an `A/B/C direct success` map.
+- [ ] Run `node scripts/validate-devflow.js` and `node scripts/validate-skill-triggers.js`; expect Core routing evidence to remain for exceptional states and direct-edge evidence to exist for unique successes.
+Acceptance: Core still names its routing role, but its map and contracts exclude all direct success edges listed in the Global Constraints.
+Verify: Run `node scripts/validate-devflow.js && node scripts/validate-skill-triggers.js`; expect both commands to pass after hybrid-route assertions are implemented.
+Comments: Markdown map and state names are self-describing; no code comments required.
+Not doing: deleting Core routing, recreating Core as a detailed workflow owner, or adding another router.
 
-## Task 2: Make Cut, Spec, And Plan Load Their Local Methods
+## Task 2: Restore A/B/C And Direct Only Unique Success Edges
 
-Task: Make Cut, Spec, and Plan load their local methods
+Task: Restore A/B/C and direct only unique success edges
 Task type: Code change
 Files:
-- Modify: skills/devflow-cut/SKILL.md | anchor: `## Context` | load `cut-methods.md` before Required Gates and stop duplicating moved details.
-- Modify: skills/devflow-spec/SKILL.md | anchor: `## Process` | load `spec-plan-methods.md` before option comparison and Spec construction.
-- Modify: skills/devflow-plan/SKILL.md | anchor: `## Authoring Process` | load `spec-plan-methods.md` before converting a Cut Decision into a Plan Pack.
-- Test: scripts/validate-skill-triggers.js | anchor: `const cases` | prove selected lifecycle skills expose their local reference and retain their existing trigger path.
+- Modify: skills/devflow-brainstorm/SKILL.md | heading ## Entry And Stop Condition | present user-selected A/B/C after Confirmed request and directly start the selected branch.
+- Modify: skills/devflow-brainstorm/references/interview-discipline.md | heading ## Fixed Summary | record the selected depth after clarification without weakening its confirmation rules.
+- Modify: skills/devflow-spec/SKILL.md | heading ## Process | make an approved A-branch Spec enter Cut directly.
+- Modify: skills/devflow-spec/references/spec-plan-methods.md | heading ## Method 10: Spec Document And Plan Pack | define approved A-branch Spec as a direct Cut input.
+- Modify: skills/devflow-cut/SKILL.md | heading ## Handoff | send `CUT_PASS` to Plan for A/B and Build for C while returning all other Cut statuses to Core.
+- Modify: skills/devflow-plan/SKILL.md | heading ## Inputs And Output | make an approved A/B Plan enter Build directly while retaining scope-drift return facts.
+- Modify: skills/devflow-build/SKILL.md | heading ## Context | state that a completed Build enters Prove directly and preserve its existing blocked return contract.
 Interfaces:
-- Consumes: selected lifecycle skill, approved design or Cut Decision, local Markdown method reference.
-- Produces: unchanged `CUT_PASS | CUT_REDUCE | CUT_REUSE | CUT_BLOCKED`, saved Spec, or reviewed Plan return artifact.
-Current behavior: Cut, Spec, and Plan carry method details inline or depend on the full global `core-methods.md` document.
-Target behavior: each skill names and loads its owner reference before applying its local workflow, while returning the same artifact to Core.
-Change mechanics: pseudocode: `load(ownerReference); execute(existingSkillContract); return(existingArtifactToCore);` Replace duplicate detailed sections with short invocation and ownership text only when the full rule is now in the referenced local file.
-Call impact: slash commands and direct skill invocation retain their input/output contracts; target and user installers require the new references in Task 7.
+- Consumes: `Confirmed request` plus user-selected `{ depth: "A" | "B" | "C" }`, then approved or successful artifacts carrying the same depth.
+- Produces: `Spec`, `Cut`, `Plan`, `Build`, or `Prove` as the sole direct success successor for the matching state and depth.
+Current behavior: Brainstorm has no A/B/C selection and Core mediates every success artifact.
+Target behavior: Brainstorm owns explicit A/B/C selection; only the approved and `CUT_PASS` edges listed in the Global Constraints bypass Core.
+Change mechanics: pseudocode: `A: Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove; B: Brainstorm -> Cut -> Plan -> Build -> Prove; C: Brainstorm -> Cut -> Build -> Prove`; return all statuses other than the named success state to Core.
+Call impact: branch state survives from Brainstorm to Build, so each direct handoff is deterministic and no skill reinterprets user intent.
 Steps:
-- [ ] Modify `skills/devflow-cut/SKILL.md`, `skills/devflow-spec/SKILL.md`, and `skills/devflow-plan/SKILL.md` at their named workflow sections using exact replacement: add local-reference load actions and remove only rule text duplicated verbatim in the new owner files.
-- [ ] Modify `scripts/validate-skill-triggers.js` at `const cases` using pseudocode: assert each selected lifecycle skill names its local reference and preserve existing route-to-owner checks.
-- [ ] Run `node scripts/validate-skill-triggers.js`; expect every existing route scenario and the three local-reference assertions to pass.
-Acceptance: a reader of any selected Cut, Spec, or Plan skill can identify its local method owner and its unchanged return artifact without rereading a global method dump.
-Verify: Run `node scripts/validate-skill-triggers.js`; expect `Skill Trigger Verification Report` and no missing trigger or local-reference assertion.
-Comments: Add function-level comment only if a new trigger-validation helper is introduced; Markdown requires no additional comments.
-Not doing: changing Cut intensity policy, Spec approval stop, Plan approval stop, or Core-exclusive routing.
+- [ ] Modify `skills/devflow-brainstorm/SKILL.md` and `skills/devflow-brainstorm/references/interview-discipline.md` using exact replacement: add a post-confirmation A/B/C user gate and persist its selected depth.
+- [ ] Modify `skills/devflow-spec/SKILL.md`, `skills/devflow-spec/references/spec-plan-methods.md`, `skills/devflow-cut/SKILL.md`, `skills/devflow-plan/SKILL.md`, and `skills/devflow-build/SKILL.md` using pseudocode: direct only approved or `CUT_PASS` artifacts with a unique next skill.
+- [ ] Run `node scripts/validate-skill-triggers.js`; expect A, B, and C cases to prove user-owned selection and every defined direct success edge.
+Acceptance: each listed success edge has one direct successor, while a missing depth or non-success artifact still reaches Core.
+Verify: Run `node scripts/validate-skill-triggers.js`; expect all direct-edge and existing clarification scenarios to pass.
+Comments: Markdown branch tables are self-describing; no code comments required.
+Not doing: allowing Brainstorm to choose A/B/C, skipping Spec or Plan approval, or changing Cut result names.
 
-## Task 3: Isolate Build, Prove, And Recovery Method Details
+## Task 3: Preserve Core Decisions For Non-Unique And Failure States
 
-Task: Isolate Build, Prove, and Recovery method details
+Task: Preserve Core decisions for non-unique and failure states
 Task type: Code change
 Files:
-- Create: skills/devflow-build/references/build-methods.md | new file | own Method 11-12 surgical build and implementation-slice details.
-- Create: skills/devflow-prove/references/proof-recovery-methods.md | new file | own Method 13-14 proof, adversarial review, and recovery evidence details shared by Prove and PUA.
-- Modify: skills/devflow-build/SKILL.md | anchor: `## Plan Review` | load `build-methods.md` after Plan Review and before implementation slices.
-- Modify: skills/devflow-prove/SKILL.md | anchor: `## Process` | load `proof-recovery-methods.md` before selecting proof and adversarial review.
-- Modify: skills/devflow-pua/SKILL.md | anchor: `## Process` | load `proof-recovery-methods.md` for the common recovery contract while preserving PUA methodology assets.
+- Modify: skills/devflow-cut/SKILL.md | heading ## Cut Result | keep `CUT_REDUCE`, `CUT_REUSE`, and `CUT_BLOCKED` as Core-return artifacts after their existing user-stop requirements.
+- Modify: skills/devflow-plan/SKILL.md | heading ## Authoring Process | retain Plan scope-drift facts for Core rather than direct Build.
+- Modify: skills/devflow-build/SKILL.md | heading ## Plan Review | retain `BUILD_BLOCKED` return facts for Core.
+- Modify: skills/devflow-prove/SKILL.md | heading ## Process | retain Proof `FAIL` and `BLOCKED` facts for Core while keeping fresh evidence and adversarial review.
+- Modify: skills/devflow-prove/references/proof-recovery-methods.md | heading ## Proof Before Done | document Proof's Core-return exception boundary.
+- Modify: skills/devflow-pua/SKILL.md | heading ## Process | retain recovery facts and re-confirmation need for Core selection.
 Interfaces:
-- Consumes: confirmed Plan or Build slice, verification evidence, recovery facts, selected local reference.
-- Produces: `BUILD_BLOCKED` facts, Proof judgment, or recovery facts returned to `devflow-core`.
-Current behavior: Build, Prove, and PUA repeat or indirectly require detailed global methods in addition to their local workflow sections.
-Target behavior: method details are loaded from Build or Proof/Recovery owner references only after the respective lifecycle skill is selected.
-Change mechanics: pseudocode: `if skill == Build read(build-methods); if skill in {Prove, PUA} read(proof-recovery-methods); then replace shared Method 11-14 text with owner links and run the existing plan, proof, or recovery contract.` Leave PUA's methodology-router, methodology-library, and flavor-display assets untouched.
-Call impact: Build and Prove retain existing stop outputs; PUA retains `METHOD: {flavor} / {method}` and returns recovery facts to Core.
+- Consumes: `{ status, reason, depth, scope, evidence }` from Cut, Plan, Build, Prove, or PUA.
+- Produces: unchanged non-success facts returned to Core for an explicit next-step decision or user-facing stop.
+Current behavior: all artifacts return to Core, so direct successes are unnecessarily mediated.
+Target behavior: Core receives only the non-success, non-unique, scope-change, recovery, or changed-intent artifacts it must judge.
+Change mechanics: pseudocode: `if (status in { CUT_REDUCE, CUT_REUSE, CUT_BLOCKED, scopeDrift, BUILD_BLOCKED, FAIL, BLOCKED, recovery }) return Core.withFacts(status); else follow directSuccessor[depth]`.
+Call impact: existing protection gates and user confirmation remain unchanged; Core retains enough facts to choose re-entry safely.
 Steps:
-- [ ] Create `skills/devflow-build/references/build-methods.md` and `skills/devflow-prove/references/proof-recovery-methods.md` using exact replacement of Method 11-14 details from the shared source, with each reference naming its skill owner and return boundary.
-- [ ] Modify `skills/devflow-build/SKILL.md`, `skills/devflow-prove/SKILL.md`, and `skills/devflow-pua/SKILL.md` at their named sections using pseudocode: load the local reference before local execution and remove only duplicated migrated detail.
-- [ ] Run `node scripts/validate-devflow.js && node scripts/validate-skill-triggers.js`; expect Build, Proof, and Recovery contract checks to pass with the new reference links.
-Acceptance: Build, Prove, and PUA load only the detail needed by their selected phase; no PUA methodology file is removed or moved.
-Verify: Run `node scripts/validate-devflow.js && node scripts/validate-skill-triggers.js`; expect both commands to pass and preserve `BUILD_BLOCKED`, Proof, and PUA return contracts.
-Comments: Markdown owner links explain scope; no code comments required.
-Not doing: changing code-comment policy, proof severity semantics, PUA methodology selection, or user-challenge triggers.
+- [ ] Modify `skills/devflow-cut/SKILL.md`, `skills/devflow-plan/SKILL.md`, and `skills/devflow-build/SKILL.md` using exact replacement: distinguish their direct success artifact from each existing Core-return status.
+- [ ] Modify `skills/devflow-prove/SKILL.md`, `skills/devflow-prove/references/proof-recovery-methods.md`, and `skills/devflow-pua/SKILL.md` using pseudocode: preserve evidence, PUA threshold, and Core decision ownership for failure or recovery.
+- [ ] Run `node scripts/validate-skill-triggers.js` and `node scripts/capability-eval.js --self-test`; expect Cut non-PASS, scope drift, Build block, Proof failure, and recovery cases to require Core.
+Acceptance: no failure path can silently reach Build or Prove, and no direct-success route removes a required Core judgment.
+Verify: Run `node scripts/validate-skill-triggers.js && node scripts/capability-eval.js --self-test`; expect hybrid exception ownership to pass.
+Comments: Markdown exception tables are self-describing; no code comments required.
+Not doing: treating a first isolated failure as PUA, auto-approving Cut reductions, or weakening Proof.
 
-## Task 4: Replace Shared-Host Rule Dumps With Portable Startup Interfaces
+## Task 4: Align Host Adapters, Commands, And Flow Diagram
 
-Task: Replace shared-host rule dumps with portable startup interfaces
+Task: Align host adapters, commands, and flow diagram
 Task type: Code change
 Files:
-- Modify: AGENTS.md | anchor: `## Engineering Principles` | replace repeated process prose with a compact route table, owner links, hard boundaries, STOP rules, and no-skill fallback.
-- Modify: CLAUDE.md | anchor: `# DevFlow Core v2` | retain Claude-specific bootstrap and point to the shared startup contract instead of restating every lifecycle step.
-- Modify: .claude/commands/devflow-core.md | anchor: `# DevFlow Core` | retain direct command loading instructions and route-to-owner behavior only.
-- Modify: hooks/devflow-session-start.js | anchor: `hookSpecificOutput.additionalContext` | emit a short activation reminder that points to the startup contract rather than a full lifecycle narrative.
+- Modify: CLAUDE.md | heading # DevFlow Core Runtime Prompt | retain Core's hybrid routing description and link creative flow to Brainstorm A/B/C.
+- Modify: .claude/commands/devflow-core.md | heading # DevFlow Core | expose Core flow map, direct successes, and Core-return exceptions.
+- Modify: .github/copilot-instructions.md | heading # DevFlow Core v2 Copilot Instructions | preserve host bootstrap and hybrid routing contract.
+- Modify: .github/instructions/devflow.instructions.md | heading # DevFlow Authoring Instructions | preserve workspace loading and distinguish direct versus Core-selected transitions.
+- Modify: .github/prompts/devflow.prompt.md | heading ## Lifecycle | state A/B/C direct successes and Core-return statuses.
+- Modify: .codebuddy/rules/devflow-core/RULE.mdc | heading # DevFlow Core v2 | preserve provider metadata and hybrid owner paths.
+- Modify: commands/devflow.toml | key prompt | replace all-Core success routing with the Core map and direct-success rules.
+- Modify: commands/devflow-spec.toml | key prompt | make only approved A-branch Spec enter Cut directly.
+- Modify: commands/devflow-plan.toml | key prompt | make only approved A/B Plan enter Build directly.
+- Modify: hooks/devflow-session-start.js | const context | emit compact hybrid-flow startup guidance.
+- Modify: skills/skill-call-diagram.md | heading ## Runtime Chain | render Core loops for exceptional states and direct A/B/C success edges.
 Interfaces:
-- Consumes: user request text, host capability `skills available | skills unavailable`, project rule path.
-- Produces: owner lookup action, minimal fallback route, and completion proof requirement.
-Current behavior: shared host files repeat broad Brainstorm, Cut, Prove, recovery, external-skill, and lifecycle explanations.
-Target behavior: every shared host file supplies only the host activation interface and an authoritative owner path; `AGENTS.md` remains executable when skills are unavailable and is no larger than 8 KiB.
-Change mechanics: exact replacement: use a single compact row format `signal -> owner -> required artifact -> return boundary`; retain direct fallback rules only in `AGENTS.md`; replace repeated explanatory paragraphs in Claude command and hook payload with links and load actions.
-Call impact: Codex/shared and Claude Code continue to route all existing request shapes; session-start context becomes smaller without losing its direct route to Core.
+- Consumes: host prompt or command invocation plus request/artifact state.
+- Produces: a consistent hybrid flow map across supported hosts and the runtime diagram.
+Current behavior: all adapters and commands prescribe Core mediation for all lifecycle artifacts.
+Target behavior: every supported entry describes Brainstorm-first creative intake, direct unique successes, and returned Core decisions.
+Change mechanics: exact replacement: insert `directSuccessor` rows for the approved states, preserve `return Core` rows for all other states, and keep independent reviews outside lifecycle routing.
+Call impact: Codex, Claude, Copilot, VS Code, CodeBuddy, command, and hook consumers receive the same lifecycle boundary.
 Steps:
-- [ ] Modify `AGENTS.md` at `## Engineering Principles` using exact replacement: retain hard safety/proof rules, ASCII trigger families, owner paths, STOP rules, and the no-skill fallback; remove duplicated skill internals and enforce an 8 KiB UTF-8 budget.
-- [ ] Modify `CLAUDE.md`, `.claude/commands/devflow-core.md`, and `hooks/devflow-session-start.js` at their named anchors using exact replacement: keep host-specific loading mechanics and replace repeated lifecycle content with route-to-owner links.
-- [ ] Run `node scripts/validate-host-adapters.js`; expect Codex/shared, Claude command, and hook startup contracts to remain reachable without requiring duplicate prose.
-Acceptance: `AGENTS.md` is no larger than 8 KiB and every shared-host entry identifies a route owner, a fallback/load action, and the proof exit without reproducing the whole lifecycle.
-Verify: Run `node scripts/validate-host-adapters.js`; expect `Host Adapter Verification Report` with all shared-host contracts passing.
-Comments: Add an inline JavaScript comment only if the hook distinguishes an unavailable-skill fallback; Markdown needs no comments.
-Not doing: modifying `.claude/settings.json`, adding a host, removing project-level `AGENTS.md`, or changing hook registration.
+- [ ] Modify host Markdown, command TOML, and `hooks/devflow-session-start.js` using exact replacement: preserve compact Core routing while adding A/B/C direct-success and exception-return rules.
+- [ ] Modify `skills/skill-call-diagram.md` Mermaid graph and Runtime Chain using exact replacement: draw direct A/B/C success arrows and Core loops only for non-unique artifacts.
+- [ ] Run `node scripts/validate-host-adapters.js`; expect every adapter to expose a Core flow map, direct creative entry, and Proof exit.
+Acceptance: no supported prompt surface describes all artifacts as direct or all artifacts as Core-mediated.
+Verify: Run `node scripts/validate-host-adapters.js`; expect host capability contracts to pass with both direct and Core-return evidence.
+Comments: Add a JavaScript comment only if the hook distinguishes a direct-success state from a Core-return state; Markdown and TOML need no comments.
+Not doing: adding a host, changing plugin discovery, or turning independent reviews into lifecycle steps.
 
-## Task 5: Shrink Copilot, VS Code, And CodeBuddy Adapters
+## Task 5: Prove The Hybrid Contract In Validators And Scenarios
 
-Task: Shrink Copilot, VS Code, and CodeBuddy adapters
+Task: Prove the hybrid contract in validators and scenarios
 Task type: Code change
 Files:
-- Modify: .github/copilot-instructions.md | anchor: `# DevFlow Core v2 Copilot Instructions` | reduce to Copilot capability assumptions, Core owner path, and proof exit.
-- Modify: .github/instructions/devflow.instructions.md | anchor: `# DevFlow Authoring Instructions` | retain workspace-scoped instruction behavior and link to owner skills.
-- Modify: .github/prompts/devflow.prompt.md | anchor: `Select route` | retain manual prompt entry behavior and compact route interface.
-- Modify: .codebuddy/rules/devflow-core/RULE.mdc | anchor: `# DevFlow Core v2` | retain provider metadata and CodeBuddy-specific load/fallback behavior only.
+- Modify: scripts/validate-devflow.js | function assertions after const core | require Core flow map, direct-success rules, and retained Core exception ownership.
+- Modify: scripts/validate-skill-triggers.js | const scenarios | add A/B/C direct-success cases and Core-return exception cases.
+- Modify: scripts/validate-host-adapters.js | const adapters | require hybrid route, owner, fallback, proof, direct-edge, and Core-return capability evidence.
+- Modify: scripts/capability-eval-scenarios.json | key vague-design-route | replace all-Core negative constraints with hybrid branch-state and Core-decision evidence.
+- Modify: skills/devflow-prove/references/flow-self-test.md | heading ## Scenario 1 | reject illegal Core mediation of direct successes and illegal skill handling of Core-return states.
 Interfaces:
-- Consumes: host-specific instruction or prompt invocation and recognized request signal.
-- Produces: `devflow-core` load action, direct manual-review owner when explicitly requested, and proof exit requirement.
-Current behavior: the four adapters independently repeat substantial lifecycle and recovery explanations.
-Target behavior: each adapter contains a short host-specific interface and links to the shared or selected owner; the same semantic rule has one runtime owner.
-Change mechanics: exact replacement: replace prose blocks with `signal -> owner -> required output` rows, preserve explicit independent-review routes, and use links for Brainstorm, Cut, Prove, PUA, and Learn details.
-Call impact: Copilot, VS Code, and CodeBuddy retain all existing user-facing activation paths while reducing context and eliminating drift-prone duplicated text.
+- Consumes: runtime file bodies, host contracts, scenario text, and flow-self-test assertions.
+- Produces: deterministic failures for missing direct edge, missing Core decision, lost depth, or inconsistent host contract.
+Current behavior: validators require every artifact to return Core and reject direct handoffs.
+Target behavior: validators allow only the direct edges from Task 2 and require Core routing for Task 3 states.
+Change mechanics: pseudocode: `require(directEdge[depth][success]); require(coreReturn[exception]); require(core.flowMap); reject(directEdge[exception]); reject(coreRoute[uniqueSuccess])`.
+Call impact: package and capability reports catch either under-migration or over-migration of lifecycle routing.
 Steps:
-- [ ] Modify `.github/copilot-instructions.md`, `.github/instructions/devflow.instructions.md`, `.github/prompts/devflow.prompt.md`, and `.codebuddy/rules/devflow-core/RULE.mdc` using exact replacement: preserve only host behavior, signal routing, independent manual-review entry, fallback/load action, and proof requirement.
-- [ ] Run `node scripts/validate-host-adapters.js`; expect all four adapter capability contracts to pass without checking copied full-lifecycle sentences.
-Acceptance: no non-shared adapter contains a complete restatement of the lifecycle, yet each can locate Core or an explicitly requested manual-review skill from its supported host surface.
-Verify: Run `node scripts/validate-host-adapters.js`; expect the Copilot, VS Code instruction, VS Code prompt, and CodeBuddy entries to pass.
-Comments: Frontmatter and route rows are self-describing; no code comments required.
-Not doing: changing GitHub extension configuration, adding Copilot agents, or introducing a new prompt format.
+- [ ] Modify `scripts/validate-devflow.js`, `scripts/validate-skill-triggers.js`, and `scripts/validate-host-adapters.js` using pseudocode: assert direct success, Core-return exception, branch depth, and flow-map evidence with function comments on new helpers.
+- [ ] Modify `scripts/capability-eval-scenarios.json` and `skills/devflow-prove/references/flow-self-test.md` using exact replacement: cover A/B/C, Cut non-PASS, Plan scope drift, Build block, Proof failure, PUA recovery, and changed intent.
+- [ ] Run `npm test`, `npm run trigger:verify`, `npm run host:verify`, `npm run capability:verify`, and `npm run capability:eval`; expect all reports to pass and hybrid negative cases to fail in self-test coverage.
+Acceptance: a required direct success routed through Core fails, and a required Core decision handled directly by a skill fails.
+Verify: Run `npm test && npm run trigger:verify && npm run host:verify && npm run capability:verify && npm run capability:eval`; expect each report to pass.
+Comments: New or changed validator helpers require function comments that name their protected direct or Core-return boundary.
+Not doing: natural-language semantic parsing, a new JSON/YAML contract file, or model-behavior benchmarking.
 
-## Task 6: Validate Capability Contracts Instead Of Phrase Duplication
+## Task 6: Preserve Installed Reachability And Update Product Documentation
 
-Task: Validate capability contracts instead of phrase duplication
+Task: Preserve installed reachability and update product documentation
 Task type: Code change
 Files:
-- Modify: scripts/validate-host-adapters.js | anchor: `const adapters` | replace per-file prose term lists with one capability contract per host.
-- Modify: scripts/validate-skill-triggers.js | anchor: `const cases` | keep user-input route scenarios while moving owner-reference checks to the selected skill rather than every adapter.
-- Modify: scripts/validate-devflow.js | anchor: `const agentsBody` | enforce UTF-8 byte budget, forbid full Method 0-15 mandatory loading, and verify required owner references and fallback markers.
+- Modify: scripts/validate-installer.js | function assertInstalledRuntimeContract | require installed Core map plus all existing owner references and hybrid transition evidence.
+- Modify: scripts/validate-user-installer.js | function assertInstalledRuntimeContract | require user runtime Core and branch owners without installing project AGENTS.md.
+- Modify: docs/PRD.md | heading ### R2. Lifecycle Router | replace all-Core routing statements with the hybrid contract.
+- Modify: docs/features/devflow-core.md | heading ## Version History | record direct-success exceptions to retained Core routing.
+- Modify: README.md | heading Native Capabilities Integrated | describe hybrid Core routing and direct deterministic edges.
+- Modify: docs/platform-setup.md | heading ## Codex | document Brainstorm A/B/C and Core-return exceptions.
 Interfaces:
-- Consumes: runtime file bodies, host capability contract `{ route, owner, fallback, proof }`, trigger scenarios.
-- Produces: assertion failures naming the missing capability or owner and zero exit status for a conforming package.
-Current behavior: host validation asserts many duplicated literal phrases across eight files; `AGENTS.md` is bounded by line count but not UTF-8 payload; the full method document is universally mandatory.
-Target behavior: validation asserts capability reachability, host-specific fallback, unique owner links, byte budget, and preserved scenario behavior without forcing prose duplication.
-Change mechanics: pseudocode: `for contract in hosts: require(contract.routeSignal); require(contract.ownerLink); require(contract.loadOrFallback); require(contract.proofExit);` Replace broad `assertTerms` arrays with this shape, compute `Buffer.byteLength(agentsBody, "utf8")`, and reject the legacy universal Method 0-15 load wording.
-Call impact: package commands keep their names and output reports; future lifecycle changes update one host contract entry instead of eight copies of a sentence.
+- Consumes: installed target/user runtime trees and public DevFlow lifecycle documentation.
+- Produces: installation checks and public docs consistent with the hybrid contract.
+Current behavior: installer validation and documentation require every lifecycle artifact to return Core.
+Target behavior: installed trees prove Core map and owner references are reachable, and docs distinguish direct success from Core decision states.
+Change mechanics: pseudocode: `for owner in installedOwners require(fileExists(owner)); require(core.flowMap); require(directSuccessEvidence); require(coreExceptionEvidence)`; replace documentation-only all-Core wording with the hybrid map.
+Call impact: target and user installs preserve the current file boundary while delivering the hybrid contract.
 Steps:
-- [ ] Modify `scripts/validate-host-adapters.js` at `const adapters` using pseudocode: define `routeSignal`, `ownerLink`, `loadOrFallback`, and `proofExit` per host, then assert each field at that host's actual entry path.
-- [ ] Modify `scripts/validate-skill-triggers.js` at `const cases` using exact replacement: keep input-to-route assertions and assert local references only on the skill that owns them.
-- [ ] Modify `scripts/validate-devflow.js` at `const agentsBody` using pseudocode: replace line-only sizing with `Buffer.byteLength`, require 8 KiB or less, reject universal full-method loading, and assert each required new reference is present.
-- [ ] Run `node scripts/validate-host-adapters.js && node scripts/validate-skill-triggers.js && node scripts/validate-devflow.js`; expect all contract reports to pass without copied full-lifecycle phrases.
-Acceptance: a removed duplicate paragraph cannot fail validation when its host interface remains reachable, but a missing route, owner link, fallback, proof exit, local reference, or oversized `AGENTS.md` fails deterministically.
-Verify: Run `node scripts/validate-host-adapters.js && node scripts/validate-skill-triggers.js && node scripts/validate-devflow.js`; expect three passing reports and no legacy phrase-duplication assertion.
-Comments: New or modified validator helpers require function comments that state the protected capability and failure condition; add inline comment only for intentional host capability differences.
-Not doing: benchmarking model quality or real IDE loading, parsing natural language semantically, or adding a JSON/YAML contract file.
-
-## Task 7: Ship Every New Runtime Reference Through Existing Installers
-
-Task: Ship every new runtime reference through existing installers
-Task type: Code change
-Files:
-- Modify: scripts/install-devflow.js | anchor: `const runtimeEntries` | include every new owner reference in target-project sync.
-- Modify: scripts/install-devflow-user.js | anchor: `const userEntries` | include every reference required by user-level skills.
-- Modify: scripts/validate-installer.js | anchor: `assertInstalledResponsibilitySplitContract` | assert target installation contains and reaches new references.
-- Modify: scripts/validate-user-installer.js | anchor: `assertInstalledResponsibilitySplitContract` | assert user installation contains and reaches new references without project rule files.
-- Modify: plugin.json | anchor: `skills` | list newly addressable runtime references only where plugin discovery needs direct exposure.
-Interfaces:
-- Consumes: installer entry arrays, installed target directory, installed user runtime directory, plugin skill manifest.
-- Produces: copied reference files and self-contained installer verification result.
-Current behavior: installer arrays only list the existing core and skill references, so newly introduced local owner references would not necessarily reach installed environments.
-Target behavior: every selected skill can load its declared owner reference after target or user installation; manifest exposure remains limited to references that a host must discover directly.
-Change mechanics: pseudocode: `const ownerReferences = [cutMethods, specPlanMethods, buildMethods, proofRecoveryMethods]; entries.push(...ownerReferences); assertInstalledFiles(ownerReferences);` Update plugin skills only for a real discovery requirement; do not add a second manifest format.
-Call impact: `install:target`, `install:user`, `install:verify`, and `user:verify` keep their CLI contracts and gain self-containment coverage for the new files.
-Steps:
-- [ ] Modify `scripts/install-devflow.js` and `scripts/install-devflow-user.js` at their entry arrays using exact replacement: append the four local references required by their installed skill sets.
-- [ ] Modify `scripts/validate-installer.js` and `scripts/validate-user-installer.js` at `assertInstalledResponsibilitySplitContract` using pseudocode: assert each installed skill's local reference exists and each owner link resolves in the installed tree.
-- [ ] Modify `plugin.json` at `skills` using exact replacement only when an added reference is a host-discoverable runtime entry; otherwise preserve the existing manifest boundary and rely on installer arrays.
-- [ ] Run `node scripts/validate-installer.js && node scripts/validate-user-installer.js`; expect both install smoke suites to pass with the newly required references present.
-Acceptance: a clean target and a clean user runtime contain every local reference named by their installed skills; no project-only `AGENTS.md` enters the user installer.
-Verify: Run `node scripts/validate-installer.js && node scripts/validate-user-installer.js`; expect both commands to report their installer validation passed.
-Comments: New installer assertion helpers require function comments explaining the installed-runtime boundary they protect.
-Not doing: changing dry-run, force-overwrite, user-home resolution, or generic merge behavior.
-
-## Task 8: Add Evidence And Invalidation To Learning-Card Contracts
-
-Task: Add evidence and invalidation to learning-card contracts
-Task type: Code change
-Files:
-- Modify: skills/devflow-learn/SKILL.md | anchor: `## Card Format` | require evidence source and invalidation condition for newly created or updated cards.
-- Modify: scripts/validate-learning-loop.js | anchor: `parseLearningCards` | require the two fields on the scenario-matched card and verify unmatched cards are not selected.
-- Modify: scripts/validate-devflow.js | anchor: `const learningIndex` | require the two fields for every linked learning card.
-- Modify: .copilot/LEARNING_INDEX.md | anchor: `# Learning Index` | document that the index selects cards by trigger and scope while evidence and invalidation remain in the card body.
-Interfaces:
-- Consumes: learning signal, index table row `{ card, trigger, scope, confidence }`, selected card body.
-- Produces: learning card with `Trigger`, `Lesson`, `Next action`, `Scope`, `Related`, `Evidence`, and `Invalidation` fields.
-Current behavior: learning cards have no consistent provenance or expiry boundary; validation checks only the original five fields.
-Target behavior: only matched cards are read, and each active card identifies the evidence that supports it plus the concrete condition that should retire or rewrite it.
-Change mechanics: pseudocode: `requiredFields = [...existingFields, "- Evidence:", "- Invalidation:"]; assert(card.includes(field));` Keep matching keyed by index trigger and scope; do not add card-body scanning before selection.
-Call impact: existing recall remains selective and non-blocking; future `devflow-learn` writes contain two additional short fields.
-Steps:
-- [ ] Modify `skills/devflow-learn/SKILL.md` at `## Card Format` using exact replacement: define concise `Evidence` and `Invalidation` semantics and require them only for qualifying cards.
-- [ ] Modify `scripts/validate-learning-loop.js` at `parseLearningCards` and `scripts/validate-devflow.js` at `const learningIndex` using pseudocode: reject linked cards missing either field and retain trigger/scope-first selection.
-- [ ] Modify `.copilot/LEARNING_INDEX.md` at `# Learning Index` using exact replacement: state that evidence and invalidation live in selected cards, not in always-loaded index rows.
-- [ ] Run `node scripts/validate-learning-loop.js && node scripts/validate-devflow.js`; expect learning schema checks and progressive recall scenarios to pass.
-Acceptance: every linked learning card has evidence and an invalidation condition, while a task with no matching index row does not load any card body.
-Verify: Run `node scripts/validate-learning-loop.js && node scripts/validate-devflow.js`; expect learning-loop validation and DevFlow validation to pass.
-Comments: New validation helpers require function comments explaining why card-body fields are checked only after index selection.
-Not doing: storing chat transcripts, automatic summaries, business facts, or new memory infrastructure.
-
-## Task 9: Migrate Existing Learning Cards And Runtime Documentation
-
-Task: Migrate existing learning cards and runtime documentation
-Task type: Documentation-only
-Files:
-- Modify: .copilot/cards/agents-runtime-prompt-boundary.md | section `# AGENTS Runtime Prompt Boundary` | add concrete source evidence and invalidation condition.
-- Modify: .copilot/cards/devflow-runtime-references.md | section `# DevFlow Runtime References` | add concrete source evidence and invalidation condition.
-- Modify: .copilot/cards/skill-description-trigger-surface.md | section `# Skill Description Trigger Surface` | add concrete source evidence and invalidation condition.
-- Modify: .copilot/cards/skill-sync-after-update.md | section `# Skill Sync After Update` | add concrete source evidence and invalidation condition.
-- Modify: .copilot/cards/global-agents-sync-preservation.md | section `# Global AGENTS Sync Preservation` | add concrete source evidence and invalidation condition.
-- Modify: .copilot/cards/rule-doc-merge-sync.md | section `# Rule Documentation Merge Sync` | add concrete source evidence and invalidation condition.
-- Modify: .copilot/cards/reference-project-absorption-proof.md | section `# Reference Project Absorption Proof` | add concrete source evidence and invalidation condition.
-- Modify: .copilot/cards/problem-reports-need-triage.md | section `# Problem Reports Need Triage` | add concrete source evidence and invalidation condition.
-- Modify: .copilot/cards/pua-same-target-trigger.md | section `# PUA Same-Target Trigger` | add concrete source evidence and invalidation condition.
-- Modify: README.md | section `Native Capabilities Integrated` | explain the startup-interface and selected-reference loading boundary.
-- Modify: docs/platform-setup.md | section `## Codex` | document minimal fallback for hosts without automatic skill loading.
-- Modify: skills/devflow-core/references/project-structure.md | section `## Public Entry Points` | document owner references as installed runtime artifacts.
-- Modify: docs/features/devflow-core.md | section `## Version History` | record this context-contract change and its lasting constraints.
-Interfaces:
-- Consumes: documentation-only
-- Produces: documentation-only
-Steps:
-- [ ] Modify all listed `.copilot/cards/*.md` using exact replacement: append `Evidence` naming the checked runtime source or validation command and `Invalidation` naming the changed contract or failed verification that requires review.
-- [ ] Modify `README.md`, `docs/platform-setup.md`, `skills/devflow-core/references/project-structure.md`, and `docs/features/devflow-core.md` using exact replacement: describe startup interfaces, selected local references, installer reachability, and the decision not to duplicate runtime methods in host adapters.
-- [ ] Run `node scripts/validate-learning-loop.js && node scripts/validate-devflow.js`; expect card schema and documentation-linked runtime checks to pass.
-Acceptance: all pre-existing cards gain evidence and invalidation without growing the index into a memory dump; public documentation accurately explains the newly installed three-layer contract.
-Verify: Run `node scripts/validate-learning-loop.js && node scripts/validate-devflow.js`; expect both commands to pass and report no missing card fields.
-Comments: none - documentation-only change.
-Not doing: converting cards to project knowledge, adding a new documentation hierarchy, or recording unrelated product history.
+- [ ] Modify `scripts/validate-installer.js` and `scripts/validate-user-installer.js` using pseudocode: retain manifest, dry-run, create, check, skip, and force coverage while requiring installed hybrid-flow evidence.
+- [ ] Modify `docs/PRD.md`, `docs/features/devflow-core.md`, `README.md`, and `docs/platform-setup.md` using exact replacement: document Core routing for non-unique states and direct routing for named successes.
+- [ ] Run `npm run install:verify`, `npm run user:verify`, `npm run verify:all`, and `git diff --check`; expect installer checks, full matrix, and whitespace validation to pass.
+Acceptance: clean target and user installs contain every required skill/reference, describe Core's hybrid role, and preserve direct-success behavior.
+Verify: Run `npm run install:verify && npm run user:verify && npm run verify:all && git diff --check`; expect every command to pass.
+Comments: Installer validator helpers need function comments for installed hybrid-contract checks; public Markdown needs no inline comments.
+Not doing: changing installer write, dry-run, force-overwrite, or user-home semantics.

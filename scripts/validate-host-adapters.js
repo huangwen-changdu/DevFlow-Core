@@ -31,6 +31,8 @@ const hosts = [
       brainstorm: ["Brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["When skills are unavailable"],
+      directSuccess: ["A/B/C", "direct success"],
+      coreReturn: ["return facts to Core", "return Core"],
       proof: ["devflow-prove", "Judgment: PASS / FAIL / BLOCKED"]
     }
   },
@@ -42,6 +44,8 @@ const hosts = [
       brainstorm: ["creative work", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["selected lifecycle reference"],
+      directSuccess: ["A/B/C", "directly"],
+      coreReturn: ["return to Core"],
       proof: ["devflow-prove"]
     }
   },
@@ -49,10 +53,12 @@ const hosts = [
     name: "Claude command",
     file: ".claude/commands/devflow-core.md",
     capabilities: {
-      route: ["Route the request through Core"],
+      route: ["Core routes request entry"],
       brainstorm: ["Before creative work", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["AGENTS.md"],
+      directSuccess: ["A/B/C", "directly"],
+      coreReturn: ["return to Core"],
       proof: ["devflow-prove"]
     }
   },
@@ -60,10 +66,12 @@ const hosts = [
     name: "Claude SessionStart",
     file: "hooks/devflow-session-start.js",
     capabilities: {
-      route: ["Problem, Fast, Design-lite, Design, Build, or Recovery"],
+      route: ["Core selects only non-unique lifecycle work"],
       brainstorm: ["Creative work", "Brainstorm"],
       owner: ["devflow-core"],
       loadOrFallback: ["selected lifecycle reference"],
+      directSuccess: ["A/B/C", "direct"],
+      coreReturn: ["return Core"],
       proof: ["Prove evidence"]
     }
   },
@@ -75,6 +83,8 @@ const hosts = [
       brainstorm: ["creative work", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["no-skill fallback"],
+      directSuccess: ["A/B/C", "directly"],
+      coreReturn: ["return to Core"],
       proof: ["Prove"]
     }
   },
@@ -86,6 +96,8 @@ const hosts = [
       brainstorm: ["creative work", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["host capability"],
+      directSuccess: ["A/B/C", "direct"],
+      coreReturn: ["return to Core"],
       proof: ["Prove before completion"]
     }
   },
@@ -96,7 +108,9 @@ const hosts = [
       route: ["Problem, Fast, Design-lite, Design, Build, or Recovery"],
       brainstorm: ["Before creative work", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
-      loadOrFallback: ["owner skill"],
+      loadOrFallback: ["load `skills/devflow-core/SKILL.md`"],
+      directSuccess: ["A/B/C", "direct successes"],
+      coreReturn: ["return to Core"],
       proof: ["devflow-prove"]
     }
   },
@@ -108,6 +122,8 @@ const hosts = [
       brainstorm: ["creative work", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["Without skills"],
+      directSuccess: ["A/B/C", "directly"],
+      coreReturn: ["return Core"],
       proof: ["Prove before completion"]
     }
   }
@@ -117,13 +133,14 @@ for (const host of hosts) assertHostContract(host);
 
 const core = read("skills/devflow-core/SKILL.md");
 for (const boundary of [
-  "Confirmed request",
-  "confirmed Spec",
-  "Cut returns",
-  "confirmed Plan",
+  "A direct success",
+  "B direct success",
+  "C direct success",
+  "CUT_REDUCE",
+  "scope drift",
   "BUILD_BLOCKED",
   "recovery facts",
-  "Only Core selects"
+  "Core selects only after"
 ]) {
   assert(core.includes(boundary), `Core is missing return boundary: ${boundary}`);
 }

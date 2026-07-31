@@ -13,16 +13,15 @@ Add search to the dashboard.
 Expected behavior:
 
 - Route: Design.
-- Skill path: `devflow-core -> devflow-brainstorm -> Confirmed request -> devflow-core`.
+- Skill path: `devflow-core -> devflow-brainstorm -> Confirmed request -> user-selected A/B/C direct branch`.
 - Brainstorm must read current project context before clarifying.
 - Brainstorm must send a Semantic Echo-Back, apply the Understanding Revision Rule when a correction changes the request, then ask or infer only goal, scope, exclusions, constraints, acceptance, and open questions.
-- Brainstorm must output the fixed `Confirmed request` summary with `Status: clarified` and stop.
-- Brainstorm must not choose an approach, route, depth, design contract, or handoff.
-- Spec must not directly hand off to Cut.
-- `devflow-core` alone chooses any subsequent lifecycle work; when it selects Spec, Spec compares real options, waits for design approval, and returns the confirmed Spec to Core.
-- Cut must return its Cut Decision to Core before lifecycle selection.
-- Plan must return the confirmed Plan to Core before lifecycle selection.
-- PUA must return recovery facts to Core before lifecycle selection.
+- Brainstorm must output the fixed `Confirmed request` summary with `Status: clarified`, present A/B/C, and wait for explicit user selection.
+- Brainstorm must not choose an approach, route, depth, design contract, or handoff; it starts only the user-selected direct branch.
+- A directly follows Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove; B directly follows Brainstorm -> Cut -> Plan -> Build -> Prove; C directly follows Brainstorm -> Cut -> Build -> Prove.
+- An approved A-branch Spec directly enters Cut, A/B `CUT_PASS` directly enters Plan, C `CUT_PASS` directly enters Build, and an approved A/B Plan directly enters Build.
+- `devflow-core` alone selects after non-unique facts: missing or changed depth, `CUT_REDUCE`, `CUT_REUSE`, `CUT_BLOCKED`, scope drift, `BUILD_BLOCKED`, Proof `FAIL`/`BLOCKED`, changed intent, or PUA recovery.
+- PUA returns recovery facts to Core before lifecycle selection.
 
 Pass check:
 
@@ -76,9 +75,8 @@ Requirement: implement CSV export for orders.
 Expected behavior:
 
 - Route: Build because implementation is requested.
-- Skill path: `devflow-core -> devflow-brainstorm -> Confirmed request -> devflow-core -> devflow-cut -> Cut Decision -> devflow-core -> devflow-build -> devflow-prove`.
-- Brainstorm confirms only the request and stops at `Status: clarified`.
-- Core chooses the lifecycle path after reading the confirmed request; when no reviewable design contract is needed, it can proceed to Cut.
+- Skill path: `devflow-core -> devflow-brainstorm -> Confirmed request -> user selects C -> devflow-cut -> CUT_PASS -> devflow-build -> devflow-prove`.
+- Brainstorm confirms the request at `Status: clarified`, then presents A/B/C and starts Cut only after the user selects C.
 - Cut checks existing export helpers, standard library/platform CSV support, dependency need, scope drift, and smallest useful path.
 - Build uses slices if the change spans API/UI/tests.
 - Prove runs the targeted test/build/manual scenario.
@@ -192,7 +190,7 @@ Expected behavior:
 - Route: Fast verification
 - Skill path: `devflow-core -> devflow-prove`
 - Must check `AGENTS.md`, `CLAUDE.md`, Copilot instructions, VS Code instruction/prompt, CodeBuddy rule, plugin metadata, and Gemini metadata.
-- Must confirm platform adapters preserve `Sense -> Brainstorm clarification -> Confirmed request -> Core route -> devflow-cut -> Cut Decision -> Core route -> devflow-build -> devflow-prove`.
+- Must confirm platform adapters preserve `Sense -> Brainstorm clarification -> user-selected A/B/C -> direct success edges -> devflow-prove`, with Core routing non-unique exceptions.
 - Must confirm plugin metadata includes all shipped skills and commands.
 - Must not rewrite adapter rules unless drift is proven.
 
@@ -379,7 +377,9 @@ Expected behavior:
 - Cut compares nearest order-history patterns and records convention, responsibility, performance, and readability checks.
 - It must not require a Service split, interface, cache, or fixed function length without current evidence.
 - Build makes business intent, key rules, failure paths, and side effects locally understandable, then records a Readability Check.
-- Prove reviews project-convention alignment, local understandability, responsibility boundaries, and any cache benefit/invalidation/consistency claim.
+- Prove reviews the actual diff against File Structure, Prewalk evidence, project-convention alignment, local understandability, responsibility boundaries, and any cache benefit/invalidation/consistency claim.
+- A coherent orchestration change passes when its responsibility, side effects, and direct contracts remain evidenced in the diff.
+- A changed responsibility or unrecorded side effect is a Blocker or Warning only when the diff shows concrete risk; a justified local convention deviation remains non-blocking.
 
 Pass check:
 
@@ -403,25 +403,54 @@ Create implementation slices from this approved design and check the plan before
 Expected behavior:
 
 - Route: Build planning before implementation.
-- Skill path: `devflow-core -> devflow-brainstorm -> Confirmed request -> devflow-core -> devflow-spec -> confirmed Spec -> devflow-core -> devflow-cut -> Cut Decision -> devflow-core -> /devflow-plan -> confirmed Plan -> devflow-core -> devflow-build -> devflow-prove`.
-- Core must consume `Confirmed request`, select Spec when approach comparison and a reviewable design contract are needed, then consume the confirmed Spec before selecting Cut.
-- Spec must compare real no-change/reuse, direct, and relevant existing-pattern options; it writes the design contract/saved spec, waits for user approval, and must not directly hand off to Cut.
-- Cut must return its Cut Decision to Core; only Core can choose whether the result needs Plan, Build, Prove, or no further lifecycle work.
-- Must create a Plan Pack with Task, Files, Acceptance, Verify, and Not doing fields only after `CUT_PASS` and Core selects planning.
-- A user-approved Plan Pack receives a lightweight Cut-consistency review; it returns the confirmed Plan and any scope-drift facts to Core, which decides whether affected Cut gates or later lifecycle work are needed.
+- Skill path: `devflow-core -> devflow-brainstorm -> Confirmed request -> user selects A -> devflow-spec -> approved Spec -> devflow-cut -> CUT_PASS -> /devflow-plan -> approved Plan -> devflow-build -> devflow-prove`.
+- Brainstorm presents A/B/C after the confirmed request. User-selected A starts Spec directly; Core routes only missing-depth, changed-intent, or non-success facts.
+- Spec must compare real no-change/reuse, direct, and relevant existing-pattern options; it writes the design contract/saved spec, waits for user approval, then an approved A Spec directly enters Cut.
+- A/B `CUT_PASS` directly enters Plan; only `CUT_REDUCE`, `CUT_REUSE`, `CUT_BLOCKED`, or other non-success facts return to Core.
+- A Code change Plan Pack requires a concrete `File Structure` row per target and task-level `Prewalk`: actual `Execution Trace`, `Current Handoff Facts`, and bounded `Remaining Structured Worklist`.
+- A delegated Build agent reads the latest trace, then re-reads only the current work item's anchors and directly changed neighbor. It does not restart broad discovery or re-decide responsibility by default.
+- A user-approved Plan Pack receives a lightweight Cut-consistency review; an approved A/B Plan directly enters Build, while scope-drift facts return to Core.
 - Saved plan files default to `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`.
 - Must not save implementation plans under `docs/features/`; that directory is for feature ledgers.
 - Must run `node scripts/devflow-plan.js <plan-file>` when the plan is saved to a file. If not found at `scripts/devflow-plan.js` (project-level), try `~/.codex/scripts/devflow-plan.js` or `~/.claude/scripts/devflow-plan.js` (user-level). Do NOT look under `skills/scripts/`.
-- Must fail or revise the plan if fields are missing, unresolved, vague, or placed under `docs/features/`.
-- Must not treat the checker as architecture approval; it only proves the plan is executable.
+- Must fail or revise a plan missing a responsibility map, actual trace evidence, current handoff facts, bounded work items, or concrete verification. The checker does not approve an architecture pattern.
 
 Pass check:
 
 ```text
 CUT_PASS: allowed scope / reuse conclusion / exclusions / verification constraints
 Command: node scripts/devflow-plan.js docs/plans/YYYY-MM-DD-<short-kebab-name>.md
-Result: DevFlow plan pack report; Plan landing: ok docs/plans/YYYY-MM-DD-<short-kebab-name>.md; Judgment: PASS
+Result: DevFlow plan pack report; File Structure: ok; trace and remaining worklist: ok; Judgment: PASS
 Next: lightweight Cut-consistency review -> confirmed Plan and scope-drift facts -> devflow-core
+Judgment: PASS / FAIL / BLOCKED
+```
+
+## Scenario 5C: Diff-First Prove Quality Gate
+
+Input:
+
+```text
+The approved export plan is implemented. Verify it and mark it ready.
+```
+
+Expected behavior:
+
+- Route: Prove.
+- Prove reads the actual diff before interpreting test output, and compares it with the approved `File Structure`, current `Execution Trace`, `Current Handoff Facts`, remaining-work completion evidence, and nearest comparable code.
+- The Code Review Report names the reviewed diff, plan boundary, Prewalk evidence, comparable code, Blockers, Warnings, Recommendations, and boundary verdict.
+- An unresolved evidence-backed Blocker or Warning returns `FAIL` facts to Core; Recommendations alone do not prevent PASS.
+- A function size, class name, dependency count, cache preference, or fixed architecture shape without changed-code evidence and concrete risk is not a blocking finding.
+
+Pass check:
+
+```text
+Diff reviewed: actual changed files/ranges
+Plan boundary: File Structure row(s) and verdict
+Prewalk evidence: Trace / Handoff Facts / completion evidence
+Blockers: 0
+Warnings: 0
+Recommendations: 0 or documented
+Boundary verdict: within approved responsibility/touch set
 Judgment: PASS / FAIL / BLOCKED
 ```
 
@@ -644,6 +673,30 @@ Command: <unit test command>
 Result: <passing unit test output>
 Adversarial review: API activation path or integration behavior remains unverified.
 Judgment: FAIL
+```
+
+## Scenario 7B: Delegated Continuation and Scope Drift
+
+Input:
+
+```text
+A Build subagent receives an approved Plan whose latest Prewalk trace records `OrderHistoryQuery`, its API handler, and current authorization behavior. The first remaining work item anchors the query and handler. A minimal anchor reread discovers a new authorization policy that changes denial behavior and the requested rule's placement.
+```
+
+Expected behavior:
+
+- Build reads the latest Execution Trace, re-reads only the current anchors and directly changed neighbor, and does not restart a broad repository review.
+- Build stops instead of silently applying the rule to the easiest existing file or expanding the touch set.
+- It returns observed policy, affected anchor, invalidated trace/handoff fact, blocked work-item verification, and the smallest replan decision to Core.
+- After Core corrects Plan/Prewalk, Build resumes from updated anchors and appends actual verification evidence for every completed remaining item.
+
+Pass check:
+
+```text
+Command: minimal anchor reread plus required verification
+Result: mismatch and affected anchor recorded; no silent scope expansion or broad rediscovery
+Adversarial review: new authorization behavior invalidates planned placement
+Judgment: FAIL facts -> devflow-core replan -> resumed Build only after corrected handoff
 ```
 
 ## Scenario 8: Skill Pack Validation

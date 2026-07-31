@@ -40,10 +40,10 @@ Verification:
 Code Documentation:
 Open Questions:
 
-If Core later selects Cut and it returns `CUT_PASS`, any resulting plan cites:
+When Cut returns `CUT_PASS`, any resulting plan cites:
 Source: <confirmed spec path or approved design>
 Spec coverage: <which requirements map to which tasks>
 Cut Decision: <allowed scope, reuse conclusion, exclusions, verification constraints>
 
-After the user reviews and approves the design contract/spec, return the confirmed Spec to `devflow-core`. Core alone selects whether Cut, `/devflow-plan`, Build, Prove, or no further work is needed.
+After the user reviews and approves an A-branch design contract/spec, directly start `devflow-cut` with the confirmed Spec and preserved Depth. Any rejection, missing depth, scope change, or other non-success result returns facts to `devflow-core`; do not select another lifecycle skill yourself.
 '''

@@ -37,7 +37,7 @@ Files the project installer syncs (identical for every platform — you get one 
 
 ## Codex
 
-Entry surface: `AGENTS.md` at the project root. Codex reads it as the runtime prompt, but does not automatically load skill bodies. `AGENTS.md` therefore provides the minimal route-to-Core fallback; Core then reads the shared method map and only the reference owned by the selected lifecycle skill.
+Entry surface: `AGENTS.md` at the project root. Codex reads it as the runtime prompt, but does not automatically load skill bodies. `AGENTS.md` therefore provides the minimal hybrid-flow fallback: Brainstorm collects a user-selected A/B/C depth, named success edges flow directly, and Core selects only non-unique exceptions. Core then reads the shared method map and only the reference owned by the selected lifecycle skill.
 
 Install into a target project:
 

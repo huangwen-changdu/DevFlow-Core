@@ -122,12 +122,12 @@ The framework must make ambiguous work concrete without assigning design or life
 Acceptance:
 
 - Brainstorm reads minimum facts, sends Semantic Echo-Back, applies the Understanding Revision Rule when a correction changes the request, and confirms goal, scope, exclusions, constraints, acceptance, and open questions one at a time.
-- Brainstorm outputs fixed `Confirmed request` with `Status: clarified`, then stops without an approach, route, depth, design contract, or handoff.
-- `devflow-core` consumes the confirmed request and decides whether a saved Spec/design contract is needed.
-- When selected, `devflow-spec` compares real options, writes a reviewable design contract and saved spec under `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`, waits for user approval, and returns the confirmed Spec to Core.
-- `devflow-core` alone selects Cut, planning, implementation, proof, or no further lifecycle work after a confirmed request, confirmed Spec, Cut Decision, confirmed Plan, or PUA recovery facts.
-- `devflow-cut` returns each result to Core; `CUT_PASS` does not directly invoke Plan, Build, or Prove.
-- `/devflow-plan` outputs smallest useful plan, not doing, impact, and verification only after Core selects it and Cut permits it; after user review, it returns the confirmed Plan and scope-drift facts to Core.
+- Brainstorm outputs fixed `Confirmed request` with `Status: clarified`, then presents A/B/C for explicit user selection. It does not choose a depth, approach, or route itself.
+- Deterministic success edges are direct: A is Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove; B is Brainstorm -> Cut -> Plan -> Build -> Prove; C is Brainstorm -> Cut -> Build -> Prove.
+- For A, `devflow-spec` compares real options, writes a reviewable design contract and saved spec under `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`, waits for user approval, then directly enters Cut.
+- A/B `CUT_PASS` directly enters planning; C `CUT_PASS` directly enters Build; an approved A/B Plan directly enters Build; completed Build directly enters Prove.
+- `devflow-core` selects only after non-unique facts: missing or changed depth, `CUT_REDUCE`, `CUT_REUSE`, `CUT_BLOCKED`, scope drift, `BUILD_BLOCKED`, Proof `FAIL`/`BLOCKED`, changed intent, or PUA recovery.
+- `/devflow-plan` outputs smallest useful plan, not doing, impact, and verification after A/B `CUT_PASS`; after user review, an approved Plan enters Build directly and scope-drift facts return to Core.
 - `devflow-pua` returns recovery facts to Core; only Core decides whether Brainstorm must re-confirm the request.
 - For implementation requests, the selected lifecycle continues into Build and Prove.
 

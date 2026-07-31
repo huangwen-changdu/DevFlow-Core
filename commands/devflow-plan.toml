@@ -1,6 +1,6 @@
 description = "Create a reviewed, executable implementation plan from an approved DevFlow spec or design."
 prompt = '''
-Load `skills/devflow-plan/SKILL.md` only after `devflow-core` selects planning. Create the single DevFlow Plan Pack from Core-selected `CUT_PASS` plus its approved design or confirmed spec.
+Load `skills/devflow-plan/SKILL.md` after an A/B direct `CUT_PASS`, or when `devflow-core` selects planning for a non-unique artifact. Create the single DevFlow Plan Pack from A/B `CUT_PASS` plus its approved design or confirmed spec.
 
 `CUT_PASS` must state the allowed scope, reuse conclusion, exclusions, and verification constraints. Do not create a construction plan before Cut returns `CUT_PASS`.
 
@@ -53,5 +53,5 @@ For `Code change`, every existing-file row must name a symbol or stable anchor; 
 
 Run `node scripts/devflow-plan.js <plan-file>` when it exists; otherwise use the user-level fallback specified in `core-methods.md`. Self-review source coverage, interfaces, precise locations, behavior changes, mechanics, call impact, verification expectations, placeholders, and file-operation labels before presenting the plan.
 
-STOP after writing and validating the plan: request user review. After approval, perform a lightweight Cut-consistency review and return the confirmed Plan plus any scope-drift facts to `devflow-core`. Core alone selects `devflow-build` or any other later lifecycle work. Do not perform Cut, Build, Prove, test-first workflow, version-control task steps, independent review, or automatic execution here.
+STOP after writing and validating the plan: request user review. After approval, perform a lightweight Cut-consistency review. An approved A/B Plan directly starts `devflow-build`; any scope-drift or non-success facts return to `devflow-core`. Do not perform Cut, Build, Prove, test-first workflow, version-control task steps, independent review, or automatic execution here.
 '''

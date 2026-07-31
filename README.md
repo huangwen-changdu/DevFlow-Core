@@ -6,7 +6,7 @@ It is not a link collection. The useful parts are built into this repo as rules,
 
 ## What It Gives Developers
 
-- A default flow that stays light: `Sense -> Brainstorm clarification -> Confirmed request -> Core route -> Cut Decision -> Core route -> Build -> Prove`
+- A hybrid default flow: Brainstorm owns explicit A/B/C selection, deterministic success edges flow directly, and Core routes only non-unique, failure, recovery, or scope-change states
 - A Fast / Design-lite / Design / Build / Recovery router with clear small-request gates and user route choice when the boundary is unclear
 - A Method Lens selector for choosing Root Cause, Working Backwards, First Principles Cut, Data/Proof, or Operational Owner strategy when the route needs more than generic process
 - A Ponytail-style ladder that prefers no-change, reuse existing code, available environment skill, standard library, native platform, installed dependency, one-line/config, then minimum new code
@@ -99,8 +99,8 @@ Other `.js` files under `scripts/` are DevFlow-Core maintainer checks, installer
 | Route | Use When | Flow |
 |---|---|---|
 | Fast | Pure Q&A, fact lookup, verification, or trivial code change (one line, no logic change, no risk). | Sense -> Prove |
-| Design | Requirement, behavior change, feature, architecture change, unclear ask, or multi-solution decision | Sense -> Brainstorm clarification -> `Confirmed request` -> Core route -> Spec approach comparison/design confirmation when selected -> confirmed Spec -> Core route -> Cut -> Cut Decision -> Core route -> Plan when selected -> confirmed Plan -> Core route -> Build -> Prove |
-| Build | User asks to implement, fix, land, or execute a change | Sense -> Brainstorm clarification when needed -> `Confirmed request` -> Core-selected Spec/Cut/Plan/Build/Prove work; each confirmed Spec, Cut Decision, confirmed Plan, or recovery fact returns to Core before its next lifecycle selection |
+| Design | Requirement, behavior change, feature, architecture change, unclear ask, or multi-solution decision | Sense -> Brainstorm clarification -> user-selected A/B/C: A `Spec -> Cut -> Plan -> Build -> Prove`; B `Cut -> Plan -> Build -> Prove`; C `Cut -> Build -> Prove` |
+| Build | User asks to implement, fix, land, or execute a change | Approved work enters Cut; A/B `CUT_PASS` directly enters Plan, C `CUT_PASS` directly enters Build, and completed Build directly enters Prove. Core routes only missing depth, non-success, scope drift, blocked, recovery, or changed-intent facts. |
 | Recovery | The user repeatedly points out that the same function, result, or requested capability remains wrong, incomplete, or missing in one task lifecycle; tests fail unexpectedly; edits go wrong; or the agent is about to give up | `devflow-pua` diagnoses recovery -> recovery facts return to Core -> Brainstorm re-confirms only when Core selects it -> Core re-routes |
 
 ## Copyable Workflows
@@ -129,9 +129,9 @@ Use this when you want the agent to land a feature without skipping design or cu
 Requirement: implement CSV export for orders.
 ```
 
-Expected route: `Build -> Brainstorm clarification -> Confirmed request -> Core route -> devflow-cut -> Cut Decision -> Core route -> devflow-build -> devflow-prove`.
+Expected route: `Build -> Brainstorm clarification -> user selects C -> devflow-cut -> CUT_PASS -> devflow-build -> devflow-prove`.
 
-Core selects `devflow-spec` or `/devflow-plan` only when the confirmed request and Cut result require those artifacts.
+Select A for `Spec -> Cut -> Plan -> Build`, B for `Cut -> Plan -> Build`, or C for `Cut -> Build`. Core resumes ownership only when an artifact has no unique successor.
 
 Local proof:
 
@@ -180,8 +180,8 @@ npm run install:verify
 |---|---|
 | `devflow-core` | Route the work, load the right next skill, preserve the output contract. |
 | `devflow-brainstorm` | 通过 Semantic Echo-Back、Understanding Revision Rule 和逐项澄清确认 Goal、Scope、Out of scope、Constraints、Acceptance 与 Open questions；输出 `Confirmed request` 后停止。 |
-| `devflow-spec` | After Core selects a `Confirmed request`, compare real options, write the reviewable design contract and saved spec, wait for approval, then return the confirmed Spec to Core. |
-| `devflow-plan` | From Core-selected `CUT_PASS`, write one reviewed code-level construction Plan Pack with exact file locations, interface contracts, current/target behavior, change mechanics, call impact, proof-ready steps, and source tracing; after approval, return the confirmed Plan and scope-drift facts to Core. |
+| `devflow-spec` | For user-selected A, compare real options, write the reviewable design contract and saved spec, wait for approval, then directly enter Cut; non-success facts return to Core. |
+| `devflow-plan` | From A/B `CUT_PASS`, write one reviewed code-level construction Plan Pack with exact file locations, interface contracts, current/target behavior, change mechanics, call impact, proof-ready steps, and source tracing; after approval, directly enter Build while scope-drift facts return to Core. |
 | `devflow-cut` | Apply reuse ladder, root-cause check, platform-native checklist, overbuild gate, cut intensity, and delete-list review. |
 | `devflow-build` | Execute the smallest approved change in verifiable slices. |
 | `devflow-prove` | Run the proof command or scenario, including Skill Activation Check for rule/skill changes, and report command/result/judgment. |
@@ -196,8 +196,8 @@ Development requests still start at `devflow-core`. The one-question interview b
 | Need | DevFlow behavior |
 |---|---|
 | Clarify a request | `devflow-brainstorm` sends a Semantic Echo-Back, applies its Understanding Revision Rule when needed, asks one question at a time, then stops at `Confirmed request`. |
-| Preserve requirements and design | `devflow-core` selects `devflow-spec` when the confirmed request needs approach comparison and a saved design contract; after user approval, Spec returns the confirmed Spec to Core. |
-| Preserve decisions/history | `devflow-core` selects the relevant lifecycle owner after confirmed request or confirmed Spec; feature ledgers preserve capability history. |
+| Preserve requirements and design | Brainstorm asks the user to choose A/B/C after clarification. A enters `devflow-spec`; after approval, its sole successor is Cut. |
+| Preserve decisions/history | Core selects the relevant lifecycle owner only after exceptions or non-unique facts; feature ledgers preserve capability history. |
 
 ## Design Output Contract
 

@@ -1,6 +1,6 @@
 ---
 name: devflow-brainstorm
-description: "You MUST use this before any creative work — creating features, building components, adding functionality, modifying behavior, or defining a problem-directed change. Explores user intent, requirements, problem boundaries, and design intent before implementation. Acts as a brainstorming partner: clarifies what the user wants through a semantic echo-back, examines the problem from multiple angles, surfaces gaps and risks, and recommends directions within the problem space; stops after a fixed Confirmed request summary. Do NOT use it for pure Q&A, lookup, verification, or an already approved change; do NOT select a route, produce implementation designs, or hand off to another skill."
+description: "You MUST use this before any creative work — creating features, building components, adding functionality, modifying behavior, or defining a problem-directed change. Explores user intent, requirements, problem boundaries, and design intent before implementation. Acts as a brainstorming partner: clarifies what the user wants through a semantic echo-back, examines the problem from multiple angles, surfaces gaps and risks, and recommends directions within the problem space; stops after a fixed Confirmed request summary and explicit A/B/C depth gate. Do NOT use it for pure Q&A, lookup, verification, or an already approved change; do NOT select a route or depth, produce implementation designs, or hand off except through the user-selected predefined direct branch."
 ---
 
 # DevFlow Brainstorm
@@ -17,16 +17,17 @@ This skill owns only:
 - ideas, suggestions, and direction recommendations inside the problem space;
 - one-at-a-time clarification of goal, scope, exclusions, constraints, acceptance, and real open questions;
 - the fixed `Confirmed request` summary.
+- an explicit A/B/C depth gate after the summary, followed only by the user-selected direct branch.
 
 Use `references/interview-discipline.md` for the Semantic Echo-Back, multi-angle checklist, recommendation boundary, one-question discipline, and fixed-summary forms.
 
-`devflow-core` owns post-clarification lifecycle routing. `devflow-spec` owns solution-space design contracts. `devflow-cut`, `devflow-plan`, `devflow-build`, `devflow-prove`, `devflow-pua`, and `devflow-docs-followup` retain their own responsibilities.
+`devflow-core` owns routing for missing depth, exceptions, and non-unique artifacts. `devflow-spec` owns solution-space design contracts. `devflow-cut`, `devflow-plan`, `devflow-build`, `devflow-prove`, `devflow-pua`, and `devflow-docs-followup` retain their own responsibilities.
 
 ## Entry And Stop Condition
 
 Enter only when `devflow-core` has identified a requirement, behavior, architecture, or ambiguity that needs clarification.
 
-Stop immediately after producing the fixed summary. Do not select Fast, Design-lite, a path, a depth, an approach, a method, or a downstream skill. Do not create design sections, a design contract, documentation, or a visual artifact.
+After producing the fixed summary, present the A/B/C gate and wait for user selection. Start A at `devflow-spec` and B/C at `devflow-cut` only after the user chooses. Do not select Fast, Design-lite, a depth, an approach, or a method on the user's behalf. Do not create design sections, a design contract, documentation, or a visual artifact.
 
 ## Clarification Depth
 
@@ -55,7 +56,7 @@ There is no fast lane. A request that turns out clear after analysis simply ends
    ```
 
 3. **Wait.** Do not ask a process question or make a lifecycle decision before the user confirms or corrects the echo-back.
-4. **Clarify one real gap at a time.** Ask only the smallest unresolved question, in this order: goal ambiguity, scope boundary, exclusion, constraint, acceptance, then any remaining open question. Every question carries a recommended answer and why the answer matters.
+4. **Clarify one decision-impact gap at a time.** Ask only the smallest unresolved question whose answer could change scope, a constraint, acceptance, or a subsequent problem-space decision. Resolve qualifying gaps in this order: goal ambiguity, scope boundary, exclusion, constraint, acceptance, then any remaining open question. Do not ask merely because a category is unfilled: record a fact-backed `none` or non-blocking unknown instead. Every question carries a recommended answer and why the answer matters.
 
    ```text
    Question: <one question>
@@ -63,9 +64,9 @@ There is no fast lane. A request that turns out clear after analysis simply ends
    Why now: <risk or dependency resolved>
    ```
 
-5. **Explore the problem.** Walk the multi-angle checklist from the reference and report what each angle found, including "nothing found here". Name gaps, risks, and blind spots in the user's request; offer directions with trade-offs and recommend one inside the problem space.
-6. **Apply the Understanding Revision Rule.** When an answer changes the current understanding, stop the current question chain, update facts, assumptions, and understanding gaps, then send a corrected Semantic Echo-Back and wait for confirmation.
-7. **Finish.** When the shared request is sufficiently clear, output the fixed summary and stop.
+5. **Revalidate every answer.** Before asking the next question, compare the answer with confirmed facts and the current request. If it introduces a load-bearing assumption, exposes a contradiction, or changes goal, scope, exclusion, constraint, acceptance, terminology, or actor, apply the Understanding Revision Rule. Otherwise record the answer and continue only when another decision-impact gap remains.
+6. **Explore the problem.** Walk the multi-angle checklist from the reference and report what each angle found, including "nothing found here". Name gaps, risks, and blind spots in the user's request; offer directions with trade-offs and recommend one inside the problem space. If exploration exposes a new decision-impact gap, return to step 4 and resolve it one question at a time before finishing.
+7. **Finish.** When no decision-impact gap remains and every non-blocking unknown is recorded, output the fixed summary, present the A/B/C gate, and wait. On user selection, follow only the corresponding predefined direct branch.
 
 ## Problem-Space Recommendation
 
@@ -120,13 +121,25 @@ Confirmed request:
 
 The summary records the agreed request and the exploration findings only. It must not contain an implementation plan, solution-space design, lifecycle route, or handoff instruction. It is the factual basis that downstream skills — starting with `devflow-spec` — build on, so record findings faithfully rather than trimming them away.
 
+## A/B/C Gate
+
+After the fixed summary, present these choices and wait for one explicit user selection:
+
+| Depth | User-selected outcome | Direct start after selection |
+|---|---|---|
+| A | Full design contract and implementation plan | `devflow-spec` |
+| B | Implementation plan without a saved Spec | `devflow-cut` |
+| C | Smallest approved change without a Plan Pack | `devflow-cut` |
+
+Record `Depth: A`, `Depth: B`, or `Depth: C` with the selected branch input. Do not infer depth from request size. A missing or changed selection returns the relevant facts to `devflow-core`.
+
 ## Anti-Rationalization
 
 | Excuse | Reality |
 |---|---|
 | "The request is obvious, so skip the echo-back." | Hidden assumptions cause changed-wrong work. Echo the understanding first. |
 | "The request looks simple, so skip the analysis." | Simple-looking requests hide the most assumptions. Walk the checklist; reporting "nothing found" is cheap. |
-| "I can choose the implementation while clarifying." | Recommendations stop at the problem space. Core routes; spec designs how to build. |
+| "I can choose the depth while clarifying." | Recommendations stop at the problem space. The user selects A/B/C; the selected branch starts directly. |
 | "Several questions save time." | One question at a time makes the answer unambiguous. |
 | "Code reveals business intent." | Code shows current behavior, not the desired outcome. Confirm intent. |
 | "A design contract is a better summary." | A design contract decides how; this skill records what plus exploration findings. |
@@ -137,13 +150,13 @@ The summary records the agreed request and the exploration findings only. It mus
 
 ## Red Flags — Stop
 
-- Selecting a route, depth, or downstream skill.
+- Selecting a depth or branch on the user's behalf.
 - Recommending implementation approaches, technical selections, or producing solution-space design.
 - Creating a design contract, spec, plan, ADR, documentation landing, or visual expression.
 - Skipping or abbreviating the multi-angle exploration because the request looks simple.
 - Treating clarification depth as permission to skip the echo-back, a confirm gate, or the recommendation duty.
 - Combining several user questions into one message.
-- Continuing after the fixed summary.
+- Starting a branch before the user selects A/B/C.
 
 ## Verification
 
@@ -157,5 +170,5 @@ Before leaving this skill, confirm:
 - [ ] Recommendations stayed inside the problem space.
 - [ ] Any changed understanding was re-echoed and confirmed.
 - [ ] The fixed `Confirmed request` summary contains every required field, including gaps/risks, directions, and recommendation.
-- [ ] The summary contains no route, design, implementation, or handoff instruction.
-- [ ] The skill stopped after `Status: clarified`.
+- [ ] The summary contains no implementation design or user-unselected branch.
+- [ ] A/B/C was presented after `Status: clarified`, and only the user-selected branch started.

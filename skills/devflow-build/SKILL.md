@@ -9,7 +9,7 @@ Implement only the selected smallest useful solution.
 
 ## Context
 
-Receives a `CUT_PASS` Cut Decision from `devflow-cut`.
+Receives a `CUT_PASS` Cut Decision from `devflow-cut`, either through the direct A/B/C success edge or a Core-selected non-unique path.
 
 - Depth A/B input: `CUT_PASS` plus a user-approved Plan Pack at `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`. Confirm the plan stays within the recorded Cut scope; re-run only affected Cut gates if the plan introduces scope, dependency, abstraction, or file-responsibility drift.
 - Depth C input: `CUT_PASS` plus the approved design contract; no Plan Pack is required.
@@ -214,7 +214,7 @@ Do not guess, do not force through blockers, and do not broaden scope to escape.
 
 ## Handoff Gate
 
-Do not say done. Hand off to `devflow-prove` with:
+Do not say done. A completed Build directly enters `devflow-prove` with:
 
 ```text
 Proof target: ...

@@ -1,6 +1,6 @@
 # DevFlow Build Methods
 
-Owner: `devflow-build`. Load this reference only after Core selects Build.
+Owner: `devflow-build`. Load this reference after C `CUT_PASS`, an approved A/B Plan, or Core selects Build for a non-unique artifact.
 
 ## Method 11: Karpathy Minimal Change
 

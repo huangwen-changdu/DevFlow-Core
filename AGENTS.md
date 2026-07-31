@@ -16,11 +16,11 @@ When skills are unavailable, use the route table and hard boundaries below as th
 
 | Signal | Owner | Required artifact | Return boundary |
 |---|---|---|---|
-| any creative work: creating features, building components, adding functionality, modifying behavior, or defining an unapproved problem-directed change | `devflow-core` -> Brainstorm | Confirmed request | STOP; Core selects next work after confirmation |
+| any creative work: creating features, building components, adding functionality, modifying behavior, or defining an unapproved problem-directed change | `devflow-core` -> Brainstorm -> user-selected A/B/C | Confirmed request + depth | unique A/B/C success edges direct; other states return Core |
 | investigation-only problem report, pure Q&A, lookup, or verification | `devflow-core` -> Prove facts / Fast | verified facts or narrow evidence | Core selects any later change after facts |
-| existing low-risk feature change, `implement`, `fix`, `land`, `bug report`, `error`, `failing test`, `broken` with an already approved scope | `devflow-core` -> Cut -> Build | approved scope and proof | every artifact returns to Core |
-| `spec`, `spec doc`, `requirements doc`, `design doc` | `devflow-spec` after Core selection | approved Spec | confirmed Spec returns to Core |
-| `plan`, `implementation plan`, `task breakdown` | `devflow-plan` after `CUT_PASS` | approved Plan | confirmed Plan returns to Core |
+| existing low-risk feature change, `implement`, `fix`, `land`, `bug report`, `error`, `failing test`, `broken` with an already approved scope | `devflow-core` -> Cut | approved scope and proof | `CUT_PASS` follows A/B -> Plan or C -> Build; other Cut states return Core |
+| `spec`, `spec doc`, `requirements doc`, `design doc` | `devflow-spec` after Core selection | approved A-branch Spec | direct Cut; all non-success states return Core |
+| `plan`, `implementation plan`, `task breakdown` | `devflow-plan` after A/B `CUT_PASS` | approved A/B Plan | direct Build; scope drift returns Core |
 | `done`, `fixed`, `complete`, `ready`, `passed` | `devflow-prove` | fresh command, result, adversarial review, judgment | PASS enters Learn review |
 | repeated same-target miss | `devflow-pua` | recovery facts and `METHOD: {flavor} / {method}` | Core selects changed path |
 | explicit deep adversarial review or red-team review | `devflow-adversarial` | independent findings | no lifecycle handoff |
@@ -31,7 +31,8 @@ When skills are unavailable, use the route table and hard boundaries below as th
 - Read facts before deciding. Search callers before a bug fix. Use First Principles Cut when cause, invariant, or smallest mechanism is unclear.
 - Do not add a dependency, abstraction, configuration surface, directory, framework layer, or generic engine without a current accepted need.
 - Prefer no change, reuse, available skill, standard library, native platform, installed dependency, direct configuration, then minimum new code.
-- Brainstorm confirms request only. Spec, Cut, Plan, Build, and PUA return artifacts or facts only. Core alone selects the next lifecycle step.
+- Core owns non-unique next-step selection. Direct success edges are A: Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove, B: Brainstorm -> Cut -> Plan -> Build -> Prove, and C: Brainstorm -> Cut -> Build -> Prove.
+- Brainstorm confirms the request, then presents A/B/C for user selection. `CUT_REDUCE`, `CUT_REUSE`, `CUT_BLOCKED`, scope drift, `BUILD_BLOCKED`, Proof `FAIL` or `BLOCKED`, and PUA recovery return facts to Core.
 - STOP for Brainstorm confirmation, Spec approval, Plan approval, and `CUT_REDUCE` or `CUT_REUSE` confirmation.
 - Do not claim completion without fresh proof. A real adversarial gap is FAIL or continued work.
 - `devflow-learn` records only reusable evidence-backed experience; business knowledge requires user confirmation before maintenance.

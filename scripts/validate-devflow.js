@@ -12,6 +12,21 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+/** Protects the hybrid boundary: only deterministic A/B/C successes bypass Core. */
+function assertHybridLifecycleContract(core) {
+  for (const edge of [
+    "A direct success: Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove",
+    "B direct success: Brainstorm -> Cut -> Plan -> Build -> Prove",
+    "C direct success: Brainstorm -> Cut -> Build -> Prove"
+  ]) {
+    assert(core.includes(edge), `Core flow map missing direct success edge: ${edge}`);
+  }
+
+  for (const exception of ["CUT_REDUCE", "CUT_REUSE", "CUT_BLOCKED", "scope drift", "BUILD_BLOCKED", "Proof FAIL or BLOCKED", "PUA recovery"]) {
+    assert(core.includes(exception), `Core flow map missing exception return: ${exception}`);
+  }
+}
+
 /** Runs a focused sibling verifier so package validation proves cross-file contracts. */
 function runVerifier(rel) {
   const result = spawnSync(process.execPath, [path.join(root, rel)], { cwd: root, encoding: "utf8" });
@@ -62,6 +77,49 @@ for (const reference of [
   assert(core.includes(reference), `Core loading map missing ${reference}`);
 }
 assert(!core.includes("Method 0-15 + Capability Matrix"), "Core must not require full lifecycle methods at route start");
+assertHybridLifecycleContract(core);
+
+/** Protects Brainstorm from regressing to either premature completion or category-by-category interrogation. */
+function assertBrainstormFollowUpContract(skill, discipline) {
+  for (const body of [skill, discipline]) {
+    for (const evidence of [
+      "decision-impact gap",
+      "could change scope, a constraint, acceptance, or a subsequent problem-space decision",
+      "introduces a load-bearing assumption, exposes a contradiction",
+      "no decision-impact gap remains"
+    ]) {
+      assert(body.includes(evidence), `Brainstorm follow-up contract missing: ${evidence}`);
+    }
+  }
+
+  assert(skill.includes("If exploration exposes a new decision-impact gap, return to step 4"), "Brainstorm must return multi-angle gaps to one-question clarification");
+  assert(discipline.includes("If an angle exposes a new decision-impact gap, return to One-Question Discipline"), "Interview discipline must return multi-angle gaps to one-question clarification");
+}
+
+/** Ensures Brainstorm never chooses depth but can follow its predefined success edge after explicit selection. */
+function assertBrainstormSelectionContract(skill) {
+  const frontmatter = skill.slice(0, skill.indexOf("---", 3) + 3);
+  assert(frontmatter.includes("explicit A/B/C depth gate"), "Brainstorm frontmatter must expose the A/B/C gate");
+  assert(frontmatter.includes("user-selected predefined direct branch"), "Brainstorm frontmatter must preserve user-selected direct branching");
+  assert(skill.includes("Do not select Fast, Design-lite, a depth, an approach, or a method on the user's behalf."), "Brainstorm must not select depth for the user");
+  assert(skill.indexOf("## A/B/C Gate") > skill.indexOf("## Fixed Output Contract"), "Brainstorm must present A/B/C after the fixed summary");
+}
+
+const brainstorm = read("skills/devflow-brainstorm/SKILL.md");
+const interviewDiscipline = read("skills/devflow-brainstorm/references/interview-discipline.md");
+assertBrainstormFollowUpContract(brainstorm, interviewDiscipline);
+assertBrainstormSelectionContract(brainstorm);
+
+for (const [rel, evidence] of [
+  ["skills/devflow-brainstorm/SKILL.md", "only by the user-selected direct branch"],
+  ["skills/devflow-spec/SKILL.md", "approved A-branch Spec directly enters `devflow-cut`"],
+  ["skills/devflow-cut/SKILL.md", "A/B directly enter `devflow-plan`; C directly enters `devflow-build`"],
+  ["skills/devflow-plan/SKILL.md", "approved A/B Plan directly enters `devflow-build`"],
+  ["skills/devflow-build/SKILL.md", "completed Build directly enters `devflow-prove`"],
+  ["skills/devflow-prove/SKILL.md", "Exception Return Boundary"]
+]) {
+  assert(read(rel).includes(evidence), `${rel} missing hybrid lifecycle evidence: ${evidence}`);
+}
 
 for (const directory of fs.readdirSync(path.join(root, "skills"), { withFileTypes: true })) {
   if (!directory.isDirectory() || !directory.name.startsWith("devflow-")) continue;
