@@ -216,8 +216,8 @@ Expected behavior:
 - Route: Independent manual.
 - Skill path: explicit user request -> `devflow-adversarial`.
 - Must run only because the user explicitly requested it; it may inspect materials from any task stage.
-- Before identifying or reading materials, must warn that the review may take a long time and wait for explicit confirmation.
-- Without confirmation, must output only the confirmation prompt and stop.
+- Must begin after the explicit review request without a separate confirmation prompt.
+- Must ask one smallest question only when the review target is unclear.
 - Must cover all five fixed dimensions: requirement coverage, reachability, boundaries and regressions, evidence strength, and user-visible outcome.
 - Findings must use `Critical`, `Important`, or `Observation` and include evidence, confidence, and context limitations.
 - Must not read, require, modify, or hand off to `devflow-prove`, PUA, Build, Learn, or any completion state.
@@ -226,8 +226,7 @@ Expected behavior:
 Pass check:
 
 ```text
-Review confirmation: pending / confirmed after duration notice
-This independent adversarial review may take a long time. Do you confirm that I should start?
+Review confirmation: explicit request received
 Adversarial review target: ...
 Findings: Critical / Important / Observation
 Five-angle coverage: requirement coverage / reachability / boundaries and regressions / evidence strength / user-visible outcome

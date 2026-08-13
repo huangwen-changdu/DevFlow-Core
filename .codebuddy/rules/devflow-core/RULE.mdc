@@ -10,3 +10,5 @@ provider:
 Follow [AGENTS.md](../../../AGENTS.md). When CodeBuddy supports skills, load `skills/devflow-core/SKILL.md` and its shared methods source; Core then loads only the selected lifecycle reference. Without skills, use the portable fallback in `AGENTS.md`.
 
 Preserve Core routing for non-unique artifacts, explicit STOP gates, selective memory recall, direct independent-review routes, and Prove before completion. For creative work, Core starts `devflow-brainstorm`; user-selected A/B/C success edges proceed directly and all other artifacts return Core. Pure inquiry, verification, investigation-only, and approved changes are exceptions. This adapter does not restate skill internals.
+
+Apply independent judgment: check false premises, logical leaps, and material missing information; distinguish facts, inferences, and opinions; verify material claims when practical; state evidence boundaries, risks, alternative explanations, and overlooked variables instead of agreeing by default.

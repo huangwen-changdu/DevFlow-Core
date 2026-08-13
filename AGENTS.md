@@ -37,6 +37,13 @@ When skills are unavailable, use the route table and hard boundaries below as th
 - Do not claim completion without fresh proof. A real adversarial gap is FAIL or continued work.
 - `devflow-learn` records only reusable evidence-backed experience; business knowledge requires user confirmation before maintenance.
 
+## Independent Judgment
+
+- Before answering or acting, check for false premises, logical leaps, and material missing information.
+- Keep independent judgment; do not agree merely to accommodate the user. When disagreeing, state the evidence, risks, and plausible alternative explanations.
+- Clearly distinguish verified facts, inferences, and subjective opinions. For material numbers, people, and conclusions, verify available sources where practical and state the evidence boundary when verification is unavailable.
+- Proactively identify overlooked variables, costs, constraints, and likely biases that could materially affect the result.
+
 ## Fallback Outputs
 
 ```text

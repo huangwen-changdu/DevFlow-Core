@@ -10,11 +10,9 @@ Run an independent, user-requested challenge of the current task materials. This
 ## Entry Gate
 
 1. Confirm the user explicitly requested this review.
-2. Before identifying or reading review materials, state: `This independent adversarial review may take a long time. Do you confirm that I should start?`
-3. Stop when confirmation is absent, declined, or ambiguous. Do not inspect materials or begin the five-angle review.
-4. Only after explicit confirmation given after this notice, identify the review target from the user's request, current files, diff, requirements, tests, or supplied evidence.
-5. If the target is unclear after confirmation, ask one smallest question to identify it.
-6. As an independent manual review, do not read, require, or alter `devflow-prove`, PUA, Build, Learn, or any lifecycle state.
+2. Immediately identify the review target from the user's request, current files, diff, requirements, tests, or supplied evidence.
+3. If the target is unclear, ask one smallest question to identify it.
+4. As an independent manual review, do not read, require, or alter `devflow-prove`, PUA, Build, Learn, or any lifecycle state.
 
 ## Five-Angle Review
 
@@ -31,7 +29,7 @@ Use facts from inspected material. Label unsupported possibilities as hypotheses
 ## Required Output
 
 ```text
-Review confirmation: confirmed after duration notice
+Review confirmation: explicit request received
 Adversarial review target: <scope reviewed>
 Findings:
 - Critical: <finding or none>; evidence: <facts>; confidence: high/medium/low
@@ -49,19 +47,12 @@ Suggested next action: <manual action for the user, or none>
 
 `Suggested next action` is advice only. Do not automatically edit files, create tasks, invoke another skill, or change lifecycle state.
 
-When confirmation is pending, declined, or ambiguous, output only:
-
-```text
-Review confirmation: pending
-This independent adversarial review may take a long time. Do you confirm that I should start?
-```
-
 ## Anti-Rationalization
 
 | Excuse | Reality |
 |---|---|
 | "The task is already complete." | This skill is independent and may inspect any current task state. |
-| "The initial request already confirms execution." | The duration notice needs a separate, explicit confirmation before material review starts. |
+| "The review is lengthy." | An explicit review request authorizes the review; do not add a second confirmation gate. |
 | "A likely issue is a fact." | Separate observed evidence from a hypothesis. |
 | "A Critical finding should trigger a fix." | Report it; the user decides whether to request follow-up work. |
 | "Another skill has a status." | Do not read or change that status. |
@@ -71,7 +62,7 @@ This independent adversarial review may take a long time. Do you confirm that I 
 Before leaving this skill, confirm:
 
 - [ ] The user explicitly requested adversarial review.
-- [ ] The duration notice was shown and the user explicitly confirmed this review run.
+- [ ] The review started without a second confirmation gate.
 - [ ] The review covers all five angles.
 - [ ] Findings have level, evidence, and confidence.
 - [ ] Context limitations are visible.

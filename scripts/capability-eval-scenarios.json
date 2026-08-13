@@ -52,13 +52,13 @@
     "command": "trigger:verify",
     "scenarioEvidence": [
       "Route: Independent manual.",
-      "Before identifying or reading materials, must warn that the review may take a long time and wait for explicit confirmation.",
-      "Without confirmation, must output only the confirmation prompt and stop.",
+      "Must begin after the explicit review request without a separate confirmation prompt.",
+      "Must ask one smallest question only when the review target is unclear.",
       "Must cover all five fixed dimensions: requirement coverage, reachability, boundaries and regressions, evidence strength, and user-visible outcome.",
       "Must not read, require, modify, or hand off to `devflow-prove`, PUA, Build, Learn, or any completion state."
     ],
     "commandEvidence": ["Skill Trigger Verification Report"],
-    "negativeConstraints": ["Must not edit code, create a task, invoke another skill, or declare global task status.", "Without confirmation, must output only the confirmation prompt and stop."]
+    "negativeConstraints": ["Must not edit code, create a task, invoke another skill, or declare global task status.", "Must not add a second confirmation gate after the explicit review request."]
   },
   {
     "id": "independent-manual-find-fault-review",
