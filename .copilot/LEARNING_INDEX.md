@@ -16,3 +16,5 @@ Read this index first. Only read a card when its trigger and scope match the cur
 | [PUA Same-Target Trigger](cards/pua-same-target-trigger.md) | devflow-pua, PUA trigger, Recovery trigger, same function, same result, repeated dissatisfaction, repeated target, 首次反馈, 同一功能, 重复指出 | project | 0.5 |
 | [Checker Contract And Route Surface Design](cards/checker-contract-route-surface.md) | checker 脚本改动, --json 输出, Status 字段, budget 阈值, 路由一致性校验, 校验表面, devflow-plan/spec/review/debt/audit/budget/route 校验器 | project | 0.5 |
 | [Subjective Quality Structure vs Behavior](cards/subjective-quality-structure-vs-behavior.md) | 不够灵动, 不好用, 感觉差点, 太死板, subjective quality, skill feels rigid, optional format, fast lane tier, 用户确认处方 | project | 0.4 |
+| [DSH Dynamic Tool defineTool Contract](cards/dsh-definetool-contract.md) | defineTool, output.schema, value schema DSL, 动态插件工具, harness.defineTool 失败 | project | 0.5 |
+| [Vague Visual Feedback Ask Intent](cards/vague-visual-feedback-ask-intent.md) | 位置有歪, 看着别扭, 视觉反馈, UI 布局修正, 反复改布局, 模糊视觉诉求 | project | 0.5 |
