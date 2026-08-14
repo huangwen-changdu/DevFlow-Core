@@ -18,3 +18,4 @@ Read this index first. Only read a card when its trigger and scope match the cur
 | [Subjective Quality Structure vs Behavior](cards/subjective-quality-structure-vs-behavior.md) | 不够灵动, 不好用, 感觉差点, 太死板, subjective quality, skill feels rigid, optional format, fast lane tier, 用户确认处方 | project | 0.4 |
 | [DSH Dynamic Tool defineTool Contract](cards/dsh-definetool-contract.md) | defineTool, output.schema, value schema DSL, 动态插件工具, harness.defineTool 失败 | project | 0.5 |
 | [Vague Visual Feedback Ask Intent](cards/vague-visual-feedback-ask-intent.md) | 位置有歪, 看着别扭, 视觉反馈, UI 布局修正, 反复改布局, 模糊视觉诉求 | project | 0.5 |
+| [Preset UI Boundary](cards/preset-ui-boundary.md) | 给 preset 加 UI, 固化插件, 常驻看板, agent preset 界面, 动态插件刷新后消失 | project | 0.6 |

@@ -150,6 +150,8 @@ assert(!cutMethods.includes("1. No change."), "cut-methods.md must not define a 
 /** Guards the lifecycle status-line rule on both always-visible surfaces. */
 assert(agents.includes("end each user-facing message with one status line"), "AGENTS.md must require the lifecycle status line");
 assert(core.includes("end each user-facing message with one status line"), "devflow-core must require the lifecycle status line");
+assert(agents.includes("maintain a `todo_write` list with one item per active work unit"), "AGENTS.md must require todo/goal status visibility");
+assert(core.includes("maintain a `todo_write` list with one item per active work unit"), "devflow-core must require todo/goal status visibility");
 
 for (const directory of fs.readdirSync(path.join(root, "skills"), { withFileTypes: true })) {
   if (!directory.isDirectory() || !directory.name.startsWith("devflow-")) continue;

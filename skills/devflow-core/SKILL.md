@@ -17,7 +17,7 @@ Next skill: <skill name or none>
 Status: [DevFlow: <node> -> <next> | awaiting approval / in progress]
 ```
 
-While a DevFlow lifecycle node is active, end each user-facing message with one status line: `[DevFlow: <node> -> <next> | awaiting approval / in progress]`. It reflects the current node without reloading the owner skill.
+While a DevFlow lifecycle node is active, end each user-facing message with one status line: `[DevFlow: <node> -> <next> | awaiting approval / in progress]`. It reflects the current node without reloading the owner skill. Keep progress visible in the persistent UI: maintain a `todo_write` list with one item per active work unit (lifecycle node, background job, or subagent), marking it `completed` the moment it settles, and use `create_goal` for the session's long-running objective.
 
 ## Context Map
 

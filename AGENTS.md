@@ -37,6 +37,7 @@ When skills are unavailable, use the route table and hard boundaries below as th
 - Do not claim completion without fresh proof. A real adversarial gap is FAIL or continued work.
 - `devflow-learn` records only reusable evidence-backed experience; business knowledge requires user confirmation before maintenance.
 - While a DevFlow lifecycle node is active, end each user-facing message with one status line: `[DevFlow: <node> -> <next> | awaiting approval / in progress]`. It reflects the current node without reloading the owner skill.
+- Keep progress visible in the persistent UI: maintain a `todo_write` list with one item per active work unit (lifecycle node, background job, or subagent), marking it `completed` the moment it settles, and use `create_goal` for the session's long-running objective.
 
 ## Independent Judgment
 

@@ -14,7 +14,29 @@
 - **设置 → 快捷命令**页可自定义：按钮名称、命令、后缀内容（命令+空格+内容）、顺序（↑/↓）、增删
 - 配置保存在浏览器 localStorage，**刷新页面不丢失**
 
-## 安装方式（推荐：让 AI 安装）
+## 安装方式（两种，推荐静态版）
+
+### 方式一：静态版（推荐）— 默认加载，重启自动恢复
+
+静态插件随 DSH 启动**自动加载**，无需手动安装/重装，重启后按钮自动出现：
+
+1. 把 `dsh/plugins/quick-cmds-static/` 包装入 profile 的 node_modules：
+   ```powershell
+   $target = "$env:USERPROFILE\.dsh\profiles\node_modules\@devflow-core"
+   New-Item -ItemType Directory -Force -Path $target | Out-Null
+   Copy-Item -Recurse -Force dsh\plugins\quick-cmds-static $target\dsh-client-quick-cmds
+   ```
+2. 在 `$env:USERPROFILE\.dsh\profiles\web\cordis.patch.yml` 注册组合行：
+   ```yaml
+   - insert:
+       - id: ui-quick-cmds
+         name: '@devflow-core/dsh-client-quick-cmds'
+   ```
+3. 重启 DSH。之后**每次启动 DSH 都会默认加载**该插件，无需任何操作。
+
+详细说明见 [`../quick-cmds-static/README.md`](../quick-cmds-static/README.md)。
+
+### 方式二：动态版（让 AI 安装，重启需重装）
 
 把下面这段话发给你的 AI 助手（DSH 会话）：
 
@@ -25,6 +47,15 @@ AI 会：
 2. 调用 `cordis_define` 创建插件
 3. 调用 `cordis_run` 激活（如遇授权提示，请点击允许）
 4. 激活后输入框上方即出现三个按钮
+
+> **注意**：动态插件存在进程内存中，DSH 重启后会消失，需要重新安装。静态版不存在此问题。
+
+## 重启 DSH 后如何恢复
+
+| 安装方式 | 重启后 |
+|---|---|
+| 静态版（推荐） | **自动默认加载**，无需任何操作，按钮和配置自动恢复 |
+| 动态版 | 插件消失，需把「方式二」的指令再次发给 AI 重新安装（配置存 localStorage 会自动恢复） |
 
 ## 手动验证
 

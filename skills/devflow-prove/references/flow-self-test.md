@@ -760,6 +760,7 @@ Expected behavior:
 - The status line follows the handoff without reloading the owner skill: `[DevFlow: Brainstorm -> Cut | awaiting approval]` becomes `[DevFlow: Cut -> Build | in progress]` after the user selects a depth.
 - The status line marks gates explicitly: `awaiting approval` at Brainstorm confirmation, Spec or Plan approval, and `CUT_REDUCE`/`CUT_REUSE` confirmation; `in progress` during execution.
 - The status line is one line; it does not replace the node's required output contract (Confirmed request, Cut Decision, Implementation Slices, Completion report).
+- The persistent todo list stays current: one `todo_write` item per active work unit (lifecycle node, background job, subagent), marked `completed` the moment it settles; a long-running session objective lives in `create_goal`.
 
 Pass check:
 
@@ -767,6 +768,7 @@ Pass check:
 Status: [DevFlow: Brainstorm -> Cut | awaiting approval]
 Status: [DevFlow: Cut -> Build | in progress]
 Status: [DevFlow: Build -> Prove | in progress]
+Todo: [node items in_progress] -> completed on settle
 Command: <actual verification>
 Result: <key output>
 Judgment: PASS
