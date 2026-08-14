@@ -30,6 +30,8 @@ Choose the lightest level that fits the risk:
 
 ## Minimal Solution Ladder
 
+This is the canonical ladder; `cut-methods.md` does not redefine it. **Ponytail** names the reference project whose smallest-solution ladder this section absorbs natively — the `Ponytail Rung` field in the Required Gates reports the numbered rung where this ladder stops.
+
 After reading the touched flow, stop at the first rung that works:
 
 1. Does this need to exist?

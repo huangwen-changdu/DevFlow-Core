@@ -139,6 +139,18 @@ for (const [rel, evidence] of [
   assert(read(rel).includes(evidence), `${rel} missing hybrid lifecycle evidence: ${evidence}`);
 }
 
+/** Guards the single-source ladder: SKILL.md owns the rungs and the Ponytail term; cut-methods.md points at it. */
+const cutSkill = read("skills/devflow-cut/SKILL.md");
+const cutMethods = read("skills/devflow-cut/references/cut-methods.md");
+assert(cutSkill.includes("canonical ladder"), "cut SKILL.md must own the canonical Minimal Solution Ladder");
+assert(cutSkill.includes("Ponytail"), "cut SKILL.md must define the Ponytail term used by the Required Gates");
+assert(cutMethods.includes("canonical Minimal Solution Ladder lives in `skills/devflow-cut/SKILL.md`"), "cut-methods.md must point at the canonical ladder");
+assert(!cutMethods.includes("1. No change."), "cut-methods.md must not define a second ladder");
+
+/** Guards the lifecycle status-line rule on both always-visible surfaces. */
+assert(agents.includes("end each user-facing message with one status line"), "AGENTS.md must require the lifecycle status line");
+assert(core.includes("end each user-facing message with one status line"), "devflow-core must require the lifecycle status line");
+
 for (const directory of fs.readdirSync(path.join(root, "skills"), { withFileTypes: true })) {
   if (!directory.isDirectory() || !directory.name.startsWith("devflow-")) continue;
   const rel = `skills/${directory.name}/SKILL.md`;
@@ -164,7 +176,9 @@ for (const installer of ["scripts/install-devflow.js", "scripts/install-devflow-
     "skills/devflow-cut/references/cut-methods.md",
     "skills/devflow-spec/references/spec-plan-methods.md",
     "skills/devflow-build/references/build-methods.md",
-    "skills/devflow-prove/references/proof-recovery-methods.md"
+    "skills/devflow-prove/references/proof-recovery-methods.md",
+    "skills/devflow-plan/references/plan-methods.md",
+    "skills/devflow-prove/references/code-review-checklist.md"
   ]) {
     assert(body.includes(reference), `${installer} must install ${reference}`);
   }

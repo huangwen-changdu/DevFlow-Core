@@ -216,7 +216,7 @@ Expected behavior:
 - Route: Independent manual.
 - Skill path: explicit user request -> `devflow-adversarial`.
 - Must run only because the user explicitly requested it; it may inspect materials from any task stage.
-- Must begin after the explicit review request without a separate confirmation prompt.
+- Must begin after the explicit review request without a separate confirmation prompt. Must not add a second confirmation gate after the explicit review request.
 - Must ask one smallest question only when the review target is unclear.
 - Must cover all five fixed dimensions: requirement coverage, reachability, boundaries and regressions, evidence strength, and user-visible outcome.
 - Findings must use `Critical`, `Important`, or `Observation` and include evidence, confidence, and context limitations.
@@ -743,5 +743,31 @@ Pass check:
 ```text
 Command: npm run install:target -- <target> --check
 Result: Check passed: installed runtime matches this package.
+Judgment: PASS
+```
+
+## Scenario 10: Lifecycle Status Line
+
+Input:
+
+```text
+Requirement: implement CSV export for orders. Do it.
+```
+
+Expected behavior:
+
+- While any lifecycle node is active — Brainstorm clarification, user-selected Cut, Build, Prove — every user-facing message ends with one status line: `[DevFlow: <node> -> <next> | awaiting approval / in progress]`.
+- The status line follows the handoff without reloading the owner skill: `[DevFlow: Brainstorm -> Cut | awaiting approval]` becomes `[DevFlow: Cut -> Build | in progress]` after the user selects a depth.
+- The status line marks gates explicitly: `awaiting approval` at Brainstorm confirmation, Spec or Plan approval, and `CUT_REDUCE`/`CUT_REUSE` confirmation; `in progress` during execution.
+- The status line is one line; it does not replace the node's required output contract (Confirmed request, Cut Decision, Implementation Slices, Completion report).
+
+Pass check:
+
+```text
+Status: [DevFlow: Brainstorm -> Cut | awaiting approval]
+Status: [DevFlow: Cut -> Build | in progress]
+Status: [DevFlow: Build -> Prove | in progress]
+Command: <actual verification>
+Result: <key output>
 Judgment: PASS
 ```

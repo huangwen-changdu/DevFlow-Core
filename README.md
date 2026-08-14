@@ -272,11 +272,12 @@ npm run review:verify
 npm run spec:verify
 npm run plan:verify
 npm run audit:verify
+npm run doctor:verify
 ```
 
 The scripts check required files, the PRD, skill frontmatter, output contracts, command entries, learning-card schema, Learning closure, learning-loop recall, Scenario Coverage Report, Skill Trigger Verification Report, Host Adapter Verification Report, Installer validation, path consistency, and required method terms.
 
-`npm run verify:all` runs the full local matrix in sequence: package validation, learning-loop validation, scenario coverage, trigger verification, host adapter verification, installer safety verification, debt scanner verification, review gate verification, spec checker verification, plan-pack verification, and audit scanner verification.
+`npm run verify:all` runs the full local matrix in sequence: package validation, learning-loop validation, scenario coverage, trigger verification, host adapter verification, installer safety verification, debt scanner verification, review gate verification, spec checker verification, plan-pack verification, audit scanner verification, and doctor self-test.
 
 `npm run learn:verify` prints `Learning loop validation passed` when the repeated-correction scenario can route from `devflow-core` to `devflow-prove`, recall the matched `.copilot` card, and verify the next-time intercept.
 
@@ -302,6 +303,8 @@ It also checks `--check` mode for matching, missing, and changed target runtime 
 
 `npm run audit:verify` runs `scripts/devflow-audit.js --self-test` and checks reuse, stdlib, native, YAGNI, and delete candidate detection. It prints `DevFlow audit self-test passed` when the scanner contract works.
 
+`node scripts/devflow-doctor.js` checks every existing user-level runtime home (`~/.dsh`, `~/.codex`, `~/.claude`, `~/.codebuddy`, `~/.workbuddy`, `~/.zcode`) for missing or changed DevFlow files by reusing `install-devflow-user.js --check`. `npm run doctor:verify` runs its `--self-test`, which proves both the clean and the missing detection states against a temp home and prints `DevFlow doctor self-test passed`.
+
 ## Reference Map
 
 Runtime reference material lives beside the skill that uses it:
@@ -318,4 +321,4 @@ Runtime reference material lives beside the skill that uses it:
 
 Product and generated project artifacts live under `docs/`, including [docs/PRD.md](docs/PRD.md). Runtime method source must stay in `skills/*/references/*`.
 
-Source-package reference material such as `skills/devflow-core/references/reference-projects.md` and `skills/devflow-core/references/project-structure.md` is validated in this repository, but is not copied by `npm run install:target`.
+Source-package reference material such as `skills/devflow-core/references/reference-projects.md` is validated in this repository, but is not copied by `npm run install:target`.

@@ -36,6 +36,7 @@ When skills are unavailable, use the route table and hard boundaries below as th
 - STOP for Brainstorm confirmation, Spec approval, Plan approval, and `CUT_REDUCE` or `CUT_REUSE` confirmation.
 - Do not claim completion without fresh proof. A real adversarial gap is FAIL or continued work.
 - `devflow-learn` records only reusable evidence-backed experience; business knowledge requires user confirmation before maintenance.
+- While a DevFlow lifecycle node is active, end each user-facing message with one status line: `[DevFlow: <node> -> <next> | awaiting approval / in progress]`. It reflects the current node without reloading the owner skill.
 
 ## Independent Judgment
 

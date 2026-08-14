@@ -14,7 +14,10 @@ Skill Activation: devflow-core
 Trigger: <user words or task shape>
 Route: Problem / Fast / Design-lite / Design / Build / Recovery
 Next skill: <skill name or none>
+Status: [DevFlow: <node> -> <next> | awaiting approval / in progress]
 ```
+
+While a DevFlow lifecycle node is active, end each user-facing message with one status line: `[DevFlow: <node> -> <next> | awaiting approval / in progress]`. It reflects the current node without reloading the owner skill.
 
 ## Context Map
 

@@ -4,15 +4,7 @@ Owner: `devflow-cut`. Load this reference after a user-selected A/B/C direct Cut
 
 ## Method 5: Minimal Solution Ladder
 
-Before new code, stop at the first rung that meets the accepted goal:
-
-1. No change.
-2. Reuse an existing project capability.
-3. Use an available skill that fully completes the task without code.
-4. Use standard library or native platform capability.
-5. Use an installed dependency.
-6. Use direct configuration or one local change.
-7. Write the minimum new code.
+The canonical Minimal Solution Ladder lives in `skills/devflow-cut/SKILL.md` (nine rungs, plus the `Ponytail` definition). Do not redefine the ladder here: read the SKILL.md ladder, stop at the first rung that meets the accepted goal, and record the selected rung.
 
 Record:
 
