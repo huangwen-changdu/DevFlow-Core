@@ -48,6 +48,9 @@ function assertInstalledRuntimeContract(home) {
     assert(core.includes(exception), `User Core missing Core-return exception: ${exception}`);
   }
   assert(!fs.existsSync(path.join(home, "AGENTS.md")), "User runtime must not install project AGENTS.md");
+  for (const presetRel of [".agent-presets/devflow/agent.cordis.yml", ".agent-presets/devflow/preset.yml"]) {
+    assert(fs.existsSync(path.join(home, presetRel)), `User runtime missing preset file: ${presetRel}`);
+  }
 }
 
 const entries = userEntries();

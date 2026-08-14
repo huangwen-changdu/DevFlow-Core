@@ -49,7 +49,7 @@ Absorbed into DevFlow-Core:
 
 Not absorbed:
 
-- Full 24-skill lifecycle. DevFlow-Core keeps 5 skills to stay lightweight.
+- Full 24-skill lifecycle. DevFlow-Core keeps a small focused skill set to stay lightweight.
 
 ## Superpowers
 

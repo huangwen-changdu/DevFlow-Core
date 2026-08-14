@@ -18,6 +18,7 @@ What each platform actually reads, and which synced files feed it:
 | opencode | `AGENTS.md` | `~/.config/opencode` | not natively* | `.opencode/commands/*.md` (manual convert)* |
 | CodeBuddy IDE | `.codebuddy/rules/devflow-core/RULE.mdc` | `~/.codebuddy` | `skills/` | `commands/*.toml` |
 | WorkBuddy | none (GUI project instructions) | GUI personal skill library | `skills/` (imported via GUI) | n/a |
+| DeepSeek Harness (DSH) | `AGENTS.md` (workspace instructions) | `~/.dsh` | `skills/` | n/a |
 
 \* opencode caveats are covered in its section below.
 
@@ -167,6 +168,29 @@ Skills:
 What to sync manually: `AGENTS.md` content into project instructions; `skills/devflow-*/` into project skills. `commands/*.toml`, `hooks/`, and host-specific directories (`.claude/`, `.codex/`, `.github/`) have no WorkBuddy equivalent — skip them.
 
 Checker scripts (`scripts/devflow-*.js`) can still run anywhere Node is available if you clone this repo, but they are optional for WorkBuddy usage.
+
+## DeepSeek Harness (DSH)
+
+Entry surfaces: `AGENTS.md` at the project root (auto-injected as workspace instructions) plus `skills/devflow-*/SKILL.md` discovered through DSH's skill filesystem. DSH is skill-capable, so Core and the focused lifecycle skills load on demand.
+
+User-level install (personal skills under `~/.dsh`):
+
+```bash
+npm run install:user -- --home ~/.dsh --write
+```
+
+What gets synced for DSH: the full pack. The load-bearing files are `AGENTS.md`, `skills/`, and `scripts/devflow-*.js`; host-specific `.claude/`, `.codebuddy/`, `.github/` surfaces are inert in DSH.
+
+Daily use:
+
+- DSH injects `AGENTS.md` automatically; the `devflow-*` skills trigger by wording.
+- Run checkers through the DSH shell tool: `node scripts/devflow-spec.js <spec-file>` and `node scripts/devflow-plan.js <plan-file>`.
+- DSH-native gates: present A/B/C and approval choices with the `ask_user_question` tool; run independent reviews (`devflow-adversarial`, `devflow-find-fault`) as fresh `subagent` runs.
+
+DSH agent preset (optional):
+
+- `install:user` also syncs the `DevFlow` agent preset to `~/.dsh/.agent-presets/devflow/`. Pick **DevFlow** in the web UI preset picker for sessions that auto-activate `devflow-core` (guaranteed activation) instead of relying on AGENTS.md loading.
+- It is a thin activator: the persona guarantees the `devflow-core` skill is loaded; the route table stays in the skill and AGENTS.md; skills remain in `~/.dsh/skills` (one source). Source lives at `dsh/agent-presets/devflow/` in this repo. Customize the user-root copy, never the shipped preset install.
 
 ## Updating An Installed Project
 

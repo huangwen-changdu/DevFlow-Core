@@ -125,6 +125,8 @@ The summary records the agreed request and the exploration findings only. It mus
 
 After the fixed summary, present these choices and wait for one explicit user selection:
 
+On DeepSeek Harness (DSH), present the gate through the structured `ask_user_question` tool as one single-select question with options A / B / C.
+
 | Depth | User-selected outcome | Direct start after selection |
 |---|---|---|
 | A | Full design contract and implementation plan | `devflow-spec` |

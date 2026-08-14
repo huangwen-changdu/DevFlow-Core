@@ -37,6 +37,7 @@ devflow-core -> devflow-brainstorm -> user-selected A/B/C
 - A skill directly follows only its named A/B/C success edge; every other artifact returns facts to Core or states an independent stop boundary.
 - Each skill must be executable: trigger, action steps, anti-rationalization check, stop/handoff, proof.
 - Put shared routing details in `skills/devflow-core/references/core-methods.md`; put detailed lifecycle methods in the selected owner's local reference.
+- Keep runtime methods in `skills/*/references/*`. `docs/` is reserved for product and generated artifacts — `docs/specs/` for saved specs, `docs/plans/` for saved plans — never runtime framework methods.
 
 ## Minimum Skill Contract
 

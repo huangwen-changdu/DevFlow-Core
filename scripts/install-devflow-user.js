@@ -28,9 +28,11 @@ const userEntries = [
   "skills/devflow-spec/references/spec-plan-methods.md",
   "skills/devflow-build/references/build-methods.md",
   "skills/devflow-prove/references/proof-recovery-methods.md",
+  "skills/devflow-prove/references/code-review-checklist.md",
   "skills/devflow-brainstorm/SKILL.md",
   "skills/devflow-spec/SKILL.md",
   "skills/devflow-plan/SKILL.md",
+  "skills/devflow-plan/references/plan-methods.md",
   "skills/devflow-cut/SKILL.md",
   "skills/devflow-cut/references/native-capability-checklist.md",
   "skills/devflow-build/SKILL.md",
@@ -51,6 +53,14 @@ const userEntries = [
   "skills/skill-call-diagram.md"
 ];
 
+// DSH agent presets install under <home>/.agent-presets/<id>/. Source lives in
+// the repo at dsh/agent-presets/<id>/ so install:user stays the single sync
+// path and --check covers both the skills and the preset.
+const presetEntries = [
+  { src: "dsh/agent-presets/devflow/agent.cordis.yml", dest: ".agent-presets/devflow/agent.cordis.yml" },
+  { src: "dsh/agent-presets/devflow/preset.yml", dest: ".agent-presets/devflow/preset.yml" }
+];
+
 const args = process.argv.slice(2);
 const write = args.includes("--write");
 const force = args.includes("--force");
@@ -67,12 +77,21 @@ function usage() {
   console.log("Add --check to verify user-level skills, commands, and scripts match this package.");
 }
 
-function userHome() {
-  return path.resolve(explicitHome || process.env.CODEX_HOME || path.join(os.homedir(), ".codex"));
+// Expand a leading `~` to the user home; Node's path.resolve does not do shell tilde expansion,
+// so `--home ~/.dsh` on Windows would otherwise resolve to `<cwd>\~\.dsh`.
+function expandTilde(p) {
+  if (!p) return p;
+  if (p === "~") return os.homedir();
+  if (p.startsWith("~/") || p.startsWith("~\\")) return path.join(os.homedir(), p.slice(2));
+  return p;
 }
 
-function copyFile(rel, targetRoot) {
-  const source = path.join(root, rel);
+function userHome() {
+  return path.resolve(expandTilde(explicitHome) || process.env.CODEX_HOME || path.join(os.homedir(), ".codex"));
+}
+
+function copyFile(rel, targetRoot, srcRel) {
+  const source = path.join(root, srcRel ?? rel);
   const target = path.join(targetRoot, rel);
 
   if (!fs.existsSync(source)) {
@@ -97,8 +116,8 @@ function copyFile(rel, targetRoot) {
   return { rel, action: exists ? "overwrote" : "created" };
 }
 
-function checkFile(rel, targetRoot) {
-  const source = path.join(root, rel);
+function checkFile(rel, targetRoot, srcRel) {
+  const source = path.join(root, srcRel ?? rel);
   const target = path.join(targetRoot, rel);
 
   if (!fs.existsSync(source)) {
@@ -131,6 +150,7 @@ const targetRoot = userHome();
 
 if (check) {
   const results = userEntries.map((rel) => checkFile(rel, targetRoot));
+  for (const { src, dest } of presetEntries) results.push(checkFile(dest, targetRoot, src));
   const missing = results.filter((result) => result.action === "missing");
   const changed = results.filter((result) => result.action === "changed");
 
@@ -150,6 +170,7 @@ if (check) {
 }
 
 const results = userEntries.map((rel) => copyFile(rel, targetRoot));
+for (const { src, dest } of presetEntries) results.push(copyFile(dest, targetRoot, src));
 
 console.log(`DevFlow user install ${write ? "write" : "dry-run"}: ${targetRoot}`);
 for (const result of results) {

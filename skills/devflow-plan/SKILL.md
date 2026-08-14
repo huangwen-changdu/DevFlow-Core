@@ -22,7 +22,7 @@ Turn an A/B `CUT_PASS`-bounded approved design or confirmed Spec into one review
 5. Write the plan using the required header and task contract below.
 6. Self-review Cut Decision fidelity, source coverage, File Structure, Prewalk evidence, file-operation classifications, interface consistency, concrete steps, acceptance proof, and scope exclusions.
 7. Run `node scripts/devflow-plan.js <plan-file>` when the project-level checker exists. Otherwise resolve the user-level checker according to `core-methods.md` Script Path Resolution.
-8. **STOP — request user review.** Revise and revalidate when requested. After approval, perform only a lightweight Cut-consistency review. An approved A/B Plan directly enters `devflow-build`; scope-drift facts return to `devflow-core`.
+8. **STOP — request user review.** On DSH, request review with the structured `ask_user_question` tool (single-select: approve / request changes). Revise and revalidate when requested. After approval, perform only a lightweight Cut-consistency review. An approved A/B Plan directly enters `devflow-build`; scope-drift facts return to `devflow-core`.
 
 Default landing is `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`, resolved from the target project root. Do not place implementation plans in `docs/features/` or `docs/specs/`.
 

@@ -51,7 +51,7 @@ Do not force a spec for Design-lite work where a short design contract and quick
    - Scope: if multiple independent subsystems appear, split into separate specs.
    - Design: the comparison names the real alternatives and the selected approach has an explicit trade-off.
 6. Run `node scripts/devflow-spec.js <spec-file>` when the script exists. If not found at `scripts/devflow-spec.js` (project-level), try `~/.codex/scripts/devflow-spec.js` or `~/.claude/scripts/devflow-spec.js` (user-level). Do NOT look under `skills/scripts/`. See `core-methods.md` Script Path Resolution.
-7. **STOP — Wait for user approval of the design contract and spec.** Tell the user the spec path and review result. If they request changes, revise the comparison/design contract and re-run self-review. An approved A-branch Spec directly enters `devflow-cut`; any non-success state returns facts to `devflow-core`.
+7. **STOP — Wait for user approval of the design contract and spec.** On DSH, request approval with the structured `ask_user_question` tool (single-select: approve / request changes). Tell the user the spec path and review result. If they request changes, revise the comparison/design contract and re-run self-review. An approved A-branch Spec directly enters `devflow-cut`; any non-success state returns facts to `devflow-core`.
 
 ## Output
 

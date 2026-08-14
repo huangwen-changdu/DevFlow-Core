@@ -97,6 +97,8 @@ SWITCH: <old flavor>/<old method> -> <new flavor>/<new method>: <reason>
 
 If the switched method also fails once, stop editing and ask the user to confirm the new success contract before another patch. If it fails twice, record the reusable miss through `devflow-learn`.
 
+On DeepSeek Harness (DSH), fresh-agent iteration via the `ralph` tool (each round a fresh agent, workspace as durable memory) is an available form of the materially-different-approach switch, but only when the user explicitly requests fresh-agent iteration; otherwise keep the normal re-read-facts-and-switch-method flow above.
+
 ## Hard Restart Rule
 
 Trigger this rule when, in one task lifecycle, the user repeatedly points out that the same function, result, or requested capability remains wrong, incomplete, or missing, including after an attempted correction.

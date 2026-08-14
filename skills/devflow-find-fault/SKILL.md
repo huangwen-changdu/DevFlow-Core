@@ -14,6 +14,8 @@ Run an independent, user-requested critique of the current task materials. This 
 3. Ask one smallest question when the target is unclear.
 4. As an independent manual review, do not read, require, or alter `devflow-prove`, PUA, Build, Learn, or any lifecycle state.
 
+On DeepSeek Harness (DSH), run this review as a fresh `subagent` with no conversation seed so the critique is genuinely independent of the main agent's reasoning; the subagent returns findings only and never declares lifecycle status, edits files, or invokes another skill.
+
 ## Post-Implementation Unease Check
 
 When target materials include an implemented feature, diff, or completion-ready result, also inspect whether the implementation has silently decided business behavior the user never confirmed. This check is for requirement-confidence gaps, not code quality or test coverage.

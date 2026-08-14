@@ -168,6 +168,7 @@ If any field is missing or empty, recovery was not executed. Report `FAIL` facts
 - If verification is partial, say exactly what remains unverified.
 - Never use old output, "looks good", or a delegated claim without independent verification.
 - Running the same successful command twice without changes adds no evidence.
+- On DeepSeek Harness (DSH), oversized tool results are pruned (default threshold 8192 chars, keeping the head 4096 and tail 1024). Preserve the key command, result excerpt, and judgment rationale in your own context — the completion report or `todo_write` — before a long output is truncated; do not rely on a pruned tool result still holding the evidence.
 
 ## Failure Loop
 

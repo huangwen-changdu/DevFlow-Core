@@ -14,6 +14,8 @@ Run an independent, user-requested challenge of the current task materials. This
 3. If the target is unclear, ask one smallest question to identify it.
 4. As an independent manual review, do not read, require, or alter `devflow-prove`, PUA, Build, Learn, or any lifecycle state.
 
+On DeepSeek Harness (DSH), run this review as a fresh `subagent` with no conversation seed so the challenge is genuinely independent of the main agent's reasoning; the subagent returns findings only and never declares lifecycle status, edits files, or invokes another skill.
+
 ## Five-Angle Review
 
 Challenge the target from each angle:

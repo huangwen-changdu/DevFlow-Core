@@ -25,7 +25,7 @@ Apply these principles to every route:
 |---|---|---|
 | Context, route choice, clarification, small-boundary, method lens, skill contract | this file | every `devflow-core` route |
 | Reuse, root cause, native, overbuild, debt | `skills/devflow-cut/references/cut-methods.md` | user-selected A/B/C direct entry or Core exception selection |
-| Spec, Plan, minimal change, implementation slices | `skills/devflow-spec/references/spec-plan-methods.md` | A direct Spec / A/B direct Plan or Core exception selection |
+| Spec or Plan | `skills/devflow-spec/references/spec-plan-methods.md` | A direct Spec / A/B direct Plan or Core exception selection |
 | Build minimal change and implementation slices | `skills/devflow-build/references/build-methods.md` | C `CUT_PASS`, approved A/B Plan, or Core exception selection |
 | Proof and recovery | `skills/devflow-prove/references/proof-recovery-methods.md` | completed Build direct Prove or Core exception selection |
 | Learning-card lifecycle | `skills/devflow-learn/SKILL.md` | Prove PASS review or reusable correction |
@@ -60,6 +60,10 @@ Knowledge recall: none / learning index + matched card / project knowledge entry
 Skill Discovery: none / <skill-name> (matched: <why>)
 Unknowns: <none or specific unknown>
 ```
+
+On DeepSeek Harness (DSH), a long autonomous node — a multi-command Problem or Fast investigation, or Prove evidence gathering with no user gate — may persist its objective with the `create_goal` / `update_goal` tools so it survives context compaction. Never use a goal to span the gated creative lifecycle (Brainstorm clarification, Spec or Plan approval stops): those remain explicit user gates.
+
+On DeepSeek Harness code mode (PTC, `run_code`), batch the independent Sense reads above into one program with `Promise.all` (read-only calls may overlap) and `print` only the needed fields instead of dumping full text, so the summary lands in the compaction head. Split into multiple calls when a later read depends on an earlier result. Wrap optional reads — missing indexes or matched cards — in `try/catch` around `ToolCallError` so a missing source stays non-blocking.
 
 ## Method 2: Brainstorm Clarification
 
@@ -124,4 +128,4 @@ Judgment: PASS / FAIL / BLOCKED
 
 ## Script Path Resolution
 
-Resolve DevFlow checker scripts in this order: `scripts/devflow-<name>.js` in the target project, `~/.codex/scripts/devflow-<name>.js`, then `~/.claude/scripts/devflow-<name>.js`. A missing checker is noted as unavailable; do not search `skills/scripts/`.
+Resolve DevFlow checker scripts in this order: `scripts/devflow-<name>.js` in the target project, `~/.codex/scripts/devflow-<name>.js`, then `~/.claude/scripts/devflow-<name>.js`. A missing checker is noted as unavailable; do not search `skills/scripts/`. On DeepSeek Harness (DSH), run the target-project checker through the DSH shell tool as `node scripts/devflow-<name>.js` and resolve a user-level checker at `~/.dsh/scripts/devflow-<name>.js`; DSH has no `~/.codex` or `~/.claude` home.

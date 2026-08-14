@@ -1,0 +1,2 @@
+name: DevFlow
+description: DevFlow 开发工作流：功能完整的编码 Agent，自动激活 devflow-core 生命周期（Brainstorm → Spec/Cut → Plan → Build → Prove）与验证完成闸门。
