@@ -22,7 +22,7 @@ Turn an A/B `CUT_PASS`-bounded approved design or confirmed Spec into one review
 5. Write the plan using the required header and task contract below.
 6. Self-review Cut Decision fidelity, source coverage, File Structure, Prewalk evidence, file-operation classifications, interface consistency, concrete steps, acceptance proof, and scope exclusions.
 7. Run `node scripts/devflow-plan.js <plan-file>` when the project-level checker exists. Otherwise resolve the user-level checker according to `core-methods.md` Script Path Resolution.
-8. **STOP — request user review.** On DSH, request review with the structured `ask_user_question` tool (single-select: approve / request changes). Revise and revalidate when requested. After approval, perform only a lightweight Cut-consistency review. An approved A/B Plan directly enters `devflow-build`; scope-drift facts return to `devflow-core`.
+8. **STOP — request user review.** On DSH, request review with the structured `ask_user_question` tool (single-select: approve / request changes). Revise and revalidate when requested. On approval, ask execution mode (single-select: `sequential` — one Build agent runs tasks in dependency order / `fan-out` — independent tasks run as parallel subagents) and record it as the plan's optional `Execution mode` header. Then perform only a lightweight Cut-consistency review. An approved A/B Plan directly enters `devflow-build`; scope-drift facts return to `devflow-core`.
 
 Default landing is `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`, resolved from the target project root. Do not place implementation plans in `docs/features/` or `docs/specs/`.
 
@@ -40,6 +40,7 @@ Source: <approved design or docs/specs/YYYY-MM-DD-<short-kebab-name>.md>
 Spec coverage: <requirements mapped to tasks, or design-only>
 Cut Decision: <CUT_PASS allowed scope, reuse conclusion, exclusions, verification constraints>
 External Skills: <skill-name>; role: <bounded specialist work>; expected evidence: <result needed by that node>; return facts: <result / not-applicable / failure> / none
+Execution mode: sequential | fan-out (optional; ask and record at approval)
 
 ## Global Constraints
 - <applicable boundary>
@@ -52,6 +53,8 @@ External Skills: <skill-name>; role: <bounded specialist work>; expected evidenc
 ```
 
 Inherit `External Skills` from the Cut Decision unchanged; the Plan Pack carries the specialist role, expected evidence, and return facts into Build and Prove. When a specialist skill is declared, merge its core quality checks into the affected tasks' `Acceptance` and `Verify` fields — the Plan Pack is the only channel that carries external-skill quality requirements into Build and Prove. A declared skill never widens the Cut scope; if its recommendation exceeds the Cut Decision, return the scope-drift facts to `devflow-core`.
+
+`Execution mode` is not part of Cut scope and does not change the checker. It is asked at approval and recorded so Build knows whether to run tasks sequentially or fan out independent tasks to subagents.
 
 ## Required Task Contract
 
@@ -128,6 +131,7 @@ Before leaving this skill, confirm:
 
 - [ ] `CUT_PASS` is cited with allowed scope, reuse conclusion, exclusions, and verification constraints.
 - [ ] `External Skills` is inherited from the Cut Decision; declared skills' quality checks are merged into task `Acceptance`/`Verify`.
+- [ ] Execution mode was asked at approval and recorded as the optional `Execution mode` header.
 - [ ] Approved design or saved spec is cited as `Source`.
 - [ ] `Spec coverage` maps the source to plan tasks.
 - [ ] Header, constraints, File Structure, interfaces, concrete steps, acceptance, verification, context-specific comments, exclusions, and task-level Prewalk records are present.

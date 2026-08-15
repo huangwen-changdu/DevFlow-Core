@@ -113,6 +113,18 @@ Rules:
 7. 副作用隔离——授权/持久化/缓存/远程调用不隐藏在无标注块内。
 8. 可证明——本 slice 有可运行的最小验证。
 
+## Execution Mode
+
+The plan's `Execution mode` (`sequential` | `fan-out`) is chosen at Plan approval and passed to Build; Build does not re-decide it. `sequential` runs tasks in dependency order as one agent; `fan-out` runs independent tasks as parallel subagents and dependent tasks in sequence after their inputs land.
+
+### Fan-out dispatch
+
+- Two tasks may run in parallel only when their `Files` touch disjoint file/symbol sets and neither `Interfaces` consumes a symbol the other `Produces`; otherwise run the producer first.
+- Each subagent runs one task contract under the same Plan Review and Prewalk read discipline, and returns the task result or `BUILD_BLOCKED` facts.
+- The main agent merges returned results, reconciles cross-task file overlap, runs the unified `Diff Self-Check`, and enters `devflow-prove` once with merged evidence — never per-subagent.
+
+`fan-out` is scheduling only; it does not change Plan Review, Stop Protocol, Cut scope, or the single Prove gate.
+
 ## Source Check
 
 When correctness depends on a framework/library/API version:
