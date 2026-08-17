@@ -59,7 +59,7 @@ DevFlow-Core 是一个可安装的 AI 编码代理工作流框架：把问题/�
 
 - `commands/*.toml`：11 个命令（devflow、spec、plan、review、debt、prove、pua、learn、adversarial、find-fault、audit）
 - `scripts/`：运行时检查器（devflow-spec/plan/review/debt/audit/doctor.js，随安装分发）+ 安装器（install-devflow.js、install-devflow-user.js）+ 维护者验证器（validate-*.js、report-scenario-coverage.js、capability-eval.js、devflow-budget.js、validate-route-consistency.js，不随安装分发）
-- 宿主入口：`.github/`（copilot-instructions.md + instructions/ + prompts/）、`.claude/`（settings.json + commands/devflow-core.md）、`.codebuddy/rules/devflow-core/RULE.mdc`、`hooks/`（SessionStart）、`dsh/agent-presets/devflow/`（DSH 预设：agent.cordis.yml + preset.yml，薄激活器）、`plugin.json`、`gemini-extension.json`
+- 宿主入口：`.github/`（copilot-instructions.md + instructions/ + prompts/）、`.claude/`（settings.json + commands/devflow-core.md）、`.codebuddy/rules/devflow-core/RULE.mdc`、`hooks/`（SessionStart）、`dsh/agent-presets/devflow/`（DSH 预设：薄激活器）、`dsh/agent-presets/devflow-2/`（DSH 预设：两阶段锚定 + Code Mode，自带 tool-bootstrap.mjs）、`plugin.json`、`gemini-extension.json`
 - `docs/`：`PRD.md`（产品方向）、`features/`（devflow-core.md 迭代台账、validation-harness.md）、`specs/` `plans/`（日期前缀落地件）、`platform-setup.md`、`iteration-plan.md`
 - `.copilot/`：`LEARNING_INDEX.md` + `cards/`（踩坑/拦截规则，索引先行只读匹配卡）
 

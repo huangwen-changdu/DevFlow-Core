@@ -59,7 +59,10 @@ const userEntries = [
 // path and --check covers both the skills and the preset.
 const presetEntries = [
   { src: "dsh/agent-presets/devflow/agent.cordis.yml", dest: ".agent-presets/devflow/agent.cordis.yml" },
-  { src: "dsh/agent-presets/devflow/preset.yml", dest: ".agent-presets/devflow/preset.yml" }
+  { src: "dsh/agent-presets/devflow/preset.yml", dest: ".agent-presets/devflow/preset.yml" },
+  { src: "dsh/agent-presets/devflow-2/agent.cordis.yml", dest: ".agent-presets/devflow-2/agent.cordis.yml" },
+  { src: "dsh/agent-presets/devflow-2/preset.yml", dest: ".agent-presets/devflow-2/preset.yml" },
+  { src: "dsh/agent-presets/devflow-2/tool-bootstrap.mjs", dest: ".agent-presets/devflow-2/tool-bootstrap.mjs" }
 ];
 
 const args = process.argv.slice(2);

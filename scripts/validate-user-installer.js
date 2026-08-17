@@ -48,9 +48,17 @@ function assertInstalledRuntimeContract(home) {
     assert(core.includes(exception), `User Core missing Core-return exception: ${exception}`);
   }
   assert(!fs.existsSync(path.join(home, "AGENTS.md")), "User runtime must not install project AGENTS.md");
-  for (const presetRel of [".agent-presets/devflow/agent.cordis.yml", ".agent-presets/devflow/preset.yml"]) {
+  for (const presetRel of [
+    ".agent-presets/devflow/agent.cordis.yml",
+    ".agent-presets/devflow/preset.yml",
+    ".agent-presets/devflow-2/agent.cordis.yml",
+    ".agent-presets/devflow-2/preset.yml",
+    ".agent-presets/devflow-2/tool-bootstrap.mjs",
+  ]) {
     assert(fs.existsSync(path.join(home, presetRel)), `User runtime missing preset file: ${presetRel}`);
   }
+  const devflow2Composition = fs.readFileSync(path.join(root, "dsh/agent-presets/devflow-2/agent.cordis.yml"), "utf8");
+  assert(devflow2Composition.includes("name: ./tool-bootstrap.mjs"), "devflow-2 preset must reference its bundled bootstrap plugin");
 }
 
 const entries = userEntries();

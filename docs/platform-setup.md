@@ -187,10 +187,12 @@ Daily use:
 - Run checkers through the DSH shell tool: `node scripts/devflow-spec.js <spec-file>` and `node scripts/devflow-plan.js <plan-file>`.
 - DSH-native gates: present A/B/C and approval choices with the `ask_user_question` tool; run independent reviews (`devflow-adversarial`, `devflow-find-fault`) as fresh `subagent` runs.
 
-DSH agent preset (optional):
+DSH agent presets (optional):
 
-- `install:user` also syncs the `DevFlow` agent preset to `~/.dsh/.agent-presets/devflow/`. Pick **DevFlow** in the web UI preset picker for sessions that auto-activate `devflow-core` (guaranteed activation) instead of relying on AGENTS.md loading.
-- It is a thin activator: the persona guarantees the `devflow-core` skill is loaded; the route table stays in the skill and AGENTS.md; skills remain in `~/.dsh/skills` (one source). Source lives at `dsh/agent-presets/devflow/` in this repo. Customize the user-root copy, never the shipped preset install.
+- `install:user` also syncs two agent presets to `~/.dsh/.agent-presets/`: `devflow/` and `devflow-2/`. Pick **DevFlow** (thin activator) or **DevFlow 2.0 (Anchored)** (two-phase anchored bootstrap) in the web UI preset picker for sessions that auto-activate `devflow-core` (guaranteed activation) instead of relying on AGENTS.md loading.
+- Both presets are thin activators in the persona sense: the persona guarantees the `devflow-core` skill is loaded; the route table stays in the skill and AGENTS.md; skills remain in `~/.dsh/skills` (one source). Sources live at `dsh/agent-presets/devflow/` and `dsh/agent-presets/devflow-2/` in this repo. Customize the user-root copy, never the shipped preset install.
+- `devflow-2` bundles `tool-bootstrap.mjs` (MIT; from `xiaobright/dsh-anchored-standard`, extended by `dsh-liangshen`): request #1 shows only the one-line Minimal persona plus persistent `bash` + `str_replace_editor`; after the anchor gate the wire switches to Code Mode (`run_code`) and the full DevFlow persona is restored.
+- `~/.dsh/.agent-presets/` is plugin-maintained: after a DSH plugin upgrade re-run `npm run install:user -- --home ~/.dsh --write --force` (or re-copy) to restore the repo versions.
 
 ## Updating An Installed Project
 
