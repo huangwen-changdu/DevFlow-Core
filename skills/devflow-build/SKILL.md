@@ -49,37 +49,7 @@ If work touches more than one file or one logical step, create Implementation Sl
 
 When saving a plan file, use `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`, resolved from the current target project's root, unless that project already documents another plan/spec path. Do not save implementation plans under `docs/features/`; that directory is for feature ledgers.
 
-For multi-step work, tasks must cite the approved source and be small and verifiable:
-
-```text
-Goal: <outcome>
-Architecture: <smallest design and boundaries>
-Tech Stack: <relevant existing stack>
-Source: <docs/specs/YYYY-MM-DD-<short-kebab-name>.md or approved design>
-Spec coverage: <which requirement(s) this plan covers, or design-only>
-Cut Decision: <CUT_PASS allowed scope, reuse conclusion, exclusions, verification constraints>
-External Skills: <skill-name>; role: <bounded specialist work>; expected evidence: <result needed by that node>; return facts: <result / not-applicable / failure> / none
-Task: <short title>
-Task type: Code change | Documentation-only
-Files:
-- Create: <path> | new file | <responsibility>
-- Modify: <path> | <symbol or stable anchor> | <responsibility>
-- Test: <path> | <test symbol or stable anchor> | <behavior proved>  # only when applicable
-Interfaces:
-- Consumes: <exact symbol/API input and type/shape, or documentation-only exception>
-- Produces: <exact symbol/API output and type/shape, or documentation-only exception>
-Current behavior: <observable current state>  # Code change only
-Target behavior: <observable outcome>  # Code change only
-Change mechanics: <minimal code snippet, pseudocode, or exact replacement rule>  # Code change only
-Call impact: <known callers/downstream effect, or no runtime impact>  # Code change only
-Steps:
-- [ ] <one file + symbol/anchor + executable action; include code snippet, pseudocode, or exact replacement for code logic>
-- [ ] <one verification action with trigger/input, expected result, and command or manual scenario>
-Acceptance: <specific condition>
-Verify: <exact command or manual scenario, trigger/input, and expected result>
-Comments: <locations and reasons required by Code Documentation, project convention, or non-obvious boundaries; or "none — trivial change">
-Not doing: <scope removed>
-```
+For multi-step work, tasks must cite the approved source, be small and verifiable, and follow the required task contract (Task: / Task type: / Files: / Interfaces: / Current behavior: / Target behavior: / Change mechanics: / Call impact: / Steps: / Acceptance: / Verify: / Comments: / Not doing:) defined in `skills/devflow-plan/SKILL.md`.
 
 No unresolved markers. For `Code change`, follow the recorded file symbol/anchor, `Current behavior`, `Target behavior`, `Change mechanics`, and `Call impact`; do not re-decide the implementation mechanism in Build. The verification step must retain its trigger/input, expected result, and command or manual scenario. `Documentation-only` applies only to tasks with no runtime code files and explicit `documentation-only` interfaces. No "add tests" without naming the behavior. No "handle edge cases" without naming the edge case. No "similar to Task N" shortcuts; repeat enough detail for each task to stand alone.
 
@@ -115,7 +85,13 @@ Rules:
 
 ## Execution Mode
 
-The plan's `Execution mode` (`sequential` | `fan-out`) is chosen at Plan approval and passed to Build; Build does not re-decide it. `sequential` runs tasks in dependency order as one agent; `fan-out` runs independent tasks as parallel subagents and dependent tasks in sequence after their inputs land.
+The plan's `Execution mode` (`sequential` | `single-subagent` | `fan-out`) is chosen at Plan approval and passed to Build; Build does not re-decide it. `sequential` runs tasks in dependency order as the Build agent itself; `single-subagent` delegates the whole plan to one executor subagent while the main agent only schedules; `fan-out` runs independent tasks as parallel subagents and dependent tasks in sequence after their inputs land.
+
+### Single-subagent dispatch
+
+- The main agent does not execute tasks. It dispatches the whole approved Plan Pack to one executor subagent, waits for the return, and then merges the returned evidence and enters Prove once.
+- The subagent runs all tasks in dependency order inside one context under the same Plan Review and Prewalk read discipline, appends actual evidence to the plan's Execution Trace, and returns the merged task results and evidence, or `BUILD_BLOCKED` facts.
+- The main agent may send one bounded follow-up when the return misses evidence; anything still incomplete is returned to `devflow-core` as `BUILD_BLOCKED` facts. The subagent never declares done, never enters Prove, and never re-decides the mode or the Cut scope.
 
 ### Fan-out dispatch
 
@@ -123,7 +99,7 @@ The plan's `Execution mode` (`sequential` | `fan-out`) is chosen at Plan approva
 - Each subagent runs one task contract under the same Plan Review and Prewalk read discipline, and returns the task result or `BUILD_BLOCKED` facts.
 - The main agent merges returned results, reconciles cross-task file overlap, runs the unified `Diff Self-Check`, and enters `devflow-prove` once with merged evidence — never per-subagent.
 
-`fan-out` is scheduling only; it does not change Plan Review, Stop Protocol, Cut scope, or the single Prove gate.
+`single-subagent` and `fan-out` are scheduling only; they do not change Plan Review, Stop Protocol, Cut scope, or the single Prove gate.
 
 ## Source Check
 

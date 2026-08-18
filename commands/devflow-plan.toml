@@ -20,7 +20,7 @@ Source: <docs/specs/YYYY-MM-DD-<short-kebab-name>.md or approved design>
 Spec coverage: <requirements mapped to tasks, or design-only>
 Cut Decision: <CUT_PASS allowed scope, reuse conclusion, exclusions, verification constraints>
 External Skills: <skill-name>; role: <bounded specialist work>; expected evidence: <result needed by that node>; return facts: <result / not-applicable / failure> / none
-Execution mode: sequential | fan-out (optional; ask and record at approval)
+Execution mode: sequential | single-subagent | fan-out (optional; ask and record at approval)
 ```
 
 Inherit `External Skills` from the Cut Decision unchanged; the Plan Pack carries the specialist role, expected evidence, and return facts into Build and Prove. When a specialist skill is declared, merge its core quality checks into the affected tasks' `Acceptance`/`Verify` fields; the Plan Pack is the only channel that carries external-skill quality requirements into Build and Prove.
@@ -54,5 +54,5 @@ For `Code change`, every existing-file row must name a symbol or stable anchor; 
 
 Run `node scripts/devflow-plan.js <plan-file>` when it exists; otherwise use the user-level fallback specified in `core-methods.md`. Self-review source coverage, interfaces, precise locations, behavior changes, mechanics, call impact, verification expectations, placeholders, and file-operation labels before presenting the plan.
 
-STOP after writing and validating the plan: request user review. On approval, ask execution mode (`sequential` / `fan-out`) and record it as the plan's optional `Execution mode` header, then perform a lightweight Cut-consistency review. An approved A/B Plan directly starts `devflow-build`; any scope-drift or non-success facts return to `devflow-core`. Do not perform Cut, Build, Prove, test-first workflow, version-control task steps, independent review, or automatic execution here.
+STOP after writing and validating the plan: request user review. On approval, ask execution mode (`sequential` — the Build agent runs tasks in dependency order / `single-subagent` — the main agent only schedules while one subagent runs all tasks / `fan-out` — independent tasks run as parallel subagents) and record it as the plan's optional `Execution mode` header, then perform a lightweight Cut-consistency review. An approved A/B Plan directly starts `devflow-build`; any scope-drift or non-success facts return to `devflow-core`. Do not perform Cut, Build, Prove, test-first workflow, version-control task steps, independent review, or automatic execution here.
 '''
