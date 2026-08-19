@@ -54,11 +54,14 @@ function assertInstalledRuntimeContract(home) {
     ".agent-presets/devflow-2/agent.cordis.yml",
     ".agent-presets/devflow-2/preset.yml",
     ".agent-presets/devflow-2/tool-bootstrap.mjs",
+    ".agent-presets/devflow-2/custom-bash.mjs",
+    ".agent-presets/devflow-2/NOTICE",
   ]) {
     assert(fs.existsSync(path.join(home, presetRel)), `User runtime missing preset file: ${presetRel}`);
   }
   const devflow2Composition = fs.readFileSync(path.join(root, "dsh/agent-presets/devflow-2/agent.cordis.yml"), "utf8");
   assert(devflow2Composition.includes("name: ./tool-bootstrap.mjs"), "devflow-2 preset must reference its bundled bootstrap plugin");
+  assert(devflow2Composition.includes("name: ./custom-bash.mjs"), "devflow-2 preset must reference its bundled custom-bash plugin");
 }
 
 const entries = userEntries();

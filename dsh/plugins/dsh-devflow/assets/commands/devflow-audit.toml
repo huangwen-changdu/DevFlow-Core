@@ -1,0 +1,32 @@
+description = "Audit a repository or scope for overengineering and code that can be deleted."
+prompt = '''
+Audit the repository or named scope for overengineering only.
+
+When `scripts/devflow-audit.js` exists, run:
+
+```bash
+node scripts/devflow-audit.js <target-directory>
+```
+
+If only user-level DevFlow is installed, run the user script instead:
+
+```bash
+node ~/.codex/scripts/devflow-audit.js <target-directory>
+# or, for Claude Code user-level install:
+node ~/.claude/scripts/devflow-audit.js <target-directory>
+```
+
+Use the script output as a first-pass candidate scan, then read referenced code before reporting important findings.
+
+Scope: overengineering and complexity only. Do not report correctness, security, performance, or style issues as audit findings.
+
+Findings use:
+<file>:L<line>: <delete|reuse|stdlib|native|yagni|shrink>: <what to cut>. <replacement>.
+
+Rank biggest useful cut first.
+End with:
+net: -<N> lines, -<M> deps possible.
+
+If nothing should be cut:
+Lean already. Ship.
+'''

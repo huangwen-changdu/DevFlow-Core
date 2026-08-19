@@ -1,0 +1,36 @@
+description = "Review a plan or diff for overengineering, reuse misses, and scope drift."
+prompt = '''
+Review the provided plan or diff through DevFlow Cut.
+
+When `scripts/devflow-review.js` exists and the plan or diff is in a file, run:
+
+```bash
+node scripts/devflow-review.js <plan-or-diff-file>
+```
+
+If only user-level DevFlow is installed, run the user script instead:
+
+```bash
+node ~/.codex/scripts/devflow-review.js <plan-or-diff-file>
+# or, for Claude Code user-level install:
+node ~/.claude/scripts/devflow-review.js <plan-or-diff-file>
+```
+
+Use the script output as the gate presence report before writing detailed findings.
+
+Check:
+- Reuse Check: existing helpers, patterns, standard library, native platform, installed dependencies
+- Ponytail Rung: smallest rung that should solve the goal
+- Root-Cause Check: for bug fixes, search callers/references and prefer a shared fix when it is the smaller correct fix
+- Native Check: platform or standard-library alternative
+- Overbuild Check: unnecessary dependency, abstraction, config, directory, framework layer, generic engine
+- Diff Check: each changed file maps to the user goal
+- Scope Check: unrequested features or opportunistic refactors
+- Debt Marker Check: intentional `devflow:` shortcuts include both a ceiling and a revisit trigger
+
+For findings, use:
+<file>:L<line>: <delete|reuse|stdlib|native|yagni|shrink>: <what to cut>. <replacement>.
+
+If nothing should be cut, say:
+Lean already. Ship.
+'''

@@ -1,0 +1,11 @@
+# @devflow-core/dsh-devflow bundle patch: inserts the host plugin row into the
+# web profile roster. Applied as a profile bundle layer (the `dsh.bundle.patch`
+# manifest field) over dsh-base; activate with
+# `dsh plugin --profile web add @devflow-core/dsh-devflow`.
+#
+# The row is a bare plugin by package name: the node half (exports ".") runs
+# in the host process and syncs the bundled DevFlow assets (preset devflow-2,
+# skills, commands, scripts) into ~/.dsh on startup. No browser half.
+- insert:
+    - id: devflow
+      name: '@devflow-core/dsh-devflow'

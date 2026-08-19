@@ -1,0 +1,49 @@
+description = "Create and validate a DevFlow spec document before implementation planning."
+prompt = '''
+Create a DevFlow spec from the `Confirmed request` that `devflow-core` selected for Spec work.
+
+Compare real no-change/reuse, direct implementation, and relevant existing-pattern options before writing the chosen design contract. Record their trade-offs in `Approach`; do not re-confirm request fields and do not select any later lifecycle skill.
+
+Default landing for saved specs is:
+
+```text
+docs/specs/YYYY-MM-DD-<short-kebab-name>.md
+```
+
+Resolve the default path from the current target project's root. Use an existing project specs directory only when the target project already documents that convention. Do not put implementation specs in `docs/features/`; that directory is for feature ledgers. Do not put specs in `docs/plans/`; that directory is for implementation plans.
+
+When `scripts/devflow-spec.js` exists and the spec is in a file, run:
+
+```bash
+node scripts/devflow-spec.js <spec-file>
+```
+
+If only user-level DevFlow is installed, run the user script instead:
+
+```bash
+node ~/.codex/scripts/devflow-spec.js <spec-file>
+# or, for Claude Code user-level install:
+node ~/.claude/scripts/devflow-spec.js <spec-file>
+```
+
+Use the script output as the required-section, unresolved-marker, and spec-landing check.
+
+Required sections (headers must remain in English for checker validation; content can be in the user's language):
+Goal:
+Context:
+Requirements:
+Non-goals:
+Approach:
+Impact:
+Acceptance:
+Verification:
+Code Documentation:
+Open Questions:
+
+When Cut returns `CUT_PASS`, any resulting plan cites:
+Source: <confirmed spec path or approved design>
+Spec coverage: <which requirements map to which tasks>
+Cut Decision: <allowed scope, reuse conclusion, exclusions, verification constraints>
+
+After the user reviews and approves an A-branch design contract/spec, directly start `devflow-cut` with the confirmed Spec and preserved Depth. Any rejection, missing depth, scope change, or other non-success result returns facts to `devflow-core`; do not select another lifecycle skill yourself.
+'''

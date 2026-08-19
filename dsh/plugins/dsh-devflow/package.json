@@ -1,0 +1,32 @@
+{
+  "name": "@devflow-core/dsh-devflow",
+  "version": "0.1.0",
+  "description": "DevFlow for DeepSeek Harness: devflow-2 agent preset + skills + commands + verification scripts, synced into ~/.dsh on host startup.",
+  "type": "module",
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json",
+    "./assets/*": "./assets/*"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "files": [
+    "lib",
+    "assets",
+    "cordis.patch.yml",
+    "README.md",
+    "NOTICE"
+  ],
+  "license": "Apache-2.0",
+  "scripts": {
+    "sync-assets": "node scripts/sync-assets.js",
+    "test": "node test/sync.test.js"
+  }
+}

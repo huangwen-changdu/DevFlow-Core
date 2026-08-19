@@ -1,0 +1,35 @@
+description = "Route a task through DevFlow Core."
+prompt = '''
+Use DevFlow Core for this request.
+
+Route the work as Fast, Design-lite, Design, Build, or Recovery.
+Before creative work — creating features, building components, adding functionality, modifying behavior, or defining an unapproved problem-directed change — run Brainstorm to confirm the request: read facts, follow `skills/devflow-brainstorm/references/interview-discipline.md`, send a Semantic Echo-Back, apply the Understanding Revision Rule when a correction changes the request, ask one question at a time only for goal/scope/exclusions/constraints/acceptance/open-question gaps, then output `Confirmed request` with `Status: clarified`. Brainstorm then presents A/B/C and waits for the user's explicit choice: A directly starts Spec, B directly starts Cut then Plan, and C directly starts Cut then Build. Brainstorm never infers the depth; a missing or changed selection returns facts to Core.
+An investigation-only problem report without a requested change uses Problem: Sense -> Prove facts. Pure Q&A, fact lookup, verification, and already approved changes are exceptions to the Brainstorm entry gate.
+If the user explicitly asks for upgraded adversarial review, deep adversarial review, red-team review, 对抗审查, or 升级版对抗审查, load `skills/devflow-adversarial/SKILL.md` directly. If the user explicitly asks to find faults, identify the biggest omission, surface a blind spot, name the least certain point, 找茬, 最大遗漏, 没有意识到什么, or 最没有把握, load `skills/devflow-find-fault/SKILL.md` directly. These are independent manual reviews: they may run at any stage and must not read, require, modify, or hand off to devflow-prove, PUA, Build, Learn, or any completion state.
+If the user challenges the result, says changed wrong, says your code is wrong/you wrote it wrong/has a problem/not right/missing/incomplete/still missing/有问题/不对/写错了/少了/少个/缺少/缺漏/遗漏/漏了, reports a quality complaint, or repeated edits miss, use Recovery through devflow-pua before more edits. For repeated challenge, explicit wrong-code signals, or repeated missing-piece complaints, return recovery facts to devflow-core; Core may restart devflow-brainstorm only for request re-confirmation, then selects the lifecycle work. Quarantine the old wrong context, diagnose the user-view miss, ask what is wrong and what result is wanted, then switch to a different/opposite method when the prior method failed.
+Use Fast for pure Q&A, fact lookup, verification, or an already approved trivial code change (one line, no logic change, no risk).
+Use Design-lite only after Brainstorm confirms a small unapproved change to an existing feature with clear behavior, one plausible path, low risk, local impact, and quick proof. Not for new requirements.
+If the boundary is unclear after Brainstorm, have Core select the smallest compatible route instead of guessing.
+Run Sense first by reading or citing relevant project facts.
+At Sense, probe `.copilot/LEARNING_INDEX.md` and `docs/project-knowledge/` when present. Read only matched learning cards or navigation-selected knowledge documents; missing locations are non-blocking and do not create storage.
+The direct success map is A: Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove, B: Brainstorm -> Cut -> Plan -> Build -> Prove, C: Brainstorm -> Cut -> Build -> Prove. An approved A Spec directly starts Cut; A/B `CUT_PASS` directly starts Plan; C `CUT_PASS` directly starts Build; an approved A/B Plan directly starts Build; a completed Build directly starts Prove.
+Before implementation, run Cut with Required Gates: Reuse, Native, Overbuild, Diff, and Scope checks. Core keeps non-unique selection: `CUT_REDUCE`/`CUT_REUSE` STOP for user confirmation, then return facts to Core; `CUT_BLOCKED`, Plan scope drift, `BUILD_BLOCKED`, Proof `FAIL`/`BLOCKED`, changed intent, and PUA recovery return facts so Core chooses the next owner.
+For bug fixes, include Root-Cause Check: searched callers/references; shared vs narrow fix; reason.
+For deliberate simplifications, add or report `devflow: <ceiling>, revisit when <trigger>`.
+If implementation is requested for an already approved scope, continue through Build and Prove.
+For problem solving, bug fixing, and architecture design, use First Principles Cut when the cause, constraint, invariant, abstraction, or smallest correct mechanism is unclear; reduce to facts, constraints, and invariants before selecting a solution.
+Before completion of development work, run adversarial review against acceptance criteria, touched files, likely regressions, activation paths, and proof coverage. A real gap means FAIL or continued work before completion.
+
+Design output:
+Goal:
+Smallest useful plan:
+Not doing:
+Impact:
+Verification:
+
+Completion proof:
+Command:
+Result:
+Adversarial review:
+Judgment: PASS / FAIL / BLOCKED
+'''

@@ -1,0 +1,3 @@
+name: DevFlow 2.0 (Anchored)
+description: DevFlow 开发工作流 + 梁神式两阶段锚定：首个请求只暴露一行 persona（You are a helpful software engineer assistant.）+ 最小工具对（持久 bash + str_replace_editor），无运行时上下文与任何注入；anchorGate 门控（首个 minimal-like 推理块或 4 步兜底）+ 1024 输出预算稳定锚定后，晋升为 Code Mode（单一 run_code），恢复完整 DevFlow 人设并自动激活 devflow-core 生命周期（Brainstorm → Spec/Cut → Plan → Build → Prove）与验证完成闭环；workspace 指令与技能目录延迟一步注入。
+order: 6

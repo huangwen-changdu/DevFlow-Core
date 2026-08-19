@@ -194,6 +194,20 @@ DSH agent presets (optional):
 - `devflow-2` bundles `tool-bootstrap.mjs` (MIT; from `xiaobright/dsh-anchored-standard`, extended by `dsh-liangshen`): request #1 shows only the one-line Minimal persona plus persistent `bash` + `str_replace_editor`; after the anchor gate the wire switches to Code Mode (`run_code`) and the full DevFlow persona is restored.
 - `~/.dsh/.agent-presets/` is plugin-maintained: after a DSH plugin upgrade re-run `npm run install:user -- --home ~/.dsh --write --force` (or re-copy) to restore the repo versions.
 
+### 插件一键安装（可选）
+
+`install:user` 仍是首选；也可发布并安装 `@devflow-core/dsh-devflow` 插件：
+
+```bash
+npx @deepseek-ai/dsh plugin --profile web add @devflow-core/dsh-devflow
+```
+
+装完重启 web；插件启动时把 devflow-2 预设、`devflow-*` skills、`devflow*.toml`
+命令与 `devflow-*.js` 验证脚本同步到 `~/.dsh/`（.agent-presets / skills /
+commands / scripts），冲突策略为 devflow-* 权威覆盖、非 devflow 资产永不触碰。
+插件源码位于 `dsh/plugins/dsh-devflow/`，发布前先跑 `node scripts/sync-assets.js`
+刷新资产并 bump 版本。升级插件后重启即自动更新。
+
 ## Updating An Installed Project
 
 After this pack changes, re-sync and verify:

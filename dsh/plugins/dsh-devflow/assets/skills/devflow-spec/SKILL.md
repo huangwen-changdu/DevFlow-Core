@@ -1,0 +1,92 @@
+---
+name: devflow-spec
+description: "Use after devflow-core selects a saved spec for a confirmed request that needs approach comparison, a reviewable design contract, and a requirements document before implementation."
+---
+
+# DevFlow Spec
+
+Write the smallest useful spec document before implementation when the request needs more than a short design contract.
+
+This is Superpowers-style spec discipline adapted to DevFlow: write specs only when they reduce ambiguity, review them before planning, and keep plans traceable to specs or approved designs.
+
+## When To Write A Spec
+
+Use a saved spec when any of these are true:
+
+- The user asks for a spec, specs doc, design doc, or requirements document.
+- The work crosses modules, roles, persistence, APIs, release flow, or user-visible workflows.
+- Several requirements must stay aligned across implementation tasks.
+- The plan would be hard to review without a written source of truth.
+
+Do not force a spec for Design-lite work where a short design contract and quick proof are enough.
+
+## Process
+
+1. Consume the `Confirmed request` that `devflow-core` selected for Spec work, then read the relevant project facts. Do not re-confirm settled request fields or route the lifecycle.
+2. Load `skills/devflow-spec/references/spec-plan-methods.md`, then compare the smallest real options before writing: no change/reuse when it can meet the request, direct implementation, and any existing project pattern that materially changes the decision. State trade-offs and why the selected approach is the smallest useful one.
+3. Write the design contract and saved spec under `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`, resolved from the current target project's root, unless that project already documents another specs path.
+4. Include the required sections with English headers:
+   - Goal
+   - Context
+   - Requirements
+   - Non-goals
+   - Approach
+   - Impact
+   - Acceptance
+   - Verification
+   - Code Documentation
+   - Open Questions
+
+   In `Approach`, record the compared options, trade-offs, chosen design, boundaries, and why rejected options do not meet the current request. Section content should be written in the user's language, but section headers must remain in English so `scripts/devflow-spec.js` can validate them.
+
+   The **Code Documentation** section records the documentation requirements this feature actually creates:
+   - Which modules/files or public interfaces need an explanation, and why
+   - Which functions/classes need a comment because their contract, failure behavior, or decision is not evident from code
+   - Which non-obvious, business, security, or compatibility boundaries need inline WHY comments
+   - Reference to existing project comment conventions when they apply
+   - For trivial changes or self-explanatory code with no triggered requirement, state "none — trivial change" explicitly
+5. Run the design/spec self-review:
+   - Unresolved-marker scan: no draft markers, unresolved question marks, or unresolved angle values.
+   - Consistency: requirements, chosen approach, impact, acceptance, and verification do not contradict.
+   - Scope: if multiple independent subsystems appear, split into separate specs.
+   - Design: the comparison names the real alternatives and the selected approach has an explicit trade-off.
+6. Run `node scripts/devflow-spec.js <spec-file>` when the script exists. If not found at `scripts/devflow-spec.js` (project-level), try `~/.codex/scripts/devflow-spec.js` or `~/.claude/scripts/devflow-spec.js` (user-level). Do NOT look under `skills/scripts/`. See `core-methods.md` Script Path Resolution.
+7. **STOP — Wait for user approval of the design contract and spec.** On DSH, request approval with the structured `ask_user_question` tool (single-select: approve / request changes). Tell the user the spec path and review result. If they request changes, revise the comparison/design contract and re-run self-review. An approved A-branch Spec directly enters `devflow-cut`; any non-success state returns facts to `devflow-core`.
+
+## Output
+
+```text
+Spec: docs/specs/YYYY-MM-DD-<short-kebab-name>.md
+Source: <Confirmed request selected by devflow-core>
+Design: options compared <pass/fail>; selected approach and trade-off <pass/fail>
+Review: unresolved-marker scan <pass/fail>; consistency <pass/fail>; scope <pass/fail>; design <pass/fail>
+Next: approved A-branch Spec -> `devflow-cut`; non-success facts -> `devflow-core`
+```
+
+## Anti-Rationalization
+
+| Excuse | Reality |
+|---|---|
+| "A plan is enough." | If requirements can drift across tasks, write the spec first. |
+| "The spec can be vague; the plan will decide." | Vague specs create wrong plans. Resolve or mark the question before planning. |
+| "Brainstorm already chose the approach." | Brainstorm confirms what the user wants; Spec compares how to satisfy it and records the design contract. |
+| "The user approved the spec, so Core must route it." | An approved A-branch Spec has one successor and directly enters Cut; exceptions still return Core facts. |
+| "This belongs in docs/features." | `docs/features/` is product ledger memory, not a generated implementation spec. |
+| "The user said implement, so skip approval." | Implementation requests still need the lightest useful design/spec source before Build. |
+| "Code Documentation is unnecessary, the code is self-explanatory." | Record the actual decision: `none — trivial change` is valid only when no project convention, public boundary, or non-obvious WHY needs preservation. |
+| "Comments will get stale." | Keep required documentation accurate; stale wording is not a reason to omit a needed contract or decision record. |
+| "I'll add comments later." | Name required documentation in the Spec so Plan and Build can verify it with the implementation. |
+
+## Verification
+
+Before leaving this skill, confirm:
+
+- [ ] Spec scope was named.
+- [ ] Real options, trade-offs, and the chosen approach are recorded in the design contract.
+- [ ] Required sections exist, including Code Documentation.
+- [ ] Spec landed under the current project's `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` path or a documented target-project specs path.
+- [ ] Unresolved-marker, consistency, scope, and design checks ran.
+- [ ] Code Documentation section names triggered documentation requirements and locations (or explicitly states "none — trivial change").
+- [ ] `scripts/devflow-spec.js` ran when available.
+- [ ] User reviewed and approved the design contract and written spec.
+- [ ] An approved A-branch Spec entered `devflow-cut`; any non-success facts returned to `devflow-core`.

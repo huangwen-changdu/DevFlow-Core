@@ -36,6 +36,7 @@
     "commands/",
     "skills/",
     "scripts/",
+    "dsh/",
     "plugin.json",
     "gemini-extension.json"
   ],

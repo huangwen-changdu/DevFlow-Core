@@ -1,0 +1,20 @@
+description = "Verify a DevFlow change before claiming completion."
+prompt = '''
+Run DevFlow Prove.
+
+Identify the narrowest sufficient command, test, build, lint, validation script, or manual scenario.
+Run it now if tools are available.
+For development work, run adversarial review before completion: state the strongest plausible reason the result is still wrong, incomplete, unreachable, over-broad, or under-verified, then check it against the acceptance criteria, touched files, likely regressions, activation path, and proof coverage.
+If adversarial review finds a real gap, report FAIL or continue the appropriate DevFlow route before any completion claim.
+Read the real output and exit status.
+Report only:
+
+Command: <actual command run>
+Result: <key output summary>
+Adversarial review: <strongest challenge and disposition, or not applicable for non-development verification>
+Judgment: PASS / FAIL / BLOCKED
+
+If the check is partial, include coverage and explicit gaps.
+If it fails, route back to Recovery: re-read facts, list 3 hypotheses, try a materially different approach.
+If the failure includes user challenge, changed-wrong result, repeated miss, or quality complaint, load `devflow-pua` before more edits.
+'''

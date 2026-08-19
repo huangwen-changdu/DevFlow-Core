@@ -1,0 +1,11 @@
+description = "Run an independent manual adversarial review of current work."
+prompt = '''
+Run DevFlow Adversarial Review.
+
+Load `skills/devflow-adversarial/SKILL.md` and begin the review when the user explicitly requests it.
+Identify the review target from the request and available task materials. Ask one smallest question only when the target is unclear.
+This command is manual and independent: it does not require, read, modify, or hand off to devflow-prove, PUA, Build, Learn, or any completion state.
+Cover requirement coverage, reachability, boundaries and regressions, evidence strength, and user-visible outcome.
+Report only the skill's required findings, five-angle coverage, context limitations, and suggested manual next action.
+Do not edit files, invoke another skill, create a task, or declare global task status.
+'''

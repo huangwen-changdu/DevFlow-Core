@@ -1,0 +1,13 @@
+@devflow-core/dsh-devflow
+
+本插件借鉴了以下开源项目的实现（Apache-2.0 / MIT），特此声明：
+
+- lib/dsh-home.js、lib/mount-once.js、lib/sync.js、lib/index.js 的同步/挂载/
+  单实例守卫逻辑改编自 @linxin666/dsh-liangshen
+  （https://github.com/zhu1090093659/dsh-web-ui ，Apache-2.0）。
+- assets/presets/devflow-2/tool-bootstrap.mjs 来自
+  https://github.com/xiaobright/dsh-anchored-standard（MIT），
+  经 dsh-liangshen 扩展后适配 devflow-2（phase1Persona 人设切换）。
+- assets/presets/devflow-2/custom-bash.mjs 与 NOTICE 同源于上述仓库。
+
+原始版权与 MIT/Apache-2.0 许可声明见各开源仓库。
