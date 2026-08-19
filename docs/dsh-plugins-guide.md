@@ -104,23 +104,6 @@ npx @deepseek-ai/dsh plugin --profile web add @linxin666/dsh-web-ui-all
 
 重启后该插件不再加载；删除这两行即恢复。
 
-### 4.2 插入本地/私有插件（例：DevFlow 快捷命令）
-
-1. 将本地包放入公共依赖目录：`~/.dsh/profiles/node_modules/@devflow-core/dsh-client-quick-cmds/`（或建 junction 指向源码）
-2. 在 `profiles/web/cordis.patch.yml` 追加：
-
-```yaml
-- insert:
-    - id: ui-quick-cmds
-      name: '@devflow-core/dsh-client-quick-cmds'
-```
-
-补丁语法说明（顶层 YAML 数组）：
-
-- `- insert: [...]` 追加插件条目（`id` + `name`，可选 `config`）
-- `- id: <entry-id>` + `disabled: true` 禁用已有条目（按 id 定位）
-- 会先应用各 bundle 的 patch，再应用本文件，因此可命中全家桶插入的条目
-
 ---
 
 ## 5. SSH 终端构建脚本（可选，仅当要用 dsh-ssh）
@@ -135,33 +118,6 @@ pnpm approve-builds
 ---
 
 ## 6. 全局插件（作用于所有 profile，~/.dsh/cordis.patch.yml）
-
-### 6.1 herdr 编排插件（本地构建，可选）
-
-前置：
-
-- 源码：`deepseek-harness` 仓库的 `packages/herdr/tool-herdr`（Node 插件，改动后需 tsc 重新构建 `lib/index.js`）
-- 二进制：herdr 的 Rust 项目，`cargo build --release` 得到 `herdr.exe`
-
-步骤：
-
-```powershell
-# 1) 建 junction 让 dsh 能解析该包
-mklink /J "C:\Users\<you>\.dsh\profiles\node_modules\@deepseek-ai\dsh-tool-herdr" "D:\path\to\deepseek-harness\packages\herdr\tool-herdr"
-
-# 2) 全局补丁层插入
-# 编辑 ~/.dsh/cordis.patch.yml 追加：
-```
-
-```yaml
-- insert:
-    - id: tool-herdr
-      name: '@deepseek-ai/dsh-tool-herdr'
-      config:
-        herdrBinPath: 'D:\path\to\herdr.exe'
-        session: default
-        defaultTimeoutMs: 60000
-```
 
 ### 6.2 皮肤自动管理区（勿手改）
 
@@ -181,7 +137,7 @@ mklink /J "C:\Users\<you>\.dsh\profiles\node_modules\@deepseek-ai\dsh-tool-herdr
 
 ### 7.1 Windows 上预设报错处理（PTY → custom-bash 分支）
 
-**症状**：Windows 上使用依赖 persistent-shell（PTY 持久 bash）的预设（如 liangshen、devflow-2），bash 工具报错：
+**症状**：Windows 上使用依赖 persistent-shell（PTY 持久 bash）的预设（如 devflow-2、liangshen），bash 工具报错：
 
 ```
 subprocess-local: terminal inspection is unsupported on platform win32
@@ -230,6 +186,20 @@ unknown tool "bash": only `run_code` is callable directly — call `bash` from i
 
 **标准线预设（devflow）同样适用**：devflow 的官方 `tool-bash` 在 win32 被禁用（沙箱执行器仅 linux），照上面加 custom-bash 即可在 Windows 上获得同名 bash（win32 上 tool-bash 禁用、custom-bash 启用，互斥不冲突；`tool-pwsh` 保留）。
 
+### 7.1.1 ⚠️ liangshen 例外：插件同步覆盖，不要手工改
+
+`@linxin666/dsh-liangshen`（全家桶子插件）是一个**预设插件**：每次 dsh 启动时把自带的 `presets/liangshen/` 按字节比对同步到 `~/.dsh/.agent-presets/liangshen/`（源里没有的文件会被删除）。因此：
+
+- 手工修改 liangshen 预设（删 `promotedPresentation: code`、加 custom-bash 等）**下次启动即被覆盖还原**——改了白改
+- 线上原版**本来就是 Code Mode（PTC）设计**：promote 后切单 `run_code` 工具线
+
+**版本注意**：
+
+- **0.1.19**：persistent-shell 无 win32 禁用、无 custom-bash → Windows 上 bash 报 terminal inspection
+- **0.2.0**：官方内置 Windows 适配（persistent-shell win32 禁用 + custom-bash，`bashPath` 可选、默认自动推断 Git Bash）→ Windows 上 bash 可用，Code Mode 正常
+
+**结论**：liangshen **保持线上原版一致**（不手工改、不禁用插件）；0.2.0 起 Windows 直接用即可；想要无 Code Mode 的两阶段锚定用 devflow-2 / devflow。
+
 ---
 
 ### 7.2 Windows 工具可用性检查清单（防再次踩坑）
@@ -242,9 +212,13 @@ unknown tool "bash": only `run_code` is callable directly — call `bash` from i
 2. **bashPath 核对**：`where.exe git` 确认 Git 安装位置，custom-bash 的 `bashPath` 必须指向实际路径（本机 `D:\Program Files\Git\bin\bash.exe`）
 3. **两个雷区**：不要依赖 persistent-shell（PTY 仅 linux/darwin，win32 必须禁用并由 custom-bash 补位）；遇到 `only run_code is callable directly` 就删 `promotedPresentation: code`
 
-本机已核实（2026-08-18）：
+本机已核实（2026-08-19）：
 
-- 四个预设（devflow / anchored-standard / liangshen / devflow-2）bash 均可用（custom-bash，Git Bash）
+- 预设 Windows 兼容性：
+  - **liangshen**（线上原版 0.2.0）：Code Mode（PTC）+ 官方内置 custom-bash（Git Bash 自动推断）→ Windows 可用
+  - **devflow-2**（源 + Windows 适配）：两阶段锚定 + Code Mode + custom-bash（无固定 bashPath，自动推断）→ Windows 可用
+  - **devflow**（源最新）：win32 用 `tool-pwsh`（`tool-bash` win32 禁用）→ Windows 可用，shell 为 PowerShell
+  - **anchored-standard**：custom-bash 分支（bashPath 指向本机 Git）→ Windows 可用
 - node-pty 族（dsh-better-sidebar 终端、dsh-ssh）：`prebuilds/win32-x64` 已打包 → Windows 可用；ssh2 的 cpu-features 加速可选（`pnpm approve-builds` 放行）
 - dsh-open-in-vscode / @liustack/modlens 自带 win32 分支，正常
 - dsh-message-edit / dsh-notification / dsh-chat-import / dsh-browser：无平台依赖
@@ -257,7 +231,7 @@ unknown tool "bash": only `run_code` is callable directly — call `bash` from i
 | 问题 | 处理 |
 |---|---|
 | 选预设后弹回默认 | 非空白会话不能切换；新建空白会话再选；或确认预设无挂载问题 |
-| bash 报 terminal inspection unsupported | Windows 上 PTY 不可用：给该预设加 custom-bash 分支（见 7.1），并核对 bashPath 指向本机 Git |
+| bash 报 terminal inspection unsupported | Windows 上 PTY 不可用：给该预设加 custom-bash 分支（见 7.1）；liangshen 0.2.0 官方已内置，无需手动改 |
 | 报 only run_code is callable | Code Mode 限制（promotedPresentation: code）：改用 run_code 包程序；或删除该配置行恢复 native |
 | 插件装完不生效 | 重启 web（patch 是启动时读取的） |
 | 全家桶与独立包冲突 | `dsh plugin --profile web remove` 掉其中一个 |
@@ -266,10 +240,9 @@ unknown tool "bash": only `run_code` is callable directly — call `bash` from i
 
 ---
 
-## 附：本机当前插件清单（2026-08-18 状态）
+## 附：本机当前插件清单（2026-08-19 状态）
 
-- **独立插件**：@liustack/modlens、dsh-better-sidebar、dsh-browser、dsh-chat-import、dsh-notification、dsh-open-in-vscode、@linxin666/dsh-web-ui-all、dsh-message-edit（新增，消息编辑/重生成）
-- **Agent 预设修复（Windows）**：四个预设均已加 custom-bash 分支（anchored-standard / liangshen / devflow-2 / devflow，bashPath 指向 D 盘 Git）；liangshen / devflow-2 另移除 promotedPresentation: code（详见 7.1）
-- **手工补丁**：ui-quick-cmds（@devflow-core，本地包）、禁用 ui-dsh-aionui-panel
-- **全局补丁**：tool-herdr（本地构建）、dsh-skin managed（10 皮肤默认禁用）
-- **已移除**：@dsh-local/dsh-pet（zealot00 旧宠物，全家桶自带新版 pet 替代）
+- **独立插件**：@liustack/modlens（3.20.0）、dsh-browser、dsh-chat-import（0.6.1）、dsh-message-edit、dsh-notification、dsh-open-in-vscode、@linxin666/dsh-web-ui-all（0.2.0 全家桶，含内置 dsh-better-sidebar 默认右面板）
+- **Agent 预设状态（Windows）**：devflow（源最新，win32 用 pwsh）/ anchored-standard（custom-bash）/ devflow-2（源 + Windows 适配 + Code Mode）/ liangshen（线上原版 0.2.0，官方 Windows 适配 + Code Mode）；详见 7.1.1
+- **手工补丁**：禁用 ui-dsh-aionui-panel
+- **全局补丁**：dsh-skin managed（10 皮肤默认禁用）
