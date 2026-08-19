@@ -73,10 +73,14 @@ devflow-2 预设的 `custom-bash.mjs` 需要 Git Bash 可解析：默认自动�
 的 custom-bash 行显式配置 `bashPath` 指向本机 Git（参照
 `docs/dsh-plugins-guide.md` 7.1 节）。
 
-## 发布
+## 发布与更新
+
+完整维护者流程（前置条件、版本 bump、发布命令、错误对照表、git 备选）见
+[RELEASE.md](RELEASE.md)。简版：
 
 ```sh
 cd dsh/plugins/dsh-devflow
 node scripts/sync-assets.js   # 发布前必须重跑，保证资产与仓库根一致
-npm publish
+# bump package.json 版本号
+npm publish --access public --//registry.npmjs.org/:_authToken=<TOKEN>
 ```
