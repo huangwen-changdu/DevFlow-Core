@@ -13,7 +13,7 @@ npx @deepseek-ai/dsh plugin --profile web add @devflow-core/dsh-devflow
 
 重启后：
 
-1. 新建会话，预设选择器可选 **DevFlow 2.0 (Anchored)**（两阶段锚定 + Code Mode）。
+1. 新建会话，预设选择器可选 **DevFlow 2.0**（两阶段锚定 + Code Mode）。
 2. 会话内 `devflow-*` skills 出现在技能目录，按任务措辞自动触发。
 3. `~/.dsh/commands/` 出现 `devflow*.toml` 斜杠命令，`~/.dsh/scripts/` 出现
    `devflow-*.js` 验证脚本（`node scripts/devflow-plan.js <plan>` 等）。

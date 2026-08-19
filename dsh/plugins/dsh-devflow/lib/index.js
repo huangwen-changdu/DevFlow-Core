@@ -29,7 +29,7 @@ export function bundledAssetsRoot() {
 
 /** Model-facing announcement: plugin presence, preset, and conflict policy. */
 export const DEVFLOW_GUIDANCE =
-  '本机已安装 @devflow-core/dsh-devflow 插件（DevFlow agent preset 分发）：新建会话的预设选择器中可选「DevFlow 2.0 (Anchored)」（两阶段锚定 + Code Mode）。插件启动时把 devflow-2 预设、devflow-* skills、devflow*.toml 命令与 devflow-*.js 验证脚本同步到 ~/.dsh/（.agent-presets/skills/commands/scripts）；冲突策略为 devflow-* 权威覆盖（字节相同跳过），非 devflow 资产永不触碰；升级插件后重启即自动更新。用户提到「DevFlow / devflow-2 / 锚定模式」时即指本插件，请据此协作。'
+  '本机已安装 @devflow-core/dsh-devflow 插件（DevFlow agent preset 分发）：新建会话的预设选择器中可选「DevFlow 2.0」（两阶段锚定 + Code Mode）。插件启动时把 devflow-2 预设、devflow-* skills、devflow*.toml 命令与 devflow-*.js 验证脚本同步到 ~/.dsh/（.agent-presets/skills/commands/scripts）；冲突策略为 devflow-* 权威覆盖（字节相同跳过），非 devflow 资产永不触碰；升级插件后重启即自动更新。用户提到「DevFlow / devflow-2 / 锚定模式」时即指本插件，请据此协作。'
 
 /**
  * Mount the plugin: sync bundled DevFlow assets into the harness-home

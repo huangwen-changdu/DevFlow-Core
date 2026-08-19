@@ -1,4 +1,4 @@
-# DevFlow 2.0 (Anchored) — DeepSeek Harness Agent Preset
+# DevFlow 2.0 — DeepSeek Harness Agent Preset
 
 A DSH agent preset that anchors the FIRST model request on the Minimal
 surface, then promotes into a full DevFlow session: Code Mode (PTC) on the
@@ -19,7 +19,7 @@ wire, the complete DevFlow persona, and the DevFlow lifecycle guaranteed.
   `xiaobright/dsh-anchored-standard`, MIT, extended by `dsh-liangshen`),
   with a `phase1Persona` swap so the DevFlow persona only appears after
   promotion.
-- `preset.yml` — picker metadata (name: DevFlow 2.0 (Anchored)).
+- `preset.yml` — picker metadata (name: DevFlow 2.0).
 
 Skills are NOT bundled: the preset's `skill-filesystem` row uses the default
 user root (`$DSH_HOME/skills`), which is exactly where `npm run install:user`
@@ -46,7 +46,7 @@ cp dsh/agent-presets/devflow-2/NOTICE                ~/.dsh/.agent-presets/devfl
 
 ## Use
 
-Start a new session in the web UI and pick **DevFlow 2.0 (Anchored)** in the
+Start a new session in the web UI and pick **DevFlow 2.0** in the
 preset picker. The roster may need a refresh or restart to show a newly added
 preset. Existing sessions keep their old phase; the two-phase behavior applies
 to new sessions.
