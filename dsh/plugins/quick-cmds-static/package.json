@@ -1,8 +1,9 @@
 {
   "name": "@devflow-core/dsh-client-quick-cmds",
-  "version": "0.1.0",
-  "description": "DevFlow 快捷命令按钮（静态客户端插件）：输入框上方一键发送斜杠命令，支持自定义与 localStorage 持久化。",
+  "version": "0.2.0",
+  "description": "DevFlow 快捷命令按钮（DSH 客户端插件）：输入框上方一键发送斜杠命令，支持自定义与 localStorage 持久化。一条 dsh plugin add 安装。",
   "type": "module",
+  "license": "MIT",
   "main": "./lib/index.js",
   "exports": {
     ".": "./lib/index.js",
@@ -12,9 +13,14 @@
   "dsh": {
     "client": {
       "platform": "web"
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
     }
   },
   "files": [
-    "lib"
+    "lib",
+    "cordis.patch.yml",
+    "README.md"
   ]
 }

@@ -242,7 +242,7 @@ unknown tool "bash": only `run_code` is callable directly — call `bash` from i
 
 ## 附：本机当前插件清单（2026-08-19 状态）
 
-- **独立插件**：@liustack/modlens（3.20.0）、dsh-browser、dsh-chat-import（0.6.1）、dsh-message-edit、dsh-notification、dsh-open-in-vscode、@linxin666/dsh-web-ui-all（0.2.0 全家桶，含内置 dsh-better-sidebar 默认右面板）
+- **独立插件**：@liustack/modlens（3.20.0）、dsh-browser、dsh-chat-import（0.6.1）、dsh-message-edit、dsh-notification、dsh-open-in-vscode、@linxin666/dsh-web-ui-all（0.2.0 全家桶，含内置 dsh-better-sidebar 默认右面板）、@devflow-core/dsh-devflow（DevFlow 预设/技能/命令分发，`dsh plugin add @devflow-core/dsh-devflow`）、@devflow-core/dsh-client-quick-cmds（快捷命令按钮，0.2.0 起为插件包形态，本机为 0.1.0 手工版）
 - **Agent 预设状态（Windows）**：devflow（源最新，win32 用 pwsh）/ anchored-standard（custom-bash）/ devflow-2（源 + Windows 适配 + Code Mode）/ liangshen（线上原版 0.2.0，官方 Windows 适配 + Code Mode）；详见 7.1.1
 - **手工补丁**：禁用 ui-dsh-aionui-panel
 - **全局补丁**：dsh-skin managed（10 皮肤默认禁用）

@@ -16,25 +16,25 @@
 
 ## 安装方式（两种，推荐静态版）
 
-### 方式一：静态版（推荐）— 默认加载，重启自动恢复
+### 方式一：静态插件包（推荐）— 一条命令安装，重启自动恢复
 
-静态插件随 DSH 启动**自动加载**，无需手动安装/重装，重启后按钮自动出现：
+`@devflow-core/dsh-client-quick-cmds` 0.2.0 起是标准 DSH 插件包：一条命令安装、
+随 DSH 启动**自动默认加载**，无需手动复制/改 patch，重启后按钮自动出现：
 
-1. 把 `dsh/plugins/quick-cmds-static/` 包装入 profile 的 node_modules：
-   ```powershell
-   $target = "$env:USERPROFILE\.dsh\profiles\node_modules\@devflow-core"
-   New-Item -ItemType Directory -Force -Path $target | Out-Null
-   Copy-Item -Recurse -Force dsh\plugins\quick-cmds-static $target\dsh-client-quick-cmds
-   ```
-2. 在 `$env:USERPROFILE\.dsh\profiles\web\cordis.patch.yml` 注册组合行：
-   ```yaml
-   - insert:
-       - id: ui-quick-cmds
-         name: '@devflow-core/dsh-client-quick-cmds'
-   ```
-3. 重启 DSH。之后**每次启动 DSH 都会默认加载**该插件，无需任何操作。
+```powershell
+npx @deepseek-ai/dsh plugin --profile web add @devflow-core/dsh-client-quick-cmds
+```
 
-详细说明见 [`../quick-cmds-static/README.md`](../quick-cmds-static/README.md)。
+装完**必须重启 web**（Ctrl+C → 重新 `npx @deepseek-ai/dsh web`）才生效。
+
+- 仓库已推送 GitHub 时也可不经 npm registry 直装：
+  `npx @deepseek-ai/dsh plugin --profile web add github:huangwen-changdu/DevFlow-Core#path:dsh/plugins/quick-cmds-static`
+- **0.1.0 手工版（复制目录 + 手改 cordis.patch.yml）不能与插件包混装**：升级前先删除
+  `~/.dsh/profiles/web/cordis.patch.yml` 里的 `ui-quick-cmds` insert 块和
+  `~/.dsh/profiles/node_modules/@devflow-core/dsh-client-quick-cmds/` 目录，再执行安装命令
+  （已配置的按钮存 localStorage，跨版本保留）
+
+详细说明（含卸载、维护者发布流程）见 [`../quick-cmds-static/README.md`](../quick-cmds-static/README.md)。
 
 ### 方式二：动态版（让 AI 安装，重启需重装）
 
