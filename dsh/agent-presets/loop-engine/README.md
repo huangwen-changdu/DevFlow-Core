@@ -7,6 +7,7 @@
 - 两阶段开场（沿用 devflow-2 / 锚定纪律）：首个请求只暴露 Minimal 锚定（一行 persona + 最小工具对），锚定门控通过后晋升为完整的**循环工程师 persona**，晋升后保持 **native 工具面**（bash 直接可用，不走 PTC run_code）。
 - 循环协议：`loop-engineering` skill（单一来源全局 `~/.dsh/skills/loop-engineering/`，由插件 / install:user 同步，随 preset 不重复打包）——循环定义六要素、每轮五步纪律、状态文件 `loop/loop-state.md`（含决策日志）、空转 blocked 保护、收尾报告。
 - 循环隔离：循环激活期间，工作区规则文件与 DevFlow 生命周期要求（审批门/Brainstorm/Plan）不参与循环决策；预算、停止条件、空转保护与平台安全始终生效；产出规范（风格/命名/约定）仍适用；循环结束恢复正常。
+- 模型自主闭环（四件套）：循环定义确认后，定义内决策全归模型——子目标分解、路线图、收尾对抗轮、失败卡沉淀与召回、受阻换策略，人只写循环定义与随时打断；定义边界（目标/范围/停止条件/预算变化）之外才停下来问人。
 - 三个内置模板：修 bug 到测试绿 / 实现功能到测试绿 / 通用任务（`~/.dsh/skills/loop-engineering/templates/`）。
 - 零新插件：bootstrap 与工具面全部沿用 devflow-2 / standard，循环机制复用 goal / todo_write / ask_user / subagent 等 DSH 原语。
 
@@ -54,3 +55,4 @@ npm run install:user -- --home ~/.dsh --check
 - 循环消耗 API 额度：轮次预算请按任务大小设置（demo 建议 ≤8 轮）；空转保护在连续 2 轮无推进时自动 blocked。
 - Windows：phase-1 bash 走 `custom-bash.mjs`（Git Bash 推断）；PTY 不可用时锚定阶段文件工具仍可用；若 `git` 不在 PATH，在组合文件 custom-bash 行显式配置 `bashPath`。
 - 循环状态写入工作区 `loop/loop-state.md`（默认），与任务文件同目录。
+- 失败卡目录 `loop/learned/`：循环收尾由模型自动沉淀根因-修复模式卡（随项目 git 提交）；每个循环开头自动扫卡召回。
