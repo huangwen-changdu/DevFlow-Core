@@ -1,8 +1,9 @@
 // demo/test.js — demo 循环的停止条件判据。
-// 断言 subtract(2,1) === 1：修复前（bug 返回 2）失败、退出码 1；
-// 修复后通过、退出码 0。
+// 覆盖：subtract（曾为故意 bug，本循环修复）、multiply、divide 两态（正常除 + 除零抛错）。
 const assert = require('assert');
-const { subtract, multiply } = require('./calc.js');
-assert.strictEqual(subtract(2, 1), 1); // 修复前失败，修复后通过
-assert.strictEqual(multiply(3, 4), 12); // multiply 断言：修复前失败（函数不存在），实现后通过
+const { subtract, multiply, divide } = require('./calc.js');
+assert.strictEqual(subtract(2, 1), 1); // 减法：2 - 1 === 1
+assert.strictEqual(multiply(3, 4), 12); // 乘法：3 * 4 === 12
+assert.strictEqual(divide(6, 3), 2); // 除法正常：6 / 3 === 2
+assert.throws(() => divide(1, 0), /zero/); // 除零抛出错误
 console.log('demo test passed');

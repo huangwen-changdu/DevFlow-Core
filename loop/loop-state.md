@@ -1,4 +1,60 @@
-# Loop State — 修复 demo/calc.js 的 subtract 减法问题
+# Loop State — demo/calc.js 实现 divide（除零抛错）
+
+## 循环定义（当前循环，用户直接下发版）
+- 目标: 在 demo/calc.js 中实现 divide 函数（除数非零正常除、除零抛出错误），demo/test.js 覆盖两种情况
+- 停止条件: `node demo/test.js` 退出码 0 且 divide 断言全部通过
+- 轮次预算: 10（demo 规模小功能，实际用 1）
+- 产出物: loop/loop-state.md
+- 检查点: 无（全自动，可随时打断）
+- 模板: implement-feature-to-green
+- 规模自判: 小任务（单文件单函数 + 测试两断言，预算 ≤10），免路线图与子目标分解，直接每轮纪律
+
+## 轮次日志
+
+### R1
+决策: 先复现拿 RED 基线证据——运行停止条件命令记录退出码，同时读 calc.js/test.js 现状与 git 状态，判断 divide 是否已存在、测试当前哪条断言失败。
+动作:
+1. `node demo/test.js` → `AssertionError: 3 !== 1`（subtract 断言失败），退出码 **1**（RED 起点；上一循环刻意恢复的 subtract 故意 bug 仍在）
+2. 读 demo/calc.js / demo/test.js → calc.js 无 divide 函数，module.exports 无 divide；test.js 无 divide 断言
+3. git status → demo/ 无未提交改动（本循环改动前的干净基线）；工作区大量无关改动（dsh/、skills/、.copilot/ 的 loop-engine 演进），不在本循环范围，不触碰
+4. 扫 loop/learned/ → 不存在，无失败卡可召回
+证据:
+- RED 基线: `node demo/test.js` 退出码 **1**（subtract 3 !== 1）
+- divide 不存在: calc.js 无 divide，exports 无 divide，test.js 无 divide 断言
+结论: 需要实现 divide（正常除 + 除零抛错）并加两断言；同时停止条件要求整份 test.js 退出码 0，而 subtract 故意 bug 会拖住套件——修复 subtract（a + b → a - b）是达成停止条件的最小必要动作（保留既有断言不改测试语义）。
+
+### R2
+决策: 一次小步完成实现与测试：calc.js 加 divide（b === 0 抛 Error，否则返回 a / b）并导出；test.js 加 divide 正常除断言（divide(6,3) === 2）与除零抛错断言（assert.throws divide(1,0)）；顺带把 subtract 修复为 a - b（见 R1 决策，停止条件必需）。
+动作: 修改 demo/calc.js（新增 divide + 修复 subtract + 更新头部注释与导出）、demo/test.js（新增两条 divide 断言）。
+证据: `node demo/test.js` → `demo test passed`，退出码 **0**；divide 两条断言与既有 subtract/multiply 断言全部通过。
+结论: 停止条件达成（exit 0 + divide 断言全过）。
+
+### R3（收尾对抗轮）
+决策: 停止条件通过后换批评者角色自查，再判达成。
+动作与检查:
+- ① 最可能错的地方: 除零检查 `b === 0` 是否覆盖 `-0`？JS 中 `-0 === 0` 为 true，`divide(1, -0)` 也会抛错——符合"除零抛错"语义，无问题；未引入 NaN/Infinity 分支（`0/0` 在 b===0 时已被拦截）。
+- ② 断言真的覆盖需求吗: 正常除 divide(6,3)===2 ✓；除零抛错 assert.throws(divide(1,0), /zero/) ✓——需求两种情况全覆盖。
+- ③ 有没有副作用破坏别的: add/subtract/multiply 断言仍通过；subtract 修复只影响其自身（3!==1 变 2===1... 即 1===1 通过），无其他调用方。
+- ④ 有没有更小的改法: 无——divide 单函数两分支即最小实现；subtract 一行修复即最小。
+- ⑤ 过期注释与文档: calc.js 头部注释已同步更新（subtract 已修复 + divide 新增说明）；demo/TASK.md 仍是旧任务（修复 subtract），与本循环不一致——**不在本循环定义范围**（定义只要求产出 loop/loop-state.md），不擅自修改，列入收尾报告建议。
+证据: 对抗轮未发现需追加修复的真问题。
+结论: **达成**。判 PASS。
+
+## 决策日志
+- R1: 先复现拿 RED 证据再动手；识别"停止条件要求整份套件 exit 0，但 subtract 故意 bug 拖 RED"的隐含约束，把修复 subtract 作为达成停止条件的最小必要动作，而非删改既有断言。
+- R2: 实现与测试一次小步完成（小任务无需拆子目标）。
+- R3: 对抗轮重点查 -0/NaN 边界与断言覆盖，未发现真问题。
+
+## 当前状态
+**已达成**：停止条件（`node demo/test.js` 退出码 0 + divide 断言全过）在 R2 满足，R3 对抗轮通过。
+变更: demo/calc.js（新增 divide + 修复 subtract + 更新注释）、demo/test.js（新增 divide 两断言）。
+遗留发现（定义范围外，建议用户决策）: demo/TASK.md 描述的是旧任务（修复 subtract），未随本循环更新；如需保持 demo 场景文档同步可另行处理。
+
+---
+
+## 历史（旧循环，仅供追溯）
+
+### 旧循环: 修复 subtract 减法问题
 
 ## 循环定义（2026 新循环，用户确认版）
 - 目标: 复现 demo/calc.js 中 subtract 的减法问题并修复，使减法语义正确（subtract(2,1) === 1），同时保证 test.js 中 multiply 断言也通过
