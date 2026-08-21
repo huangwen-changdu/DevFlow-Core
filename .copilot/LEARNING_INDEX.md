@@ -21,3 +21,5 @@ Read this index first. Only read a card when its trigger and scope match the cur
 | [Preset UI Boundary](cards/preset-ui-boundary.md) | 给 preset 加 UI, 固化插件, 常驻看板, agent preset 界面, 动态插件刷新后消失 | project | 0.6 |
 | [DSH Round-Based Long Task Execution](cards/dsh-round-based-long-task.md) | DSH 长任务, subagent 10 分钟限制, 子代理超时, 分轮执行, round-based, 主代理汇总 | project | 0.5 |
 | [DSH Plugin Preset Distribution](cards/dsh-plugin-preset-distribution.md) | DSH 插件分发 agent preset, dsh plugin add, bundle patch, preset 同步, 插件打包 skills, 模拟插件 apply, 测试同步函数, 客户端插件打包, 纯 client 插件 bundle 挂载, quick-cmds | project | 0.5 |
+| [DSH Preset 派生与挂载校验闭环](cards/dsh-preset-derive-mount-validate.md) | 新建/派生 DSH agent preset, agentPresets.standingKeyFor, preset 挂载校验, loop-engine, preset 从已有基底拷贝 | project | 0.4 |
+| [PowerShell UTF-8 显示乱码不等于文件损坏](cards/pwsh-utf8-display-mojibake.md) | pwsh Get-Content 中文乱码, PowerShell 显示乱码, UTF-8 文件校验, 哈希对比文件, CJK 文件内容检查 | global | 0.4 |

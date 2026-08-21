@@ -1,0 +1,11 @@
+# @devflow-core/dsh-loop-engine bundle patch: inserts the host plugin row into
+# the web profile roster. Applied as a profile bundle layer (the `dsh.bundle.patch`
+# manifest field) over dsh-base; activate with
+# `dsh plugin --profile web add @devflow-core/dsh-loop-engine`.
+#
+# The row is a bare plugin by package name: the node half (exports ".") runs
+# in the host process and syncs the bundled Loop Engine assets (preset
+# loop-engine, skill loop-engineering) into ~/.dsh on startup. No browser half.
+- insert:
+    - id: loop-engine
+      name: '@devflow-core/dsh-loop-engine'

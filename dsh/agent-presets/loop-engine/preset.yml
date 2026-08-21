@@ -1,0 +1,3 @@
+name: Loop Engine 循环工程
+description: 循环工程（Loop Engineering）：两阶段锚定开场，晋升后为循环工程师 persona——你写循环定义（目标/停止条件/轮次预算/产出物），或只描述需求由 agent 草拟定义供你确认，确认后会话自循环自动多轮推进，agent 每轮自己决定下一步；内置修 bug 到绿、实现功能到绿、通用任务三类循环模板。
+order: 7

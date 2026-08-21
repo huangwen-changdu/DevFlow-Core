@@ -1,0 +1,4 @@
+agent.cordis.yml 改编自 DeepSeek Harness 内置 Minimal/Standard preset 与 dsh-liangshen（MIT）。
+tool-bootstrap.mjs 来自 https://github.com/xiaobright/dsh-anchored-standard（MIT），
+经 dsh-liangshen 扩展后适配 devflow-2（phase1Persona 人设切换）。
+原始 DeepSeek 版权和 MIT 许可声明见开源仓库。
