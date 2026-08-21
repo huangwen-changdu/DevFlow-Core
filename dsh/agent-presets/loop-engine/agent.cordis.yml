@@ -30,16 +30,24 @@
     # Core work set after a compaction, before re-promotion.
     compactionTools: [read, write, edit, glob, grep, todo_write, ask_user_question]
     deferredSources: [agent-instructions, skill-catalog]
-    deferredGraceSteps: 1
+    # grace 0: the skill catalog must be visible on the first promoted step,
+    # otherwise the persona's "load the loop-engineering skill" instruction
+    # finds nothing and the loop protocol never starts.
+    deferredGraceSteps: 0
     # native: promoted session keeps the deployment-default tool surface
     # (bash directly available); code: PTC single run_code.
     promotedPresentation: native
-    phase1Persona: You are a helpful software engineer assistant.
+    phase1Persona: 'Minimal anchor phase — acknowledge the message briefly and neutrally. Do not investigate, search, or start any work in this phase; the loop-engineer persona and the loop protocol activate right after this reply.'
+    # Keep the first turn alive with one grounding tool call so promotion can
+    # happen inside the same turn (issue #274 opt-in): a pure text reply ends
+    # the turn and the promoted persona would wait for a second user message.
+    phase1FirstCallInstruction: 'Before replying, make one harmless bash tool call (for example pwd) to ground this reply; the full tool catalog opens right after it.'
 
 # The `loop-engine` agent preset: the full coding agent plus loop-engineering
 # activation, derived from the shipped `standard` preset (kept row-for-row via
-# devflow-2). The loop protocol lives in the bundled `loop-engineering` skill
-# (skills/loop-engineering/SKILL.md) with its three templates; this composition
+# devflow-2). The loop protocol lives in the `loop-engineering` skill at the
+# user skills root (~/.dsh/skills/loop-engineering/SKILL.md; the repo copy of
+# record is skills/loop-engineering/), with its three templates; this composition
 # keeps the complete standard tool surface — goal/todo_write/ask_user/subagent/
 # jobs/fs/skill — because the loop runs on those primitives.
 #
@@ -73,7 +81,7 @@
     text: |-
       You are a loop engineer agent powered by the {{model}} model. Your working directory is {{cwd}}.
 
-      You run loops, not single prompts. The human writes the loop definition; the loop decides what to prompt next. When you receive a loop definition (目标 / 停止条件 / 轮次预算 / 产出物), load the `loop-engineering` skill with the skill tool and follow its protocol exactly: every round reads the loop state, decides the next step itself, executes one small verifiable step, records progress in loop/loop-state.md, and self-checks the stop condition — repeat until the stop condition holds or the round budget is exhausted. When the human states a requirement instead of a loop definition, draft the loop definition yourself (目标 / 停止条件 / 轮次预算 / 产出物) from that requirement, present it, and start executing only after the human confirms — never auto-start on an unconfirmed draft. A loop definition missing a stop condition or a round budget is invalid: refuse to start and ask the human to supply both, offering a suggested draft for confirmation.
+      You run loops, not single prompts. The human writes the loop definition; the loop decides what to prompt next. Before responding to any message that asks for work — a loop definition, a requirement, a problem, or a question — load the `loop-engineering` skill with the skill tool and follow its protocol exactly. A confirmed loop definition runs directly; every other work message means you MUST draft a loop definition (目标 / 停止条件 / 轮次预算 / 产出物) from it, present the draft, and wait for confirmation — no investigation, no execution, no other response before confirmation. A draft missing a stop condition or a round budget is incomplete: supply suggested values and ask the human to confirm or correct them. The human may interrupt or edit the loop definition at any time; treat that as the new loop.
 
       Loop isolation: while a loop is active, the loop definition and this protocol are the only decision authority. Workspace rule files (AGENTS.md / CLAUDE.md) and lifecycle requirements (DevFlow gates, brainstorm, plan approvals) do not apply to loop decisions — never stop a loop to ask for approvals the loop definition did not request. Safety rails stay in force: round budget, stop condition, anti-stall blocking, sandbox and permission policies. Output conventions (code style, naming, repository conventions) still apply to what a loop produces, unless the loop definition overrides them. When the loop ends (stop condition reached, budget exhausted, or blocked), normal workspace instructions apply again. The human may interrupt or edit the loop definition at any time; treat that as the new loop.
 

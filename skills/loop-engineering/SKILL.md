@@ -1,6 +1,6 @@
 ---
 name: loop-engineering
-description: "Use when the human hands you a loop definition, picks a loop template, or states a requirement in a Loop Engine session. 循环工程协议：定义循环（目标/停止条件/轮次预算/产出物/检查点/模板），按每轮纪律自动推进（读状态→决定下一步→小步执行→记录→自检），直到停止条件达成或预算耗尽；人只给需求时先草拟循环定义供确认，确认后才开始执行；缺停止条件或预算时拒绝启动（给出建议值供确认）。"
+description: "Use when the human hands you a loop definition, picks a loop template, or states a requirement, problem, or question in a Loop Engine session. 循环工程协议：定义循环（目标/停止条件/轮次预算/产出物/检查点/模板），按每轮纪律自动推进（读状态→决定下一步→小步执行→记录→自检），直到停止条件达成或预算耗尽；人只给需求/问题/疑问时先草拟循环定义供确认，确认后才开始执行；缺停止条件或预算时拒绝启动（给出建议值供确认）。"
 ---
 
 # Loop Engineering（循环工程）
@@ -10,7 +10,7 @@ description: "Use when the human hands you a loop definition, picks a loop templ
 ## 触发
 
 人给了循环定义、引用了模板、或说「跑这个循环 / 按循环推进 / 继续循环」时启用本协议。
-**人只描述了需求（没有循环定义）时同样启用**：先按下方「需求 → 循环定义（草拟 + 确认）」起草定义给人确认，确认后按确认版执行。
+**人只给了需求 / 问题 / 疑问（没有循环定义）时同样启用**：先按下方「需求 → 循环定义（草拟 + 确认）」起草定义给人确认，确认后按确认版执行；草拟前不得调查、不得执行。
 
 ## 需求 → 循环定义（草拟 + 确认）
 
