@@ -24,3 +24,4 @@ Read this index first. Only read a card when its trigger and scope match the cur
 | [DSH Preset 派生与挂载校验闭环](cards/dsh-preset-derive-mount-validate.md) | 新建/派生 DSH agent preset, agentPresets.standingKeyFor, preset 挂载校验, loop-engine, preset 从已有基底拷贝 | project | 0.4 |
 | [PowerShell UTF-8 显示乱码不等于文件损坏](cards/pwsh-utf8-display-mojibake.md) | pwsh Get-Content 中文乱码, PowerShell 显示乱码, UTF-8 文件校验, 哈希对比文件, CJK 文件内容检查 | global | 0.4 |
 | [DSH Loop Preset 入口行为迭代教训](cards/dsh-preset-loop-entry-iterations.md) | loop-engine preset 行为不符合预期, 晋升后不草拟定义, 首问被裸答, 会话就停了, 改 preset 后重启修改丢失, phase1Persona 挂载失败, 双源链 | project | 0.7 |
+| [DSH 插件仓库更新必须同步发布 npm](cards/dsh-plugin-repo-change-publish.md) | 改动 dsh/plugins 插件源码或 assets, 插件分发的 preset/skill 变更, dsh 插件有更新, loop-engine/dsh-devflow 资产变更 | project | 0.6 |

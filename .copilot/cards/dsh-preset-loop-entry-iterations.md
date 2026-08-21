@@ -5,5 +5,5 @@
 - Next action: Next time 改 loop-engine（或任何插件分发的 DSH preset），first 确认权威源位置（dsh/agent-presets/<id>/ + 仓库根 skills/）并跑 sync-assets + 同步运行时 + standingKeyFor；Next time 设计协议入口，first 用「宽触发 + 单动作 load skill」而非窄触发多条款；Next time 改 bootstrap 相关配置，first 记住 phase1FirstCallInstruction 保回合、引号包 plain scalar 值；do not 在未确认外部修改归属时覆盖文件。
 - Scope: project
 - Related: dsh/agent-presets/loop-engine/、skills/loop-engineering/SKILL.md、dsh/plugins/dsh-loop-engine/（assets + scripts/sync-assets.js + lib/sync.js）、.copilot/cards/dsh-preset-derive-mount-validate.md
-- Evidence: 三次用户实测失败→修复闭环：首问裸答（触发面窄）→ 调查不草拟（多段软规则失效）→ 「就停了」（回合边界，phase1FirstCallInstruction 修复后用户确认三步全对）；standingKeyFor 抓出 phase1Persona YAML 冒号错误；双源哈希一致性验证（权威源/插件镜像/运行时三处 True）
+- Evidence: 三次用户实测失败→修复闭环：首问裸答（触发面窄）→ 调查不草拟（多段软规则失效）→ 「就停了」（回合边界，phase1FirstCallInstruction 修复后用户确认三步全对）；standingKeyFor 抓出 phase1Persona YAML 冒号错误；双源哈希一致性验证（权威源/插件镜像/运行时三处 True）；四件套行为验收：分级自判（预算 10 单函数任务判小、免路线图，依据入状态文件）、对抗轮（-0/NaN/断言覆盖/副作用/过期文档五查）、失败卡四要素落盘、开头扫卡召回、定义内自决（顺修 subtract）与定义外停下（TASK.md 不擅改）全部按协议运转；路线图/子目标链路径未触发（需真正多步骤任务验证）
 - Invalidation: bootstrap 升级改变晋升机制或 phase1FirstCallInstruction 语义、dsh-loop-engine 插件同步策略改变后本卡过时
