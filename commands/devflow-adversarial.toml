@@ -7,5 +7,6 @@ Identify the review target from the request and available task materials. Ask on
 This command is manual and independent: it does not require, read, modify, or hand off to devflow-prove, PUA, Build, Learn, or any completion state.
 Cover requirement coverage, reachability, boundaries and regressions, evidence strength, and user-visible outcome.
 Report only the skill's required findings, five-angle coverage, context limitations, and suggested manual next action.
+On DeepSeek Harness (DSH), dispatch a fresh subagent and run the review in bounded rounds, one round per review angle; the subagent returns each round's findings and the main agent aggregates them into the final report.
 Do not edit files, invoke another skill, create a task, or declare global task status.
 '''

@@ -1,11 +1,13 @@
 ---
 name: devflow-adversarial
-description: "Use when a user explicitly asks for an independent deep adversarial review, upgraded adversarial review, red-team review, 对抗审查, 升级版对抗审查, or a five-angle challenge of current work. It can run at any task stage and does not read, require, modify, or hand off to devflow-prove, PUA, Build, Learn, or any completion state."
+description: "Use when a user explicitly asks for an independent deep adversarial review, upgraded adversarial review, red-team review, 对抗审查, 升级版对抗审查, 红队审查, 五角度挑战, or a five-angle challenge of current work. It can run at any task stage and does not read, require, modify, or hand off to devflow-prove, PUA, Build, Learn, or any completion state."
 ---
 
 # DevFlow Adversarial Review
 
 Run an independent, user-requested challenge of the current task materials. This skill does not declare global task status or perform work beyond review.
+
+Use this skill when the user asks to challenge whether the current result holds. When the user asks what is missing or uncertain instead, use `devflow-find-fault`.
 
 ## Entry Gate
 
@@ -14,7 +16,9 @@ Run an independent, user-requested challenge of the current task materials. This
 3. If the target is unclear, ask one smallest question to identify it.
 4. As an independent manual review, do not read, require, or alter `devflow-prove`, PUA, Build, Learn, or any lifecycle state.
 
-On DeepSeek Harness (DSH), run this review as a fresh `subagent` with no conversation seed so the challenge is genuinely independent of the main agent's reasoning; the subagent returns findings only and never declares lifecycle status, edits files, or invokes another skill.
+On DeepSeek Harness (DSH), dispatch a fresh `subagent` so the challenge stays independent of the main agent's reasoning. Call the `subagent` tool once with `run_in_background: false` and a complete standalone prompt that names the review target and the material paths, and instructs the subagent to read those materials and return evidence-backed findings (the subagent has no conversation seed and cannot see this conversation). Then run the review in bounded rounds, one review unit per round: after each round the subagent returns that unit's findings, you aggregate them and report progress, then continue the same subagent conversation with the `send_message` tool. After the final unit, assemble the complete `Required Output` below from the aggregated findings. The subagent returns findings only — it never declares lifecycle status, edits files, or invokes another skill. If a round returns nothing usable (timeout, truncation, or failure), record it under `Context limitations`, retry that unit once with a narrower instruction, and continue with the remaining units; never silently drop a unit.
+
+Review units: one of the five angles per round, five rounds in total.
 
 ## Five-Angle Review
 
@@ -37,6 +41,7 @@ Findings:
 - Critical: <finding or none>; evidence: <facts>; confidence: high/medium/low
 - Important: <finding or none>; evidence: <facts>; confidence: high/medium/low
 - Observation: <finding or none>; evidence: <facts>; confidence: high/medium/low
+Repeat one bullet per finding; order findings by severity, then confidence; write none when a level has no finding.
 Five-angle coverage:
 - Requirement coverage: <challenge and result>
 - Reachability: <challenge and result>

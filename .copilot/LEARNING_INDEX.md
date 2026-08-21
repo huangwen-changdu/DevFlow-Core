@@ -19,4 +19,5 @@ Read this index first. Only read a card when its trigger and scope match the cur
 | [DSH Dynamic Tool defineTool Contract](cards/dsh-definetool-contract.md) | defineTool, output.schema, value schema DSL, 动态插件工具, harness.defineTool 失败 | project | 0.5 |
 | [Vague Visual Feedback Ask Intent](cards/vague-visual-feedback-ask-intent.md) | 位置有歪, 看着别扭, 视觉反馈, UI 布局修正, 反复改布局, 模糊视觉诉求 | project | 0.5 |
 | [Preset UI Boundary](cards/preset-ui-boundary.md) | 给 preset 加 UI, 固化插件, 常驻看板, agent preset 界面, 动态插件刷新后消失 | project | 0.6 |
+| [DSH Round-Based Long Task Execution](cards/dsh-round-based-long-task.md) | DSH 长任务, subagent 10 分钟限制, 子代理超时, 分轮执行, round-based, 主代理汇总 | project | 0.5 |
 | [DSH Plugin Preset Distribution](cards/dsh-plugin-preset-distribution.md) | DSH 插件分发 agent preset, dsh plugin add, bundle patch, preset 同步, 插件打包 skills, 模拟插件 apply, 测试同步函数, 客户端插件打包, 纯 client 插件 bundle 挂载, quick-cmds | project | 0.5 |

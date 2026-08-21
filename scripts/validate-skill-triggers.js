@@ -18,6 +18,38 @@ function assertScenario(scenario) {
   }
 }
 
+/** Recursively returns absolute file paths under dir. */
+function filesUnder(dir) {
+  const out = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...filesUnder(full));
+    else out.push(full);
+  }
+  return out;
+}
+
+/** Fails loudly when a packaged dsh skill or command asset drifts from its repo-root source. */
+function assertPackagedAssetParity() {
+  const assetRoot = path.join(root, "dsh", "plugins", "dsh-devflow", "assets");
+  const skillDirs = fs.readdirSync(path.join(root, "skills")).filter((name) => name.startsWith("devflow-"));
+  for (const dir of skillDirs) {
+    const srcDir = path.join(root, "skills", dir);
+    for (const full of filesUnder(srcDir)) {
+      const rel = path.relative(srcDir, full);
+      const dst = path.join(assetRoot, "skills", dir, rel);
+      assert(fs.existsSync(dst) && fs.readFileSync(dst).equals(fs.readFileSync(full)),
+        `dsh packaged asset drifted from source: skills/${dir}/${rel} — re-run node dsh/plugins/dsh-devflow/scripts/sync-assets.js`);
+    }
+  }
+  for (const name of fs.readdirSync(path.join(root, "commands")).filter((n) => n.startsWith("devflow") && n.endsWith(".toml"))) {
+    const src = path.join(root, "commands", name);
+    const dst = path.join(assetRoot, "commands", name);
+    assert(fs.existsSync(dst) && fs.readFileSync(dst).equals(fs.readFileSync(src)),
+      `dsh packaged asset drifted from source: commands/${name} — re-run node dsh/plugins/dsh-devflow/scripts/sync-assets.js`);
+  }
+}
+
 const scenarios = [
   {
     name: "creative-work clarification",
@@ -227,8 +259,11 @@ for (const [command, owner] of [
   assert(read(command).includes(owner), `${command} must identify ${owner}`);
 }
 
+assertPackagedAssetParity();
+
 console.log("Skill Trigger Verification Report");
 console.log(`Scenario cases: ${scenarios.length}`);
 console.log("Command cases: 5");
 for (const scenario of scenarios) console.log(`- ${scenario.name}: ${scenario.route}`);
+console.log("Packaged asset parity: PASS");
 console.log("Judgment: PASS");

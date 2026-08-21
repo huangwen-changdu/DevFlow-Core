@@ -55,6 +55,8 @@
       "Must begin after the explicit review request without a separate confirmation prompt.",
       "Must ask one smallest question only when the review target is unclear.",
       "Must cover all five fixed dimensions: requirement coverage, reachability, boundaries and regressions, evidence strength, and user-visible outcome.",
+      "Must run on DSH in bounded rounds, one round per review angle, with the subagent returning each round's findings to the main agent for aggregation.",
+      "Must dispatch a fresh subagent.",
       "Must not read, require, modify, or hand off to `devflow-prove`, PUA, Build, Learn, or any completion state."
     ],
     "commandEvidence": ["Skill Trigger Verification Report"],
@@ -70,6 +72,8 @@
       "Route: Independent manual.",
       "Must answer biggest omission, unrecognized blind spot, and least certain point, plus every explicit user follow-up question.",
       "Each answer must separate facts, inference, and unknowns, then state confidence and a next step; findings must use `Critical`, `Important`, or `Observation` with evidence and context limitations.",
+      "Must run on DSH in bounded rounds, one round per question or unease-check block, with the subagent returning each round's findings to the main agent for aggregation.",
+      "Must dispatch a fresh subagent.",
       "Must not read, require, modify, or hand off to `devflow-prove`, PUA, Build, Learn, or any completion state."
     ],
     "commandEvidence": ["Skill Trigger Verification Report"],

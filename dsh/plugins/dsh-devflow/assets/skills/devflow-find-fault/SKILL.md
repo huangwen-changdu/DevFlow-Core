@@ -7,6 +7,8 @@ description: "Use when a user explicitly asks to find faults, identify the bigge
 
 Run an independent, user-requested critique of the current task materials. This skill identifies gaps and uncertainty without declaring global task status.
 
+Use this skill when the user asks what is missing, unrecognized, or uncertain. When the user asks a five-angle challenge of whether the result holds instead, use `devflow-adversarial`.
+
 ## Entry Gate
 
 1. Confirm the user explicitly requested find-fault review.
@@ -14,11 +16,15 @@ Run an independent, user-requested critique of the current task materials. This 
 3. Ask one smallest question when the target is unclear.
 4. As an independent manual review, do not read, require, or alter `devflow-prove`, PUA, Build, Learn, or any lifecycle state.
 
-On DeepSeek Harness (DSH), run this review as a fresh `subagent` with no conversation seed so the critique is genuinely independent of the main agent's reasoning; the subagent returns findings only and never declares lifecycle status, edits files, or invokes another skill.
+On DeepSeek Harness (DSH), dispatch a fresh `subagent` so the critique stays independent of the main agent's reasoning. Call the `subagent` tool once with `run_in_background: false` and a complete standalone prompt that names the review target and the material paths, and instructs the subagent to read those materials and return evidence-backed findings (the subagent has no conversation seed and cannot see this conversation). Then run the review in bounded rounds, one review unit per round: after each round the subagent returns that unit's findings, you aggregate them and report progress, then continue the same subagent conversation with the `send_message` tool. After the final unit, assemble the complete `Required Output` below from the aggregated findings. The subagent returns findings only — it never declares lifecycle status, edits files, or invokes another skill. If a round returns nothing usable (timeout, truncation, or failure), record it under `Context limitations`, retry that unit once with a narrower instruction, and continue with the remaining units; never silently drop a unit.
+
+Review units: one question per round — the three default questions and every user-supplied question — plus one final round for the unease check when the target contains implementation material.
 
 ## Post-Implementation Unease Check
 
 When target materials include an implemented feature, diff, or completion-ready result, also inspect whether the implementation has silently decided business behavior the user never confirmed. This check is for requirement-confidence gaps, not code quality or test coverage.
+
+When the target contains no implementation material (no diff, no new code, no completion-ready result), skip the unease check and report `Unease check: not applicable` with the reason; do not invent business decisions from requirements text alone.
 
 1. Compare explicit requirements, conversation evidence, acceptance criteria, and current behavior against the implementation.
 2. List every material decision with no direct confirmation, especially: ordering, filtering, defaults, empty states, pagination, permissions, state transitions, exceptions, retries, boundary inputs, and conflicting actor outcomes.
@@ -78,6 +84,7 @@ Findings:
 - Critical: <finding or none>; evidence: <facts>; confidence: high/medium/low
 - Important: <finding or none>; evidence: <facts>; confidence: high/medium/low
 - Observation: <finding or none>; evidence: <facts>; confidence: high/medium/low
+Repeat one bullet per finding; order findings by severity, then confidence; write none when a level has no finding.
 Context limitations: <unavailable material or none>
 Suggested next action: <manual action for the user, or none>
 ```
