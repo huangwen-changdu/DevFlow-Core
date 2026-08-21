@@ -37,11 +37,7 @@
     # native: promoted session keeps the deployment-default tool surface
     # (bash directly available); code: PTC single run_code.
     promotedPresentation: native
-    phase1Persona: 'Minimal anchor phase — acknowledge the message briefly and neutrally. Do not investigate, search, or start any work in this phase; the loop-engineer persona and the loop protocol activate right after this reply.'
-    # Keep the first turn alive with one grounding tool call so promotion can
-    # happen inside the same turn (issue #274 opt-in): a pure text reply ends
-    # the turn and the promoted persona would wait for a second user message.
-    phase1FirstCallInstruction: 'Before replying, make one harmless bash tool call (for example pwd) to ground this reply; the full tool catalog opens right after it.'
+    phase1Persona: You are a helpful software engineer assistant.
 
 # The `loop-engine` agent preset: the full coding agent plus loop-engineering
 # activation, derived from the shipped `standard` preset (kept row-for-row via
