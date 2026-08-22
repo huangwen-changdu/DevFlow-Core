@@ -10,7 +10,7 @@
 停止条件: `node 测试命令` 退出码 0 且全部断言通过
 轮次预算: 8
 规模评级: 模型自判（预算为线索；小任务免路线图与子目标链）
-产出物: loop/loop-state.md
+产出物: docs/loop/loop-state.md
 检查点: 无（可随时打断）
 ```
 
@@ -21,7 +21,7 @@
 目标: 修复 demo/calc.js 的 subtract，使减法正确
 停止条件: `node demo/test.js` 退出码 0
 轮次预算: 8
-产出物: loop/loop-state.md
+产出物: docs/loop/loop-state.md
 ```
 
 ## 规则

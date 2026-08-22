@@ -5,7 +5,7 @@
 ## What it is
 
 - 两阶段开场（沿用 devflow-2 / 锚定纪律）：首个请求只暴露 Minimal 锚定（一行 persona + 最小工具对），锚定门控通过后晋升为完整的**循环工程师 persona**，晋升后保持 **native 工具面**（bash 直接可用，不走 PTC run_code）。
-- 循环协议：`loop-engineering` skill（单一来源全局 `~/.dsh/skills/loop-engineering/`，由插件 / install:user 同步，随 preset 不重复打包）——循环定义六要素、每轮五步纪律、状态文件 `loop/loop-state.md`（含决策日志）、空转 blocked 保护、收尾报告。
+- 循环协议：`loop-engineering` skill（单一来源全局 `~/.dsh/skills/loop-engineering/`，由插件 / install:user 同步，随 preset 不重复打包）——循环定义六要素、每轮五步纪律、状态文件 `docs/loop/loop-state.md`（含决策日志）、空转 blocked 保护、收尾报告。
 - 循环隔离：循环激活期间，工作区规则文件与 DevFlow 生命周期要求（审批门/Brainstorm/Plan）不参与循环决策；预算、停止条件、空转保护与平台安全始终生效；产出规范（风格/命名/约定）仍适用；循环结束恢复正常。
 - 模型自主闭环（四件套）：循环定义确认后，定义内决策全归模型——子目标分解、路线图、收尾对抗轮、失败卡沉淀与召回、受阻换策略，人只写循环定义与随时打断；定义边界（目标/范围/停止条件/预算变化）之外才停下来问人。
 - 三个内置模板：修 bug 到测试绿 / 实现功能到测试绿 / 通用任务（`~/.dsh/skills/loop-engineering/templates/`）。
@@ -39,7 +39,7 @@ npm run install:user -- --home ~/.dsh --check
 目标: 修复 demo/calc.js 的 subtract，使减法正确
 停止条件: `node demo/test.js` 退出码 0
 轮次预算: 8
-产出物: loop/loop-state.md
+产出物: docs/loop/loop-state.md
 ```
 
 3. 循环自动多轮推进；随时可发新消息打断或改定义。收尾时输出结果、轮次统计与证据路径。
@@ -54,5 +54,6 @@ npm run install:user -- --home ~/.dsh --check
 - `~/.dsh/.agent-presets/loop-engine/` 完全由插件管理：插件升级重建时无需手工重装，install:user 可作手动路径（二者并存不冲突）。
 - 循环消耗 API 额度：轮次预算请按任务大小设置（demo 建议 ≤8 轮）；空转保护在连续 2 轮无推进时自动 blocked。
 - Windows：phase-1 bash 走 `custom-bash.mjs`（Git Bash 推断）；PTY 不可用时锚定阶段文件工具仍可用；若 `git` 不在 PATH，在组合文件 custom-bash 行显式配置 `bashPath`。
-- 循环状态写入工作区 `loop/loop-state.md`（默认），与任务文件同目录。
-- 失败卡目录 `loop/learned/`：循环收尾由模型自动沉淀根因-修复模式卡（随项目 git 提交）；每个循环开头自动扫卡召回。
+- 循环状态写入工作区 `docs/loop/loop-state.md`（默认），与任务文件同目录。
+- 失败卡目录 `docs/loop/learned/`：循环收尾由模型自动沉淀根因-修复模式卡（随项目 git 提交）；每个循环开头自动扫卡召回。
+- 文档沉淀：每个循环收尾给新/改文档加 `> 摘要:` 头并同步 `docs/loop/INDEX.md` 索引，AI 后续会话先读索引定位、再读摘要行确认、最后读正文。

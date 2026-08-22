@@ -10,7 +10,7 @@
 停止条件: `node 测试命令` 退出码 0 且覆盖「验收点」的断言全部通过
 轮次预算: 8
 规模评级: 模型自判（预算为线索；小任务免路线图与子目标链）
-产出物: loop/loop-state.md
+产出物: docs/loop/loop-state.md
 检查点: 每 2 轮确认一次（可选；删除该行即全自动）
 ```
 
@@ -21,7 +21,7 @@
 目标: 在 demo/calc.js 中实现 multiply，乘法的输入输出正确
 停止条件: `node demo/test.js` 退出码 0 且 multiply 断言全部通过
 轮次预算: 8
-产出物: loop/loop-state.md
+产出物: docs/loop/loop-state.md
 ```
 
 ## 规则

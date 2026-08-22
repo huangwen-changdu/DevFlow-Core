@@ -10,7 +10,7 @@
 停止条件: 「客观可检查判据：命令退出码 / 断言通过 / 文件内容 / 事实核对」
 轮次预算: 8
 规模评级: 模型自判（预算为线索；小任务免路线图与子目标链）
-产出物: loop/loop-state.md
+产出物: docs/loop/loop-state.md
 检查点: 无（可随时打断）
 ```
 
@@ -21,7 +21,7 @@
 目标: 汇总 docs/ 下所有 spec 文件的设计决策到 docs/SUMMARY.md
 停止条件: `node scripts/check-summary.js` 退出码 0 且 docs/SUMMARY.md 含全部 spec 标题
 轮次预算: 8
-产出物: loop/loop-state.md
+产出物: docs/loop/loop-state.md
 ```
 
 ## 规则

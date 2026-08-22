@@ -22,7 +22,7 @@
   config:
     shellTools: [bash]
     commonTools: [str_replace_editor]
-    messageSources: [user]
+    messageSources: [user, goal]
     anchorGate: true
     maxBootstrapSteps: 4
     promoteAfterFirstResponse: true
@@ -37,6 +37,9 @@
     # native: promoted session keeps the deployment-default tool surface
     # (bash directly available); code: PTC single run_code.
     promotedPresentation: native
+    # Aligned with liangshen 0.2.8 (issue #388): after promotion, replace the
+    # full-text AGENTS.md injection with one non-imperative reference hint.
+    instructionHint: true
     phase1Persona: You are a helpful software engineer assistant.
 
 # The `loop-engine` agent preset: the full coding agent plus loop-engineering
