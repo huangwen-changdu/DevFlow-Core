@@ -18,11 +18,11 @@ Turn an A/B `CUT_PASS`-bounded approved design or confirmed Spec into one review
 1. Read only source material, code, tests, and conventions relevant to the approved scope. Load `skills/devflow-spec/references/spec-plan-methods.md` and `skills/devflow-plan/references/plan-methods.md` before applying Plan Pack mechanics.
 2. Map exact affected file responsibilities once in `## File Structure` before writing tasks. Reuse existing modules and name the intended file operation.
 3. Perform bounded real investigation and record it as task-level `Prewalk`: actual `Execution Trace`, Current Handoff Facts, and only the unfinished `Remaining Structured Worklist`.
-4. Split independent deliverables into small, reviewable tasks. Each task should be understandable without referring to another task.
+4. Split independent deliverables into small, reviewable tasks. Each task should be understandable without referring to another task, and it carries its own complete execution spec（执行规范）— `Files`, `Change mechanics`, `Steps`, and `Verify` — so the executor edits directly from the task without re-reading the plan or the code for a pre-edit view（零 view）.
 5. Write the plan using the required header and task contract below.
 6. Self-review Cut Decision fidelity, source coverage, File Structure, Prewalk evidence, file-operation classifications, interface consistency, concrete steps, acceptance proof, and scope exclusions.
 7. Run `node scripts/devflow-plan.js <plan-file>` when the project-level checker exists. Otherwise resolve the user-level checker according to `core-methods.md` Script Path Resolution.
-8. **STOP — request user review.** On DSH, request review with the structured `ask_user_question` tool (single-select: approve / request changes). Revise and revalidate when requested. On approval, ask execution mode (single-select: `sequential` — the Build agent runs tasks in dependency order / `single-subagent` — the main agent only schedules: one subagent runs all tasks in dependency order / `fan-out` — independent tasks run as parallel subagents) and record it as the plan's optional `Execution mode` header. Then perform only a lightweight Cut-consistency review. An approved A/B Plan directly enters `devflow-build`; scope-drift facts return to `devflow-core`.
+8. **STOP — request user review.** On DSH, request review with the structured `ask_user_question` tool (single-select: approve / request changes). Revise and revalidate when requested. On approval, ask execution mode (single-select: `sequential` — the Build agent runs tasks in dependency order / `single-subagent` — the main agent only schedules: one subagent runs tasks one per round in dependency order / `fan-out` — independent tasks run as parallel subagents) and record it as the plan's optional `Execution mode` header. Then perform only a lightweight Cut-consistency review. An approved A/B Plan directly enters `devflow-build`; scope-drift facts return to `devflow-core`.
 
 Default landing is `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`, resolved from the target project root. Do not place implementation plans in `docs/features/` or `docs/specs/`.
 
@@ -55,6 +55,8 @@ Execution mode: sequential | single-subagent | fan-out (optional; ask and record
 Inherit `External Skills` from the Cut Decision unchanged; the Plan Pack carries the specialist role, expected evidence, and return facts into Build and Prove. When a specialist skill is declared, merge its core quality checks into the affected tasks' `Acceptance` and `Verify` fields — the Plan Pack is the only channel that carries external-skill quality requirements into Build and Prove. A declared skill never widens the Cut scope; if its recommendation exceeds the Cut Decision, return the scope-drift facts to `devflow-core`.
 
 `Execution mode` is not part of Cut scope and does not change the checker. It is asked at approval and recorded so Build knows how to run tasks: sequentially as the Build agent itself, through one delegated subagent while the main agent only schedules, or fan out independent tasks to parallel subagents.
+
+Each task's `Files`, `Change mechanics`, `Steps`, and `Verify` form the only execution basis（执行规范）handed to the executor: dispatch sends just these fields, and the executor edits directly from them without a pre-edit view of the plan document, the code, or the anchors. `Read-basis` / `Live anchors` remain the plan author's evidence record, not executor re-read instructions.
 
 ## Required Task Contract
 
@@ -90,7 +92,7 @@ Execution Trace:
 - Verified: <actual check> → <observed result; or "none yet">.
 
 Current Handoff Facts:
-- Target anchors: <current file, symbol, or range that Build minimally re-reads>.
+- Target anchors: <current file, symbol, or range the plan author verified (evidence record, not executor re-read instruction)>.
 - Nearby convention: <comparable inspected code and observed convention; or "no comparable code found">.
 - Direct path: <traced callers, collaborators, boundaries, affected tests; or "none">.
 - Current constraints: <observed contract, ordering, errors, compatibility; or "none">.
@@ -104,7 +106,7 @@ Remaining Structured Worklist:
   Done when: <fact proving this action is complete>.
 ```
 
-`File Structure` is one responsibility map, not a fixed architecture rule. For every non-trivial Code change, every task must carry a `Prewalk`. Each trace row records an action actually performed and its observed result; it cannot describe planned work. `Remaining Structured Worklist` contains only unfinished actions. Each item needs `Anchors`, `Verify`, and `Done when`; cap one task at 12 items. Build reads the latest trace first, minimally re-reads the current item's anchors and directly changed neighbor, appends actual evidence after the item, and returns facts to `devflow-core` if anchors, contracts, conventions, direct dependencies, responsibility, or directly necessary touch set contradict the handoff. Documentation-only tasks retain their existing exception.
+`File Structure` is one responsibility map, not a fixed architecture rule. For every non-trivial Code change, every task must carry a `Prewalk`. Each trace row records an action actually performed and its observed result; it cannot describe planned work. `Remaining Structured Worklist` contains only unfinished actions. Each item needs `Anchors`, `Verify`, and `Done when`; cap one task at 12 items. The executor reads the current task's execution spec (`Files`, `Change mechanics`, `Steps`, `Verify`), edits directly, runs `Verify`, appends actual evidence, and returns the observed difference as facts to `devflow-core` only when an edit or verification actually fails — there is no pre-edit plan or code view. Documentation-only tasks retain their existing exception.
 
 Use only `Create`, `Modify`, and `Test` file-operation labels. For a `Code change`, every existing-file row must name a symbol or stable anchor; `Create` rows use `new file`. `Current behavior`, `Target behavior`, `Change mechanics`, and `Call impact` are mandatory. `Change mechanics` must contain the smallest code snippet, pseudocode, or exact replacement rule that removes implementation inference. Interfaces name exact symbols and input/output shape. The verification step and `Verify` field name the trigger/input, expected result, and runnable command or manual scenario.
 
@@ -112,7 +114,7 @@ Use only `Create`, `Modify`, and `Test` file-operation labels. For a `Code chang
 
 ## Boundaries
 
-Plan generation does not repeat Cut, perform Build or Prove, prescribe independent review, test-first workflow, version-control task steps, or execute automatically. It converts `CUT_PASS` into a static construction checklist. The checker validates static structure; it does not judge architecture or lifecycle state.
+Plan generation does not repeat Cut, perform Build or Prove, prescribe independent review, test-first workflow, version-control task steps, or execute automatically. It converts `CUT_PASS` into a static construction checklist. The checker validates static structure; it does not judge architecture or lifecycle state. Plan generation writes the execution spec（执行规范）; the zero-view（零 view）execution discipline belongs to `plan-methods.md` and `devflow-build` — a Plan Pack must not include execution-phase re-read or pre-edit review instructions.
 
 ## Anti-Rationalization
 
@@ -136,7 +138,7 @@ Before leaving this skill, confirm:
 - [ ] `Spec coverage` maps the source to plan tasks.
 - [ ] Header, constraints, File Structure, interfaces, concrete steps, acceptance, verification, context-specific comments, exclusions, and task-level Prewalk records are present.
 - [ ] Each trace entry is an observed past action/result; each remaining worklist item is bounded, verified, and fact-complete.
-- [ ] Every task is independently understandable, requires only minimal anchor reread, and has no unresolved or vague placeholder.
+- [ ] Every task is independently understandable, requires no pre-edit read, and has no unresolved or vague placeholder.
 - [ ] The checker passed when available.
 - [ ] The user reviewed the written plan.
 - [ ] An approved A/B Plan entered `devflow-build`; any scope-drift facts returned to `devflow-core`.

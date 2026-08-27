@@ -29,14 +29,14 @@ Execution Trace:
 - Verified: [actual check] → [observed result; or "none yet"].
 
 Current Handoff Facts:
-- Target anchors: [minimum current anchors for the next executor].
+- Target anchors: [current file/symbol/range the plan author verified; evidence record, not executor re-read instruction].
 - Nearby convention: [inspected comparable code and observed convention; or "no comparable code found"].
 - Direct path: [traced callers, collaborators, boundaries, affected tests; or "none"].
 - Current constraints: [observed contract, ordering, error behavior, compatibility; or "none"].
 - Planned touch set: [remaining expected files/symbols and reason].
 - Risks / stop conditions: [facts that require Core replan; or "none beyond ordinary Plan drift"].
-- Read-basis: [已读文件清单——执行者无需重读].
-- Live anchors: [仅需现场确认的锚点——执行者只读这些].
+- Read-basis: [已读文件清单——计划作者的证据簿记，执行者不重读].
+- Live anchors: [计划作者已确认的锚点——执行者不重读，仅作失败回报时的定位].
 
 Remaining Structured Worklist:
 - [ ] [one independently completable remaining action with file/symbol and expected outcome].
@@ -61,14 +61,14 @@ Remaining Structured Worklist:
 
 ## Delegated Execution
 
-A delegated executor reads the latest trace, then minimally re-reads the current work item's anchors and directly changed neighbor. It does not repeat File Structure decisions or broadly reread the repository by default. The executor determines its read set from `Current Handoff Facts`: it must not re-read the `Read-basis` list and only live-verifies the `Live anchors`; anchor contradiction still returns facts to `devflow-core`.
+A delegated executor — the main agent itself, one delegated subagent, or one fan-out subagent — never re-reads the plan document, the latest trace, the anchors, the goal, or the code for a pre-edit view. It receives only the current task's execution spec (`Files`, exact replacement rules, `Steps`, `Verify`), edits those files directly, runs the task's `Verify` command, and returns actual evidence or failure facts to the orchestrating Build agent. `Read-basis` and `Live anchors` stay in the plan as the plan author's evidence record (the checker requires them); they are not executor re-read instructions.
 
-Stop and return facts to `devflow-core` when the minimal reread shows a contradiction in any target anchor, direct caller, contract, local convention, dependency, side effect, affected test, responsibility, or directly necessary touch set. The return identifies the observed mismatch, affected anchor, invalidated handoff fact, blocked verification, and smallest replan decision. An obvious stale line reference may be corrected without returning only when the symbol, contract, responsibility, and intended outcome are unchanged.
+When an edit cannot be applied or a `Verify` fails, the executor returns the observed difference — affected file/anchor, actual behavior, blocked verification, and smallest replan decision — as facts to `devflow-core`; it does not pre-check anchors and does not guess past a failed edit. A stale line reference may be corrected without returning only when the symbol, contract, responsibility, and intended outcome are unchanged.
 
 ### Fan-out
 
-When the plan's `Execution mode` is `fan-out`, one Build orchestrator partitions tasks into parallel groups and dispatches each task to a subagent. Every subagent follows the same per-task read discipline above: read the latest trace, minimally re-read only its task's anchors (`Read-basis` / `Live anchors`), execute only its task's `Files`, and return evidence or contradiction facts. Two tasks may run in parallel only when their `Files` touch disjoint file/symbol sets and neither `Interfaces` consumes a symbol the other `Produces`; tasks sharing a file/symbol or with a consume/produce dependency run in sequence. The orchestrator merges returned results, reconciles cross-task overlap, and enters Prove once with merged evidence.
+When the plan's `Execution mode` is `fan-out`, one Build orchestrator partitions tasks into parallel groups and dispatches each task to a subagent. Every subagent receives only its own task's execution spec, edits its task's `Files` directly, runs its task's `Verify`, and returns evidence or failure facts; it does not re-read the plan, the trace, the anchors, or the code. Two tasks may run in parallel only when their `Files` touch disjoint file/symbol sets and neither `Interfaces` consumes a symbol the other `Produces`; tasks sharing a file/symbol or with a consume/produce dependency run in sequence. The orchestrator merges returned results, reconciles cross-task overlap, and enters Prove once with merged evidence.
 
 ### Single-subagent
 
-When the plan's `Execution mode` is `single-subagent`, the main agent only schedules: it dispatches the whole approved Plan Pack to one executor subagent, waits for the return, then merges the returned evidence and enters Prove once. The subagent runs all tasks in dependency order inside one context under the same per-task read discipline above: read the latest trace, minimally re-read only the current item's `Anchors` / `Live anchors`, execute only the task's `Files`, append actual evidence to the plan trace, and return merged results and evidence, or `BUILD_BLOCKED` facts. Nothing runs in parallel; prefer this mode for small to medium plans or plans whose tasks are strongly dependent, and keep `fan-out` for large parallel plans.
+When the plan's `Execution mode` is `single-subagent`, the main agent only schedules: it dispatches one task's execution spec at a time to one executor subagent, waits for the return, then merges the returned evidence and enters Prove once. The main agent dispatches one task at a time — only that task's execution spec, not the whole plan. The subagent edits that task's `Files` directly, runs its `Verify`, appends actual evidence, and returns the task results and evidence or `BUILD_BLOCKED` facts; the next task continues the same subagent conversation through `send_message`. On DeepSeek Harness (DSH), subagent turns are time-bounded, so one task per round is the norm; a timeout or truncated return retries that one task once with a narrower instruction. The subagent never re-reads the plan, the trace, the anchors, or the code for a pre-edit view. Nothing runs in parallel; prefer this mode for small to medium plans or plans whose tasks are strongly dependent, and keep `fan-out` for large parallel plans.
