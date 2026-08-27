@@ -15,20 +15,15 @@ Receives a `CUT_PASS` Cut Decision from `devflow-cut`, either through the direct
 - Depth C input: `CUT_PASS` plus the approved design contract; no Plan Pack is required.
 
 When no plan file exists, the approved design and Cut Decision form the Build Contract basis; skip the plan checker.
-## Plan Review
+## Direct Execution
 
-Load `skills/devflow-build/references/build-methods.md` after this review and before implementation slices. It owns the detailed minimal-change and slice discipline.
+Load `skills/devflow-build/references/build-methods.md` after this section and before implementation slices. It owns the detailed minimal-change and slice discipline.
 
-Before editing, reconcile the plan against the current codebase — executability review, not redesign:
+There is no pre-edit plan review. The executor reads only the current task's execution spec — `Files`, `Change mechanics`, `Steps`, `Verify` — from the approved plan, edits those files directly, runs `Verify`, and appends actual evidence. An actual edit or verification failure must stop and return `BUILD_BLOCKED` with the facts to `devflow-core`: the observed mismatch, affected anchor, and smallest replan decision. Do not pre-check anchors, do not guess, do not silently repair the plan.
 
-1. Anchors: every `Modify` symbol/anchor and interface in the plan still exists and matches.
-2. Behavior: each task's `Current behavior` still describes the code.
-3. Steps: unambiguous, with verification commands that can run in this environment.
-4. Skills: every skill declared in `External Skills` (Cut Decision or plan header) is actually loaded through the platform's skill mechanism, or the reason it does not apply is recorded; loading alone is not completion — Build requires the specialist's returned result, not-applicable, or failure facts. A specialist result implying structure outside the approved scope returns scope-drift facts to `devflow-core`, not silent adoption.
+Every skill declared in `External Skills` (Cut Decision or plan header) must actually be loaded through the platform's skill mechanism, or the reason it does not apply recorded; loading alone is not completion — Build requires the specialist's returned result, not-applicable, or failure facts. A specialist result implying structure outside the approved scope returns scope-drift facts to `devflow-core`, not silent adoption. Skill loading is not a pre-edit view and remains mandatory.
 
-Any failed check, unclear instruction, or critical gap: stop and return `BUILD_BLOCKED` with the facts to `devflow-core`. Do not guess, do not silently repair the plan. Reviewing fidelity is not re-deciding the mechanism.
-
-For Depth C (no Plan Pack), run the same review against the approved design contract: confirm the symbols and behaviors it names still exist. Depth C keeps Build freedom inside the Cut Decision; it does not skip this review or the Stop Protocol.
+For Depth C (no Plan Pack), the approved design contract is the execution spec: edit directly from it without a separate reconciliation pass. Depth C keeps Build freedom inside the Cut Decision; it does not skip the Stop Protocol.
 
 ## Build Contract
 
@@ -51,7 +46,7 @@ When saving a plan file, use `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`, reso
 
 For multi-step work, tasks must cite the approved source, be small and verifiable, and follow the required task contract (Task: / Task type: / Files: / Interfaces: / Current behavior: / Target behavior: / Change mechanics: / Call impact: / Steps: / Acceptance: / Verify: / Comments: / Not doing:) defined in `skills/devflow-plan/SKILL.md`.
 
-No unresolved markers. For `Code change`, follow the recorded file symbol/anchor, `Current behavior`, `Target behavior`, `Change mechanics`, and `Call impact`; do not re-decide the implementation mechanism in Build. The verification step must retain its trigger/input, expected result, and command or manual scenario. `Documentation-only` applies only to tasks with no runtime code files and explicit `documentation-only` interfaces. No "add tests" without naming the behavior. No "handle edge cases" without naming the edge case. No "similar to Task N" shortcuts; repeat enough detail for each task to stand alone.
+No unresolved markers. For `Code change`, the dispatched execution spec follows the recorded file symbol/anchor and `Change mechanics`; do not re-decide the implementation mechanism in Build. `Current behavior`, `Target behavior`, and `Call impact` are the plan author's records, not executor re-read requirements. The verification step must retain its trigger/input, expected result, and command or manual scenario. `Documentation-only` applies only to tasks with no runtime code files and explicit `documentation-only` interfaces. No "add tests" without naming the behavior. No "handle edge cases" without naming the edge case. No "similar to Task N" shortcuts; repeat enough detail for each task to stand alone.
 
 Before Build, run `node scripts/devflow-plan.js <plan-file>` when a plan is saved to a file. If not found at `scripts/devflow-plan.js` (project-level), try `~/.codex/scripts/devflow-plan.js` or `~/.claude/scripts/devflow-plan.js` (user-level). Do NOT look under `skills/scripts/`. See `core-methods.md` Script Path Resolution.
 
@@ -85,21 +80,21 @@ Rules:
 
 ## Execution Mode
 
-The plan's `Execution mode` (`sequential` | `single-subagent` | `fan-out`) is chosen at Plan approval and passed to Build; Build does not re-decide it. `sequential` runs tasks in dependency order as the Build agent itself; `single-subagent` delegates the whole plan to one executor subagent while the main agent only schedules; `fan-out` runs independent tasks as parallel subagents and dependent tasks in sequence after their inputs land.
+The plan's `Execution mode` (`sequential` | `single-subagent` | `fan-out`) is chosen at Plan approval and passed to Build; Build does not re-decide it. `sequential` runs tasks in dependency order as the Build agent itself; `single-subagent` dispatches one task's execution spec at a time to one executor subagent while the main agent only schedules; `fan-out` runs independent tasks as parallel subagents and dependent tasks in sequence after their inputs land.
 
 ### Single-subagent dispatch
 
-- The main agent does not execute tasks. It dispatches the whole approved Plan Pack to one executor subagent, waits for the return, and then merges the returned evidence and enters Prove once.
-- The subagent runs all tasks in dependency order inside one context under the same Plan Review and Prewalk read discipline, appends actual evidence to the plan's Execution Trace, and returns the merged task results and evidence, or `BUILD_BLOCKED` facts.
+- The main agent does not execute tasks. It dispatches one task's execution spec at a time to one executor subagent, waits for the return, and then merges the returned evidence and enters Prove once.
+- The subagent edits that task's `Files` directly, runs its `Verify`, appends actual evidence, and returns the task results and evidence, or `BUILD_BLOCKED` facts. On DSH, one task per subagent round; the next task continues through `send_message`; a timeout or truncated return retries that task once.
 - The main agent may send one bounded follow-up when the return misses evidence; anything still incomplete is returned to `devflow-core` as `BUILD_BLOCKED` facts. The subagent never declares done, never enters Prove, and never re-decides the mode or the Cut scope.
 
 ### Fan-out dispatch
 
 - Two tasks may run in parallel only when their `Files` touch disjoint file/symbol sets and neither `Interfaces` consumes a symbol the other `Produces`; otherwise run the producer first.
-- Each subagent runs one task contract under the same Plan Review and Prewalk read discipline, and returns the task result or `BUILD_BLOCKED` facts.
+- Each subagent receives only its task's execution spec, edits its task's `Files` directly, runs its `Verify`, and returns the task result or `BUILD_BLOCKED` facts.
 - The main agent merges returned results, reconciles cross-task file overlap, runs the unified `Diff Self-Check`, and enters `devflow-prove` once with merged evidence — never per-subagent.
 
-`single-subagent` and `fan-out` are scheduling only; they do not change Plan Review, Stop Protocol, Cut scope, or the single Prove gate.
+`single-subagent` and `fan-out` are scheduling only; they do not change Cut scope, Stop Protocol, or the single Prove gate.
 
 ## Source Check
 
@@ -196,7 +191,7 @@ If any file has no goal link, remove that change.
 | "We'll verify everything at the end." | Verify slices when focused checks exist. |
 | "Docs changes do not need proof." | Docs/rules/skills need validation just like code. |
 | "The issue only mentions one caller." | Check sibling callers before choosing the fix location. |
-| "The plan is approved, so I just execute." | Plan Review comes first: stale anchors or unclear steps return `BUILD_BLOCKED` to Core. |
+| "The plan is approved, so I just execute." | Right: the approved execution spec is edited directly; an actual edit or verification failure returns `BUILD_BLOCKED` to Core. |
 | "I'll infer the missing step." | Guessing past a gap is forbidden; unclear instructions return `BUILD_BLOCKED` facts. |
 | "The code is self-explanatory." | That does not waive a comment required by the approved contract, project convention, or a non-obvious boundary. |
 | "Comments will get stale." | Keep a required comment accurate or remove a stale one; a stale explanation is not a reason to skip a needed decision record. |
@@ -207,7 +202,7 @@ If any file has no goal link, remove that change.
 
 Stop executing immediately and return `BUILD_BLOCKED` with the blocking facts to `devflow-core` when:
 
-- a Plan Review check fails (dead anchor, stale behavior, missing interface, unclear step)
+- an edit cannot be applied or a verification fails (dead anchor, stale behavior, missing interface, unclear step)
 - a dependency, tool, or declared external skill is missing and the task depends on it, or its returned failure facts block the approved work
 - verification fails repeatedly for the same task
 - the plan has a critical gap that prevents starting or continuing
@@ -228,7 +223,7 @@ Known unverified: ...
 
 Before leaving this skill, confirm:
 
-- [ ] Plan Review passed or concerns were returned to `devflow-core` as `BUILD_BLOCKED`.
+- [ ] Direct Execution completed — each task's spec was edited directly and verified, or actual failures were returned to `devflow-core` as `BUILD_BLOCKED`.
 - [ ] Declared external skills were loaded, or the exception reason was recorded in `Skills loaded`.
 - [ ] Build contract exists.
 - [ ] Cut gates passed or were run.

@@ -20,7 +20,7 @@
   config:
     shellTools: [bash]
     commonTools: [str_replace_editor]
-    messageSources: [user]
+    messageSources: [user, goal]
     anchorGate: true
     maxBootstrapSteps: 4
     promoteAfterFirstResponse: true
@@ -30,6 +30,9 @@
     deferredSources: [agent-instructions, skill-catalog]
     deferredGraceSteps: 1
     promotedPresentation: code
+    # Aligned with liangshen 0.2.8 (issue #388): after promotion, replace the
+    # full-text AGENTS.md injection with one non-imperative reference hint.
+    instructionHint: true
     phase1Persona: You are a helpful software engineer assistant.
 
 # The `devflow` agent preset: the full coding agent plus DevFlow workflow
