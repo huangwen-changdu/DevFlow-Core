@@ -1,0 +1,131 @@
+# DevFlow Core Methods
+
+This is the shared method source loaded by `devflow-core` before route selection. It contains only the invariants needed by every route. Load the selected owner reference from the map below before applying lifecycle-specific rules.
+
+## Method 0: Architect Mindset
+
+Apply these principles to every route:
+
+1. Read the affected system and blast radius before changing it.
+2. Preserve contracts unless the accepted goal requires a contract change.
+3. Prefer the smallest necessary coupling and mechanism.
+4. Trace data and callers before diagnosing a bug.
+5. Scale ceremony to reversibility and failure modes.
+6. Treat complexity as a limited budget.
+7. Use fresh evidence, not intuition, for completion claims.
+8. Prefer the nearest established project convention before introducing a new pattern; a deliberate deviation states its reason, impact, and proof.
+9. Give each type or module one dominant responsibility; split, merge, or abstract only when responsibilities, dependencies, lifecycle, or likely change reasons materially differ.
+10. Evaluate caching, optimization, and concurrency against demonstrated workload or a concrete failure mode; add them only with measurable benefit plus clear ownership, invalidation, and consistency behavior.
+11. Optimize for local understanding: a maintainer familiar with the project should be able to identify business intent, key rules, failure paths, and side effects from nearby names and structure.
+12. Apply SOLID and platform best practices as decision lenses, not mandatory patterns. A simpler solution is preferred when it preserves correctness, readability, maintainability, contracts, and required performance.
+
+## Capability Map
+
+| Need | Runtime owner | Load when |
+|---|---|---|
+| Context, route choice, clarification, small-boundary, method lens, skill contract | this file | every `devflow-core` route |
+| Reuse, root cause, native, overbuild, debt | `skills/devflow-cut/references/cut-methods.md` | user-selected A/B/C direct entry or Core exception selection |
+| Spec or Plan | `skills/devflow-spec/references/spec-plan-methods.md` | A direct Spec / A/B direct Plan or Core exception selection |
+| Build minimal change and implementation slices | `skills/devflow-build/references/build-methods.md` | C `CUT_PASS`, approved A/B Plan, or Core exception selection |
+| Proof and recovery | `skills/devflow-prove/references/proof-recovery-methods.md` | completed Build direct Prove or Core exception selection |
+| Learning-card lifecycle | `skills/devflow-learn/SKILL.md` | Prove PASS review or reusable correction |
+
+## Method 1: Context Map
+
+Read the narrowest useful facts:
+
+1. Project rules and relevant source, tests, commands, and current docs.
+2. `.copilot/LEARNING_INDEX.md`, then only cards whose Trigger and Scope match.
+3. `docs/project-knowledge/AI-START-HERE.md` or `index.md`, then only navigation-selected documents.
+4. `graphify-out/GRAPH_REPORT.md` when architecture impact is in scope.
+5. Available environment skills; record a matching specialist skill without widening DevFlow scope. For a matched specialist, record the bounded-work contract:
+
+```text
+Owner: current DevFlow node
+Role: bounded specialist work
+Expected evidence: result needed by that node
+Return: result / not-applicable / failure facts
+
+The current owner evaluates the return using its existing gate.
+```
+
+A specialist result cannot alter depth, approval, direct-success, or Core-return rules; DevFlow remains the lifecycle meta-skill.
+
+Missing indexes or references are non-blocking and must not create storage.
+
+```text
+Facts: read/confirmed <files or commands>
+Methods: read/confirmed core-methods.md; selected owner references <paths or none>
+Knowledge recall: none / learning index + matched card / project knowledge entry + matched docs
+Skill Discovery: none / <skill-name> (matched: <why>)
+Unknowns: <none or specific unknown>
+```
+
+On DeepSeek Harness (DSH), a long autonomous node — a multi-command Problem or Fast investigation, or Prove evidence gathering with no user gate — may persist its objective with the `create_goal` / `update_goal` tools so it survives context compaction. Never use a goal to span the gated creative lifecycle (Brainstorm clarification, Spec or Plan approval stops): those remain explicit user gates.
+
+On DeepSeek Harness code mode (PTC, `run_code`), batch the independent Sense reads above into one program with `Promise.all` (read-only calls may overlap) and `print` only the needed fields instead of dumping full text, so the summary lands in the compaction head. Split into multiple calls when a later read depends on an earlier result. Wrap optional reads — missing indexes or matched cards — in `try/catch` around `ToolCallError` so a missing source stays non-blocking.
+
+## Method 2: Brainstorm Clarification
+
+Before any creative work — creating features, building components, adding functionality, modifying behavior, or defining an unapproved problem-directed change — select `devflow-brainstorm`. This applies even when the request appears clear or low risk. Pure Q&A, lookup, verification, investigation-only reports, and already approved changes remain outside this entry gate.
+
+Read minimum facts, send a Semantic Echo-Back, resolve one real uncertainty at a time, and stop after this fixed artifact:
+
+```text
+Confirmed request:
+- Goal: ...
+- Scope: ...
+- Out of scope: ...
+- Constraints: ...
+- Acceptance: ...
+- Open questions: ...
+- Status: clarified
+```
+
+After the fixed summary, Brainstorm presents A/B/C for an explicit user selection. A directly enters Spec; B and C directly enter Cut. Brainstorm never selects the depth itself. All non-success or non-unique artifacts return facts to Core for routing.
+
+## Method 3: Small Request Boundary
+
+Use Fast only when impact, risk, uncertainty, and proof are all small. Design-lite is for an existing feature with one plausible path after facts are read. Choose full Design when behavior, options, contracts, modules, compatibility, or rollback are unclear. Ask the user to choose when facts cannot distinguish the route.
+
+## Method 4: Method Lens
+
+Select one lens only when it changes execution judgment:
+
+| Lens | Use when | Action |
+|---|---|---|
+| Root Cause | Bug or regression | Search callers and shared cause before proposing a fix. |
+| Working Backwards | Product or workflow ambiguity | Start from a user-visible acceptance result. |
+| First Principles Cut | Problem solving, bug fixing, architecture, scope, or abstraction pressure | Reduce to facts, constraints, invariants, and smallest mechanism. |
+| Data/Proof | Metrics or verifier-sensitive work | Define evidence and owner before implementation. |
+| Operational Owner | Cross-file or release work | Name responsible surface and rollback or follow-through evidence. |
+
+## Method 15: Skill As Executable Contract
+
+Every skill must state when it applies, concrete actions, artifact or output, stop or return boundary, and verification. Put trigger language in its description. Do not duplicate the full framework in every skill or entry file.
+
+## Shared Output Contracts
+
+Design:
+
+```text
+Goal: ...
+Motivation: ...
+Smallest useful plan: ...
+Not doing: ...
+Impact: ...
+Verification: ...
+```
+
+Completion:
+
+```text
+Command: ...
+Result: ...
+Adversarial review: ...
+Judgment: PASS / FAIL / BLOCKED
+```
+
+## Script Path Resolution
+
+Resolve DevFlow checker scripts in this order: `scripts/devflow-<name>.js` in the target project, `~/.codex/scripts/devflow-<name>.js`, then `~/.claude/scripts/devflow-<name>.js`. A missing checker is noted as unavailable; do not search `skills/scripts/`. On DeepSeek Harness (DSH), run the target-project checker through the DSH shell tool as `node scripts/devflow-<name>.js` and resolve a user-level checker at `~/.dsh/scripts/devflow-<name>.js`; DSH has no `~/.codex` or `~/.claude` home.

@@ -1,0 +1,27 @@
+{
+  "name": "devflow",
+  "version": "0.1.0",
+  "description": "DevFlow lifecycle skills for Codex",
+  "author": {
+    "name": "DevFlow Core",
+    "url": "https://github.com/huangwen-changdu/DevFlow-Core"
+  },
+  "homepage": "https://github.com/huangwen-changdu/DevFlow-Core/tree/main/plugins/devflow",
+  "repository": "https://github.com/huangwen-changdu/DevFlow-Core",
+  "license": "MIT",
+  "keywords": ["devflow", "ai-coding", "verification", "minimal-change"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "DevFlow Core",
+    "shortDescription": "Run DevFlow lifecycle work in Codex.",
+    "longDescription": "DevFlow Core provides the repository's lifecycle skills for clarification, planning, building, proof, and recovery.",
+    "developerName": "DevFlow Core",
+    "category": "Productivity",
+    "capabilities": ["Workflow", "Code review"],
+    "defaultPrompt": [
+      "Route this task through the DevFlow lifecycle.",
+      "Review this change with DevFlow gates before implementation.",
+      "Prove this result before calling it complete."
+    ]
+  }
+}
