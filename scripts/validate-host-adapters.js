@@ -27,8 +27,8 @@ const hosts = [
     name: "Codex/shared fallback",
     file: "AGENTS.md",
     capabilities: {
-      route: ["any creative work"],
-      brainstorm: ["Brainstorm"],
+      route: ["risk gate", "clear low-risk"],
+      brainstorm: ["Brainstorm", "material risk"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["When skills are unavailable"],
       directSuccess: ["A/B/C", "direct success"],
@@ -41,7 +41,7 @@ const hosts = [
     file: "CLAUDE.md",
     capabilities: {
       route: ["AGENTS.md"],
-      brainstorm: ["creative work", "devflow-brainstorm"],
+      brainstorm: ["risk gate", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["selected lifecycle reference"],
       directSuccess: ["A/B/C", "directly"],
@@ -54,7 +54,7 @@ const hosts = [
     file: ".claude/commands/devflow-core.md",
     capabilities: {
       route: ["Core routes request entry"],
-      brainstorm: ["Before creative work", "devflow-brainstorm"],
+      brainstorm: ["ambiguous", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["AGENTS.md"],
       directSuccess: ["A/B/C", "directly"],
@@ -67,7 +67,7 @@ const hosts = [
     file: "hooks/devflow-session-start.js",
     capabilities: {
       route: ["Core selects only non-unique lifecycle work"],
-      brainstorm: ["Creative work", "Brainstorm"],
+      brainstorm: ["risk", "Brainstorm"],
       owner: ["devflow-core"],
       loadOrFallback: ["selected lifecycle reference"],
       directSuccess: ["A/B/C", "direct"],
@@ -80,9 +80,9 @@ const hosts = [
     file: ".github/copilot-instructions.md",
     capabilities: {
       route: ["AGENTS.md"],
-      brainstorm: ["creative work", "devflow-brainstorm"],
+      brainstorm: ["risk gate", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
-      loadOrFallback: ["no-skill fallback"],
+      loadOrFallback: ["fallback"],
       directSuccess: ["A/B/C", "directly"],
       coreReturn: ["return to Core"],
       proof: ["Prove"]
@@ -93,7 +93,7 @@ const hosts = [
     file: ".github/instructions/devflow.instructions.md",
     capabilities: {
       route: ["AGENTS.md"],
-      brainstorm: ["creative work", "devflow-brainstorm"],
+      brainstorm: ["risk gate", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["host capability"],
       directSuccess: ["A/B/C", "direct"],
@@ -106,7 +106,7 @@ const hosts = [
     file: ".github/prompts/devflow.prompt.md",
     capabilities: {
       route: ["Problem, Fast, Design-lite, Design, Build, or Recovery"],
-      brainstorm: ["Before creative work", "devflow-brainstorm"],
+      brainstorm: ["risk gate", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["load `skills/devflow-core/SKILL.md`"],
       directSuccess: ["A/B/C", "direct successes"],
@@ -119,7 +119,7 @@ const hosts = [
     file: ".codebuddy/rules/devflow-core/RULE.mdc",
     capabilities: {
       route: ["AGENTS.md"],
-      brainstorm: ["creative work", "devflow-brainstorm"],
+      brainstorm: ["risk gate", "devflow-brainstorm"],
       owner: ["skills/devflow-core/SKILL.md"],
       loadOrFallback: ["Without skills"],
       directSuccess: ["A/B/C", "directly"],

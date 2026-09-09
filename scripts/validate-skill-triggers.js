@@ -56,12 +56,26 @@ const scenarios = [
     route: "Design",
     input: "Add an order export feature and modify its delivery behavior.",
     evidence: [
-      ["AGENTS.md", "any creative work"],
-      ["skills/devflow-core/SKILL.md", "Before any creative work"],
-      ["skills/devflow-core/references/core-methods.md", "Before any creative work"],
-      ["skills/devflow-brainstorm/SKILL.md", "You MUST use this before any creative work"],
+      ["AGENTS.md", "creative work with ambiguity or material risk"],
+      ["skills/devflow-core/SKILL.md", "Brainstorm is required when any material risk"],
+      ["skills/devflow-core/references/core-methods.md", "Brainstorm is required for new behavior"],
+      ["skills/devflow-brainstorm/SKILL.md", "Use when devflow-core sends ambiguous or materially risky creative work"],
       ["skills/devflow-brainstorm/SKILL.md", "Confirmed request"],
-      ["commands/devflow.toml", "Before creative work"]
+      ["commands/devflow.toml", "When Brainstorm is selected"]
+    ]
+  },
+  {
+    name: "clear low-risk direct Cut path",
+    route: "Design-lite -> Cut",
+    input: "Rename an existing local label in one file; behavior is clear, reversible, and has a text-search proof.",
+    evidence: [
+      ["AGENTS.md", "clear low-risk existing behavior change"],
+      ["skills/devflow-core/SKILL.md", "select `devflow-cut` directly"],
+      ["skills/devflow-core/SKILL.md", "Depth hint: skip"],
+      ["skills/devflow-cut/SKILL.md", "Design-lite contract"],
+      ["commands/devflow.toml", "may go directly to Cut"],
+      ["commands/devflow.toml", "Unapproved edits are not Fast"],
+      ["skills/skill-call-diagram.md", "Skip-Brainstorm Design-lite success"]
     ]
   },
   {
@@ -81,7 +95,7 @@ const scenarios = [
     input: "Problem report: check what is wrong without fixing it.",
     evidence: [
       ["AGENTS.md", "investigation-only problem report"],
-      ["skills/devflow-core/SKILL.md", "investigation-only reports"],
+      ["skills/devflow-core/SKILL.md", "Investigation-only reports"],
       ["skills/devflow-prove/SKILL.md", "Process"],
       ["commands/devflow.toml", "investigation-only problem report"]
     ]
@@ -120,7 +134,7 @@ const scenarios = [
       ["skills/devflow-core/SKILL.md", "Core Return Boundaries"],
       ["skills/devflow-cut/SKILL.md", "CUT_REDUCE`, `CUT_REUSE`, and `CUT_BLOCKED` return facts to `devflow-core`"],
       ["skills/devflow-plan/SKILL.md", "scope-drift facts return to `devflow-core`"],
-      ["skills/devflow-build/SKILL.md", "return `BUILD_BLOCKED` with the facts to `devflow-core`"],
+      ["skills/devflow-build/SKILL.md", "return `BUILD_BLOCKED` with facts to `devflow-core`"],
       ["skills/devflow-prove/SKILL.md", "Exception Return Boundary"],
       ["skills/devflow-pua/SKILL.md", "PUA never selects the replacement execution skill"]
     ]
@@ -176,8 +190,11 @@ const scenarios = [
       ["skills/devflow-plan/SKILL.md", "## File Structure"],
       ["skills/devflow-plan/SKILL.md", "Execution Trace"],
       ["skills/devflow-plan/SKILL.md", "Remaining Structured Worklist"],
+      ["skills/devflow-plan/SKILL.md", "bounded drift check, not broad repository rediscovery"],
+      ["skills/devflow-build/SKILL.md", "current task anchor plus a directly changed neighbor"],
       ["scripts/devflow-plan.js", "maximumWorklistItems"],
       ["skills/devflow-prove/SKILL.md", "actual implementation diff"],
+      ["skills/devflow-prove/SKILL.md", "Context loading is conditional"],
       ["skills/devflow-prove/SKILL.md", "unresolved Blocker or Warning"],
       ["skills/devflow-prove/references/flow-self-test.md", "Scenario 5C: Diff-First Prove Quality Gate"]
     ]

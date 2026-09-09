@@ -15,6 +15,7 @@ function assert(condition, message) {
 /** Protects the hybrid boundary: only deterministic A/B/C successes bypass Core. */
 function assertHybridLifecycleContract(core) {
   for (const edge of [
+    "Skip-Brainstorm Design-lite success: Cut -> Build -> Prove",
     "A direct success: Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove",
     "B direct success: Brainstorm -> Cut -> Plan -> Build -> Prove",
     "C direct success: Brainstorm -> Cut -> Build -> Prove"
@@ -78,6 +79,21 @@ for (const reference of [
 }
 assert(!core.includes("Method 0-15 + Capability Matrix"), "Core must not require full lifecycle methods at route start");
 assertHybridLifecycleContract(core);
+for (const evidence of [
+  "explicit independent review -> investigation or pure inquiry -> approved scope -> risk gate",
+  "clear goal, existing local behavior, one plausible path, local impact, reversible change",
+  "no security/data-loss/permission/contract risk, and quick proof",
+  "Skipping Brainstorm compresses analysis only; it never skips Cut or Prove",
+  "Unapproved edits never use Fast",
+  "Brainstorm required:",
+  "Depth hint:",
+  "Design-lite contract and Depth C"
+]) {
+  assert(core.includes(evidence), `Core risk-adaptive contract missing: ${evidence}`);
+}
+assert(!read("commands/devflow.toml").includes("Use Design-lite only after Brainstorm"), "Design-lite must not wait for Brainstorm after a risk-gate skip");
+assert(read("skills/devflow-cut/SKILL.md").includes("Design-lite contract"), "Cut must accept a Core-selected Design-lite skip contract");
+assert(read("commands/devflow.toml").includes("Unapproved edits are not Fast"), "Generic /devflow must keep unapproved edits out of Fast");
 
 /** Guards the meta-skill capability contract: specialist roles stay bounded and result-bearing, never guidance-only. */
 function assertCapabilityContract(coreMethods, handoffSurfaces) {
@@ -125,8 +141,31 @@ function assertBrainstormSelectionContract(skill) {
 
 const brainstorm = read("skills/devflow-brainstorm/SKILL.md");
 const interviewDiscipline = read("skills/devflow-brainstorm/references/interview-discipline.md");
+assert(brainstorm.includes("Core supplies a depth hint"), "Brainstorm must consume Core-selected depth");
+assert(brainstorm.includes("`compact`"), "Brainstorm must define compact clarification");
+assert(brainstorm.includes("ask no clarification question"), "Brainstorm must avoid questions when no decision-impact gap remains");
+assert(!brainstorm.includes("There is no fast lane"), "Brainstorm must not prohibit adaptive clarification");
 assertBrainstormFollowUpContract(brainstorm, interviewDiscipline);
 assertBrainstormSelectionContract(brainstorm);
+
+const prove = read("skills/devflow-prove/SKILL.md");
+const proofMethods = read("skills/devflow-prove/references/proof-recovery-methods.md");
+assert(prove.includes("Context loading is conditional"), "Prove must define conditional context loading");
+assert(prove.includes("only when the change touches DevFlow runtime rules"), "Prove must limit framework self-test loading");
+assert(proofMethods.includes("## Proof Context Selection"), "Proof methods must define context selection");
+assert(proofMethods.includes("Narrow context does not weaken diff review"), "Proof methods must retain proof safeguards");
+
+const planSkill = read("skills/devflow-plan/SKILL.md");
+const planMethods = read("skills/devflow-plan/references/plan-methods.md");
+const buildSkill = read("skills/devflow-build/SKILL.md");
+for (const [rel, body] of [
+  ["skills/devflow-plan/SKILL.md", planSkill],
+  ["skills/devflow-plan/references/plan-methods.md", planMethods],
+  ["skills/devflow-build/SKILL.md", buildSkill]
+]) {
+  assert(body.includes("current task anchor"), `${rel} must allow bounded current-anchor rereads`);
+  assert(body.includes("broad"), `${rel} must prohibit broad rediscovery`);
+}
 
 for (const [rel, evidence] of [
   ["skills/devflow-brainstorm/SKILL.md", "only by the user-selected direct branch"],

@@ -1,6 +1,6 @@
 ---
 name: devflow-brainstorm
-description: "You MUST use this before any creative work — creating features, building components, adding functionality, modifying behavior, or defining a problem-directed change. Explores user intent, requirements, problem boundaries, and design intent before implementation. Acts as a brainstorming partner: clarifies what the user wants through a semantic echo-back, examines the problem from multiple angles, surfaces gaps and risks, and recommends directions within the problem space; stops after a fixed Confirmed request summary and explicit A/B/C depth gate. Do NOT use it for pure Q&A, lookup, verification, or an already approved change; do NOT select a route or depth, produce implementation designs, or hand off except through the user-selected predefined direct branch."
+description: "Use when devflow-core sends ambiguous or materially risky creative work for clarification — creating features, building components, adding functionality, modifying behavior, or defining a problem-directed change. Clarifies intent through a semantic echo-back, runs risk-relevant problem-space exploration, and stops after a fixed Confirmed request summary and explicit A/B/C depth gate. Do NOT use it for clear low-risk existing behavior, pure Q&A, lookup, verification, or an already approved change; do NOT select a route or depth, produce implementation designs, or hand off except through the user-selected predefined direct branch."
 ---
 
 # DevFlow Brainstorm
@@ -13,7 +13,7 @@ This skill owns only:
 
 - minimal fact reading needed to understand the request;
 - Semantic Echo-Back and understanding correction;
-- mandatory multi-angle problem exploration: surfacing gaps, risks, blind spots, and unstated assumptions in the user's request;
+- Core-selected, risk-relevant problem exploration: surfacing gaps, risks, blind spots, and unstated assumptions in the user's request;
 - ideas, suggestions, and direction recommendations inside the problem space;
 - one-at-a-time clarification of goal, scope, exclusions, constraints, acceptance, and real open questions;
 - the fixed `Confirmed request` summary.
@@ -25,20 +25,21 @@ Use `references/interview-discipline.md` for the Semantic Echo-Back, multi-angle
 
 ## Entry And Stop Condition
 
-Enter only when `devflow-core` has identified a requirement, behavior, architecture, or ambiguity that needs clarification.
+Enter only when `devflow-core` has identified ambiguity or material risk that needs clarification. Core may bypass this skill for a clear, reversible, local existing-feature change with one plausible path, no security/data-loss/permission/contract risk, and quick proof.
 
 After producing the fixed summary, present the A/B/C gate and wait for user selection. Start A at `devflow-spec` and B/C at `devflow-cut` only after the user chooses. Do not select Fast, Design-lite, a depth, an approach, or a method on the user's behalf. Do not create design sections, a design contract, documentation, or a visual artifact.
 
 ## Clarification Depth
 
-Depth governs **analysis breadth only**. It never skips the echo-back, the confirm gates, the question discipline, or the recommendation duty.
+Core supplies a depth hint after selecting this skill. Depth governs **analysis breadth only**. It never skips the echo-back, the confirm gates, the question discipline, or the recommendation duty. Compact mode is analysis compression, not permission to skip confirmation.
 
 | Tier | Use when | Behavior |
 |---|---|---|
-| `deep` (default) | Every request, unless the user explicitly asks for a lighter pass. | Full multi-angle checklist with a per-angle report, gap/risk surfacing, direction options with trade-offs, and a recommendation. |
-| `standard` | Only on explicit user request for a lighter pass. | Run the fitting angles instead of the full checklist; every other duty unchanged. |
+| `compact` | Core has established clear goal, scope, constraints, acceptance, and a bounded material-risk reason. | Echo-back, risk/edge/acceptance check, only decision-impact questions, and fixed summary; record non-blocking angles as `none`. |
+| `standard` | Core identifies several relevant uncertainties or interacting impacts without full architecture ambiguity. | Run fitting angles with trade-offs and recommendation; every other duty unchanged. |
+| `deep` | Ambiguous, high-risk, cross-module, externally visible, irreversible, security-sensitive, data-loss-sensitive, or contract-changing work. | Full multi-angle checklist with per-angle findings, gap/risk surfacing, direction options with trade-offs, and recommendation. |
 
-There is no fast lane. A request that turns out clear after analysis simply ends with fewer questions — the analysis still ran and its findings still reach the summary.
+If no decision-impact gap remains after the supplied facts and echo-back, ask no clarification question. Still produce the fixed summary and wait for confirmation and A/B/C.
 
 ## Clarification Process
 
@@ -65,7 +66,7 @@ There is no fast lane. A request that turns out clear after analysis simply ends
    ```
 
 5. **Revalidate every answer.** Before asking the next question, compare the answer with confirmed facts and the current request. If it introduces a load-bearing assumption, exposes a contradiction, or changes goal, scope, exclusion, constraint, acceptance, terminology, or actor, apply the Understanding Revision Rule. Otherwise record the answer and continue only when another decision-impact gap remains.
-6. **Explore the problem.** Walk the multi-angle checklist from the reference and report what each angle found, including "nothing found here". Name gaps, risks, and blind spots in the user's request; offer directions with trade-offs and recommend one inside the problem space. If exploration exposes a new decision-impact gap, return to step 4 and resolve it one question at a time before finishing.
+6. **Explore the problem.** In `compact`, run only risk, edge, impact, and acceptance checks; in `standard`, run fitting angles; in `deep`, walk the full checklist from the reference. Report negative findings, name gaps and risks, offer directions with trade-offs, and recommend one inside the problem space. If exploration exposes a new decision-impact gap, return to step 4 and resolve it one question at a time before finishing.
 7. **Finish.** When no decision-impact gap remains and every non-blocking unknown is recorded, output the fixed summary, present the A/B/C gate, and wait. On user selection, follow only the corresponding predefined direct branch.
 
 ## Problem-Space Recommendation

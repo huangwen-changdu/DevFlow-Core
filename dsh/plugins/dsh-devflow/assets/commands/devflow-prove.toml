@@ -4,6 +4,8 @@ Run DevFlow Prove.
 
 Identify the narrowest sufficient command, test, build, lint, validation script, or manual scenario.
 Run it now if tools are available.
+Load `skills/devflow-prove/references/proof-recovery-methods.md` always. Load `skills/devflow-prove/references/flow-self-test.md` only for DevFlow runtime, skill, command, host, hook, validator, scenario, installer, or harness changes. For code, load `skills/devflow-prove/references/code-review-checklist.md`, always apply General Engineering Review, and apply only language sections matching changed extensions.
+Read the actual diff and the current task's named anchors; reread at most one already-listed neighbor needed to detect drift; do not restart broad repository discovery.
 For development work, run adversarial review before completion: state the strongest plausible reason the result is still wrong, incomplete, unreachable, over-broad, or under-verified, then check it against the acceptance criteria, touched files, likely regressions, activation path, and proof coverage.
 If adversarial review finds a real gap, report FAIL or continue the appropriate DevFlow route before any completion claim.
 Read the real output and exit status.

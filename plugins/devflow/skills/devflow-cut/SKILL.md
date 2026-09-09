@@ -11,7 +11,7 @@ Cut unnecessary work before writing it.
 
 ## Context
 
-Receives a Core-selected approved design or an approved A-branch Spec. Cut decides the smallest implementation boundary before any construction plan; do not use a future plan as evidence for these gates.
+Receives a Core-selected approved design, an approved A-branch Spec, or a Core-selected Design-lite contract after the risk gate skipped Brainstorm. A Design-lite skip records Depth C and `CUT_PASS` enters Build. User-selected A/B still enter Plan. Cut decides the smallest implementation boundary before any construction plan; do not use a future plan as evidence for these gates.
 
 Before applying the Minimal Solution Ladder or Required Gates, load `skills/devflow-cut/references/cut-methods.md`. That reference owns the detailed reuse, root-cause, native, overbuild, and debt rules.
 

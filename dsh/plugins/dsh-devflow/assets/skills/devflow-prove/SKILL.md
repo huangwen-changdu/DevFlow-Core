@@ -11,17 +11,20 @@ No proof, no completion.
 
 ## Methodology Assets
 
-When this skill activates, read these local references before choosing or running proof scenarios:
+Context loading is conditional and selected by changed surface.
 
-- `skills/devflow-prove/references/flow-self-test.md` — end-to-end scenario tests and pressure scenarios for the framework itself.
-- `skills/devflow-prove/references/code-review-checklist.md` — language-specific code quality criteria for adversarial code review.
+When this skill activates, read only the references required by the changed surface:
+
+- Always read `skills/devflow-prove/references/proof-recovery-methods.md` — shared proof and recovery method.
+- Read `skills/devflow-prove/references/flow-self-test.md` only when the change touches DevFlow runtime rules, skills, commands, host adapters, hooks, validators, scenarios, installers, or harness behavior.
+- For code, read `skills/devflow-prove/references/code-review-checklist.md` and apply only the matching language section: `.js/.jsx/.ts/.tsx` -> TypeScript / JavaScript plus React/Vue when present; `.py` -> Python; `.go` -> Go; `.java` -> Java; `.cs` -> C# / .NET; `.sql` -> SQL. Always apply General Engineering Review. Unlisted extensions use General Engineering Review and record the missing language checklist.
 
 ## Process
 
 Load `skills/devflow-prove/references/proof-recovery-methods.md` before selecting proof. It owns the shared proof and recovery method details used by Prove and PUA.
 
 1. Identify the command, test, build, lint, diff check, validation script, or manual scenario that proves the claim.
-2. Confirm the exact changed files, approved File Structure/Plan boundary, latest Prewalk Execution Trace and Current Handoff Facts. Read the task's remaining-work completion evidence plus the nearest comparable code.
+2. Confirm the exact changed files, approved File Structure/Plan boundary, latest Prewalk Execution Trace and Current Handoff Facts. Read task-local completion evidence plus only the nearest directly relevant code or contract.
 3. Run the narrowest sufficient check now, then independently inspect the actual implementation diff before interpreting test results.
 4. Run adversarial review (对抗式审查) against the approved responsibility boundary, Prewalk facts, direct contracts, nearby convention, and likely regressions.
 5. For code changes: run the **Code Quality Review** (General Engineering Review + Language-Specific Checklist from `code-review-checklist.md`), then generate a **Code Review Report** (see format below). Classify each evidence-backed finding as Blocker, Warning, or Recommendation. An unresolved Blocker or Warning returns `FAIL` facts to Core; recommendations do not block an otherwise proven result.

@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current Version: v50
+- Current Version: v52
 - Status: active
-- Last Change: skill-owned-direct-success-flow
+- Last Change: risk-adaptive-context-tightening
 - Product Area: runtime flow, skill routing, validation, learning loop
 
 ## Feature Background
@@ -12,7 +12,7 @@
 DevFlow Core Runtime is the central product capability of DevFlow-Core. It turns developer requests into a lightweight but verified agent workflow:
 
 ```text
-Sense -> Brainstorm clarification -> user-selected A/B/C -> A: Spec -> Cut -> Plan -> Build -> Prove; B: Cut -> Plan -> Build -> Prove; C: Cut -> Build -> Prove. Non-unique, blocked, failed, recovery, scope-change, or changed-intent facts return to Core.
+Sense -> risk gate -> skip-Brainstorm Design-lite: Cut -> Build -> Prove; or Brainstorm clarification -> user-selected A/B/C -> A: Spec -> Cut -> Plan -> Build -> Prove; B: Cut -> Plan -> Build -> Prove; C: Cut -> Build -> Prove. Unapproved edits never use Fast. Non-unique, blocked, failed, recovery, scope-change, or changed-intent facts return to Core.
 ```
 
 This ledger exists so future changes do not lose why the runtime is shaped this way, which reference-project ideas were absorbed, and which boundaries must not drift.
@@ -25,11 +25,13 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - Codex and Claude Code `SessionStart` hook artifacts for project-level activation reminders, plus Claude plugin-style activation.
 - Claude Code `/devflow-core` command under `.claude/commands/` that explicitly bridges requirements, UI/page ambiguity, prompt distinction issues, and server-backed implementation requests to `devflow-brainstorm`.
 - `devflow-core` route selection for Fast, Problem, Design-lite, Design, Build, and Recovery.
-- `devflow-brainstorm` is a request clarifier: it reads minimum facts, sends Semantic Echo-Back, applies the Understanding Revision Rule when a correction changes the request, resolves only goal, scope, exclusions, constraints, acceptance, and open questions one at a time, outputs fixed `Confirmed request` with `Status: clarified`, then presents an explicit A/B/C user gate.
+- Core uses a risk-adaptive gate: clear, local, reversible existing-feature changes with one plausible path, no security/data-loss/permission/contract risk, and quick proof may enter Cut directly; ambiguous or materially risky creative work enters Brainstorm. Cut and Prove remain mandatory on the low-risk path.
+- `devflow-brainstorm` is a Core-selected request clarifier: it reads minimum facts, supports compact/standard/deep analysis, sends Semantic Echo-Back, applies the Understanding Revision Rule when a correction changes the request, resolves only decision-impact gaps one at a time, outputs fixed `Confirmed request` with `Status: clarified`, then presents an explicit A/B/C user gate.
 - `devflow-spec` consumes user-selected A, compares real options, writes the reviewable design contract and saved spec, waits for approval, then directly enters Cut; non-success facts return to Core.
 - `devflow-core` owns non-unique lifecycle selection only: missing or changed depth, Cut non-PASS, scope drift, Build blocks, Proof FAIL/BLOCKED, changed intent, and PUA recovery return facts for its decision.
 - `devflow-pua` retains pressure diagnosis, method switching, hypotheses, and new success-contract ownership when the user repeatedly reports that the same function, result, or requested capability is wrong, incomplete, or missing in one task lifecycle. It returns recovery facts to Core, which may select `devflow-brainstorm` only to re-confirm the request before routing again.
-- `devflow-prove` Skill Activation Chain Check for rule, command, prompt, entry, and skill changes.
+- `devflow-prove` Skill Activation Chain Check for rule, command, prompt, entry, and skill changes; framework self-tests load conditionally while language checklists remain change-extension scoped.
+- Plan/Build handoff permits bounded current-anchor and directly changed-neighbor rereads for drift detection, while prohibiting broad repository rediscovery, silent plan repair, and scope expansion.
 - Small Request Boundary gates for Fast and Design-lite: impact, risk, uncertainty, and proof.
 - Method Lens selection for Design, Recovery, problem solving (问题解决), bug fixing, architecture design (架构设计), and high-risk proof: Root Cause, Working Backwards, First Principles Cut (第一性原理), Data/Proof, and Operational Owner.
 - `devflow-prove` adversarial review (对抗式审查) before completion for development work, checking whether the result is still wrong, incomplete, unreachable, over-broad, or under-verified before any done/fixed/ready claim.
@@ -43,7 +45,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - Learning cards under `.copilot/` for repeatable corrections.
 - `/devflow-learn` command and `npm run learn:verify` for executable learning-loop closure checks.
 - Progressive knowledge recall at Sense: probe existing `.copilot/LEARNING_INDEX.md` and `docs/project-knowledge/`, load learning cards only after index trigger/scope matching, then use `AI-START-HERE.md` or `index.md` plus `registry.json` to select only relevant business knowledge documents. Missing recall sources are non-blocking and never create storage.
-- **External Skill Discovery** at Sense: scan available skills in the current environment (platform skill registry, `use_skill` listing, local skill directories). External skills are complementary to the devflow route: devflow manages scope and risk (what to change, how much); external skills guide execution quality (how to do it well). When a non-devflow skill (e.g., `frontend-design`, `pdf`, `understand`, `data-analysis`) matches the task, suggest loading it alongside the devflow route. The devflow chain (brainstorm -> cut -> build -> prove) always runs. The Minimal Solution Ladder includes a skill-reuse rung: "Does an available skill in the environment handle this without writing new code?" `CUT_REUSE` applies only when the skill fully handles the task with no new code needed (e.g., `pdf` for reading a PDF). For skills that guide implementation (e.g., `frontend-design`), they are loaded alongside devflow-build, not instead of it.
+- **External Skill Discovery** at Sense: scan available skills in the current environment (platform skill registry, `use_skill` listing, local skill directories). External skills are complementary to the devflow route: devflow manages scope and risk (what to change, how much); external skills guide execution quality (how to do it well). When a non-devflow skill (e.g., `frontend-design`, `pdf`, `understand`, `data-analysis`) matches the task, suggest loading it alongside the devflow route. Cut and Prove still run; Brainstorm runs when the risk gate requires it. The Minimal Solution Ladder includes a skill-reuse rung: "Does an available skill in the environment handle this without writing new code?" `CUT_REUSE` applies only when the skill fully handles the task with no new code needed (e.g., `pdf` for reading a PDF). For skills that guide implementation (e.g., `frontend-design`), they are loaded alongside devflow-build, not instead of it.
 - `devflow-learn` lazily creates `.copilot/` records only for reusable execution lessons; `devflow-project-knowledge` is shipped in plugin and both installer runtimes and lazily maintains `docs/project-knowledge/` only after explicit user confirmation of a code-backed business candidate.
 - `npm run scenario:coverage` for architecture-layer visibility across self-test scenarios.
 - `npm run trigger:verify` for prompt-to-route and skill-path trigger checks.
@@ -64,6 +66,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 
 | Version | Change | Type | Date | Status | Summary |
 |---|---|---|---|---|---|
+| v52 | risk-adaptive-context-tightening | runtime context governance | 2026-09-04 | active | Added Core-owned risk precedence so clear low-risk existing behavior skips Brainstorm as Design-lite Depth C (`CUT_PASS` enters Build). Fast no longer covers unapproved edits. Core records `Brainstorm required` and a depth hint. Brainstorm clarification is adaptive; Prove reference loading is change-surface scoped; Plan/Build reread named anchors plus at most one listed neighbor. Evidence is static validation only and does not measure live model quality. |
 | v51 | adversarial-review-direct-start | manual review behavior | 2026-08-11 | active | Removed the secondary duration-confirmation pause from `devflow-adversarial`. An explicit user request now starts the independent five-angle review immediately; it asks one smallest question only when the review target is unclear. Synchronized command, self-test, and capability-evaluation contracts. |
 | v50 | skill-owned-direct-success-flow | lifecycle boundary | 2026-07-31 | active | Restored the user-owned A/B/C gate in Brainstorm and moved only deterministic success edges into the owning skills: A `Spec -> Cut -> Plan -> Build -> Prove`, B `Cut -> Plan -> Build -> Prove`, C `Cut -> Build -> Prove`. Core retains compact routing for missing depth, Cut non-PASS, scope drift, Build blocks, Proof FAIL/BLOCKED, changed intent, and PUA recovery. Synchronized commands, host entries, self-tests, validators, installers, and public docs. |
 | v49 | progressive-context-and-adapter-contract | runtime context governance | 2026-07-30 | active | Replaced repeated host lifecycle prose with thin startup adapters, a compact Core loading map, and selected owner references for Cut, Spec/Plan, Build, and Prove/Recovery. Validators now check route, owner, fallback/load, proof, installer reachability, 8 KiB AGENTS payload, and learning-card evidence/invalidation rather than copied phrases. |

@@ -2,6 +2,10 @@
 
 Owners: `devflow-prove` and `devflow-pua`. Load this reference after completed Build directly enters Prove or when Core selects Proof or Recovery for a non-unique artifact.
 
+## Proof Context Selection
+
+Keep proof context proportional to the change. Always load this reference. Load `flow-self-test.md` only for DevFlow runtime, skill, command, host, hook, validator, scenario, installer, or harness changes; ordinary application changes use the changed file, its direct contract, and the relevant proof command. Load `code-review-checklist.md` for code and apply General Engineering Review plus only language sections matching changed extensions. Narrow context does not weaken diff review, adversarial review, or fresh proof.
+
 ## Method 13: Proof Before Done
 
 Run fresh, narrow evidence before a completion claim. Rules and skills need file, trigger, load, and downstream evidence. Code needs a focused test, build, lint, typecheck, or reproducible scenario. A bug fix needs symptom or regression proof.

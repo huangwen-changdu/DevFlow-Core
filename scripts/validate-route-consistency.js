@@ -5,6 +5,7 @@ const root = path.resolve(__dirname, "..");
 
 // 关键路由边集合：只断言"边存在"，不做全文比对——各表面存在反引号、缩写与连字符变体。
 // 成功边用无前缀正则，兼容 README 的 `Spec -> Cut -> ...` 写法（无 Brainstorm 前缀）。
+const skipEdge = { name: "Skip-Brainstorm Design-lite", pattern: /Skip-Brainstorm Design-lite(?: success)?:\s*Cut\s*->\s*Build\s*->\s*Prove/ };
 const successEdges = [
   { name: "A direct success", pattern: /Spec\s*->\s*Cut\s*->\s*Plan\s*->\s*Build\s*->\s*Prove/ },
   { name: "B direct success", pattern: /Cut\s*->\s*Plan\s*->\s*Build\s*->\s*Prove/ },
@@ -28,11 +29,11 @@ const returnEdges = [
 const routeSurfaces = [
   {
     rel: "AGENTS.md",
-    edges: [...successEdges, ...returnEdges]
+    edges: [skipEdge, ...successEdges, ...returnEdges]
   },
   {
     rel: "skills/devflow-core/SKILL.md",
-    edges: [...successEdges, ...returnEdges]
+    edges: [skipEdge, ...successEdges, ...returnEdges]
   },
   {
     rel: "README.md",
@@ -40,7 +41,7 @@ const routeSurfaces = [
   },
   {
     rel: "skills/skill-call-diagram.md",
-    edges: [...successEdges, ...returnEdges]
+    edges: [skipEdge, ...successEdges, ...returnEdges]
   }
 ];
 

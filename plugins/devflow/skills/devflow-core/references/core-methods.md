@@ -65,9 +65,19 @@ On DeepSeek Harness (DSH), a long autonomous node — a multi-command Problem or
 
 On DeepSeek Harness code mode (PTC, `run_code`), batch the independent Sense reads above into one program with `Promise.all` (read-only calls may overlap) and `print` only the needed fields instead of dumping full text, so the summary lands in the compaction head. Split into multiple calls when a later read depends on an earlier result. Wrap optional reads — missing indexes or matched cards — in `try/catch` around `ToolCallError` so a missing source stays non-blocking.
 
-## Method 2: Brainstorm Clarification
+## Method 2: Route Precedence And Risk Gate
 
-Before any creative work — creating features, building components, adding functionality, modifying behavior, or defining an unapproved problem-directed change — select `devflow-brainstorm`. This applies even when the request appears clear or low risk. Pure Q&A, lookup, verification, investigation-only reports, and already approved changes remain outside this entry gate.
+Evaluate in this order: explicit independent review -> investigation/pure inquiry -> approved scope -> risk gate -> route owner. Keywords are signals, not decisions.
+
+Brainstorm is required for new behavior, ambiguity, cross-module or externally visible impact, irreversible work, security/data-loss/permission/contract risk, or any missing fact that could change the plan. A clear existing-feature change may enter Cut directly only when every low-risk condition holds: clear goal, existing local behavior, one plausible path, local impact, reversible change, no security/data-loss/permission/contract risk, and quick proof. The absence of one condition is enough to keep Brainstorm controlled.
+
+Unapproved edits never use Fast. A skip records `Brainstorm required: no` and `Depth hint: skip`, writes a Design-lite contract (goal, acceptance, exclusions), and enters Cut at Depth C. Compact is only for a Core-sent hint where goal, scope, and acceptance are already clear and one named residual risk remains that is not security, data-loss, permission, contract, or irreversible work. Core never lets Brainstorm choose skip or depth.
+
+Low-risk autonomy compresses clarification; it does not authorize implementation. Cut still checks reuse, native options, overbuild, diff, and scope, and Prove still requires fresh evidence and adversarial review.
+
+## Method 2A: Brainstorm Clarification
+
+When Core selects Brainstorm for creative work — creating features, building components, adding functionality, modifying behavior, or defining an unapproved problem-directed change — load it before implementation. Clear low-risk existing behavior is the only creative-work bypass. Pure Q&A, lookup, verification, investigation-only reports, and already approved changes remain outside this entry gate.
 
 Read minimum facts, send a Semantic Echo-Back, resolve one real uncertainty at a time, and stop after this fixed artifact:
 
@@ -86,7 +96,7 @@ After the fixed summary, Brainstorm presents A/B/C for an explicit user selectio
 
 ## Method 3: Small Request Boundary
 
-Use Fast only when impact, risk, uncertainty, and proof are all small. Design-lite is for an existing feature with one plausible path after facts are read. Choose full Design when behavior, options, contracts, modules, compatibility, or rollback are unclear. Ask the user to choose when facts cannot distinguish the route.
+Use Fast only for inquiry, verification, or already approved trivial changes; unapproved edits are not Fast. Design-lite is the skip-Brainstorm path for an existing feature after the seven-factor gate passes. Choose full Design when behavior, options, contracts, modules, compatibility, or rollback are unclear. Ask the user to choose when facts cannot distinguish the route.
 
 ## Method 4: Method Lens
 

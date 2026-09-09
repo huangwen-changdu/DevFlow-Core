@@ -63,7 +63,7 @@ What it does:
 
 Absorbed into DevFlow-Core:
 
-- `Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> devflow-cut -> devflow-build -> devflow-prove` remains the default chain.
+- Ambiguous or material-risk work still uses `Sense -> Brainstorm -> [STOP: Depth A/B/C] -> (A: devflow-spec -> /devflow-plan | B: /devflow-plan | C: direct) -> devflow-cut -> devflow-build -> devflow-prove`. Clear low-risk existing behavior skips Brainstorm as Design-lite Depth C: Cut -> Build -> Prove.
 - `devflow-brainstorm` includes design approval shape, assumption challenges, and approach comparison.
 - `devflow-spec`, `commands/devflow-spec.toml`, and `scripts/devflow-spec.js` add a saved requirements source for larger or explicitly spec-requested work.
 - Generated specs default to `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`; `docs/plans/` remains implementation planning.

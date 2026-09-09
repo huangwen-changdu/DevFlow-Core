@@ -21,14 +21,15 @@ User request
 
 ## Clarification Depth
 
-Depth governs **analysis breadth only**. It never skips the echo-back, the confirm gates, the question discipline, or the recommendation duty.
+Core selects a depth hint when it sends the request. Depth governs **analysis breadth only**. It never skips the echo-back, the confirm gates, the question discipline, or the recommendation duty. Compact mode compresses analysis; it does not remove confirmation.
 
 | Tier | Entry condition | Moves |
 |---|---|---|
-| `deep` (default) | Every request, unless the user explicitly asks for a lighter pass. | Full multi-angle checklist with a per-angle report; directions with trade-offs; recommendation. |
-| `standard` | Only on explicit user request for a lighter pass. | Fitting angles instead of the full checklist; every other duty unchanged. |
+| `compact` | Core has supplied clear goal, scope, constraints, acceptance, and a bounded material-risk reason. | Echo-back, risk/edge/acceptance check, decision-impact questions only, then fixed summary. |
+| `standard` | Several relevant uncertainties or interacting impacts exist without full ambiguity. | Fitting angles with trade-offs and recommendation; every other duty unchanged. |
+| `deep` | Ambiguity, high impact, cross-module/external effects, irreversible/security/data-loss/permission/contract risk, or missing facts. | Full multi-angle checklist with per-angle report; directions with trade-offs; recommendation. |
 
-There is no fast lane. When the user asks for speed, compress wording, never gates.
+When no decision-impact gap remains, ask no clarification question. Always retain the echo-back, confirmation, fixed summary, and A/B/C gate.
 
 ## Semantic Echo-Back
 

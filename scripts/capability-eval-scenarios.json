@@ -1,12 +1,13 @@
 [
   {
     "id": "vague-design-route",
-    "scenario": "Scenario 1: Vague Feature Request",
+    "scenario": "Scenario 1: Vague Or Material-Risk Feature Request",
     "layers": ["Prompt Surface", "Harness/Validation", "Context", "Eval/Verifier", "Orchestration/Slices"],
     "expectedRoute": "Design",
     "command": "trigger:verify",
     "scenarioEvidence": [
       "Route: Design",
+      "Core must classify the request as ambiguous/material-risk before entering Brainstorm",
       "Skill path: `devflow-core -> devflow-brainstorm -> Confirmed request -> user-selected A/B/C direct branch`",
       "Brainstorm must send a Semantic Echo-Back, apply the Understanding Revision Rule when a correction changes the request, then ask or infer only goal, scope, exclusions, constraints, acceptance, and open questions.",
       "Brainstorm must output the fixed `Confirmed request` summary with `Status: clarified`, present A/B/C, and wait for explicit user selection.",
@@ -15,6 +16,23 @@
     ],
     "commandEvidence": ["Skill Trigger Verification Report"],
     "negativeConstraints": ["Brainstorm must not choose an approach, route, depth, design contract, or handoff; it starts only the user-selected direct branch.", "`devflow-core` alone selects after non-unique facts: missing or changed depth, `CUT_REDUCE`, `CUT_REUSE`, `CUT_BLOCKED`, scope drift, `BUILD_BLOCKED`, Proof `FAIL`/`BLOCKED`, changed intent, or PUA recovery.", "PUA returns recovery facts to Core before lifecycle selection."]
+  },
+  {
+    "id": "low-risk-direct-cut",
+    "scenario": "Scenario 2: Small Clear Change",
+    "layers": ["Prompt Surface", "Context", "Eval/Verifier"],
+    "expectedRoute": "Design-lite",
+    "command": "trigger:verify",
+    "scenarioEvidence": [
+      "Core may bypass Brainstorm only after the low-risk gate passes.",
+      "`CUT_PASS` enters Build, then Prove.",
+      "clear low-risk existing behavior change",
+      "select `devflow-cut` directly",
+      "Depth hint: skip",
+      "Unapproved edits never use Fast"
+    ],
+    "commandEvidence": ["clear low-risk direct Cut path"],
+    "negativeConstraints": ["Cut and Prove remain mandatory", "Unapproved edits never use Fast"]
   },
   {
     "id": "first-principles-cut",

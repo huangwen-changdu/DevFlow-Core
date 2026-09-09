@@ -1,6 +1,6 @@
 ---
 name: devflow-core
-description: "Use when starting development work, routing Problem, Fast, Design-lite, Design, Build, or Recovery work, investigating issues, handling requirements or bugs, or deciding which DevFlow skill owns the next lifecycle step. Before any creative work — creating features, building components, adding functionality, modifying behavior, or defining an unapproved problem-directed change — select devflow-brainstorm for a Confirmed request; pure Q&A, lookup, verification, and investigation-only reports remain exceptions."
+description: "Use when starting development work, routing Problem, Fast, Design-lite, Design, Build, or Recovery work, investigating issues, handling requirements or bugs, or deciding which DevFlow skill owns the next lifecycle step. Apply Core's risk gate before selecting Brainstorm or Cut; clear low-risk existing behavior may skip Brainstorm but never Cut or Prove."
 ---
 
 # DevFlow Core
@@ -13,6 +13,8 @@ Route work through the smallest reliable lifecycle. Core owns next-step selectio
 Skill Activation: devflow-core
 Trigger: <user words or task shape>
 Route: Problem / Fast / Design-lite / Design / Build / Recovery
+Brainstorm required: yes/no
+Depth hint: skip / compact / standard / deep / none
 Next skill: <skill name or none>
 Status: [DevFlow: <node> -> <next> | awaiting approval / in progress]
 ```
@@ -45,11 +47,16 @@ Unknowns: <none or specific unknown>
 
 ## Routes
 
+Apply this precedence before choosing a route: explicit independent review -> investigation or pure inquiry -> approved scope -> risk gate -> lifecycle owner. Do not route from keywords alone.
+Investigation-only reports remain a Problem exception and do not enter Brainstorm.
+
+Brainstorm is required when any material risk or decision-impact uncertainty exists. A request may bypass Brainstorm only when all of these are true: clear goal, existing local behavior, one plausible path, local impact, reversible change, no security/data-loss/permission/contract risk, and quick proof. Any unknown or failed factor keeps Brainstorm. Skipping Brainstorm compresses analysis only; it never skips Cut or Prove. Unapproved edits never use Fast.
+
 | Route | Use when | Core action |
 |---|---|---|
 | Problem | A reported problem has no explicit fix request. | Prove facts first, then select later work only if a change is known. |
-| Fast | Pure answer, lookup, verification, or one local low-risk change. | Sense, then narrow proof. |
-| Design-lite | Existing feature, one clear low-risk path, quick proof. | State goal, acceptance, exclusions; select Cut before Build. |
+| Fast | Pure answer, lookup, verification, or an already approved trivial change. | Sense, then narrow proof. |
+| Design-lite | Existing feature, all seven low-risk conditions hold. | Record `Brainstorm required: no` and `Depth hint: skip`; state goal, acceptance, exclusions; select Cut with Depth C, then Build. |
 | Design | New requirement, behavior or architecture change, ambiguity, or multiple options. | Select Brainstorm; after confirmation its user-selected A/B/C path directly starts Spec or Cut. |
 | Build | User asks to implement, fix, build, or land an approved change. | Select Cut, then Plan when construction needs several steps, then Build and Prove. |
 | Recovery | Same target remains wrong after correction or proof failure. | Select PUA, consume recovery facts, then choose a different path. |
@@ -57,6 +64,7 @@ Unknowns: <none or specific unknown>
 ## Core Flow Map
 
 ```text
+Skip-Brainstorm Design-lite success: Cut -> Build -> Prove
 A direct success: Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove
 B direct success: Brainstorm -> Cut -> Plan -> Build -> Prove
 C direct success: Brainstorm -> Cut -> Build -> Prove
@@ -79,7 +87,9 @@ Core selects only after a returned non-unique artifact. `CUT_REDUCE` and `CUT_RE
 
 ## Capability Dispatch
 
-- Unclear requirement, new feature, behavior change, or multiple options: select `devflow-brainstorm` for Semantic Echo-Back and a fixed Confirmed request.
+- Clear low-risk existing behavior with one plausible local path and quick proof: record skip depth, select `devflow-cut` directly with a Design-lite contract and Depth C; `CUT_PASS` enters Build. Keep the Cut and Prove gates.
+- An unapproved problem-directed change enters the risk gate; material risk or ambiguity selects `devflow-brainstorm`.
+- Unclear requirement, new feature, materially risky behavior change, cross-module impact, or multiple options: select `devflow-brainstorm` for Semantic Echo-Back and a fixed Confirmed request. Record `Brainstorm required: yes` and a depth hint: `compact` when goal, scope, and acceptance are already clear and one named residual risk remains that is not security, data-loss, permission, contract, or irreversible; `deep` for ambiguity or those protected risks; otherwise `standard`.
 - Explicit spec or design document: select `devflow-spec` after confirmed request.
 - New structure, dependency, abstraction, configuration, folder, or generic capability: select `devflow-cut`.
 - Approved construction work: select `devflow-build` when Core receives a non-unique construction artifact; A/B approved Plans and C `CUT_PASS` enter Build directly.

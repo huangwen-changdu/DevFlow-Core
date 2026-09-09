@@ -2,7 +2,7 @@
 
 Use these scenarios to verify the framework from request to landing. A scenario passes only when the expected skill behavior, output contract, and proof are visible.
 
-## Scenario 1: Vague Feature Request
+## Scenario 1: Vague Or Material-Risk Feature Request
 
 Input:
 
@@ -14,6 +14,7 @@ Expected behavior:
 
 - Route: Design.
 - Skill path: `devflow-core -> devflow-brainstorm -> Confirmed request -> user-selected A/B/C direct branch`.
+- Core must classify the request as ambiguous/material-risk before entering Brainstorm and pass a suitable depth hint.
 - Brainstorm must read current project context before clarifying.
 - Brainstorm must send a Semantic Echo-Back, apply the Understanding Revision Rule when a correction changes the request, then ask or infer only goal, scope, exclusions, constraints, acceptance, and open questions.
 - Brainstorm must output the fixed `Confirmed request` summary with `Status: clarified`, present A/B/C, and wait for explicit user selection.
@@ -190,7 +191,7 @@ Expected behavior:
 - Route: Fast verification
 - Skill path: `devflow-core -> devflow-prove`
 - Must check `AGENTS.md`, `CLAUDE.md`, Copilot instructions, VS Code instruction/prompt, CodeBuddy rule, plugin metadata, and Gemini metadata.
-- Must confirm platform adapters preserve `Sense -> Brainstorm clarification -> user-selected A/B/C -> direct success edges -> devflow-prove`, with Core routing non-unique exceptions.
+- Must confirm platform adapters preserve the risk gate: skip-Brainstorm Design-lite is Cut -> Build -> Prove; ambiguous or material-risk work is Sense -> Brainstorm clarification -> user-selected A/B/C -> direct success edges -> devflow-prove, with Core routing non-unique exceptions. Unapproved edits never use Fast.
 - Must confirm plugin metadata includes all shipped skills and commands.
 - Must not rewrite adapter rules unless drift is proven.
 
@@ -281,8 +282,10 @@ In README, rename "Proof Gate" to "Proof Before Done".
 
 Expected behavior:
 
-- Route: Build because implementation is requested and scope is clear.
-- Still run a lightweight Sense and Cut.
+- Route: Design-lite because implementation is requested and the low-risk gate passes.
+- This is a clear low-risk existing behavior change; Core records `Brainstorm required: no` and `Depth hint: skip`, then select `devflow-cut` directly with a Design-lite contract and Depth C.
+- Core may bypass Brainstorm only after the low-risk gate passes.
+- `CUT_PASS` enters Build, then Prove. Cut and Prove remain mandatory. Unapproved edits never use Fast.
 - Touch only the requested file.
 - Verify with text search.
 

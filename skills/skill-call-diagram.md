@@ -13,7 +13,8 @@ graph TD
     LEARN["devflow-learn"]
     EXT["External Skills"]
 
-    CORE -->|"creative intake"| BRAIN
+    CORE -->|"risk gate: Brainstorm when ambiguous/material"| BRAIN
+    CORE -->|"skip Brainstorm Design-lite Depth C"| CUT
     BRAIN -->|"A confirmed"| SPEC
     BRAIN -->|"B/C confirmed"| CUT
     SPEC -->|"A approved"| CUT
@@ -36,7 +37,7 @@ graph TD
 ## Runtime Chain
 
 ```text
-Core handles entry and artifact states without one determined successor.
+Core handles entry and artifact states without one determined successor. It evaluates explicit review, inquiry, approved scope, then risk before selecting an owner; keywords alone do not route work. Clear low-risk existing behavior may skip Brainstorm only when goal, path, impact, reversibility, risk, and proof are all small. Skip-Brainstorm Design-lite success: Cut -> Build -> Prove. Unapproved edits never use Fast. Cut and Prove still remain required.
 Brainstorm confirms intent, then the user selects A/B/C.
 A: Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove.
 B: Brainstorm -> Cut -> Plan -> Build -> Prove.

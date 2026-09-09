@@ -102,7 +102,8 @@ Other `.js` files under `scripts/` are DevFlow-Core maintainer checks, installer
 
 | Route | Use When | Flow |
 |---|---|---|
-| Fast | Pure Q&A, fact lookup, verification, or trivial code change (one line, no logic change, no risk). | Sense -> Prove |
+| Fast | Pure Q&A, fact lookup, verification, or already approved trivial code change | Sense -> Prove |
+| Design-lite | Clear low-risk existing-feature change that passes the risk gate | Sense -> Cut -> Build -> Prove (skip Brainstorm; Depth C) |
 | Design | Requirement, behavior change, feature, architecture change, unclear ask, or multi-solution decision | Sense -> Brainstorm clarification -> user-selected A/B/C: A `Spec -> Cut -> Plan -> Build -> Prove`; B `Cut -> Plan -> Build -> Prove`; C `Cut -> Build -> Prove` |
 | Build | User asks to implement, fix, land, or execute a change | Approved work enters Cut; A/B `CUT_PASS` directly enters Plan, C `CUT_PASS` directly enters Build, and completed Build directly enters Prove. Core routes only missing depth, non-success, scope drift, blocked, recovery, or changed-intent facts. |
 | Recovery | The user repeatedly points out that the same function, result, or requested capability remains wrong, incomplete, or missing in one task lifecycle; tests fail unexpectedly; edits go wrong; or the agent is about to give up | `devflow-pua` diagnoses recovery -> recovery facts return to Core -> Brainstorm re-confirms only when Core selects it -> Core re-routes |

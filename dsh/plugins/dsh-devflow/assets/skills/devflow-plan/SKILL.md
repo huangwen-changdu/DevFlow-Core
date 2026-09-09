@@ -18,7 +18,7 @@ Turn an A/B `CUT_PASS`-bounded approved design or confirmed Spec into one review
 1. Read only source material, code, tests, and conventions relevant to the approved scope. Load `skills/devflow-spec/references/spec-plan-methods.md` and `skills/devflow-plan/references/plan-methods.md` before applying Plan Pack mechanics.
 2. Map exact affected file responsibilities once in `## File Structure` before writing tasks. Reuse existing modules and name the intended file operation.
 3. Perform bounded real investigation and record it as task-level `Prewalk`: actual `Execution Trace`, Current Handoff Facts, and only the unfinished `Remaining Structured Worklist`.
-4. Split independent deliverables into small, reviewable tasks. Each task should be understandable without referring to another task, and it carries its own complete execution spec（执行规范）— `Files`, `Change mechanics`, `Steps`, and `Verify` — so the executor edits directly from the task without re-reading the plan or the code for a pre-edit view（零 view）.
+4. Split independent deliverables into small, reviewable tasks. Each task should be understandable without referring to another task, and it carries its own complete execution spec（执行规范）— `Files`, `Change mechanics`, `Steps`, and `Verify` — so the executor can edit directly while still re-reading the current task anchor. A directly changed neighbor is reread only when it is already listed and its contract could invalidate the edit.
 5. Write the plan using the required header and task contract below.
 6. Self-review Cut Decision fidelity, source coverage, File Structure, Prewalk evidence, file-operation classifications, interface consistency, concrete steps, acceptance proof, and scope exclusions.
 7. Run `node scripts/devflow-plan.js <plan-file>` when the project-level checker exists. Otherwise resolve the user-level checker according to `core-methods.md` Script Path Resolution.
@@ -56,7 +56,7 @@ Inherit `External Skills` from the Cut Decision unchanged; the Plan Pack carries
 
 `Execution mode` is not part of Cut scope and does not change the checker. It is asked at approval and recorded so Build knows how to run tasks: sequentially as the Build agent itself, through one delegated subagent while the main agent only schedules, or fan out independent tasks to parallel subagents.
 
-Each task's `Files`, `Change mechanics`, `Steps`, and `Verify` form the only execution basis（执行规范）handed to the executor: dispatch sends just these fields, and the executor edits directly from them without a pre-edit view of the plan document, the code, or the anchors. `Read-basis` / `Live anchors` remain the plan author's evidence record, not executor re-read instructions.
+Each task's `Files`, `Change mechanics`, `Steps`, and `Verify` form the execution basis（执行规范）handed to the executor. The executor must re-read the current task's named anchors. A current task anchor and directly changed neighbor may be reread only when that neighbor is already listed and its contract could invalidate the edit; this is a bounded drift check, not broad repository rediscovery. `Read-basis` / `Live anchors` remain the plan author's evidence record. Do not silently repair stale instructions, redesign outside scope, or expand the touch set.
 
 ## Required Task Contract
 
@@ -106,7 +106,7 @@ Remaining Structured Worklist:
   Done when: <fact proving this action is complete>.
 ```
 
-`File Structure` is one responsibility map, not a fixed architecture rule. For every non-trivial Code change, every task must carry a `Prewalk`. Each trace row records an action actually performed and its observed result; it cannot describe planned work. `Remaining Structured Worklist` contains only unfinished actions. Each item needs `Anchors`, `Verify`, and `Done when`; cap one task at 12 items. The executor reads the current task's execution spec (`Files`, `Change mechanics`, `Steps`, `Verify`), edits directly, runs `Verify`, appends actual evidence, and returns the observed difference as facts to `devflow-core` only when an edit or verification actually fails — there is no pre-edit plan or code view. Documentation-only tasks retain their existing exception.
+`File Structure` is one responsibility map, not a fixed architecture rule. For every non-trivial Code change, every task must carry a `Prewalk`. Each trace row records an action actually performed and its observed result; it cannot describe planned work. `Remaining Structured Worklist` contains only unfinished actions. Each item needs `Anchors`, `Verify`, and `Done when`; cap one task at 12 items. The executor reads the current task's execution spec, must reread named anchors, may reread at most one already-listed neighbor for drift detection, edits, runs `Verify`, appends actual evidence, and returns observed differences as facts to `devflow-core` when an edit or verification fails. Documentation-only tasks retain their existing exception.
 
 Use only `Create`, `Modify`, and `Test` file-operation labels. For a `Code change`, every existing-file row must name a symbol or stable anchor; `Create` rows use `new file`. `Current behavior`, `Target behavior`, `Change mechanics`, and `Call impact` are mandatory. `Change mechanics` must contain the smallest code snippet, pseudocode, or exact replacement rule that removes implementation inference. Interfaces name exact symbols and input/output shape. The verification step and `Verify` field name the trigger/input, expected result, and runnable command or manual scenario.
 
@@ -138,7 +138,7 @@ Before leaving this skill, confirm:
 - [ ] `Spec coverage` maps the source to plan tasks.
 - [ ] Header, constraints, File Structure, interfaces, concrete steps, acceptance, verification, context-specific comments, exclusions, and task-level Prewalk records are present.
 - [ ] Each trace entry is an observed past action/result; each remaining worklist item is bounded, verified, and fact-complete.
-- [ ] Every task is independently understandable, requires no pre-edit read, and has no unresolved or vague placeholder.
+- [ ] Every task is independently understandable, requires named-anchor rereads and at most one already-listed neighbor, and has no unresolved or vague placeholder.
 - [ ] The checker passed when available.
 - [ ] The user reviewed the written plan.
 - [ ] An approved A/B Plan entered `devflow-build`; any scope-drift facts returned to `devflow-core`.
