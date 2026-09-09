@@ -19,6 +19,10 @@ Verification:
 
 Split multi-step work into one to five testable slices. Each slice names files, user-visible or contract behavior, verification, and comment requirements. Verify a slice before moving on whenever a focused check exists.
 
+Build owns how. A v2 plan task gives `Files`, `Change`, `Acceptance`, `Verify`, and `Not doing`; the executor reads the named anchors plus one directly changed neighbor, chooses the smallest implementation inside that boundary, and records the choice in the task's `## Progress` evidence. It does not wait for Plan to pre-decide the edit, and it does not widen the boundary. Legacy plans that prescribe `Change mechanics` are followed as written.
+
+After a slice passes its verification, write back the plan's `## Progress` row: `doing` while in flight, `done` with the command and key result when verified. On a legacy plan without a Progress table, report the same evidence in the completion message.
+
 ## Readability Outcome Check
 
 Before handoff, review changed code from the perspective of a maintainer familiar with the project but not this change. Use names, structure, extraction, comments, and tests as appropriate; do not apply any technique mechanically.

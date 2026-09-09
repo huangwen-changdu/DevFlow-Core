@@ -41,6 +41,7 @@
 | 2026-07-31 | P1-5b 安装升级路径：`--write` 记录 `.devflow-manifest.json`（版本+sha256），`--check` 报版本差 | `scripts/install-devflow.js` | `npm run install:verify` | done |
 | 2026-07-31 | P2-6 本地可观测性：`DEVFLOW_OBSERVE=1` 时项目根追加会话日志，默认关闭 | `hooks/devflow-session-start.js` + `.gitignore` | 见该 hook 的验证场景 | done |
 | 2026-07-31 | 本迭代文档 | `docs/iteration-plan.md` | 本文档自身 | done |
+| 2026-09-10 | 可用性重构：Plan v2 契约（6 字段 + Progress + Rejected）、Build 有界 how 与回写、Prove 落地回写、双索引与 `--index` 机检 | `skills/devflow-{plan,cut,build,prove,learn,core}/`、`scripts/devflow-plan.js`、`docs/plans/INDEX.md`、`docs/features/INDEX.md` | `npm run index:verify` + `npm run verify:all` | done |
 
 批次执行依据：`docs/plans/2026-07-31-devflow-harness-iteration.md`（Status: approved → in-progress → done 的迁移即本表状态来源）。
 

@@ -35,10 +35,11 @@ Apply these principles to every route:
 Read the narrowest useful facts:
 
 1. Project rules and relevant source, tests, commands, and current docs.
-2. `.copilot/LEARNING_INDEX.md`, then only cards whose Trigger and Scope match.
-3. `docs/project-knowledge/AI-START-HERE.md` or `index.md`, then only navigation-selected documents.
-4. `graphify-out/GRAPH_REPORT.md` when architecture impact is in scope.
-5. Available environment skills; record a matching specialist skill without widening DevFlow scope. For a matched specialist, record the bounded-work contract:
+2. `docs/features/INDEX.md` and `docs/plans/INDEX.md` when present: existing capabilities, their entry points, and plan status. Missing indexes are non-blocking.
+3. `.copilot/LEARNING_INDEX.md`, then only cards whose Trigger and Scope match.
+4. `docs/project-knowledge/AI-START-HERE.md` or `index.md`, then only navigation-selected documents.
+5. `graphify-out/GRAPH_REPORT.md` when architecture impact is in scope.
+6. Available environment skills; record a matching specialist skill without widening DevFlow scope. For a matched specialist, record the bounded-work contract:
 
 ```text
 Owner: current DevFlow node

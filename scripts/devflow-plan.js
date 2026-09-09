@@ -1,4 +1,5 @@
 const fs = require("node:fs");
+const path = require("node:path");
 
 const requiredGlobalFields = ["Goal", "Architecture", "Tech Stack", "Source", "Spec coverage", "External Skills"];
 const requiredTaskFields = ["Task", "Task type", "Files", "Interfaces", "Steps", "Acceptance", "Verify", "Comments", "Not doing"];
@@ -38,10 +39,25 @@ const worklistItemPattern = /^\s*-\s*\[ \]\s+(.+)$/gim;
 const worklistDetailNames = ["Anchors", "Verify", "Done when"];
 const maximumWorklistItems = 12;
 
+// v2 契约（2026-09-10 可用性重构）：计划只保留排序与验收字段；实现改法归 Build。
+// 判定：含 `## Progress` 且不含 `Prewalk` 视为 v2；否则走 legacy 分支，旧计划无需迁移。
+const v2GlobalFields = ["Goal", "Not doing", "Cut"];
+const v2TaskFields = ["Task", "Files", "Change", "Acceptance", "Verify", "Not doing"];
+const v2AllFields = [...v2GlobalFields, ...v2TaskFields];
+const v2FieldPatterns = Object.fromEntries(
+  v2AllFields.map((field) => [field, new RegExp(`^(?:\\*\\*)?${field}(?:\\*\\*)?\\s*:`, "im")])
+);
+const progressHeadingPattern = /^##\s+Progress\s*$/im;
+const progressRowPattern = /^\s*\|\s*(\d+)\s*\|\s*([^|]*)\|\s*(todo|doing|done)\s*\|\s*([^|]*)\|/gim;
+const indexStatuses = ["active", "planned", "legacy", "retired"];
+const indexPaths = { plans: "docs/plans/INDEX.md", features: "docs/features/INDEX.md" };
+
 /** Print the checker command contract and default plan landing. */
 function usage() {
-  console.log("Usage: node scripts/devflow-plan.js [plan-file] [--self-test] [--json]");
+  console.log("Usage: node scripts/devflow-plan.js [plan-file] [--index] [--self-test] [--json]");
   console.log("Checks whether a DevFlow Plan Pack has an executable header, task contracts, and plan landing.");
+  console.log("v2 plans carry a slim header, per-task Files/Change/Acceptance/Verify/Not doing, and a ## Progress table; legacy plans keep the old contract.");
+  console.log("--index checks docs/plans/INDEX.md and docs/features/INDEX.md against the filesystem.");
   console.log("Default plan landing is docs/plans/YYYY-MM-DD-<short-kebab-name>.md unless the project documents another plan path.");
   console.log("--json prints a single-line machine-readable summary; optional Status header values: " + validStatuses.join(" | "));
 }
@@ -311,8 +327,207 @@ function checkTask(task, fileStructure) {
   };
 }
 
-/** Validate global plan headers and all independently scoped task contracts. */
+/** v2 计划判定：新格式带 Progress 表且不含 Prewalk；旧格式继续走 legacy 校验。 */
+function detectV2(body) {
+  return progressHeadingPattern.test(body) && !/^\s*Prewalk\s*:\s*$/im.test(body);
+}
+
+/** Extract one v2 field block; ends at the next v1 or v2 field line. */
+function v2FieldBlock(body, field) {
+  const lines = body.split(/\r?\n/);
+  const start = lines.findIndex((line) => v2FieldPatterns[field].test(line));
+  if (start < 0) return "";
+
+  const value = lines[start].replace(v2FieldPatterns[field], "").trim();
+  const end = lines.findIndex(
+    (line, index) =>
+      index > start && (v2AllFields.some((name) => v2FieldPatterns[name].test(line)) || /^#{1,6}\s+\S/.test(line))
+  );
+  return [value, ...lines.slice(start + 1, end < 0 ? lines.length : end)].join("\n").trim();
+}
+
+/** Split a v2 plan at Task fields; the Progress table is not part of any task body. */
+function splitTasksV2(body) {
+  const lines = body.split(/\r?\n/);
+  const progressIndex = lines.findIndex((line) => progressHeadingPattern.test(line));
+  const limit = progressIndex < 0 ? lines.length : progressIndex;
+  const taskStarts = [];
+  lines.forEach((line, index) => {
+    if (index < limit && v2FieldPatterns.Task.test(line)) taskStarts.push(index);
+  });
+  return taskStarts.map((start, index) => {
+    const end = taskStarts[index + 1] ?? limit;
+    return { number: index + 1, body: lines.slice(start, end).join("\n") };
+  });
+}
+
+/** Validate one v2 task: files, change intent, acceptance, proof, and exclusion. */
+function checkTaskV2(task) {
+  const missing = v2TaskFields.filter((field) => !v2FieldPatterns[field].test(task.body));
+  const files = v2FieldBlock(task.body, "Files");
+  const change = v2FieldBlock(task.body, "Change");
+  const verify = v2FieldBlock(task.body, "Verify");
+  const notDoing = v2FieldBlock(task.body, "Not doing");
+  const fileEntries = parseFileEntries(files);
+  const invalidFiles = fileEntries.filter(({ match }) => !match).map(({ line }) => line);
+  const unlocatedCodeFiles = findUnlocatedCodeFiles(fileEntries);
+  const unresolved = findMatches(task.body, unresolvedPatterns);
+  const vague = findMatches([change, v2FieldBlock(task.body, "Acceptance"), verify].join("\n"), vaguePatterns);
+  // v2 不强制精确改法；只要求 Change 说出可执行意图，具体实现归 Build。
+  const missingChange = !implementationVerbPattern.test(change) || genericMechanicsPattern.test(change);
+  const incompleteVerification = !hasVerificationExpectation(verify);
+
+  return {
+    number: task.number,
+    missing,
+    unresolved,
+    vague,
+    invalidFiles,
+    unlocatedCodeFiles,
+    missingChange,
+    incompleteVerification,
+    missingNotDoing: !notDoing,
+    ok:
+      missing.length === 0 &&
+      unresolved.length === 0 &&
+      vague.length === 0 &&
+      invalidFiles.length === 0 &&
+      unlocatedCodeFiles.length === 0 &&
+      !missingChange &&
+      !incompleteVerification &&
+      Boolean(notDoing)
+  };
+}
+
+/** Validate the v2 plan contract: slim header, task rows, Progress table, and Cut subtraction. */
+function checkPlanV2(body) {
+  const tasks = splitTasksV2(body);
+  const taskResults = tasks.map(checkTaskV2);
+  const missingGlobal = v2GlobalFields.filter((field) => !v2FieldPatterns[field].test(body));
+  const cutBlock = v2FieldBlock(body, "Cut");
+  const missingRejected = !/Rejected\s*:\s*\S/im.test(cutBlock);
+  const statusMatch = body.match(statusPattern);
+  const status = statusMatch ? statusMatch[1].trim() : "legacy";
+  const invalidStatus = statusMatch ? !validStatuses.includes(status) : false;
+  const progress = [...body.matchAll(progressRowPattern)].map((match) => ({
+    number: Number(match[1]),
+    state: match[3],
+    evidence: match[4].trim()
+  }));
+  const missingEvidence = progress.filter((row) => row.state === "done" && (!row.evidence || row.evidence === "-"));
+  const progressMismatch = progress.length !== tasks.length;
+  const doneStatusNeedsAllDone = status === "done" && progress.some((row) => row.state !== "done");
+
+  return {
+    v2: true,
+    status,
+    invalidStatus,
+    missingGlobal,
+    cut: { missingRejected },
+    tasks: taskResults,
+    progress: { count: progress.length, mismatch: progressMismatch, missingEvidence },
+    doneStatusNeedsAllDone,
+    ok:
+      missingGlobal.length === 0 &&
+      !missingRejected &&
+      !invalidStatus &&
+      tasks.length > 0 &&
+      taskResults.every((task) => task.ok) &&
+      !progressMismatch &&
+      missingEvidence.length === 0 &&
+      !doneStatusNeedsAllDone
+  };
+}
+
+/** Read a markdown table into cell arrays, skipping header and separator rows. */
+function readMarkdownTable(filePath) {
+  const lines = fs.readFileSync(filePath, "utf8").split(/\r?\n/).filter((line) => /^\s*\|/.test(line));
+  const rows = lines.map((line) => line.split("|").slice(1, -1).map((cell) => cell.trim()));
+  return rows.filter((cells) => !cells.every((cell) => /^:?-{2,}:?$/.test(cell))).slice(1);
+}
+
+/** Check docs/plans/INDEX.md and docs/features/INDEX.md against the filesystem. */
+function checkIndexes(root) {
+  const problems = [];
+  const plansDir = path.join(root, "docs", "plans");
+  const featuresDir = path.join(root, "docs", "features");
+  const plansIndex = path.join(root, ...indexPaths.plans.split("/"));
+  const featuresIndex = path.join(root, ...indexPaths.features.split("/"));
+  const planFiles = fs.existsSync(plansDir)
+    ? fs.readdirSync(plansDir).filter((name) => name.endsWith(".md") && name !== "INDEX.md")
+    : [];
+  const planRows = fs.existsSync(plansIndex) ? readMarkdownTable(plansIndex) : [];
+  const featureRows = fs.existsSync(featuresIndex) ? readMarkdownTable(featuresIndex) : [];
+
+  if (planFiles.length > 0 && !fs.existsSync(plansIndex)) {
+    problems.push("docs/plans/INDEX.md missing while plan files exist");
+  }
+  for (const file of planFiles) {
+    const rows = planRows.filter((cells) => cells.some((cell) => cell.includes(file)));
+    if (rows.length === 0) problems.push(`plan not listed in docs/plans/INDEX.md: ${file}`);
+    if (rows.length > 1) problems.push(`plan listed more than once in docs/plans/INDEX.md: ${file}`);
+  }
+  for (const cells of planRows) {
+    const link = cells.find((cell) => cell.includes(".md"));
+    const file = link ? (link.match(/([^()/]+\.md)/) || [])[1] : null;
+    if (!file) continue;
+    if (!planFiles.includes(file)) problems.push(`docs/plans/INDEX.md lists unknown plan: ${file}`);
+    const filePath = path.join(plansDir, file);
+    if (!fs.existsSync(filePath)) continue;
+    const body = fs.readFileSync(filePath, "utf8");
+    const statusMatch = body.match(statusPattern);
+    const expected = statusMatch ? statusMatch[1].trim() : "legacy";
+    const rowStatus = (cells[2] || "").trim();
+    if (rowStatus && rowStatus !== expected) {
+      problems.push(`status mismatch for ${file}: index ${rowStatus} vs file ${expected}`);
+    }
+    if (rowStatus === "done" && (!(cells[4] || "").trim() || (cells[4] || "").trim() === "-")) {
+      problems.push(`done plan needs landing evidence in docs/plans/INDEX.md: ${file}`);
+    }
+    const featureCell = (cells[5] || "").trim();
+    if (featureCell && featureCell !== "-" && !featureRows.some((row) => (row[0] || "").includes(featureCell))) {
+      problems.push(`feature entry not found in docs/features/INDEX.md: ${featureCell}`);
+    }
+  }
+  for (const cells of featureRows) {
+    const status = (cells[3] || "").trim();
+    if (status && !indexStatuses.includes(status)) {
+      problems.push(`invalid feature status in docs/features/INDEX.md: ${status}`);
+    }
+    const files = (cells[5] || "").split(",").map((value) => value.replaceAll("`", "").trim()).filter((value) => value && value !== "-");
+    for (const rel of files) {
+      if (!fs.existsSync(path.join(root, rel))) problems.push(`feature file missing: ${rel}`);
+    }
+    const plan = (cells[6] || "").replaceAll("`", "").trim();
+    if (plan && plan !== "-" && !fs.existsSync(path.join(root, "docs", "plans", plan))) {
+      problems.push(`feature source plan missing: ${plan}`);
+    }
+  }
+  return problems;
+}
+
+/** Run the plan and feature index consistency check. */
+function runIndexCheck(json) {
+  const problems = checkIndexes(path.resolve(__dirname, ".."));
+  if (json) {
+    console.log(JSON.stringify({ checker: "plan-index", problems, judgment: problems.length === 0 ? "PASS" : "FAIL" }));
+  } else {
+    console.log("DevFlow plan and feature index report");
+    console.log(`Index files: ${indexPaths.plans} | ${indexPaths.features}`);
+    if (problems.length === 0) console.log("Problems: none");
+    for (const problem of problems) console.log(`Problem: ${problem}`);
+    console.log(`Judgment: ${problems.length === 0 ? "PASS" : "FAIL"}`);
+  }
+  return problems.length === 0 ? 0 : 1;
+}
+
+/** Dispatch the v2 and legacy plan contracts so old plans keep validating. */
 function checkPlan(body) {
+  return detectV2(body) ? checkPlanV2(body) : checkPlanLegacy(body);
+}
+
+/** Validate global plan headers and all independently scoped task contracts. */
+function checkPlanLegacy(body) {
   const fileStructure = checkFileStructure(body);
   const tasks = splitTasks(body);
   const requiresFileStructure = tasks.some((task) => fieldBlock(task.body, "Task type") === "Code change");
@@ -366,12 +581,21 @@ function report(body, filePath, json) {
     console.log(
       JSON.stringify({
         checker: "plan",
+        format: result.v2 ? "v2" : "legacy",
         landing: landing.message,
         status: result.status,
         invalidStatus: result.invalidStatus,
         missingGlobal: result.missingGlobal,
-        globalUnresolved: result.globalUnresolved,
-        fileStructure: result.fileStructure.ok ? "ok" : "missing or invalid",
+        globalUnresolved: result.globalUnresolved || [],
+        fileStructure: result.v2 ? "v2" : result.fileStructure.ok ? "ok" : "missing or invalid",
+        cut: result.v2 ? { missingRejected: result.cut.missingRejected } : null,
+        progress: result.v2
+          ? {
+              count: result.progress.count,
+              mismatch: result.progress.mismatch,
+              missingEvidence: result.progress.missingEvidence.length
+            }
+          : null,
         tasks: result.tasks.map((task) => ({ number: task.number, ok: task.ok })),
         judgment
       })
@@ -381,22 +605,43 @@ function report(body, filePath, json) {
 
   console.log("DevFlow plan pack report");
   console.log(landing.message);
+  console.log(`Format: ${result.v2 ? "v2" : "legacy"}`);
   console.log(`Status: ${result.invalidStatus ? "invalid" : result.status}`);
-  for (const field of requiredGlobalFields) console.log(`${field}: ${result.missingGlobal.includes(field) ? "missing" : "ok"}`);
-  console.log(`Global unresolved markers: ${result.globalUnresolved.join(", ") || "none"}`);
-  console.log(
-    `File Structure: ${
-      !result.requiresFileStructure ? "documentation-only exception" : result.fileStructure.ok ? "ok" : "missing or invalid"
-    }`
-  );
-  if (result.requiresFileStructure && !result.fileStructure.ok) {
-    console.log(`File Structure invalid rows: ${result.fileStructure.invalidRows.join("; ") || "none"}`);
+  for (const field of result.v2 ? v2GlobalFields : requiredGlobalFields) {
+    console.log(`${field}: ${result.missingGlobal.includes(field) ? "missing" : "ok"}`);
+  }
+  if (result.v2) {
+    console.log(`Cut Rejected: ${result.cut.missingRejected ? "missing" : "ok"}`);
+    console.log(`Progress rows: ${result.progress.count} (tasks ${result.tasks.length})${result.progress.mismatch ? " mismatch" : ""}`);
+    for (const row of result.progress.missingEvidence) console.log(`Progress row ${row.number} is done without evidence`);
+    if (result.doneStatusNeedsAllDone) console.log("Status done requires every Progress row done");
+  } else {
+    console.log(`Global unresolved markers: ${result.globalUnresolved.join(", ") || "none"}`);
+    console.log(
+      `File Structure: ${
+        !result.requiresFileStructure ? "documentation-only exception" : result.fileStructure.ok ? "ok" : "missing or invalid"
+      }`
+    );
+    if (result.requiresFileStructure && !result.fileStructure.ok) {
+      console.log(`File Structure invalid rows: ${result.fileStructure.invalidRows.join("; ") || "none"}`);
+    }
   }
   console.log(`Tasks: ${result.tasks.length}`);
   if (result.tasks.length === 0) console.log("Missing: at least one Task field");
 
   for (const task of result.tasks) {
-    const issues = [
+    const issues = result.v2
+      ? [
+          ...task.missing.map((field) => `missing ${field}`),
+          ...task.unresolved.map((match) => `unresolved ${match}`),
+          ...task.vague.map((match) => `vague ${match}`),
+          ...task.invalidFiles.map((line) => `unclassified file ${line}`),
+          ...task.unlocatedCodeFiles.map((line) => `missing file symbol/anchor ${line}`),
+          ...(task.missingChange ? ["Change needs an executable intent verb"] : []),
+          ...(task.missingNotDoing ? ["missing Not doing exclusion"] : []),
+          ...(task.incompleteVerification ? ["Verify needs command/scenario and expected result"] : [])
+        ]
+      : [
       ...task.missing.map((field) => `missing ${field}`),
       ...task.unresolved.map((match) => `unresolved ${match}`),
       ...task.vague.map((match) => `vague ${match}`),
@@ -621,8 +866,40 @@ function selfTest() {
   if (!checkPlanLanding("docs/plans/2026-07-14-add-plan-scanner.md").ok) throw new Error("Self-test expected docs/plans landing to pass");
   if (checkPlanLanding("docs/features/add-plan-scanner.md").ok) throw new Error("Self-test expected docs/features plan landing to fail");
 
+  const validV2Plan = [
+    "Status: approved",
+    "Goal: validate the slim v2 plan contract",
+    "Not doing: architecture review",
+    "Cut: 做 checker | 不做 迁移旧计划 | 复用 既有 self-test | 验证 node scripts/devflow-plan.js | Rejected: 新增独立脚本 — 复用既有 checker",
+    "## Tasks",
+    "",
+    "Task: Add v2 validation",
+    "Files:",
+    "- Modify: scripts/devflow-plan.js | symbol: `checkPlanV2` | validate the slim contract",
+    "Change: add v2 field validation and dispatch",
+    "Acceptance: v2 plans pass and legacy plans keep passing",
+    "Verify: run `node scripts/devflow-plan.js --self-test` expect exit 0",
+    "Not doing: changing legacy validation",
+    "",
+    "## Progress",
+    "",
+    "| # | Task | Status | Evidence |",
+    "|---|---|---|---|",
+    "| 1 | Add v2 validation | todo | - |"
+  ].join("\n");
+  if (!detectV2(validV2Plan)) throw new Error("Self-test expected v2 detection to pass");
+  if (!checkPlan(validV2Plan).ok) throw new Error("Self-test expected valid v2 plan to pass");
+  if (checkPlan(validV2Plan.replace(/Rejected:[^\n]*/, "Rejected:")).ok) throw new Error("Self-test expected missing Rejected to fail");
+  if (checkPlan(validV2Plan.replace("| 1 | Add v2 validation | todo | - |", "| 1 | Add v2 validation | done | - |")).ok) {
+    throw new Error("Self-test expected a done Progress row without evidence to fail");
+  }
+  if (checkPlan(validV2Plan.replace("| 1 | Add v2 validation | todo | - |", "")).ok) {
+    throw new Error("Self-test expected a Progress/task count mismatch to fail");
+  }
+  if (typeof checkIndexes !== "function") throw new Error("Self-test expected the index checker to exist");
+
   console.log("DevFlow plan self-test passed");
-  console.log("Checked code-level fields, precise file locations, mechanics evidence, verification expectations, Read-basis/Live anchors handoff facts, documentation-only exception, external-skill declaration, and plan landing guidance");
+  console.log("Checked v2 and legacy plan contracts, Progress evidence, Cut Rejected, code-level fields, precise file locations, verification expectations, documentation-only exception, external-skill declaration, and plan landing guidance");
 }
 
 const args = process.argv.slice(2);
@@ -633,6 +910,9 @@ if (args.includes("--help") || args.includes("-h")) {
 if (args.includes("--self-test")) {
   selfTest();
   process.exit(0);
+}
+if (args.includes("--index")) {
+  process.exit(runIndexCheck(args.includes("--json")));
 }
 const targetArg = args.find((arg) => !arg.startsWith("-"));
 process.exitCode = report(readInput(args), targetArg, args.includes("--json"));

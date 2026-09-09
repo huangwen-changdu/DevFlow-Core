@@ -40,7 +40,10 @@ Reuse Check: what existing capability was checked first?
 Trace Check: what accepted request does each key change trace to?
 Scope Check: what tempting but unrequested feature was removed?
 Diff Check: which user goal does each changed file serve?
+Rejected: what candidate scope, dependency, abstraction, or config was cut — or none plus the evidence that ruled each candidate out?
 ```
+
+`Rejected` is not optional. A gate that answers only "what is included" cannot show whether any subtraction happened, which is how a Cut degrades into a stamp. Name the cut candidate, or name the evidence that closed each candidate out.
 
 ## Method 8A: Contextual Design Quality Check
 

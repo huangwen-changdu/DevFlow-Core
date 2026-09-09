@@ -163,7 +163,7 @@ for (const [rel, body] of [
   ["skills/devflow-plan/references/plan-methods.md", planMethods],
   ["skills/devflow-build/SKILL.md", buildSkill]
 ]) {
-  assert(body.includes("current task anchor"), `${rel} must allow bounded current-anchor rereads`);
+  assert(body.includes("directly changed neighbor"), `${rel} must allow bounded anchor and neighbor reads`);
   assert(body.includes("broad"), `${rel} must prohibit broad rediscovery`);
 }
 
@@ -239,6 +239,22 @@ runVerifier("scripts/validate-host-adapters.js");
 runVerifier("scripts/validate-skill-triggers.js");
 runVerifier("scripts/devflow-budget.js");
 runVerifier("scripts/validate-route-consistency.js");
+
+// v2 计划契约与双索引：契约文本、机检入口与索引文件必须同时存在，否则规则会与实现漂移。
+const usabilityPlanSkill = read("skills/devflow-plan/SKILL.md");
+for (const marker of ["## Progress", "Rejected", "Six fields per task", "Landed:"]) {
+  assert(usabilityPlanSkill.includes(marker), `devflow-plan must publish the v2 contract marker ${marker}`);
+}
+const usabilityPlanChecker = read("scripts/devflow-plan.js");
+for (const marker of ["v2TaskFields", "detectV2", "checkIndexes", "--index"]) {
+  assert(usabilityPlanChecker.includes(marker), `devflow-plan.js must implement the v2/index marker ${marker}`);
+}
+for (const indexFile of ["docs/plans/INDEX.md", "docs/features/INDEX.md"]) {
+  assert(fs.existsSync(path.join(root, indexFile)), `capability index missing: ${indexFile}`);
+}
+assert(read("AGENTS.md").includes("docs/features/INDEX.md"), "AGENTS.md must point Sense at the capability index");
+assert(read("skills/devflow-learn/SKILL.md").includes("docs/features/INDEX.md"), "devflow-learn must own the capability index row");
+assert(read("skills/devflow-prove/SKILL.md").includes("Landed:"), "devflow-prove must write the landing record on PASS");
 
 console.log("DevFlow validation passed");
 console.log(`Checked ${requiredFiles.length} runtime files, ${cards.length} learning cards, and selected host and trigger contracts`);

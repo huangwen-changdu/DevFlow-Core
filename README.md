@@ -85,12 +85,15 @@ When installed into a target project, only the target-runtime scripts are copied
 | Script | Use inside target project |
 |---|---|
 | `node scripts/devflow-spec.js <spec-file>` | Check that a DevFlow spec has required sections, clear content, and the right `docs/specs/` landing path before planning. |
-| `node scripts/devflow-plan.js <plan-file>` | Check that a Plan Pack has executable header fields, categorized `Files` with `new file` or a symbol/stable anchor, `Task type`, exact `Interfaces`, code-task `Current behavior` / `Target behavior` / `Change mechanics` / `Call impact`, code-level Steps, and verification triggers, expectations, and commands before implementation. `Documentation-only` tasks retain an explicit non-runtime exception. The checker validates structure rather than generating plans or judging architecture. |
+| `node scripts/devflow-plan.js <plan-file>` | Check a Plan Pack. v2 plans need a slim header, six fields per task (`Task` / `Files` / `Change` / `Acceptance` / `Verify` / `Not doing`), a `Cut` line with a non-empty `Rejected`, and a `## Progress` table whose `done` rows carry evidence. Legacy plans that still carry `Task type`, `Interfaces`, `Change mechanics`, `Steps`, and `Prewalk` keep validating under the legacy rules. The checker validates structure rather than generating plans or judging architecture. |
+| `node scripts/devflow-plan.js --index` | Check that `docs/plans/INDEX.md` and `docs/features/INDEX.md` match the filesystem: every plan has exactly one row, row status matches the file header, `done` rows carry landing evidence, and feature rows point at real files and plans. |
 | `node scripts/devflow-review.js <plan-or-diff-file>` | Check whether a plan or diff includes the required reuse, native, overbuild, diff, and scope gates before detailed review. |
 | `node scripts/devflow-debt.js .` | Harvest intentional `devflow:` simplification markers into a debt report. |
 | `node scripts/devflow-audit.js <target-directory>` | Run a repo-wide audit candidate scan for overengineering, missed reuse, stdlib/native replacements, and YAGNI abstractions. |
 
-Saved specs should land in the current target project's `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` unless that project already documents another specs path. Saved implementation plans should land in the current target project's `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`. `docs/features/` is for feature ledgers, not generated specs or task plans.
+Saved specs should land in the current target project's `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` unless that project already documents another specs path. Saved implementation plans should land in the current target project's `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`. `docs/features/` is for feature ledgers and the capability index, not generated specs or task plans.
+
+`docs/features/INDEX.md` and `docs/plans/INDEX.md` are the one-hop entry for a new session: the feature index says what exists, where its entry point is, and how to verify it; the plan index says which plans are approved, in progress, or landed. Both are machine-checked by `node scripts/devflow-plan.js --index` and `npm run index:verify`.
 
 Specs and plans may carry an optional `Status: draft | approved | in-progress | done` header for cross-session lifecycle tracking; `node scripts/devflow-spec.js` and `node scripts/devflow-plan.js` validate the value and treat a missing field as legacy. Long-term iteration planning for DevFlow-Core itself lives in [docs/iteration-plan.md](docs/iteration-plan.md).
 

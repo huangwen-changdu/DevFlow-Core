@@ -19,7 +19,7 @@ When no plan file exists, the approved design and Cut Decision form the Build Co
 
 Load `skills/devflow-build/references/build-methods.md` after this section and before implementation slices. It owns the detailed minimal-change and slice discipline.
 
-There is no broad pre-edit plan review. The executor reads only the current task's execution spec — `Files`, `Change mechanics`, `Steps`, `Verify` — and must reread the current task's named anchors. A current task anchor plus a directly changed neighbor may be reread only when that neighbor is already listed in the task `Files` and its contract could invalidate the edit. An actual edit, anchor mismatch, or verification failure must stop and return `BUILD_BLOCKED` with facts to `devflow-core`: observed mismatch, affected anchor, and smallest replan decision. Do not broadly rediscover, guess, silently repair the plan, or expand scope.
+There is no broad pre-edit plan review. The executor reads the current task's `Files`, `Change`, `Acceptance`, `Verify`, and `Not doing`, and may read the task's named anchors plus one directly changed neighbor to choose the smallest implementation. Build owns how inside the task boundary; it must not broadly rediscover the repository, redesign outside the task boundary, silently repair the plan, or expand scope. An anchor mismatch or verification failure must stop and return `BUILD_BLOCKED` with facts to `devflow-core`: observed mismatch, affected anchor, and smallest replan decision.
 
 Every skill declared in `External Skills` (Cut Decision or plan header) must actually be loaded through the platform's skill mechanism, or the reason it does not apply recorded; loading alone is not completion — Build requires the specialist's returned result, not-applicable, or failure facts. A specialist result implying structure outside the approved scope returns scope-drift facts to `devflow-core`, not silent adoption. Skill loading is not a pre-edit view and remains mandatory.
 
@@ -44,9 +44,11 @@ If work touches more than one file or one logical step, create Implementation Sl
 
 When saving a plan file, use `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`, resolved from the current target project's root, unless that project already documents another plan/spec path. Do not save implementation plans under `docs/features/`; that directory is for feature ledgers.
 
-For multi-step work, tasks must cite the approved source, be small and verifiable, and follow the required task contract (Task: / Task type: / Files: / Interfaces: / Current behavior: / Target behavior: / Change mechanics: / Call impact: / Steps: / Acceptance: / Verify: / Comments: / Not doing:) defined in `skills/devflow-plan/SKILL.md`.
+For multi-step work, tasks must cite the approved source, be small and verifiable, and follow the six-field contract (`Task` / `Files` / `Change` / `Acceptance` / `Verify` / `Not doing`) in `skills/devflow-plan/SKILL.md`. Legacy plans with `Change mechanics` and `Prewalk` stay executable under their own contract.
 
-No unresolved markers. For `Code change`, the dispatched execution spec follows the recorded file symbol/anchor and `Change mechanics`; do not re-decide the implementation mechanism in Build. `Current behavior`, `Target behavior`, and `Call impact` are the plan author's records; bounded current-anchor/neighbor reread is allowed only for drift detection. The verification step must retain its trigger/input, expected result, and command or manual scenario. `Documentation-only` applies only to tasks with no runtime code files and explicit `documentation-only` interfaces. No "add tests" without naming the behavior. No "handle edge cases" without naming the edge case. No "similar to Task N" shortcuts; repeat enough detail for each task to stand alone.
+No unresolved markers. `Change` states the executable intent and boundary; add exact mechanics only when the change crosses a module contract, is irreversible, or touches security or data boundaries. Otherwise Build chooses the smallest implementation and records it as Progress evidence. The verification step keeps its trigger/input, expected result, and command or manual scenario. A task whose files are all documentation paths is documentation-only. No "add tests" without naming the behavior, no "handle edge cases" without naming the edge case, no "similar to Task N" shortcuts.
+
+Close each task by writing back its `## Progress` row: `doing` when starting, `done` with the command and key result when its `Verify` passes. A `done` row without evidence fails the checker. On a legacy plan without a Progress table, report the same evidence in the completion message.
 
 Before Build, run `node scripts/devflow-plan.js <plan-file>` when a plan is saved to a file. If not found at `scripts/devflow-plan.js` (project-level), try `~/.codex/scripts/devflow-plan.js` or `~/.claude/scripts/devflow-plan.js` (user-level). Do NOT look under `skills/scripts/`. See `core-methods.md` Script Path Resolution.
 
@@ -191,7 +193,7 @@ If any file has no goal link, remove that change.
 | "We'll verify everything at the end." | Verify slices when focused checks exist. |
 | "Docs changes do not need proof." | Docs/rules/skills need validation just like code. |
 | "The issue only mentions one caller." | Check sibling callers before choosing the fix location. |
-| "The plan is approved, so I just execute." | Right: the approved execution spec is edited directly; an actual edit or verification failure returns `BUILD_BLOCKED` to Core. |
+| "The plan is approved, so I just execute." | The plan fixes the boundary and proof; Build still chooses the smallest implementation inside that boundary. A real edit or verification failure returns `BUILD_BLOCKED` to Core. |
 | "I'll infer the missing step." | Guessing past a gap is forbidden; unclear instructions return `BUILD_BLOCKED` facts. |
 | "The code is self-explanatory." | That does not waive a comment required by the approved contract, project convention, or a non-obvious boundary. |
 | "Comments will get stale." | Keep a required comment accurate or remove a stale one; a stale explanation is not a reason to skip a needed decision record. |

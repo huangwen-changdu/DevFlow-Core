@@ -383,7 +383,7 @@ Expected behavior:
 - Cut compares nearest order-history patterns and records convention, responsibility, performance, and readability checks.
 - It must not require a Service split, interface, cache, or fixed function length without current evidence.
 - Build makes business intent, key rules, failure paths, and side effects locally understandable, then records a Readability Check.
-- Prove reviews the actual diff against File Structure, Prewalk evidence, project-convention alignment, local understandability, responsibility boundaries, and any cache benefit/invalidation/consistency claim.
+- Prove reviews the actual diff against the plan task boundary, Progress evidence, project-convention alignment, local understandability, responsibility boundaries, and any cache benefit/invalidation/consistency claim.
 - A coherent orchestration change passes when its responsibility, side effects, and direct contracts remain evidenced in the diff.
 - A changed responsibility or unrecorded side effect is a Blocker or Warning only when the diff shows concrete risk; a justified local convention deviation remains non-blocking.
 
@@ -413,20 +413,22 @@ Expected behavior:
 - Brainstorm presents A/B/C after the confirmed request. User-selected A starts Spec directly; Core routes only missing-depth, changed-intent, or non-success facts.
 - Spec must compare real no-change/reuse, direct, and relevant existing-pattern options; it writes the design contract/saved spec, waits for user approval, then an approved A Spec directly enters Cut.
 - A/B `CUT_PASS` directly enters Plan; only `CUT_REDUCE`, `CUT_REUSE`, `CUT_BLOCKED`, or other non-success facts return to Core.
-- A Code change Plan Pack requires a concrete `File Structure` row per target and task-level `Prewalk`: actual `Execution Trace`, `Current Handoff Facts`, and bounded `Remaining Structured Worklist`.
-- A delegated Build agent reads the latest trace, then re-reads only the current work item's anchors and directly changed neighbor. It does not restart broad discovery or re-decide responsibility by default.
+- A v2 Plan Pack carries a slim header, one six-field task per deliverable, a mandatory `Cut` line with a non-empty `Rejected`, and a `## Progress` table.
+- Build may read the current task's anchors and one directly changed neighbor to choose the smallest implementation, flips the task's Progress row, and records the command and result as evidence.
+- Prove writes `Status: done` and `Landed:` on `PASS`; a `done` Progress row without evidence is not `PASS`.
+- A legacy plan that still carries `File Structure` and `Prewalk` remains valid under the legacy rules.
 - A user-approved Plan Pack receives a lightweight Cut-consistency review; an approved A/B Plan directly enters Build, while scope-drift facts return to Core.
 - Saved plan files default to `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`.
 - Must not save implementation plans under `docs/features/`; that directory is for feature ledgers.
 - Must run `node scripts/devflow-plan.js <plan-file>` when the plan is saved to a file. If not found at `scripts/devflow-plan.js` (project-level), try `~/.codex/scripts/devflow-plan.js` or `~/.claude/scripts/devflow-plan.js` (user-level). Do NOT look under `skills/scripts/`.
-- Must fail or revise a plan missing a responsibility map, actual trace evidence, current handoff facts, bounded work items, or concrete verification. The checker does not approve an architecture pattern.
+- Must fail or revise a v2 plan missing `Rejected`, a six-field task, a Progress row matching the task count, evidence on a `done` row, or a runnable `Verify`. The checker does not approve an architecture pattern.
 
 Pass check:
 
 ```text
-CUT_PASS: allowed scope / reuse conclusion / exclusions / verification constraints
+CUT_PASS: 做 / 不做 / 复用 / 验证 plus Rejected
 Command: node scripts/devflow-plan.js docs/plans/YYYY-MM-DD-<short-kebab-name>.md
-Result: DevFlow plan pack report; File Structure: ok; trace and remaining worklist: ok; Judgment: PASS
+Result: DevFlow plan pack report; Format: v2; Cut Rejected: ok; Progress rows match tasks; Judgment: PASS
 Next: lightweight Cut-consistency review -> confirmed Plan and scope-drift facts -> devflow-core
 Judgment: PASS / FAIL / BLOCKED
 ```
@@ -442,8 +444,8 @@ The approved export plan is implemented. Verify it and mark it ready.
 Expected behavior:
 
 - Route: Prove.
-- Prove reads the actual diff before interpreting test output, and compares it with the approved `File Structure`, current `Execution Trace`, `Current Handoff Facts`, remaining-work completion evidence, and nearest comparable code.
-- The Code Review Report names the reviewed diff, plan boundary, Prewalk evidence, comparable code, Blockers, Warnings, Recommendations, and boundary verdict.
+- Prove reads the actual diff before interpreting test output, and compares it with the approved task boundary, Progress evidence, and nearest comparable code.
+- The Code Review Report names the reviewed diff, plan boundary, Progress evidence, comparable code, Blockers, Warnings, Recommendations, and boundary verdict.
 - An unresolved evidence-backed Blocker or Warning returns `FAIL` facts to Core; Recommendations alone do not prevent PASS.
 - A function size, class name, dependency count, cache preference, or fixed architecture shape without changed-code evidence and concrete risk is not a blocking finding.
 
@@ -451,8 +453,8 @@ Pass check:
 
 ```text
 Diff reviewed: actual changed files/ranges
-Plan boundary: File Structure row(s) and verdict
-Prewalk evidence: Trace / Handoff Facts / completion evidence
+Plan boundary: approved task Files rows and verdict
+Progress evidence: row Status plus recorded command/result
 Blockers: 0
 Warnings: 0
 Recommendations: 0 or documented
@@ -686,7 +688,7 @@ Judgment: FAIL
 Input:
 
 ```text
-A Build subagent receives an approved Plan whose latest Prewalk trace records `OrderHistoryQuery`, its API handler, and current authorization behavior. The first remaining work item anchors the query and handler. A minimal anchor reread discovers a new authorization policy that changes denial behavior and the requested rule's placement.
+A Build subagent receives an approved legacy Plan whose latest Prewalk trace records `OrderHistoryQuery`, its API handler, and current authorization behavior. The first remaining work item anchors the query and handler. A minimal anchor reread discovers a new authorization policy that changes denial behavior and the requested rule's placement.
 ```
 
 Expected behavior:

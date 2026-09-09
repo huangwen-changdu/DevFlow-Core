@@ -92,6 +92,8 @@ Coverage: <what was verified>
 Not covered: <none or explicit gap>
 ```
 
+On `PASS` with a plan file, write the landing record back before reporting: header `Status: done` plus `Landed: <date> · <evidence>`. Every `## Progress` row must already be `done` with evidence; a missing-evidence row is not `PASS`. On `FAIL` or `BLOCKED`, leave `Status` unchanged and report facts to Core.
+
 ## Code Review Report
 
 For code changes, after running the Code Quality Review (General Engineering Review + Language-Specific Checklist), generate this report before claiming PASS or FAIL. Review the actual diff before relying on test results. A Blocker or unresolved Warning returns `FAIL` facts to Core; Recommendations remain visible but do not independently prevent PASS.
@@ -99,8 +101,8 @@ For code changes, after running the Code Quality Review (General Engineering Rev
 ```text
 Code Review Report:
 - Diff reviewed: [actual changed files/ranges].
-- Plan boundary: [approved File Structure row(s) and verdict].
-- Prewalk evidence: [Execution Trace, Handoff Facts, remaining-work completion evidence].
+- Plan boundary: [approved task `Files` rows and verdict; legacy plans may cite `File Structure` rows].
+- Progress evidence: [Progress rows with their Status and recorded command/result; legacy plans may cite Prewalk evidence].
 - Comparable code: [nearest inspected file/symbol and observed convention].
 - Blockers: [count].
   1. [Blocker] [file:line] — [changed-code evidence and concrete risk] → [smallest correction].

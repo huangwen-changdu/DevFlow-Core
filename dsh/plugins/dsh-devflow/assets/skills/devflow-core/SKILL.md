@@ -25,7 +25,7 @@ While a DevFlow lifecycle node is active, end each user-facing message with one 
 
 Read `skills/devflow-core/references/core-methods.md` before route selection. It supplies Method 0, shared route rules, and the owner map. Do not load all lifecycle references by default.
 
-Read the narrowest relevant project facts, then progressively recall learning and project knowledge. Scan available skills and record a matching external specialist skill; a specialist may perform bounded specialist work inside the current node while DevFlow retains route and node ownership.
+Read the narrowest relevant project facts, then read `docs/features/INDEX.md` and `docs/plans/INDEX.md` when present — one hop to see which capabilities already exist, where their entry points are, and which plans landed. Then progressively recall learning and project knowledge. Scan available skills and record a matching external specialist skill; a specialist may perform bounded specialist work inside the current node while DevFlow retains route and node ownership.
 
 Before a route-specific decision, load only the selected owner reference:
 

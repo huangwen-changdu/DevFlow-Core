@@ -2,10 +2,10 @@
 
 ## Current State
 
-- Current Version: v52
+- Current Version: v53
 - Status: active
-- Last Change: risk-adaptive-context-tightening
-- Product Area: runtime flow, skill routing, validation, learning loop
+- Last Change: usability-flow-reconfiguration
+- Product Area: runtime flow, plan contract, capability index, validation, learning loop
 
 ## Feature Background
 
@@ -66,6 +66,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 
 | Version | Change | Type | Date | Status | Summary |
 |---|---|---|---|---|---|
+| v53 | usability-flow-reconfiguration | plan contract, capability index | 2026-09-10 | active | Slimmed the Plan Pack to a v2 contract (six fields per task, `Cut` line with mandatory `Rejected`, `## Progress` table) while legacy plans keep the old validation rules. Build regained bounded implementation authority and writes Progress evidence back; Prove writes `Status: done` and `Landed:` on PASS. Added `docs/features/INDEX.md` and `docs/plans/INDEX.md` as the one-hop Sense entry, maintained by `devflow-learn` and checked by `node scripts/devflow-plan.js --index`. A/B/C depth stays user-selected because capability evaluation forbids Brainstorm from choosing depth. |
 | v52 | risk-adaptive-context-tightening | runtime context governance | 2026-09-04 | active | Added Core-owned risk precedence so clear low-risk existing behavior skips Brainstorm as Design-lite Depth C (`CUT_PASS` enters Build). Fast no longer covers unapproved edits. Core records `Brainstorm required` and a depth hint. Brainstorm clarification is adaptive; Prove reference loading is change-surface scoped; Plan/Build reread named anchors plus at most one listed neighbor. Evidence is static validation only and does not measure live model quality. |
 | v51 | adversarial-review-direct-start | manual review behavior | 2026-08-11 | active | Removed the secondary duration-confirmation pause from `devflow-adversarial`. An explicit user request now starts the independent five-angle review immediately; it asks one smallest question only when the review target is unclear. Synchronized command, self-test, and capability-evaluation contracts. |
 | v50 | skill-owned-direct-success-flow | lifecycle boundary | 2026-07-31 | active | Restored the user-owned A/B/C gate in Brainstorm and moved only deterministic success edges into the owning skills: A `Spec -> Cut -> Plan -> Build -> Prove`, B `Cut -> Plan -> Build -> Prove`, C `Cut -> Build -> Prove`. Core retains compact routing for missing depth, Cut non-PASS, scope drift, Build blocks, Proof FAIL/BLOCKED, changed intent, and PUA recovery. Synchronized commands, host entries, self-tests, validators, installers, and public docs. |

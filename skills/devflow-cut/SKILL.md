@@ -167,6 +167,14 @@ CUT_REUSE: existing capability can be reused; do not write new implementation
 CUT_BLOCKED: missing facts or risk too high; return the blocking facts to `devflow-core`
 ```
 
+Every result also records a four-line decision plus a mandatory subtraction record:
+
+```text
+Cut: 做 <what is included> | 不做 <what is excluded> | 复用 <reused capability> | 验证 <verification> | Rejected: <at least one candidate scope, dependency, abstraction, or config that was cut, or none plus evidence why nothing could be cut>
+```
+
+`Rejected` is what separates a real Cut from a rubber stamp. A Cut that removes nothing writes `Rejected: none` and names the evidence that ruled each candidate out; a Cut that removes something names it. Without this line, a plan can pass every gate while quietly carrying avoidable work.
+
 When `CUT_REDUCE` or `CUT_REUSE` occurs, **STOP — present the reduction or reuse finding to the user**. Explain what was cut, what existing capability replaces it, and why the smaller option is sufficient. After confirmation, return the confirmed result to `devflow-core`.
 
 When `CUT_BLOCKED` occurs, return the blocking facts to `devflow-core`. Core decides whether it must restart `devflow-brainstorm` to re-explore the goal and constraints.
@@ -195,7 +203,7 @@ When `CUT_BLOCKED` occurs, return the blocking facts to `devflow-core`. Core dec
 
 ## Handoff
 
-After `CUT_PASS`, record a Cut Decision containing the allowed scope, reuse conclusion, exclusions, required verification, `External Skills`, and `Depth`. A recorded specialist role performs bounded work only; Cut retains reuse and scope authority, and `CUT_PASS` is never delegated. A/B directly enter `devflow-plan`; C directly enters `devflow-build`. `CUT_REDUCE`, `CUT_REUSE`, and `CUT_BLOCKED` return facts to `devflow-core`; `CUT_REDUCE` and `CUT_REUSE` remain stopped until user confirmation. A Plan Pack that broadens scope returns affected-gate facts to Core before any later selection.
+After `CUT_PASS`, record a Cut Decision containing the four-line decision, the `Rejected` subtraction record, allowed scope, reuse conclusion, exclusions, required verification, `External Skills`, and `Depth`. When a plan file is produced, the four lines and `Rejected` go into the plan header; at depth C they stay in the Build Contract message. A recorded specialist role performs bounded work only; Cut retains reuse and scope authority, and `CUT_PASS` is never delegated. A/B directly enter `devflow-plan`; C directly enters `devflow-build`. `CUT_REDUCE`, `CUT_REUSE`, and `CUT_BLOCKED` return facts to `devflow-core`; `CUT_REDUCE` and `CUT_REUSE` remain stopped until user confirmation. A Plan Pack that broadens scope returns affected-gate facts to Core before any later selection.
 
 ## Verification
 
@@ -204,5 +212,6 @@ Before leaving this skill, confirm:
 - [ ] Reuse, Root-Cause when relevant, Native, Overbuild, Diff, and Scope checks were answered.
 - [ ] Any new structure has a current need.
 - [ ] Removed scope is explicitly named.
+- [ ] The four-line `Cut` decision is recorded, with a non-empty `Rejected` or `none` plus evidence.
 - [ ] Intentional simplifications have `devflow:` ceiling and revisit trigger markers.
 - [ ] Cut result is one of the four allowed statuses.
