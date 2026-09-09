@@ -35,7 +35,7 @@ Apply these principles to every route:
 Read the narrowest useful facts:
 
 1. Project rules and relevant source, tests, commands, and current docs.
-2. `docs/features/INDEX.md` and `docs/plans/INDEX.md` when present: existing capabilities, their entry points, and plan status. Missing indexes are non-blocking.
+2. `docs/features/INDEX.md` and `docs/plans/INDEX.md` when present: match the task keywords against the index rows and read only the matched row's entry file or ledger section; an index over 40 rows is filtered with `node scripts/devflow-plan.js --index --query 关键词`. Do not bulk-read capability documents. Missing indexes are non-blocking.
 3. `.copilot/LEARNING_INDEX.md`, then only cards whose Trigger and Scope match.
 4. `docs/project-knowledge/AI-START-HERE.md` or `index.md`, then only navigation-selected documents.
 5. `graphify-out/GRAPH_REPORT.md` when architecture impact is in scope.

@@ -58,6 +58,7 @@ function usage() {
   console.log("Checks whether a DevFlow Plan Pack has an executable header, task contracts, and plan landing.");
   console.log("v2 plans carry a slim header, per-task Files/Change/Acceptance/Verify/Not doing, and a ## Progress table; legacy plans keep the old contract.");
   console.log("--index checks docs/plans/INDEX.md and docs/features/INDEX.md against the filesystem.");
+  console.log("--index --query <keyword> prints only matching index rows for progressive loading; an empty result still exits 0.");
   console.log("Default plan landing is docs/plans/YYYY-MM-DD-<short-kebab-name>.md unless the project documents another plan path.");
   console.log("--json prints a single-line machine-readable summary; optional Status header values: " + validStatuses.join(" | "));
 }
@@ -439,11 +440,36 @@ function checkPlanV2(body) {
   };
 }
 
-/** Read a markdown table into cell arrays, skipping header and separator rows. */
+/** Read a markdown table into its header cells and data rows, skipping separator rows. */
 function readMarkdownTable(filePath) {
   const lines = fs.readFileSync(filePath, "utf8").split(/\r?\n/).filter((line) => /^\s*\|/.test(line));
-  const rows = lines.map((line) => line.split("|").slice(1, -1).map((cell) => cell.trim()));
-  return rows.filter((cells) => !cells.every((cell) => /^:?-{2,}:?$/.test(cell))).slice(1);
+  const cells = lines.map((line) => line.split("|").slice(1, -1).map((cell) => cell.trim()));
+  const data = cells.filter((row) => !row.every((cell) => /^:?-{2,}:?$/.test(cell)));
+  return { header: data[0] || [], rows: data.slice(1) };
+}
+
+/** Resolve named column positions from the table header so a new column cannot shift the checks. */
+function columnIndexes(header, names) {
+  return Object.fromEntries(names.map((name) => [name, header.findIndex((cell) => cell.includes(name))]));
+}
+
+/** Read one index file's data rows, returning an empty list when the index does not exist yet. */
+function readIndexRows(root, kind) {
+  const filePath = path.join(root, ...indexPaths[kind].split("/"));
+  return fs.existsSync(filePath) ? readMarkdownTable(filePath).rows : [];
+}
+
+/** Return index rows whose text contains the query, for progressive index loading. */
+function matchIndexRows(rows, query) {
+  const needle = String(query || "").trim().toLowerCase();
+  if (!needle) return [];
+  return rows.filter((cells) => cells.join(" ").toLowerCase().includes(needle));
+}
+
+/** Read the value after a flag, or an empty string when it is absent or looks like another flag. */
+function argValue(args, flag) {
+  const index = args.indexOf(flag);
+  return index >= 0 && args[index + 1] && !args[index + 1].startsWith("-") ? args[index + 1] : "";
 }
 
 /** Check docs/plans/INDEX.md and docs/features/INDEX.md against the filesystem. */
@@ -456,8 +482,12 @@ function checkIndexes(root) {
   const planFiles = fs.existsSync(plansDir)
     ? fs.readdirSync(plansDir).filter((name) => name.endsWith(".md") && name !== "INDEX.md")
     : [];
-  const planRows = fs.existsSync(plansIndex) ? readMarkdownTable(plansIndex) : [];
-  const featureRows = fs.existsSync(featuresIndex) ? readMarkdownTable(featuresIndex) : [];
+  const planRows = readIndexRows(root, "plans");
+  const featureRows = readIndexRows(root, "features");
+  const plansTable = fs.existsSync(plansIndex) ? readMarkdownTable(plansIndex) : { header: [] };
+  const featuresTable = fs.existsSync(featuresIndex) ? readMarkdownTable(featuresIndex) : { header: [] };
+  const planCols = columnIndexes(plansTable.header, ["计划", "Status", "落地证据", "功能条目"]);
+  const featureCols = columnIndexes(featuresTable.header, ["功能", "Status", "关键文件", "来源计划"]);
 
   if (planFiles.length > 0 && !fs.existsSync(plansIndex)) {
     problems.push("docs/plans/INDEX.md missing while plan files exist");
@@ -477,28 +507,29 @@ function checkIndexes(root) {
     const body = fs.readFileSync(filePath, "utf8");
     const statusMatch = body.match(statusPattern);
     const expected = statusMatch ? statusMatch[1].trim() : "legacy";
-    const rowStatus = (cells[2] || "").trim();
+    const rowStatus = (cells[planCols.Status] || "").trim();
     if (rowStatus && rowStatus !== expected) {
       problems.push(`status mismatch for ${file}: index ${rowStatus} vs file ${expected}`);
     }
-    if (rowStatus === "done" && (!(cells[4] || "").trim() || (cells[4] || "").trim() === "-")) {
+    const evidence = (cells[planCols["落地证据"]] || "").trim();
+    if (rowStatus === "done" && (!evidence || evidence === "-")) {
       problems.push(`done plan needs landing evidence in docs/plans/INDEX.md: ${file}`);
     }
-    const featureCell = (cells[5] || "").trim();
-    if (featureCell && featureCell !== "-" && !featureRows.some((row) => (row[0] || "").includes(featureCell))) {
+    const featureCell = (cells[planCols["功能条目"]] || "").trim();
+    if (featureCell && featureCell !== "-" && !featureRows.some((row) => (row[featureCols["功能"]] || "").includes(featureCell))) {
       problems.push(`feature entry not found in docs/features/INDEX.md: ${featureCell}`);
     }
   }
   for (const cells of featureRows) {
-    const status = (cells[3] || "").trim();
+    const status = (cells[featureCols.Status] || "").trim();
     if (status && !indexStatuses.includes(status)) {
       problems.push(`invalid feature status in docs/features/INDEX.md: ${status}`);
     }
-    const files = (cells[5] || "").split(",").map((value) => value.replaceAll("`", "").trim()).filter((value) => value && value !== "-");
+    const files = (cells[featureCols["关键文件"]] || "").split(",").map((value) => value.replaceAll("`", "").trim()).filter((value) => value && value !== "-");
     for (const rel of files) {
       if (!fs.existsSync(path.join(root, rel))) problems.push(`feature file missing: ${rel}`);
     }
-    const plan = (cells[6] || "").replaceAll("`", "").trim();
+    const plan = (cells[featureCols["来源计划"]] || "").replaceAll("`", "").trim();
     if (plan && plan !== "-" && !fs.existsSync(path.join(root, "docs", "plans", plan))) {
       problems.push(`feature source plan missing: ${plan}`);
     }
@@ -506,9 +537,23 @@ function checkIndexes(root) {
   return problems;
 }
 
-/** Run the plan and feature index consistency check. */
-function runIndexCheck(json) {
-  const problems = checkIndexes(path.resolve(__dirname, ".."));
+/** Run the plan and feature index consistency check, or answer a single query. */
+function runIndexCheck(json, query) {
+  const root = path.resolve(__dirname, "..");
+  if (query) {
+    const featureMatches = matchIndexRows(readIndexRows(root, "features"), query);
+    const planMatches = matchIndexRows(readIndexRows(root, "plans"), query);
+    if (json) {
+      console.log(JSON.stringify({ checker: "plan-index-query", query, features: featureMatches, plans: planMatches, judgment: "PASS" }));
+    } else {
+      console.log(`DevFlow index query: ${query}`);
+      for (const cells of featureMatches) console.log(`功能行: ${cells.join(" | ")}`);
+      for (const cells of planMatches) console.log(`计划行: ${cells.join(" | ")}`);
+      console.log(`Matches: ${featureMatches.length + planMatches.length}`);
+    }
+    return 0;
+  }
+  const problems = checkIndexes(root);
   if (json) {
     console.log(JSON.stringify({ checker: "plan-index", problems, judgment: problems.length === 0 ? "PASS" : "FAIL" }));
   } else {
@@ -897,6 +942,11 @@ function selfTest() {
     throw new Error("Self-test expected a Progress/task count mismatch to fail");
   }
   if (typeof checkIndexes !== "function") throw new Error("Self-test expected the index checker to exist");
+  if (matchIndexRows([["功能A", "计划相关", "x"]], "计划").length !== 1) throw new Error("Self-test expected index query to match a row");
+  if (matchIndexRows([["功能A", "计划相关", "x"]], "不存在").length !== 0) throw new Error("Self-test expected index query to miss");
+  if (matchIndexRows([["功能A"]], "").length !== 0) throw new Error("Self-test expected an empty index query to match nothing");
+  if (argValue(["--index", "--query", "计划"], "--query") !== "计划") throw new Error("Self-test expected --query to read its value");
+  if (argValue(["--index", "--query", "--json"], "--query") !== "") throw new Error("Self-test expected --query to reject a flag as its value");
 
   console.log("DevFlow plan self-test passed");
   console.log("Checked v2 and legacy plan contracts, Progress evidence, Cut Rejected, code-level fields, precise file locations, verification expectations, documentation-only exception, external-skill declaration, and plan landing guidance");
@@ -912,7 +962,7 @@ if (args.includes("--self-test")) {
   process.exit(0);
 }
 if (args.includes("--index")) {
-  process.exit(runIndexCheck(args.includes("--json")));
+  process.exit(runIndexCheck(args.includes("--json"), argValue(args, "--query")));
 }
 const targetArg = args.find((arg) => !arg.startsWith("-"));
 process.exitCode = report(readInput(args), targetArg, args.includes("--json"));

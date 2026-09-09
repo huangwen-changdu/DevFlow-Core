@@ -7,7 +7,7 @@ This file is a portable startup interface, not a method reference or README. Loa
 1. Load `skills/devflow-core/SKILL.md` for development work.
 2. Read `skills/devflow-core/references/core-methods.md` before selecting a route.
 3. Read only the selected lifecycle reference from Core's loading map.
-4. At Sense, read narrow project facts, then read `docs/features/INDEX.md` and `docs/plans/INDEX.md` when present to locate existing capabilities and plan status, then selectively recall `.copilot/LEARNING_INDEX.md` and `docs/project-knowledge/`. Missing recall sources are non-blocking.
+4. At Sense, read narrow project facts, then match the task keywords against `docs/features/INDEX.md` and `docs/plans/INDEX.md` when present and read only the matched row's entry file or ledger section; an index over 40 rows is filtered with `node scripts/devflow-plan.js --index --query 关键词`. Do not bulk-read capability documents. Then selectively recall `.copilot/LEARNING_INDEX.md` and `docs/project-knowledge/`. Missing recall sources are non-blocking.
 5. Scan available skills. A matching external skill may perform bounded specialist work; DevFlow retains route and node ownership.
 
 When skills are unavailable, use the route table and hard boundaries below as the fallback; do not invent lifecycle details.

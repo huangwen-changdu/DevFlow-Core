@@ -253,6 +253,8 @@ for (const indexFile of ["docs/plans/INDEX.md", "docs/features/INDEX.md"]) {
   assert(fs.existsSync(path.join(root, indexFile)), `capability index missing: ${indexFile}`);
 }
 assert(read("AGENTS.md").includes("docs/features/INDEX.md"), "AGENTS.md must point Sense at the capability index");
+assert(read("AGENTS.md").includes("--index --query"), "AGENTS.md must document the progressive index query mode");
+assert(read("docs/features/INDEX.md").includes("触发词"), "docs/features/INDEX.md must publish a trigger-word column for progressive routing");
 assert(read("skills/devflow-learn/SKILL.md").includes("docs/features/INDEX.md"), "devflow-learn must own the capability index row");
 assert(read("skills/devflow-prove/SKILL.md").includes("Landed:"), "devflow-prove must write the landing record on PASS");
 
