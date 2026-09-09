@@ -51,6 +51,11 @@ const progressHeadingPattern = /^##\s+Progress\s*$/im;
 const progressRowPattern = /^\s*\|\s*(\d+)\s*\|\s*([^|]*)\|\s*(todo|doing|done)\s*\|\s*([^|]*)\|/gim;
 const indexStatuses = ["active", "planned", "legacy", "retired"];
 const indexPaths = { plans: "docs/plans/INDEX.md", features: "docs/features/INDEX.md" };
+// 需求台账：一条需求从确认到落地的唯一记录；opt-out 表示用户显式跳过文档（仍必须有验证证据与原因）。
+const requirementPath = "docs/requirements.md";
+const requirementStatuses = ["open", "designed", "planned", "built", "landed", "opt-out", "dropped"];
+const terminalRequirementStatuses = ["landed", "opt-out", "dropped"];
+const promotionConfidence = 0.7;
 
 /** Print the checker command contract and default plan landing. */
 function usage() {
@@ -59,6 +64,7 @@ function usage() {
   console.log("v2 plans carry a slim header, per-task Files/Change/Acceptance/Verify/Not doing, and a ## Progress table; legacy plans keep the old contract.");
   console.log("--index checks docs/plans/INDEX.md and docs/features/INDEX.md against the filesystem.");
   console.log("--index --query <keyword> prints only matching index rows for progressive loading; an empty result still exits 0.");
+  console.log("--loop prints a read-only loop report: requirement status counts, plan landing rate, feature rows, and promotion candidates.");
   console.log("Default plan landing is docs/plans/YYYY-MM-DD-<short-kebab-name>.md unless the project documents another plan path.");
   console.log("--json prints a single-line machine-readable summary; optional Status header values: " + validStatuses.join(" | "));
 }
@@ -440,12 +446,31 @@ function checkPlanV2(body) {
   };
 }
 
-/** Read a markdown table into its header cells and data rows, skipping separator rows. */
+/** Read every markdown table in a file as header cells plus data rows, skipping separator rows. */
+function readMarkdownTables(filePath) {
+  const lines = fs.readFileSync(filePath, "utf8").split(/\r?\n/);
+  const tables = [];
+  let current = [];
+  for (const line of lines) {
+    if (/^\s*\|/.test(line)) {
+      current.push(line.split("|").slice(1, -1).map((cell) => cell.trim()));
+      continue;
+    }
+    if (current.length) {
+      tables.push(current);
+      current = [];
+    }
+  }
+  if (current.length) tables.push(current);
+  return tables
+    .map((cells) => cells.filter((row) => !row.every((cell) => /^:?-{2,}:?$/.test(cell))))
+    .filter((cells) => cells.length > 1)
+    .map((cells) => ({ header: cells[0], rows: cells.slice(1) }));
+}
+
+/** Read the first markdown table into its header cells and data rows. */
 function readMarkdownTable(filePath) {
-  const lines = fs.readFileSync(filePath, "utf8").split(/\r?\n/).filter((line) => /^\s*\|/.test(line));
-  const cells = lines.map((line) => line.split("|").slice(1, -1).map((cell) => cell.trim()));
-  const data = cells.filter((row) => !row.every((cell) => /^:?-{2,}:?$/.test(cell)));
-  return { header: data[0] || [], rows: data.slice(1) };
+  return readMarkdownTables(filePath)[0] || { header: [], rows: [] };
 }
 
 /** Resolve named column positions from the table header so a new column cannot shift the checks. */
@@ -534,6 +559,10 @@ function checkIndexes(root) {
       problems.push(`feature source plan missing: ${plan}`);
     }
   }
+  const requirementTable = readRequirementTable(root);
+  problems.push(
+    ...checkRequirementTable(requirementTable.header, requirementTable.rows, (rel) => fs.existsSync(path.join(root, rel)))
+  );
   return problems;
 }
 
@@ -564,6 +593,101 @@ function runIndexCheck(json, query) {
     console.log(`Judgment: ${problems.length === 0 ? "PASS" : "FAIL"}`);
   }
   return problems.length === 0 ? 0 : 1;
+}
+
+/** Validate the requirement ledger table: status whitelist, terminal evidence, opt-out reason, artifact paths. */
+function checkRequirementTable(header, rows, exists) {
+  const problems = [];
+  const cols = columnIndexes(header, ["需求", "日期", "落地物", "状态", "证据或跳过"]);
+  if (cols["状态"] < 0 || cols["证据或跳过"] < 0) {
+    problems.push("docs/requirements.md header must contain 状态 and 证据或跳过 columns");
+    return problems;
+  }
+  for (const cells of rows) {
+    const requirement = (cells[cols["需求"]] || "").trim();
+    const date = cols["日期"] >= 0 ? (cells[cols["日期"]] || "").trim() : "";
+    const status = (cells[cols["状态"]] || "").trim();
+    const evidence = (cells[cols["证据或跳过"]] || "").trim();
+    if (!requirement) problems.push("requirement row missing 需求 text");
+    if (!date) problems.push(`requirement row missing 日期: ${requirement}`);
+    if (!requirementStatuses.includes(status)) problems.push(`invalid requirement status: ${status}`);
+    if (terminalRequirementStatuses.includes(status) && (!evidence || evidence === "-")) {
+      problems.push(`terminal requirement needs evidence: ${requirement}`);
+    }
+    if (status === "opt-out" && !/原因|reason|skip/i.test(evidence)) {
+      problems.push(`opt-out needs a recorded reason: ${requirement}`);
+    }
+    const artifacts = (cells[cols["落地物"]] || "")
+      .split(",")
+      .map((value) => value.replaceAll("`", "").trim())
+      .filter((value) => value && value !== "-");
+    for (const rel of artifacts) {
+      if (!exists(rel)) problems.push(`requirement artifact missing: ${rel}`);
+    }
+  }
+  return problems;
+}
+
+/** Read the requirement ledger table, selecting the table that carries the ledger columns. */
+function readRequirementTable(root) {
+  const filePath = path.join(root, ...requirementPath.split("/"));
+  if (!fs.existsSync(filePath)) return { header: [], rows: [] };
+  const tables = readMarkdownTables(filePath);
+  const ledger = tables.find(
+    (table) => table.header.some((cell) => cell.includes("状态")) && table.header.some((cell) => cell.includes("证据或跳过"))
+  );
+  return ledger || tables[0] || { header: [], rows: [] };
+}
+
+/** Count requirement statuses and promotion candidates for the read-only loop report. */
+function summarizeLoop(root) {
+  const { header, rows } = readRequirementTable(root);
+  const cols = columnIndexes(header, ["状态", "需求"]);
+  const counts = Object.fromEntries(requirementStatuses.map((status) => [status, 0]));
+  for (const cells of rows) {
+    const status = cols["状态"] >= 0 ? (cells[cols["状态"]] || "").trim() : "";
+    if (Object.prototype.hasOwnProperty.call(counts, status)) counts[status] += 1;
+  }
+  const planRows = readIndexRows(root, "plans");
+  const plansWithStatus = planRows.filter((cells) => validStatuses.includes((cells[2] || "").trim()));
+  const plansDone = plansWithStatus.filter((cells) => (cells[2] || "").trim() === "done");
+  const learningIndex = path.join(root, ".copilot", "LEARNING_INDEX.md");
+  const learningTable = fs.existsSync(learningIndex) ? readMarkdownTable(learningIndex) : { header: [], rows: [] };
+  const cardCols = columnIndexes(learningTable.header, ["Card", "Confidence"]);
+  const candidates = learningTable.rows
+    .map((cells) => ({
+      name: ((cells[cardCols.Card] || "").match(/\[([^\]]+)\]/) || [])[1] || "",
+      confidence: Number((cells[cardCols.Confidence] || "").trim())
+    }))
+    .filter((card) => card.name && Number.isFinite(card.confidence) && card.confidence >= promotionConfidence);
+
+  return {
+    requirements: { total: rows.length, counts },
+    plans: { withStatus: plansWithStatus.length, done: plansDone.length },
+    features: readIndexRows(root, "features").length,
+    candidates
+  };
+}
+
+/** Run the read-only loop report: requirement counts, plan landing rate, feature rows, promotion candidates. */
+function runLoopReport(json) {
+  const summary = summarizeLoop(path.resolve(__dirname, ".."));
+  const counts = summary.requirements.counts;
+  const landingRate = summary.plans.withStatus
+    ? Math.round((summary.plans.done / summary.plans.withStatus) * 100)
+    : 0;
+  if (json) {
+    console.log(JSON.stringify({ checker: "devflow-loop", ...summary, landingRate, judgment: "PASS" }));
+    return 0;
+  }
+  console.log("DevFlow loop report");
+  console.log(`Requirements: total ${summary.requirements.total} | ${requirementStatuses.map((status) => `${status} ${counts[status]}`).join(" | ")}`);
+  console.log(`Plan landing: ${summary.plans.done}/${summary.plans.withStatus} with status (${landingRate}%)`);
+  console.log(`Feature rows: ${summary.features}`);
+  console.log(`Promotion candidates (confidence >= ${promotionConfidence}): ${summary.candidates.length}`);
+  for (const card of summary.candidates) console.log(`  - ${card.name} (${card.confidence})`);
+  console.log("Judgment: PASS");
+  return 0;
 }
 
 /** Dispatch the v2 and legacy plan contracts so old plans keep validating. */
@@ -948,6 +1072,22 @@ function selfTest() {
   if (argValue(["--index", "--query", "计划"], "--query") !== "计划") throw new Error("Self-test expected --query to read its value");
   if (argValue(["--index", "--query", "--json"], "--query") !== "") throw new Error("Self-test expected --query to reject a flag as its value");
 
+  const requirementHeader = ["日期", "需求", "来源", "深度", "落地物", "状态", "证据或跳过", "更新日"];
+  const requirementRows = [
+    ["2026-09-10", "已落地需求", "用户请求", "A", "docs/specs/x.md", "landed", "npm test 通过", "2026-09-10"],
+    ["2026-09-10", "跳过文档需求", "用户请求", "C", "-", "opt-out", "原因：用户显式跳过", "2026-09-10"]
+  ];
+  const requirementProblems = checkRequirementTable(requirementHeader, requirementRows, () => true);
+  if (requirementProblems.length !== 0) throw new Error(`Self-test expected a valid requirement table to pass: ${requirementProblems.join("; ")}`);
+  const badStatus = checkRequirementTable(requirementHeader, [["2026-09-10", "状态非法", "用户请求", "A", "-", "shipped", "证据", "2026-09-10"]], () => true);
+  if (badStatus.length === 0) throw new Error("Self-test expected an invalid requirement status to fail");
+  const missingEvidence = checkRequirementTable(requirementHeader, [["2026-09-10", "终态无证据", "用户请求", "A", "-", "landed", "-", "2026-09-10"]], () => true);
+  if (missingEvidence.length === 0) throw new Error("Self-test expected a terminal requirement without evidence to fail");
+  const missingReason = checkRequirementTable(requirementHeader, [["2026-09-10", "跳过无原因", "用户请求", "C", "-", "opt-out", "验证通过", "2026-09-10"]], () => true);
+  if (missingReason.length === 0) throw new Error("Self-test expected an opt-out without a reason to fail");
+  const missingArtifact = checkRequirementTable(requirementHeader, [["2026-09-10", "落地物不存在", "用户请求", "A", "docs/specs/nope.md", "planned", "-", "2026-09-10"]], () => false);
+  if (missingArtifact.length === 0) throw new Error("Self-test expected a missing requirement artifact to fail");
+
   console.log("DevFlow plan self-test passed");
   console.log("Checked v2 and legacy plan contracts, Progress evidence, Cut Rejected, code-level fields, precise file locations, verification expectations, documentation-only exception, external-skill declaration, and plan landing guidance");
 }
@@ -960,6 +1100,9 @@ if (args.includes("--help") || args.includes("-h")) {
 if (args.includes("--self-test")) {
   selfTest();
   process.exit(0);
+}
+if (args.includes("--loop")) {
+  process.exit(runLoopReport(args.includes("--json")));
 }
 if (args.includes("--index")) {
   process.exit(runIndexCheck(args.includes("--json"), argValue(args, "--query")));

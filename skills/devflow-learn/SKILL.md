@@ -20,6 +20,7 @@ Extract only knowledge that can help a future task:
 - a costly, counterintuitive, repeated, or project-wide lesson
 - a confirmed project-business fact that may require knowledge-package maintenance
 - a user-visible capability or interface-contract change that must appear in `docs/features/INDEX.md`
+- a developer preference about how to work — language, documentation depth, design-first, verify-command habits, review style — confirmed by a repeated correction
 
 `PASS` requires the review, not a new record. If no useful reusable knowledge remains after classification, report that result and create nothing.
 
@@ -27,6 +28,7 @@ Extract only knowledge that can help a future task:
 |---|---|---|
 | Reusable execution experience or proven work pattern | Create or update one focused card | `.copilot/cards/` |
 | User-visible capability or interface contract changed | Add or update one row: what it does, its trigger words, its entry point, its verify command, and its source plan | `docs/features/INDEX.md` |
+| The same how-to preference was corrected twice | Create or update one `Scope: global` preference card | `.copilot/cards/` |
 | Confirmed business fact changed | Report a project-knowledge candidate and wait for user confirmation | `docs/project-knowledge/` after confirmation via `devflow-project-knowledge` |
 | Ordinary detail, one-off fact, already-covered lesson, or pure refactor without insight | Report no useful record | none |
 
@@ -139,6 +141,7 @@ Read this index first. Only read a card when its trigger matches the current tas
 | 1 | Create/update card, confidence 0.3-0.5 |
 | 2 | Raise confidence and force recall before acting |
 | 3 | Propose `AGENTS.md` or platform rule update |
+| Card confidence reaches 0.7 | Propose the rule or skill change and create one `docs/requirements.md` row for the proposal, so learning returns to the requirement loop |
 | 4+ | Propose skill or command automation |
 | User explicitly says remember/learn/沉淀 | Promote immediately if scope is clear |
 

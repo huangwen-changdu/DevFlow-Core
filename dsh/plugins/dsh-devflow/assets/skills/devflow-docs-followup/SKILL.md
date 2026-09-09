@@ -34,7 +34,7 @@ Rules:
 
 - Treat only an explicit selection as approval to create that document type.
 - Treat silence, an ambiguous reply, or an unselected item as not approved.
-- Treat `none` as a completed follow-up with no files written.
+- Treat `none` as a completed follow-up with no files written; record it as `opt-out` in `docs/requirements.md` with the skip reason and the verification evidence. Silence or an ambiguous reply never becomes `opt-out`; the default requirement record still applies.
 - If the user selects more than one type, create only those selected types.
 
 ## Evidence And Landing

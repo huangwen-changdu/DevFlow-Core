@@ -122,6 +122,8 @@ Confirmed request:
 
 The summary records the agreed request and the exploration findings only. It must not contain an implementation plan, solution-space design, lifecycle route, or handoff instruction. It is the factual basis that downstream skills — starting with `devflow-spec` — build on, so record findings faithfully rather than trimming them away.
 
+On `Status: clarified`, create or update the requirement row in `docs/requirements.md` with status `open`; depth is recorded when the lifecycle path is chosen. Pure Q&A, lookup, and read-only verification create no row.
+
 ## A/B/C Gate
 
 After the fixed summary, present these choices and wait for one explicit user selection:

@@ -15,6 +15,7 @@ Trigger: <user words or task shape>
 Route: Problem / Fast / Design-lite / Design / Build / Recovery
 Brainstorm required: yes/no
 Depth hint: skip / compact / standard / deep / none
+Preferences applied: <count of global preference cards matched this turn>
 Next skill: <skill name or none>
 Status: [DevFlow: <node> -> <next> | awaiting approval / in progress]
 ```
@@ -60,6 +61,8 @@ Brainstorm is required when any material risk or decision-impact uncertainty exi
 | Design | New requirement, behavior or architecture change, ambiguity, or multiple options. | Select Brainstorm; after confirmation its user-selected A/B/C path directly starts Spec or Cut. |
 | Build | User asks to implement, fix, build, or land an approved change. | Select Cut, then Plan when construction needs several steps, then Build and Prove. |
 | Recovery | Same target remains wrong after correction or proof failure. | Select PUA, consume recovery facts, then choose a different path. |
+
+Every creative or problem-directed change creates or updates one row in `docs/requirements.md`: Brainstorm writes `open` after `Confirmed request`, and Design-lite writes `open` with depth `C` when Brainstorm is skipped. Pure Q&A, lookup, read-only verification, and explicit independent reviews create no row.
 
 ## Core Flow Map
 

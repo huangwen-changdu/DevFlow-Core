@@ -42,6 +42,7 @@
 | 2026-07-31 | P2-6 本地可观测性：`DEVFLOW_OBSERVE=1` 时项目根追加会话日志，默认关闭 | `hooks/devflow-session-start.js` + `.gitignore` | 见该 hook 的验证场景 | done |
 | 2026-07-31 | 本迭代文档 | `docs/iteration-plan.md` | 本文档自身 | done |
 | 2026-09-10 | 可用性重构：Plan v2 契约（6 字段 + Progress + Rejected）、Build 有界 how 与回写、Prove 落地回写、双索引与 `--index` 机检 | `skills/devflow-{plan,cut,build,prove,learn,core}/`、`scripts/devflow-plan.js`、`docs/plans/INDEX.md`、`docs/features/INDEX.md` | `npm run index:verify` + `npm run verify:all` | done |
+| 2026-09-10 | 需求闭环：需求台账 `docs/requirements.md`、跳过留痕（opt-out + 原因）、Prove 终态硬条件、`--loop` 报告、global 偏好卡与晋升回流 | `docs/requirements.md`、`skills/devflow-{brainstorm,core,spec,plan,build,prove,docs-followup,learn}/`、`scripts/devflow-plan.js` | `node scripts/devflow-plan.js --loop` + `npm run verify:all` | done |
 
 批次执行依据：`docs/plans/2026-07-31-devflow-harness-iteration.md`（Status: approved → in-progress → done 的迁移即本表状态来源）。
 

@@ -48,7 +48,7 @@ For multi-step work, tasks must cite the approved source, be small and verifiabl
 
 No unresolved markers. `Change` states the executable intent and boundary; add exact mechanics only when the change crosses a module contract, is irreversible, or touches security or data boundaries. Otherwise Build chooses the smallest implementation and records it as Progress evidence. The verification step keeps its trigger/input, expected result, and command or manual scenario. A task whose files are all documentation paths is documentation-only. No "add tests" without naming the behavior, no "handle edge cases" without naming the edge case, no "similar to Task N" shortcuts.
 
-Close each task by writing back its `## Progress` row: `doing` when starting, `done` with the command and key result when its `Verify` passes. A `done` row without evidence fails the checker. On a legacy plan without a Progress table, report the same evidence in the completion message.
+Close each task by writing back its `## Progress` row: `doing` when starting, `done` with the command and key result when its `Verify` passes. A `done` row without evidence fails the checker. On a legacy plan without a Progress table, report the same evidence in the completion message. When every task is `done`, advance the requirement row in `docs/requirements.md` to `built`.
 
 Before Build, run `node scripts/devflow-plan.js <plan-file>` when a plan is saved to a file. If not found at `scripts/devflow-plan.js` (project-level), try `~/.codex/scripts/devflow-plan.js` or `~/.claude/scripts/devflow-plan.js` (user-level). Do NOT look under `skills/scripts/`. See `core-methods.md` Script Path Resolution.
 

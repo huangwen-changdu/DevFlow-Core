@@ -92,7 +92,7 @@ Coverage: <what was verified>
 Not covered: <none or explicit gap>
 ```
 
-On `PASS` with a plan file, write the landing record back before reporting: header `Status: done` plus `Landed: <date> · <evidence>`. Every `## Progress` row must already be `done` with evidence; a missing-evidence row is not `PASS`. On `FAIL` or `BLOCKED`, leave `Status` unchanged and report facts to Core.
+On `PASS` with a plan file, write back before reporting: header `Status: done` plus `Landed: <date> · <evidence>`; every `## Progress` row must already be `done` with evidence. `PASS` also requires the `docs/requirements.md` row to be terminal — write `landed` with the evidence, or return the missing-row facts to Core. On `FAIL` or `BLOCKED`, leave `Status` unchanged and report facts to Core.
 
 ## Code Review Report
 

@@ -23,6 +23,7 @@ Turn an A/B `CUT_PASS`-bounded approved design or confirmed Spec into one review
 6. Self-review Cut fidelity, touch-set coverage, acceptance proof, scope exclusions, and Progress row count against the task count.
 7. Run `node scripts/devflow-plan.js <plan-file>` when the project-level checker exists. Otherwise resolve the user-level checker according to `core-methods.md` Script Path Resolution.
 8. **STOP — request user review.** On DSH, request review with the structured `ask_user_question` tool (single-select: approve / request changes). Revise and revalidate when requested. On approval, ask execution mode (single-select: `sequential` — the Build agent runs tasks in dependency order / `single-subagent` — the main agent only schedules: one subagent runs tasks one per round in dependency order / `fan-out` — independent tasks run as parallel subagents) and record it as the plan's optional `Execution mode` header. Then perform only a lightweight Cut-consistency review. An approved A/B Plan directly enters `devflow-build`; scope-drift facts return to `devflow-core`.
+9. On approval, advance the requirement row in `docs/requirements.md` to `planned` and fill the plan path in its artifact column.
 
 Default landing is `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`, resolved from the target project root. Do not place implementation plans in `docs/features/` or `docs/specs/`.
 

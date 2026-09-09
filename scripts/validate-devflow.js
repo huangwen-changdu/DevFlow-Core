@@ -258,5 +258,15 @@ assert(read("docs/features/INDEX.md").includes("触发词"), "docs/features/INDE
 assert(read("skills/devflow-learn/SKILL.md").includes("docs/features/INDEX.md"), "devflow-learn must own the capability index row");
 assert(read("skills/devflow-prove/SKILL.md").includes("Landed:"), "devflow-prove must write the landing record on PASS");
 
+// 需求闭环：台账、终态硬条件、循环报告与偏好应用必须同时存在，否则"需求落地"只剩声明。
+const requirementLedger = read("docs/requirements.md");
+for (const marker of ["证据或跳过", "opt-out", "landed"]) {
+  assert(requirementLedger.includes(marker), `docs/requirements.md must publish the ledger marker ${marker}`);
+}
+assert(read("scripts/devflow-plan.js").includes("--loop"), "devflow-plan.js must implement the loop report");
+assert(read("skills/devflow-prove/SKILL.md").includes("docs/requirements.md"), "devflow-prove must gate PASS on the requirement row");
+assert(read("skills/devflow-docs-followup/SKILL.md").includes("opt-out"), "devflow-docs-followup must record an explicit skip");
+assert(read("skills/devflow-learn/SKILL.md").includes("global"), "devflow-learn must record global preference cards");
+
 console.log("DevFlow validation passed");
 console.log(`Checked ${requiredFiles.length} runtime files, ${cards.length} learning cards, and selected host and trigger contracts`);
