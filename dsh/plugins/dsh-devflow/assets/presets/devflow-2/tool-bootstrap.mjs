@@ -29,10 +29,16 @@
  * `we` and no `let me`) or the `maxBootstrapSteps` fallback.
  * `promoteAfterFirstResponse` promotes a tool-less first response once it has
  * responded, and also releases an anchor-gated session when its first turn
- * ends (`turn/end`). With `promotedPresentation: code` the promoted catalog
- * is presented as Code Mode (PTC): the wire shows a single `run_code` tool
- * backed by the generated SDK, switched at the step boundary so the current
- * step's native calls are never interrupted. `deferredSources` and
+ * ends (`turn/end`). `promotedPresentation` is passed verbatim to
+ * `tools.presentAs(mode)`, so the promoted wire depends on which mode string
+ * the preset names: `native` = every tool schema and no SDK section; `ptc` =
+ * the `run_code` transport plus the generated SDK; `both`, and any other
+ * string — including `code`, which this preset used before 2026-09-10 and
+ * which `dsh-tools` falls through to the default branch — = every tool schema
+ * AND `run_code` AND the SDK section, i.e. one catalog paid for twice. Only
+ * `ptc` narrows `wireSchemas()` to the `run_code` transport. The switch
+ * happens at the step boundary so the current step's native calls are never
+ * interrupted. `deferredSources` and
  * `deferredGraceSteps` delay selected injected message kinds (workspace
  * instructions, skill catalog) for a few steps after promotion.
  *

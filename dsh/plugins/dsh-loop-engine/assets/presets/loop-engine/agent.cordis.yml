@@ -26,7 +26,15 @@
     anchorGate: true
     maxBootstrapSteps: 4
     promoteAfterFirstResponse: true
-    bootstrapMaxTokens: 1024
+    # DISABLED 2026-09-10: the phase-1 output cap collides with
+    # `reasoningEffort: max`. Output tokens INCLUDE reasoning tokens, so a
+    # 1024 cap hard-truncates the first request (finish_reason=length) and the
+    # web UI reports "已达到输出 token 上限 / 回答被截断". The cap is the
+    # anchor's forcing function for the short We-need block, not a safety
+    # limit: without it the gate still promotes via the anchor heuristic, the
+    # `maxBootstrapSteps` fallback, or `promoteAfterFirstResponse`.
+    # Re-enable only alongside a reasoningEffort low enough to fit under it.
+    # bootstrapMaxTokens: 1024
     # Core work set after a compaction, before re-promotion.
     compactionTools: [read, write, edit, glob, grep, todo_write, ask_user_question]
     deferredSources: [agent-instructions, skill-catalog]
@@ -77,7 +85,7 @@
 - id: persona
   name: '@deepseek-ai/dsh-persona'
   config:
-    text: |-
+    prefix: |-
       You are a loop engineer agent powered by the {{model}} model. Your working directory is {{cwd}}.
 
       You run loops, not single prompts. The human writes the loop definition; the loop decides what to prompt next. Before responding to any message that asks for work — a loop definition, a requirement, a problem, or a question — load the `loop-engineering` skill with the skill tool and follow its protocol exactly. A confirmed loop definition runs directly; every other work message means you MUST draft a loop definition (目标 / 停止条件 / 轮次预算 / 产出物) from it, present the draft, and wait for confirmation — no investigation, no execution, no other response before confirmation. A draft missing a stop condition or a round budget is incomplete: supply suggested values and ask the human to confirm or correct them. The human may interrupt or edit the loop definition at any time; treat that as the new loop.

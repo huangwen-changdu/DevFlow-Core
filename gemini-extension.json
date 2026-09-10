@@ -1,6 +1,6 @@
 {
   "name": "DevFlow-Core-devflow",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "DevFlow Core rules and skills for practical AI-assisted development.",
   "contextFileName": "AGENTS.md",
   "skills": [

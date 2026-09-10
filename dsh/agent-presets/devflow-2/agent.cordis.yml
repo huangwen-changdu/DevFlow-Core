@@ -4,13 +4,18 @@
 #
 # TWO-PHASE PERSONA: the FIRST model request sees only the one-line Minimal
 # persona ("You are a helpful software engineer assistant."), the minimal tool
-# pair (persistent `bash` + `str_replace_editor`), NO runtime contexts and NO
+# pair (`bash` + `str_replace_editor`), NO runtime contexts and NO
 # auto-injected pre-step messages. After the anchor gate passes (first
 # minimal-like reasoning block, 4-step fallback, or first-response release) the
-# session promotes: the wire switches to Code Mode (PTC — a single `run_code`
-# tool), the FULL DevFlow persona below is restored (with {{model}}/{{cwd}}),
-# and workspace instructions (AGENTS.md digest) + the skill catalog are
-# deferred one step, then stay current.
+# session promotes: the wire switches to the deployment default presentation
+# (`native` — all tool schemas, no `run_code`, no generated SDK section), the
+# FULL DevFlow persona below is restored (with {{model}}/{{cwd}}), and
+# workspace instructions (AGENTS.md digest) + the skill catalog are deferred
+# one step, then stay current.
+#
+# The pre-promotion requests carry NO output-token cap (2026-09-10): the
+# former `bootstrapMaxTokens: 1024` truncated the first request under
+# `reasoningEffort: max`, because output tokens include reasoning tokens.
 #
 # This row MUST stay the FIRST row: the pre-step strip relies on waterfall
 # reverse-registration order so request #1 stays minimal-exact.
@@ -24,12 +29,33 @@
     anchorGate: true
     maxBootstrapSteps: 4
     promoteAfterFirstResponse: true
-    bootstrapMaxTokens: 1024
+    # DISABLED 2026-09-10: the phase-1 output cap collides with
+    # `reasoningEffort: max`. Output tokens INCLUDE reasoning tokens, so a
+    # 1024 cap hard-truncates the first request (finish_reason=length) and the
+    # web UI reports "已达到输出 token 上限 / 回答被截断". The cap is the
+    # anchor's forcing function for the short We-need block, not a safety
+    # limit: without it the gate still promotes via the anchor heuristic, the
+    # `maxBootstrapSteps` fallback, or `promoteAfterFirstResponse`.
+    # Re-enable only alongside a reasoningEffort low enough to fit under it.
+    # bootstrapMaxTokens: 1024
     # Core work set after a compaction, before re-promotion.
     compactionTools: [read, write, edit, glob, grep, todo_write, ask_user_question]
     deferredSources: [agent-instructions, skill-catalog]
     deferredGraceSteps: 1
-    promotedPresentation: code
+    # native (changed 2026-09-10, was `code`): `code` does NOT mean "PTC only".
+    # In @deepseek-ai/dsh-tools, presentAs(mode) attaches the collapse + SDK
+    # sections for every mode except `native`, while wireSchemas() narrows the
+    # wire to `run_code` ONLY for `ptc`; `code` falls through to the default
+    # branch, so it behaves as `both` — native schemas AND run_code AND the
+    # generated SDK section. Measured on a real session: 36 tool schemas
+    # (33,805 chars) plus a 35,333-char SDK section in the system prompt, i.e.
+    # one 36-tool catalog paid for twice (76,968 chars/request). `native` keeps
+    # the same 36 native tools and drops the duplicate SDK section
+    # (~40,065 chars/request, -48%). Trade-off: `run_code` disappears.
+    # Use `ptc` instead if the PTC batching surface is wanted: it saves about
+    # the same amount (drops the 33,805-char schema array instead) but forces
+    # every tool call through a program.
+    promotedPresentation: native
     # Aligned with liangshen 0.2.8 (issue #388): after promotion, replace the
     # full-text AGENTS.md injection with one non-imperative reference hint.
     instructionHint: true
@@ -66,7 +92,7 @@
 - id: persona
   name: '@deepseek-ai/dsh-persona'
   config:
-    text: |-
+    prefix: |-
       You are a coding agent powered by the {{model}} model. Your working directory is {{cwd}}.
 
       You run DevFlow. Before any development work — creating features, building components, adding functionality, modifying behavior, or defining an unapproved problem-directed change — load the `devflow-core` skill with the skill tool and read its `core-methods.md` reference, then load only the selected lifecycle owner skill. The route table and hard boundaries live in that skill and in AGENTS.md; do not invent lifecycle details. Pure Q&A, lookup, verification, and investigation-only reports need no lifecycle.
@@ -157,8 +183,11 @@
 # registry is keyed by owning agent anyway. With the persistent shell, long
 # commands run through `&`; these controls still expose whatever the host
 # registry tracks.
-- id: tool-jobs
-  name: '@deepseek-ai/dsh-tool-jobs'
+# DISABLED 2026-09-10 (prompt-budget trim): `job_kill` / `job_list` /
+# `job_output` were never called in 30 recorded sessions. Uncomment to restore
+# background-job control. Long commands still work through `&` in the shell.
+# - id: tool-jobs
+#   name: '@deepseek-ai/dsh-tool-jobs'
 
 # ── skills ──────────────────────────────────────────────────────────────────
 
@@ -307,19 +336,25 @@
         enableRunInBackground: false
         maxDepth: provider-managed
 
-    - id: workflow-worker-thread
-      name: '@deepseek-ai/dsh-workflow-worker-thread'
-      config:
-        provider: spawn
+    # DISABLED 2026-09-10 (prompt-budget trim): the `workflow` schema is the
+    # single largest tool description in this catalog (4,067 chars) and was
+    # never called in 30 recorded sessions. Uncomment both rows to restore
+    # large multi-agent orchestration.
+    # - id: workflow-worker-thread
+    #   name: '@deepseek-ai/dsh-workflow-worker-thread'
+    #   config:
+    #     provider: spawn
+    #
+    # - id: tool-workflow
+    #   name: '@deepseek-ai/dsh-tool-workflow'
 
-    - id: tool-workflow
-      name: '@deepseek-ai/dsh-tool-workflow'
-
-    - id: tool-ralph
-      name: '@deepseek-ai/dsh-tool-ralph'
-      config:
-        subagentProvider: spawn
-        maxRounds: 64
+    # DISABLED 2026-09-10 (prompt-budget trim): `ralph` was never called in 30
+    # recorded sessions. Uncomment to restore fresh-agent Ralph loops.
+    # - id: tool-ralph
+    #   name: '@deepseek-ai/dsh-tool-ralph'
+    #   config:
+    #     subagentProvider: spawn
+    #     maxRounds: 64
 
 # ── remaining model-facing rows ─────────────────────────────────────────────
 
