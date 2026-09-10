@@ -94,7 +94,21 @@ When installed into a target project, only the target-runtime scripts are copied
 
 Saved specs should land in the current target project's `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` unless that project already documents another specs path. Saved implementation plans should land in the current target project's `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`. `docs/features/` is for feature ledgers and the capability index, not generated specs or task plans.
 
-`docs/features/INDEX.md` and `docs/plans/INDEX.md` are the one-hop entry for a new session: the feature index says what exists, where its entry point is, and how to verify it; the plan index says which plans are approved, in progress, or landed. Both are machine-checked by `node scripts/devflow-plan.js --index` and `npm run index:verify`.
+`docs/features/INDEX.md` and `docs/plans/INDEX.md` are the one-hop entry for a new session: the feature index says what exists, where its entry point is, and how to verify it; the plan index says which plans are approved, in progress, or landed. Both are machine-checked by `node scripts/devflow-plan.js --index` and `npm run index:verify`. `docs/requirements.md` records one row per confirmed requirement from `open` to `landed`, keeps an explicit user skip as `opt-out` with a reason, and is validated by the same command; `node scripts/devflow-plan.js --loop` reports the loop state.
+
+## Wiki publishing
+
+The repository docs are the source of truth; the GitHub wiki is a generated, read-only view for humans. Skills never read the wiki, so it cannot become a second source of truth.
+
+```sh
+npm run wiki:check   # compare the local wiki clone with the generated pages
+npm run wiki:write   # render the pages into the clone
+node scripts/devflow-wiki.js --push   # commit and push them (explicit)
+```
+
+The generator renders `Home.md`, `_Sidebar.md`, and one page per source file (`docs/features/INDEX.md`, `docs/requirements.md`, `docs/plans/INDEX.md`, `docs/project-knowledge/AI-START-HERE.md`); every page carries a generated notice and its source path.
+
+First-time setup: create any page in the GitHub wiki UI so the wiki repository exists, then clone it. `npm run wiki:check` prints the exact command when the local clone is missing and exits 0, so it never blocks local work. Set `DEVFLOW_WIKI_DIR` to use another clone location. Editing a wiki page by hand makes the next check report `wiki page out of date`, which is the intended drift alarm.
 
 Specs and plans may carry an optional `Status: draft | approved | in-progress | done` header for cross-session lifecycle tracking; `node scripts/devflow-spec.js` and `node scripts/devflow-plan.js` validate the value and treat a missing field as legacy. Long-term iteration planning for DevFlow-Core itself lives in [docs/iteration-plan.md](docs/iteration-plan.md).
 

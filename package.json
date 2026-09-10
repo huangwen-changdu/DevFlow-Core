@@ -20,6 +20,8 @@
     "spec:verify": "node scripts/devflow-spec.js --self-test",
     "plan:verify": "node scripts/devflow-plan.js --self-test",
     "index:verify": "node scripts/devflow-plan.js --index",
+    "wiki:check": "node scripts/devflow-wiki.js --check",
+    "wiki:write": "node scripts/devflow-wiki.js --write",
     "audit:verify": "node scripts/devflow-audit.js --self-test",
     "doctor:verify": "node scripts/devflow-doctor.js --self-test",
     "verify:all": "npm test && npm run learn:verify && npm run scenario:coverage && npm run trigger:verify && npm run host:verify && npm run install:verify && npm run user:verify && npm run debt:verify && npm run review:verify && npm run spec:verify && npm run plan:verify && npm run index:verify && npm run audit:verify && npm run doctor:verify && npm run capability:verify && npm run capability:eval && npm run budget:verify && npm run route:verify",

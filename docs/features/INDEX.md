@@ -23,6 +23,7 @@
 | DevFlow 独立评审 | 用户显式请求的对抗审查与找茬，独立于生命周期之外 | 对抗审查, 找茬, 红队, 最大遗漏, 盲点, 不安感, 独立评审 | `/devflow-adversarial` + `/devflow-find-fault` | active | `npm run trigger:verify` | skills/devflow-adversarial/SKILL.md, skills/devflow-find-fault/SKILL.md | 2026-07-26-independent-manual-review-skills.md | 2026-09-10 |
 | DSH 分发与预设 | 把技能、命令、脚本打包成 DSH 插件与预设，源与副本逐字节一致 | DSH, 插件, 预设, preset, 分发, 同步资产, 打包 | `dsh/plugins/dsh-devflow` | active | `npm test` | dsh/plugins/dsh-devflow/scripts/sync-assets.js, dsh/agent-presets/devflow-2 | 2026-08-19-devflow-dsh-plugin-pack.md | 2026-09-10 |
 | 循环工程 | Loop Engine 预设与独立分发插件，支撑模型自主闭环 | 循环, loop, 轮次, 失败卡, 状态文件, 循环工程 | `skills/loop-engineering` + `dsh/agent-presets/loop-engine` | active | `npm test` | skills/loop-engineering/SKILL.md, dsh/plugins/dsh-loop-engine/package.json | 2026-08-21-loop-engineering-preset.md | 2026-09-10 |
+| Wiki 单向发布 | 从仓库文档生成 GitHub Wiki 页面；repo 是源，wiki 是派生只读视图 | wiki, 发布, 派生视图, Home, Sidebar, wiki:check | `scripts/devflow-wiki.js` | active | `npm run wiki:check` | scripts/devflow-wiki.js, docs/features/INDEX.md | 2026-09-10-wiki-single-way-publish.md | 2026-09-10 |
 
 ## 维护机制
 

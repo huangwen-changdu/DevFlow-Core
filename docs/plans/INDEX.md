@@ -41,6 +41,7 @@
 | 2026-09-10 | [2026-09-10-devflow-usability-flow-reconfiguration](2026-09-10-devflow-usability-flow-reconfiguration.md) | done | docs/specs/2026-09-10-devflow-usability-flow-reconfiguration.md | verify:all 退出码 0 + --index PASS + 六个用户级 home --check 通过 | DevFlow 计划生成与落地 |
 | 2026-09-10 | [2026-09-10-feature-index-progressive-loading](2026-09-10-feature-index-progressive-loading.md) | done | 用户请求（2026-09-10 会话）+ Cut Decision | verify:all 退出码 0 + --index PASS + --query 正负例通过 | DevFlow 功能索引 |
 | 2026-09-10 | [2026-09-10-requirement-loop-and-developer-profile](2026-09-10-requirement-loop-and-developer-profile.md) | done | docs/specs/2026-09-10-requirement-loop-and-developer-profile.md | verify:all 退出码 0 + --index PASS + --loop 计数 | DevFlow 需求闭环 |
+| 2026-09-10 | [2026-09-10-wiki-single-way-publish](2026-09-10-wiki-single-way-publish.md) | done | 用户请求（2026-09-10 会话，方案 A）+ Cut Decision | wiki:check 无克隆 exit 0 + --self-test PASS + verify:all 退出码 0 | Wiki 单向发布 |
 
 ## 维护机制
 
