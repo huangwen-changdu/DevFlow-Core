@@ -18,7 +18,7 @@ Turn an A/B `CUT_PASS`-bounded approved design or confirmed Spec into one review
 1. Read only source material, code, tests, and conventions relevant to the approved scope. Load `skills/devflow-spec/references/spec-plan-methods.md` and `skills/devflow-plan/references/plan-methods.md` before applying Plan Pack mechanics.
 2. Map the intended touch set once: list the files and the responsibility each one carries. Reuse existing modules and name the intended file operation.
 3. Do the bounded investigation needed to write correct tasks. Keep that evidence in the conversation or in a learning card; it is not a plan field.
-4. Split independent deliverables into small, reviewable tasks. Each task carries `Files`, `Change`, `Acceptance`, `Verify`, and `Not doing` so an executor can act on it without reading another task.
+4. Split by delivery unit: one task = one independently verifiable deliverable and the smallest unit worth a fresh reviewer's gate — split only where a reviewer could meaningfully reject one task while approving its neighbor, and fold setup, configuration, scaffolding, and documentation into the task whose deliverable needs them. Split whenever `Acceptance` needs `且`/`and` to join two independently verifiable results; keep one task when the same rule mirrors across files — mirrored edits are one delivery unit, not one task per file. Each task carries `Files`, `Change`, `Acceptance`, `Verify`, and `Not doing` so an executor can act on it without reading another task.
 5. Write the plan using the required header, task contract, and `## Progress` table below.
 6. Self-review Cut fidelity, touch-set coverage, acceptance proof, scope exclusions, and Progress row count against the task count.
 7. Run `node scripts/devflow-plan.js <plan-file>` when the project-level checker exists. Otherwise resolve the user-level checker according to `core-methods.md` Script Path Resolution.
@@ -49,7 +49,7 @@ Files:
 - Create: <path> | new file | <responsibility>
 - Modify: <path> | <symbol or stable anchor> | <responsibility>
 - Test: <path> | <symbol or stable anchor> | <behavior proved>  # only when applicable
-Change: <what changes and its boundary; add the smallest mechanics only when the change crosses a module contract, is irreversible, or touches security or data boundaries>
+Change: <what changes and its boundary; add the smallest mechanics (pseudocode, exact replacement, or key fragment) only when the change crosses a module contract, is irreversible, touches security or data boundaries, or the mechanism cannot be inferred from the task's named anchors by a different session or model>
 Acceptance: <specific observable condition>
 Verify: <exact command or manual scenario, trigger/input, and expected result>
 Not doing: <scope excluded by this task>
@@ -77,15 +77,15 @@ Files:
 - Create: <path> | new file | <responsibility>
 - Modify: <path> | <symbol or stable anchor> | <responsibility>
 - Test: <path> | <symbol or stable anchor> | <behavior proved>  # only when applicable
-Change: <what changes and its boundary; exact mechanics only when the change crosses a module contract, is irreversible, or touches security or data boundaries>
+Change: <what changes and its boundary; exact mechanics (pseudocode, exact replacement, or key fragment) only when the change crosses a module contract, is irreversible, touches security or data boundaries, or the mechanism cannot be inferred from the task's named anchors by a different session or model>
 Acceptance: <specific observable condition>
 Verify: <exact command or manual scenario, trigger/input, and expected result>
 Not doing: <scope excluded by this task>
 ```
 
-Use only `Create`, `Modify`, and `Test` file-operation labels. `Create` rows use `new file`; every other row names a symbol or stable anchor. `Change` states the executable intent and its boundary in one or two lines; it does not restate current behavior, target behavior, call impact, or interfaces unless the task changes a cross-module contract. The Plan no longer classifies tasks by `Task type`: a task whose files are all documentation paths is documentation-only, and the checker treats it that way.
+Use only `Create`, `Modify`, and `Test` file-operation labels. `Create` rows use `new file`; every other row names a symbol or stable anchor. `Change` states the executable intent and its boundary in one or two lines; it does not restate current behavior, target behavior, call impact, or interfaces unless the task changes a cross-module contract. When the mechanism cannot be inferred from the task's named anchors — the common case when a different session or model executes the plan — `Change` carries the smallest runnable mechanics (pseudocode, exact replacement, or key fragment) so the executor acts without the author's session context. The Plan no longer classifies tasks by `Task type`: a task whose files are all documentation paths is documentation-only, and the checker treats it that way.
 
-Six fields per task is the whole contract: ordering, the touch set, the intent, the acceptance condition, the proof command, and the exclusion. Investigation traces, handoff facts, per-task worklists, architecture, tech stack, spec coverage, and comment locations are owned by other nodes or stay in the conversation. `Prewalk`, `File Structure`, `Interfaces`, `Current behavior`, `Target behavior`, `Change mechanics`, `Call impact`, and `Comments` are not part of the v2 contract; a plan that still carries them is treated as legacy.
+Six fields per task is the whole contract: ordering, the touch set, the intent, the acceptance condition, the proof command, and the exclusion. `Acceptance` states one observable result; a `；`/`;`-joined multi-result acceptance is a split signal and the checker fails it while the plan is active. Plan length has no fixed total line cap: it grows with the number of delivery units while every task keeps the six-field, one-result shape. Investigation traces, handoff facts, per-task worklists, architecture, tech stack, spec coverage, and comment locations are owned by other nodes or stay in the conversation. `Prewalk`, `File Structure`, `Interfaces`, `Current behavior`, `Target behavior`, `Change mechanics`, `Call impact`, and `Comments` are not part of the v2 contract; a plan that still carries them is treated as legacy.
 
 Keep one task understandable on its own. Do not use cross-task shorthand, generic test additions, unnamed edge cases, or cleanup entries. Name a test file only when the stated behavior needs one.
 
@@ -103,6 +103,8 @@ Plan generation does not repeat Cut, perform Build or Prove, prescribe independe
 | "The checker proves the architecture." | It proves structure only; the author must review scope and design consistency. |
 | "The plan is approved, so Cut can be skipped." | Plan generation requires an existing `CUT_PASS`; it cannot replace the earlier reuse and scope decision. |
 | "The task details can broaden the solution." | If a task exceeds the Cut Decision, return the scope-drift facts to `devflow-core`; do not directly enter Build. |
+| "Two results can share one task when they ship together." | Two independently verifiable results are two delivery units; split the task or reduce `Acceptance` to one observable result. |
+| "A different session or model will figure out the how." | If the mechanism cannot be inferred from the task's named anchors, `Change` must carry the smallest runnable mechanics; otherwise the handoff stalls. |
 
 ## Verification
 
@@ -114,6 +116,8 @@ Before leaving this skill, confirm:
 - [ ] Approved design or saved spec is cited as optional `Source`.
 - [ ] Header, tasks, and `## Progress` match the v2 contract; each task has six fields and no legacy field.
 - [ ] Every task is independently understandable and has no unresolved or vague placeholder.
+- [ ] Each task is exactly one delivery unit: no `；`/`;`-joined `Acceptance`, and a mirrored rule was not split per file.
+- [ ] Every task is executable by a different session or model from its six fields plus named anchors: a non-inferable mechanism carries the smallest runnable mechanics.
 - [ ] Progress row count equals task count; every `done` row carries evidence.
 - [ ] The checker passed when available.
 - [ ] The user reviewed the written plan.

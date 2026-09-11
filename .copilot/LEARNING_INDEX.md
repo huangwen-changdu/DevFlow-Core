@@ -14,7 +14,7 @@ Read this index first. Only read a card when its trigger and scope match the cur
 | [AGENTS Runtime Prompt Boundary](cards/agents-runtime-prompt-boundary.md) | AGENTS.md, runtime prompt, prompt file, unrelated explanation, README-like content, long method details, wrong place, misplaced content, repeated correction | project | 0.7 |
 | [Problem Reports Need Triage](cards/problem-reports-need-triage.md) | 问题, 有问题, 检查一下, 哪里不对, investigate issue, problem report without fix request | project | 0.6 |
 | [PUA Same-Target Trigger](cards/pua-same-target-trigger.md) | devflow-pua, PUA trigger, Recovery trigger, same function, same result, repeated dissatisfaction, repeated target, 首次反馈, 同一功能, 重复指出 | project | 0.5 |
-| [Checker Contract And Route Surface Design](cards/checker-contract-route-surface.md) | checker 脚本改动, --json 输出, Status 字段, budget 阈值, 契约瘦身, 新增校验分支, legacy 兼容判定, 路由一致性校验, 校验表面, devflow-plan/spec/review/debt/audit/budget/route 校验器 | project | 0.6 |
+| [Checker Contract And Route Surface Design](cards/checker-contract-route-surface.md) | checker 脚本改动, --json 输出, Status 字段, budget 阈值, 契约瘦身, 新增校验分支, legacy 兼容判定, 路由一致性校验, 校验表面, devflow-plan/spec/review/debt/audit/budget/route 校验器 | project | 0.7 |
 | [Skip Path Needs Receiver And Success Edge](cards/skip-path-receiver-and-success-edge.md) | skip Brainstorm, bypass gate, new Core direct path, Design-lite without Brainstorm, add route exception | project | 0.4 |
 | [Subjective Quality Structure vs Behavior](cards/subjective-quality-structure-vs-behavior.md) | 不够灵动, 不好用, 感觉差点, 太死板, subjective quality, skill feels rigid, optional format, fast lane tier, 用户确认处方 | project | 0.4 |
 | [DSH Dynamic Tool defineTool Contract](cards/dsh-definetool-contract.md) | defineTool, output.schema, value schema DSL, 动态插件工具, harness.defineTool 失败 | project | 0.5 |
@@ -25,6 +25,7 @@ Read this index first. Only read a card when its trigger and scope match the cur
 | [DSH Preset 派生与挂载校验闭环](cards/dsh-preset-derive-mount-validate.md) | 新建/派生 DSH agent preset, agentPresets.standingKeyFor, preset 挂载校验, loop-engine, preset 从已有基底拷贝 | project | 0.4 |
 | [PowerShell UTF-8 显示乱码不等于文件损坏](cards/pwsh-utf8-display-mojibake.md) | pwsh Get-Content 中文乱码, PowerShell 显示乱码, UTF-8 文件校验, 哈希对比文件, CJK 文件内容检查 | global | 0.4 |
 | [DSH Loop Preset 入口行为迭代教训](cards/dsh-preset-loop-entry-iterations.md) | loop-engine preset 行为不符合预期, 晋升后不草拟定义, 首问被裸答, 会话就停了, 改 preset 后重启修改丢失, phase1Persona 挂载失败, 双源链 | project | 0.7 |
-| [DSH 插件仓库更新必须同步发布 npm](cards/dsh-plugin-repo-change-publish.md) | 改动 dsh/plugins 插件源码或 assets, 插件分发的 preset/skill 变更, dsh 插件有更新, loop-engine/dsh-devflow 资产变更 | project | 0.6 |
+| [DSH 插件仓库更新必须同步发布 npm](cards/dsh-plugin-repo-change-publish.md) | 改动 dsh/plugins 插件源码或 assets, 插件分发的 preset/skill 变更, dsh 插件有更新, loop-engine/dsh-devflow 资产变更 | project | 0.7 |
 | [Scripted Markdown Write-Back Must Verify The Header](cards/scripted-markdown-writeback-verify.md) | 用 node 脚本回写 Markdown 表行, 计划 Progress 回写, 索引表更新, heredoc 里写正则, 文件头被改坏, replace 插到文件开头 | project | 0.4 |
 | [External Platform Is A Publish Target, Not A Source](cards/external-publish-target-not-source.md) | wiki, GitHub Wiki, 文档发布, 知识沉淀出口, 外部平台当文档源, 派生视图, 发布脚本, sync docs to wiki | project | 0.4 |
+| [Plan Density Follows The Executor Contract](cards/plan-density-executor-contract.md) | 计划密度, 计划太薄, 计划太厚, 任务粒度, right-sizing, 跨会话执行, 跨模型交接, executor context, 内嵌代码, plan density | project | 0.4 |

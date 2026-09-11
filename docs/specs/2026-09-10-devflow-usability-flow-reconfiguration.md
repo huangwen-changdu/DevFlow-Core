@@ -3,6 +3,7 @@
 Status: draft
 Date: 2026-09-10
 Source: devflow-core -> Brainstorm Confirmed request（2026-09-10 会话，depth A）
+Note: 2026-09-11——R2/A2 的「5 任务 ≤60 行」硬上限已取消；计划改为按交付单元拆任务（一任务 = 一可独立验收交付单元），总量随交付单元数增长；见 `docs/requirements.md` 2026-09-11 行。
 
 ## Goal
 

@@ -101,7 +101,7 @@ npx @deepseek-ai/dsh plugin --profile web update @devflow-core/dsh-devflow
 - 字节相同的文件跳过（不覆盖用户 mtime）
 - 不同的文件覆盖（devflow-* 权威）
 - 源不再包含的 devflow-* 残留 prune
-- 非 devflow 资产（atlassian、rtk 等）永不触碰
+- 非 devflow 资产（atlassian 等）永不触碰
 - `~/.dsh/.agent-presets/devflow-2/` 整目录归插件管理，目录内非包内文件会被清理
 
 ## 常见错误对照表

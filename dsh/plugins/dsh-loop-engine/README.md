@@ -31,7 +31,7 @@ npx @deepseek-ai/dsh plugin --profile web add @devflow-core/dsh-loop-engine
 - **loop-\* 权威覆盖**：目标文件与包内源文件字节相同 → 跳过；不同 → 覆盖。
 - 源不再包含的 loop-\* 残留（升级后旧文件）→ 删除（prune）。
 - **非 loop 资产永不触碰**：其他插件分发的 preset/skill（devflow-*、
-  atlassian、rtk 等）与用户自装内容一律保留，不删除不覆盖。
+  atlassian 等）与用户自装内容一律保留，不删除不覆盖。
 - **preset 目录完全由插件管理**：`~/.dsh/.agent-presets/loop-engine/` 整目录归
   插件所有，目录内非包内文件（含手动备份如 `agent.cordis.yml.bak-*`）会在
   下次同步时被清理。请勿在该目录存放自定义文件；如需自定义 preset，把

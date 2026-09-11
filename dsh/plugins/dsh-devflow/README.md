@@ -33,7 +33,7 @@ npx @deepseek-ai/dsh plugin --profile web add @devflow-core/dsh-devflow
 
 - **devflow-\* 权威覆盖**：目标文件与包内源文件字节相同 → 跳过；不同 → 覆盖。
 - 源不再包含的 devflow-\* 残留（升级后旧文件）→ 删除（prune）。
-- **非 devflow 资产永不触碰**：用户自装的 skill（如 `atlassian`、`rtk`）、
+- **非 devflow 资产永不触碰**：用户自装的 skill（如 `atlassian`）、
   自定义命令/脚本一律保留，不删除不覆盖。
 - **preset 目录完全由插件管理**：`~/.dsh/.agent-presets/devflow-2/` 整目录归
   插件所有，目录内非包内文件（含手动备份如 `agent.cordis.yml.bak-*`）会在

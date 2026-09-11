@@ -66,7 +66,7 @@ Execution Trace:
 - Read: AGENTS.md / Start step 5 → matching external skill is limited to “guides quality”.
 - Read: skills/devflow-core/SKILL.md / Context Map and skills/devflow-core/references/core-methods.md / Method 1 → Core discovers matching guidance but has no execution-return record.
 - Traced: AGENTS.md startup rule → devflow-core → shared Core methods → selected lifecycle owner.
-- Ran: `rtk npm test` → `DevFlow validation passed` before this Plan executes.
+- Ran: `npm test` → `DevFlow validation passed` before this Plan executes.
 - Verified: `node scripts/devflow-spec.js docs/specs/2026-07-31-meta-skill-capability-integration.md` → revised minimal Spec passed.
 
 Current Handoff Facts:

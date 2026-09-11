@@ -242,11 +242,11 @@ runVerifier("scripts/validate-route-consistency.js");
 
 // v2 计划契约与双索引：契约文本、机检入口与索引文件必须同时存在，否则规则会与实现漂移。
 const usabilityPlanSkill = read("skills/devflow-plan/SKILL.md");
-for (const marker of ["## Progress", "Rejected", "Six fields per task", "Landed:"]) {
+for (const marker of ["## Progress", "Rejected", "Six fields per task", "Landed:", "one delivery unit", "one observable result", "fresh reviewer's gate", "cannot be inferred from the task's named anchors"]) {
   assert(usabilityPlanSkill.includes(marker), `devflow-plan must publish the v2 contract marker ${marker}`);
 }
 const usabilityPlanChecker = read("scripts/devflow-plan.js");
-for (const marker of ["v2TaskFields", "detectV2", "checkIndexes", "--index"]) {
+for (const marker of ["v2TaskFields", "detectV2", "checkIndexes", "--index", "multiResult"]) {
   assert(usabilityPlanChecker.includes(marker), `devflow-plan.js must implement the v2/index marker ${marker}`);
 }
 for (const indexFile of ["docs/plans/INDEX.md", "docs/features/INDEX.md"]) {

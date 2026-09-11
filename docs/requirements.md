@@ -25,6 +25,8 @@ open -> designed -> planned -> built -> landed
 |---|---|---|---|---|---|---|---|
 | 2026-09-10 | 需求闭环与开发者画像：需求台账 + 跳过留痕 + 闭环报告 + 偏好卡 | 用户请求 | A | docs/specs/2026-09-10-requirement-loop-and-developer-profile.md, docs/plans/2026-09-10-requirement-loop-and-developer-profile.md | landed | npm run verify:all 退出码 0；--index PASS；--loop 输出计数 | 2026-09-10 |
 | 2026-09-10 | GitHub Wiki 作为文档知识沉淀出口：repo 为源、单向派生发布 | 用户请求 | B | docs/plans/2026-09-10-wiki-single-way-publish.md | landed | npm run verify:all 退出码 0；wiki:check 无克隆 exit 0；--self-test PASS | 2026-09-10 |
+| 2026-09-11 | 计划任务粒度收紧：一任务 = 一可独立验收交付单元（指南判据 + checker 保守子集；取消 60 行硬上限） | 用户请求 | C | - | landed | npm run verify:all 退出码 0；自测覆盖多结果 FAIL/done 容忍/代码片段分号；粗/细 E2E exit 1/0；4 份既有 v2 计划零回归；镜像哈希一致 | 2026-09-11 |
+| 2026-09-11 | 计划跨会话/跨模型可执行：吸收 right-sizing 判据 + how 非显然任务附最小可执行改法 | 用户请求 | C | - | landed | npm run verify:all 退出码 0；断言锁 right-sizing/锚点不可推短语；历史 v2 计划 exit 0；镜像哈希一致；budget PASS；插件版本随本轮发布 bump：框架 0.4.0 / dsh-devflow 0.7.0 / Codex 0.2.0（npm publish 待用户执行） | 2026-09-11 |
 
 ## 维护机制
 

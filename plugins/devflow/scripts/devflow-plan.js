@@ -369,20 +369,24 @@ function splitTasksV2(body) {
 }
 
 /** Validate one v2 task: files, change intent, acceptance, proof, and exclusion. */
-function checkTaskV2(task) {
+function checkTaskV2(task, enforceGranularity = true) {
   const missing = v2TaskFields.filter((field) => !v2FieldPatterns[field].test(task.body));
   const files = v2FieldBlock(task.body, "Files");
   const change = v2FieldBlock(task.body, "Change");
+  const acceptance = v2FieldBlock(task.body, "Acceptance");
   const verify = v2FieldBlock(task.body, "Verify");
   const notDoing = v2FieldBlock(task.body, "Not doing");
   const fileEntries = parseFileEntries(files);
   const invalidFiles = fileEntries.filter(({ match }) => !match).map(({ line }) => line);
   const unlocatedCodeFiles = findUnlocatedCodeFiles(fileEntries);
   const unresolved = findMatches(task.body, unresolvedPatterns);
-  const vague = findMatches([change, v2FieldBlock(task.body, "Acceptance"), verify].join("\n"), vaguePatterns);
+  const vague = findMatches([change, acceptance, verify].join("\n"), vaguePatterns);
   // v2 不强制精确改法；只要求 Change 说出可执行意图，具体实现归 Build。
   const missingChange = !implementationVerbPattern.test(change) || genericMechanicsPattern.test(change);
   const incompleteVerification = !hasVerificationExpectation(verify);
+  // 单结果保守代理：Acceptance 含分号即视为多交付单元；先剔除反引号代码片段，避免命令里的半角分号误报。语义判据（"且"连接独立结果、镜像合并）在技能指南，checker 只强制可静态判定的子集。
+  const acceptanceText = acceptance.replace(/`[^`]*`/g, "");
+  const multiResult = enforceGranularity && /[；;]/.test(acceptanceText);
 
   return {
     number: task.number,
@@ -393,6 +397,7 @@ function checkTaskV2(task) {
     unlocatedCodeFiles,
     missingChange,
     incompleteVerification,
+    multiResult,
     missingNotDoing: !notDoing,
     ok:
       missing.length === 0 &&
@@ -402,6 +407,7 @@ function checkTaskV2(task) {
       unlocatedCodeFiles.length === 0 &&
       !missingChange &&
       !incompleteVerification &&
+      !multiResult &&
       Boolean(notDoing)
   };
 }
@@ -409,13 +415,15 @@ function checkTaskV2(task) {
 /** Validate the v2 plan contract: slim header, task rows, Progress table, and Cut subtraction. */
 function checkPlanV2(body) {
   const tasks = splitTasksV2(body);
-  const taskResults = tasks.map(checkTaskV2);
-  const missingGlobal = v2GlobalFields.filter((field) => !v2FieldPatterns[field].test(body));
-  const cutBlock = v2FieldBlock(body, "Cut");
-  const missingRejected = !/Rejected\s*:\s*\S/im.test(cutBlock);
   const statusMatch = body.match(statusPattern);
   const status = statusMatch ? statusMatch[1].trim() : "legacy";
   const invalidStatus = statusMatch ? !validStatuses.includes(status) : false;
+  // 粒度代理只在活跃计划（draft/approved/in-progress）上强制；done 计划是历史记录，不重判，避免既有 v2 计划校验回归。
+  const enforceGranularity = status !== "done";
+  const taskResults = tasks.map((task) => checkTaskV2(task, enforceGranularity));
+  const missingGlobal = v2GlobalFields.filter((field) => !v2FieldPatterns[field].test(body));
+  const cutBlock = v2FieldBlock(body, "Cut");
+  const missingRejected = !/Rejected\s*:\s*\S/im.test(cutBlock);
   const progress = [...body.matchAll(progressRowPattern)].map((match) => ({
     number: Number(match[1]),
     state: match[3],
@@ -806,6 +814,7 @@ function report(body, filePath, json) {
           ...task.vague.map((match) => `vague ${match}`),
           ...task.invalidFiles.map((line) => `unclassified file ${line}`),
           ...task.unlocatedCodeFiles.map((line) => `missing file symbol/anchor ${line}`),
+          ...(task.multiResult ? ["Acceptance lists multiple results; split the task or state one observable result"] : []),
           ...(task.missingChange ? ["Change needs an executable intent verb"] : []),
           ...(task.missingNotDoing ? ["missing Not doing exclusion"] : []),
           ...(task.incompleteVerification ? ["Verify needs command/scenario and expected result"] : [])
@@ -1046,7 +1055,7 @@ function selfTest() {
     "Files:",
     "- Modify: scripts/devflow-plan.js | symbol: `checkPlanV2` | validate the slim contract",
     "Change: add v2 field validation and dispatch",
-    "Acceptance: v2 plans pass and legacy plans keep passing",
+    "Acceptance: v2 plans pass the slim contract",
     "Verify: run `node scripts/devflow-plan.js --self-test` expect exit 0",
     "Not doing: changing legacy validation",
     "",
@@ -1058,6 +1067,24 @@ function selfTest() {
   ].join("\n");
   if (!detectV2(validV2Plan)) throw new Error("Self-test expected v2 detection to pass");
   if (!checkPlan(validV2Plan).ok) throw new Error("Self-test expected valid v2 plan to pass");
+  const multiResultV2Plan = validV2Plan.replace(
+    "Acceptance: v2 plans pass the slim contract",
+    "Acceptance: v2 plans pass；legacy plans keep passing"
+  );
+  if (checkPlan(multiResultV2Plan).ok) throw new Error("Self-test expected a semicolon-joined Acceptance to fail");
+  const doneMultiResultV2Plan = multiResultV2Plan
+    .replace("Status: approved", "Status: done")
+    .replace("| 1 | Add v2 validation | todo | - |", "| 1 | Add v2 validation | done | run `node scripts/devflow-plan.js --self-test` |");
+  if (!checkPlan(doneMultiResultV2Plan).ok) {
+    throw new Error("Self-test expected a done plan to keep validating without granularity re-judging");
+  }
+  const codeSpanSemicolonV2Plan = validV2Plan.replace(
+    "Acceptance: v2 plans pass the slim contract",
+    "Acceptance: `node -e \"a;b\"` prints one result"
+  );
+  if (!checkPlan(codeSpanSemicolonV2Plan).ok) {
+    throw new Error("Self-test expected a semicolon inside a code span to stay valid");
+  }
   if (checkPlan(validV2Plan.replace(/Rejected:[^\n]*/, "Rejected:")).ok) throw new Error("Self-test expected missing Rejected to fail");
   if (checkPlan(validV2Plan.replace("| 1 | Add v2 validation | todo | - |", "| 1 | Add v2 validation | done | - |")).ok) {
     throw new Error("Self-test expected a done Progress row without evidence to fail");
@@ -1089,7 +1116,7 @@ function selfTest() {
   if (missingArtifact.length === 0) throw new Error("Self-test expected a missing requirement artifact to fail");
 
   console.log("DevFlow plan self-test passed");
-  console.log("Checked v2 and legacy plan contracts, Progress evidence, Cut Rejected, code-level fields, precise file locations, verification expectations, documentation-only exception, external-skill declaration, and plan landing guidance");
+  console.log("Checked v2 and legacy plan contracts, Progress evidence, Cut Rejected, single-result Acceptance granularity, code-level fields, precise file locations, verification expectations, documentation-only exception, external-skill declaration, and plan landing guidance");
 }
 
 const args = process.argv.slice(2);

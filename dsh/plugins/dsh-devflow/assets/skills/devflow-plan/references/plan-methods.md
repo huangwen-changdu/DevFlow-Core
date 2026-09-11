@@ -8,6 +8,17 @@ State the intended touch set once, before tasks: the files and the responsibilit
 
 The v2 Plan Pack has no `File Structure` table. The per-task `Files` rows are the touch set; a global table would only restate them.
 
+## Delivery Unit
+
+Split by delivery unit, not by file or by step: one task = one independently verifiable deliverable.
+
+- Splitting test: if `Acceptance` needs `且`/`and` to join two independently verifiable results, they are two delivery units — split them.
+- Mirror test: the same rule edited across several files is one delivery unit; do not split it per file.
+- Right-sizing test: a task is the smallest unit worth a fresh reviewer's gate — split only where a reviewer could meaningfully reject one task while approving its neighbor; fold setup, configuration, scaffolding, and documentation into the task whose deliverable needs them.
+- `Acceptance` states one observable result. The checker fails a v2 task whose `Acceptance` contains a `；`/`;` separator outside backtick code spans as the conservative static proxy for this rule; it applies while the plan is active (draft/approved/in-progress), while done plans stay historical records. The semantic tests above still govern mirrored and independently verifiable cases.
+- Handoff density: when the mechanism cannot be inferred from the task's named anchors — a different session or model executes the plan — `Change` carries the smallest runnable mechanics (pseudocode, exact replacement, or key fragment); otherwise it stays intent plus boundary.
+- No fixed total line cap: plan length grows with the number of delivery units; the six-field shape keeps each task slim.
+
 ## Task Rows
 
 Each task carries exactly six fields:
@@ -21,7 +32,7 @@ Verify: <command or manual scenario with trigger, input, and expected result>
 Not doing: <scope excluded by this task>
 ```
 
-`Change` states the executable intent. Add exact mechanics only when the change crosses a module contract, is irreversible, or touches security or data boundaries. Otherwise the executor chooses the smallest implementation inside the task boundary. This is the deliberate trade: the plan stops pre-deciding every edit, and Build regains bounded implementation authority. That trade is the fix for the bloated-plan problem, not a relaxation of proof.
+`Change` states the executable intent. Add exact mechanics (pseudocode, exact replacement, or key fragment) only when the change crosses a module contract, is irreversible, touches security or data boundaries, or the mechanism cannot be inferred from the task's named anchors by a different session or model. Otherwise the executor chooses the smallest implementation inside the task boundary. This is the deliberate trade: the plan stops pre-deciding every edit, and Build regains bounded implementation authority. That trade is the fix for the bloated-plan problem, not a relaxation of proof.
 
 Investigation evidence does not belong in the plan. Keep it in the conversation, or in a `.copilot/cards/` learning card when it is reusable across tasks.
 
