@@ -17,6 +17,8 @@ Adversarial review: <acceptance, regressions, activation, proof coverage>
 Judgment: PASS / FAIL / BLOCKED
 ```
 
+Before the completion report, reread every final artifact and its wrapper — filenames, titles, comments, tags, documents, commit or PR text, metadata, hook rewrites, and the report itself — as a reader without access to this session, and describe only the accepted final state. Recheck after any content change; keep deliberate decision records, safety and compatibility facts, real baseline changes, executed external actions, and pre-existing user changes; keep unrelated changes out of this task's commit, PR, or handoff, and do not add cleanup or no-residue claims.
+
 `PASS` is Prove's terminal success after Learn review. Proof `FAIL`, `BLOCKED`, a real adversarial gap, unresolved Code Review Blocker/Warning, or incomplete PUA recovery evidence returns its facts to `devflow-core`; Core selects the repair, recovery, or re-clarification path. Prove never infers that next owner.
 
 ### Quality-Finding Recovery

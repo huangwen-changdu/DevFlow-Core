@@ -42,3 +42,5 @@ A function may contain several steps when they form one coherent business narrat
 ## Build Comments
 
 The approved Spec/Plan and local project convention define required code comments. Add a comment when it records a protected contract, failure condition, business rule, compatibility boundary, or other non-obvious reason; inline comments explain reasons, not syntax. Markdown runtime contracts use headings and fixed output shapes rather than narrative comments.
+
+When a comment describes behavior, write it from the accepted final state. Regenerate it from the final behavior instead of editing rejected wording; comments never narrate rejected alternatives, session corrections, intermediate attempts, or why-not-X reasoning, and keep only the non-obvious reasons a future maintainer needs.

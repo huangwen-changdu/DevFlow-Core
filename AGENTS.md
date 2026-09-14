@@ -42,6 +42,7 @@ When skills are unavailable, use the route table and hard boundaries below as th
 - `devflow-learn` records only reusable evidence-backed experience; business knowledge requires user confirmation before maintenance.
 - While a DevFlow lifecycle node is active, end each user-facing message with one status line: `[DevFlow: <node> -> <next> | awaiting approval / in progress]`. It reflects the current node without reloading the owner skill.
 - Keep progress visible in the persistent UI: maintain a `todo_write` list with one item per active work unit (lifecycle node, background job, or subagent), marking it `completed` the moment it settles, and use `create_goal` for the session's long-running objective.
+- Final artifacts and their wrappers — titles, filenames, body text, comments, tags, commits, PR text, documents, and handoffs — describe the accepted final state, assuming the reader did not see this session; rejected session-only alternatives, intermediate attempts, and corrections stay control data. Regenerate names, titles, and openings from the positive target rather than editing rejected wording; keep real baseline changes, executed external actions, required technical names, decision records, safety facts, and pre-existing user changes.
 
 ## Independent Judgment
 

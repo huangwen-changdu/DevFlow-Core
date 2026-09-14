@@ -8,6 +8,8 @@ Owner: `devflow-spec` and `devflow-plan`. Load this reference only after Core se
 
 `devflow-plan` consumes A/B `CUT_PASS` plus an approved design or confirmed Spec. It creates one implementation plan under `docs/plans/`, then waits for user review. An approved A/B Plan directly enters Build; scope-drift facts return to Core.
 
+Spec and Plan names, titles, and framing describe the accepted final state, regenerated from the positive target rather than edited from rejected wording. Keep Non-goals and Rejected as deliberate decision records; keep unrelated changes, comparisons, quotations, audits, or migration notes out unless the user asked or the document requires them.
+
 A Spec contains Goal, Context, Requirements, Non-goals, Approach, Impact, Acceptance, Verification, Code Documentation, and Open Questions. A Plan states Source, Spec coverage, Cut Decision, External Skills, exact files or anchors, interfaces, current and target behavior, mechanics, call impact, verification, comments, and exclusions.
 
 ## Plan Contract

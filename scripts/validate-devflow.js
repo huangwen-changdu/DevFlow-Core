@@ -29,9 +29,9 @@ function assertHybridLifecycleContract(core) {
 }
 
 /** Runs a focused sibling verifier so package validation proves cross-file contracts. */
-function runVerifier(rel) {
-  const result = spawnSync(process.execPath, [path.join(root, rel)], { cwd: root, encoding: "utf8" });
-  if (result.status !== 0) throw new Error(`${rel} failed:\n${result.stdout}\n${result.stderr}`);
+function runVerifier(rel, args = []) {
+  const result = spawnSync(process.execPath, [path.join(root, rel), ...args], { cwd: root, encoding: "utf8" });
+  if (result.status !== 0) throw new Error(`${[rel, ...args].join(" ")} failed:\n${result.stdout}\n${result.stderr}`);
 }
 
 /** Returns cards linked by the index; card bodies are checked only after index selection. */
@@ -192,6 +192,67 @@ assert(core.includes("end each user-facing message with one status line"), "devf
 assert(agents.includes("maintain a `todo_write` list with one item per active work unit"), "AGENTS.md must require todo/goal status visibility");
 assert(core.includes("maintain a `todo_write` list with one item per active work unit"), "devflow-core must require todo/goal status visibility");
 
+/** Guards delivery-surface hygiene: the accepted-final-state rule must stay wired into all six carrying surfaces or the rule silently drifts away. */
+assert(read("AGENTS.md").includes("accepted final state"), "AGENTS.md must publish the accepted-final-state delivery rule");
+assert(read("skills/devflow-core/SKILL.md").includes("accepted final state"), "devflow-core must publish the accepted-final-state delivery rule");
+assert(read("skills/devflow-build/references/build-methods.md").includes("accepted final state"), "build-methods must publish the accepted-final-state delivery rule");
+assert(read("skills/devflow-prove/references/proof-recovery-methods.md").includes("accepted final state"), "proof-recovery-methods must publish the accepted-final-state delivery rule");
+assert(read("skills/devflow-spec/references/spec-plan-methods.md").includes("accepted final state"), "spec-plan-methods must publish the accepted-final-state delivery rule");
+assert(read("skills/devflow-docs-followup/SKILL.md").includes("accepted final state"), "devflow-docs-followup must publish the accepted-final-state delivery rule");
+
+/** Collects repo-relative file paths under a repo-relative directory, so a copy gate compares whole trees instead of the one file a change touched. */
+function filesUnder(rel) {
+  return fs.readdirSync(path.join(root, rel), { withFileTypes: true }).flatMap((entry) => {
+    const child = `${rel}/${entry.name}`;
+    return entry.isDirectory() ? filesUnder(child) : [child];
+  });
+}
+
+/** Fails on a missing, stale, or orphaned mirror, so a distribution copy cannot silently diverge from its repo-root source. */
+function assertMirrorTree(sourceRoot, copyRoot, hint) {
+  const sources = filesUnder(sourceRoot);
+  const copies = filesUnder(copyRoot);
+  for (const source of sources) {
+    const copy = `${copyRoot}/${source.slice(sourceRoot.length + 1)}`;
+    assert(copies.includes(copy) && read(copy) === read(source), `${copyRoot} drifted from ${sourceRoot}: ${copy} — ${hint}`);
+  }
+  for (const orphan of copies.filter((copy) => !sources.includes(`${sourceRoot}/${copy.slice(copyRoot.length + 1)}`))) {
+    assert(false, `${copyRoot} has no source in ${sourceRoot}: ${orphan} — ${hint}`);
+  }
+}
+
+/** Guards the Codex plugin copy: neither npm test nor verify-plugin.js compares plugins/devflow/skills bytes with the repo-root skills tree. */
+for (const directory of fs.readdirSync(path.join(root, "skills"), { withFileTypes: true })) {
+  if (!directory.isDirectory() || !directory.name.startsWith("devflow-")) continue;
+  assertMirrorTree(
+    `skills/${directory.name}`,
+    `plugins/devflow/skills/${directory.name}`,
+    "refresh the Codex plugin copy and re-run plugins/devflow/scripts/verify-plugin.js"
+  );
+}
+
+/** Guards the dsh preset copy: assertPackagedAssetParity covers skills and commands only, so a promoted preset can drift unnoticed. */
+assertMirrorTree(
+  "dsh/agent-presets/devflow-2",
+  "dsh/plugins/dsh-devflow/assets/presets/devflow-2",
+  "re-run node dsh/plugins/dsh-devflow/scripts/sync-assets.js"
+);
+
+/** Guards the promoted persona: instructionHint replaces the workspace AGENTS.md digest, so both preset copies must restate these AGENTS.md-owned clauses. */
+for (const [label, agentsClause, personaClause] of [
+  ["Independent Judgment false-premise check", "check for false premises, logical leaps, and material missing information", "check for false premises, logical leaps, and material missing information"],
+  ["Independent Judgment evidence and alternatives", "state the evidence, risks, and plausible alternative explanations", "state the evidence, risks, and plausible alternative explanations"],
+  ["Independent Judgment evidence boundary", "state the evidence boundary when verification is unavailable", "state the evidence boundary when verification is unavailable"],
+  ["Independent Judgment overlooked variables", "overlooked variables, costs, constraints, and likely biases", "overlooked variables, costs, constraints, and likely biases"],
+  ["Fallback design output contract", "Smallest useful plan", "Goal / Smallest useful plan / Not doing / Impact / Verification"],
+  ["Fallback completion output contract", "Adversarial review", "Command / Result / Adversarial review / Judgment"]
+]) {
+  assert(agents.includes(agentsClause), `AGENTS.md must keep the ${label} clause: ${agentsClause}`);
+  for (const rel of ["dsh/agent-presets/devflow-2/agent.cordis.yml", "dsh/plugins/dsh-devflow/assets/presets/devflow-2/agent.cordis.yml"]) {
+    assert(read(rel).includes(personaClause), `${rel} must restate the AGENTS.md ${label} clause: ${personaClause}`);
+  }
+}
+
 for (const directory of fs.readdirSync(path.join(root, "skills"), { withFileTypes: true })) {
   if (!directory.isDirectory() || !directory.name.startsWith("devflow-")) continue;
   const rel = `skills/${directory.name}/SKILL.md`;
@@ -239,6 +300,10 @@ runVerifier("scripts/validate-host-adapters.js");
 runVerifier("scripts/validate-skill-triggers.js");
 runVerifier("scripts/devflow-budget.js");
 runVerifier("scripts/validate-route-consistency.js");
+// The new devflow: marker is gated only inside the two preset trees: a global scan still reports two pre-existing
+// no-ceiling markers (dsh/plugins/*/scripts/sync-assets.js:10) that are outside this checker's write scope.
+runVerifier("scripts/devflow-debt.js", ["dsh/agent-presets/devflow-2"]);
+runVerifier("scripts/devflow-debt.js", ["dsh/plugins/dsh-devflow/assets/presets/devflow-2"]);
 
 // v2 计划契约与双索引：契约文本、机检入口与索引文件必须同时存在，否则规则会与实现漂移。
 const usabilityPlanSkill = read("skills/devflow-plan/SKILL.md");

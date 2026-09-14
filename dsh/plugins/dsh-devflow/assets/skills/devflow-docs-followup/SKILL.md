@@ -41,6 +41,8 @@ Rules:
 
 Before writing a selected document, read the current diff, implementation, tests, commands, and user-confirmed decisions. Use project documentation conventions and templates when they exist.
 
+Describe the accepted final state: session-only alternatives, intermediate attempts, and corrections stay out of created documents. Regenerate titles and openings from the positive target; keep API names, real removals, executed external actions, diagnostics, tests, and compatibility facts that accuracy requires, and keep unrelated changes out unless the document requires them.
+
 When the target project has no relevant convention, use these fallback locations:
 
 | Document type | Fallback path |

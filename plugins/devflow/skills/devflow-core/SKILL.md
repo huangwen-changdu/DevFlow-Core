@@ -22,6 +22,14 @@ Status: [DevFlow: <node> -> <next> | awaiting approval / in progress]
 
 While a DevFlow lifecycle node is active, end each user-facing message with one status line: `[DevFlow: <node> -> <next> | awaiting approval / in progress]`. It reflects the current node without reloading the owner skill. Keep progress visible in the persistent UI: maintain a `todo_write` list with one item per active work unit (lifecycle node, background job, or subagent), marking it `completed` the moment it settles, and use `create_goal` for the session's long-running objective.
 
+## Delivery Surfaces
+
+Final artifacts and their wrappers — titles, filenames, body text, comments, tags, commits, PR text, documents, and handoffs — describe the accepted final state, assuming the reader did not see this session; rejected session-only alternatives, intermediate attempts, and wording corrections stay control data.
+
+For each surface, decide whether a session-less reader needs the information: keep an exclusion only when omission would make the artifact inaccurate, unsafe, misleading, or incompatible, or when this surface must explain a real change from the committed or user-approved baseline. Regenerate high-salience names, titles, and openings from the positive target instead of editing rejected wording, and never write an absent option as a labeled absence. Keep real baseline changes, executed external actions, required technical names, diagnostics, tests, and pre-existing user changes.
+
+Before completion, reread every user-visible surface and wrapper, including filenames, metadata, and hook rewrites, and recheck after any content change. Keep unrelated changes out of this task's commit, PR, or handoff; keep comparisons, quotations, audits, or migration notes only when the user asked or the surface requires them, and do not add cleanup or no-residue claims.
+
 ## Context Map
 
 Read `skills/devflow-core/references/core-methods.md` before route selection. It supplies Method 0, shared route rules, and the owner map. Do not load all lifecycle references by default.
