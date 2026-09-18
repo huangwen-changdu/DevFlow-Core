@@ -43,12 +43,32 @@ const maximumWorklistItems = 12;
 // 判定：含 `## Progress` 且不含 `Prewalk` 视为 v2；否则走 legacy 分支，旧计划无需迁移。
 const v2GlobalFields = ["Goal", "Not doing", "Cut"];
 const v2TaskFields = ["Task", "Files", "Change", "Acceptance", "Verify", "Not doing"];
+// Interfaces 只在子代理执行模式下必填，所以单独成组：它参与字段边界判定，但不进入必填集合。
+const v2ConditionalFields = ["Interfaces"];
 const v2AllFields = [...v2GlobalFields, ...v2TaskFields];
+const v2BoundaryFields = [...v2AllFields, ...v2ConditionalFields];
 const v2FieldPatterns = Object.fromEntries(
   v2AllFields.map((field) => [field, new RegExp(`^(?:\\*\\*)?${field}(?:\\*\\*)?\\s*:`, "im")])
 );
 const progressHeadingPattern = /^##\s+Progress\s*$/im;
 const progressRowPattern = /^\s*\|\s*(\d+)\s*\|\s*([^|]*)\|\s*(todo|doing|done)\s*\|\s*([^|]*)\|/gim;
+// v2 证据准入（2026-09-16）：侦查小节只接受"命令 + 输出"或"none 加理由"；跨任务通道由执行模式这一机械事实触发；
+// Not doing 的每句必须能在 Source 文档或 Cut 行里找到逐字痕迹，防止把凭空不变量写成计划约束。
+const reconHeadingPattern = /^##\s+Recon\b.*$/im;
+const reconBulletPattern = /^\s*-\s+\S/;
+const reconOutputPattern = /`[^`]+`\s*(?:→|->)\s*\S/;
+const reconNonePattern = /^none\s*[—–-]\s*\S/i;
+const interfaceFieldPattern = /^(?:\*\*)?Interfaces(?:\*\*)?\s*:/im;
+const interfaceFieldNames = ["Consumes", "Produces"];
+const subagentExecutionModes = ["single-subagent", "fan-out"];
+const executionModePattern = /^\s*(?:\*\*)?Execution mode(?:\*\*)?\s*:\s*([^\n]+)/im;
+const sourceFieldPattern = /^\s*(?:\*\*)?Source(?:\*\*)?\s*:\s*([^\n]+)/im;
+const sourcePathPattern = /[A-Za-z0-9_./-]+\.md/;
+const traceGramLength = 3;
+const cjkRunPattern = /[\u4e00-\u9fa5]{3,}/g;
+const asciiTermPattern = /[A-Za-z][A-Za-z0-9_./-]{3,}/g;
+const backtickTermPattern = /`([^`\n]+)`/g;
+const headerEndPattern = /^##\s+Tasks\s*$/im;
 const indexStatuses = ["active", "planned", "legacy", "retired"];
 const indexPaths = { plans: "docs/plans/INDEX.md", features: "docs/features/INDEX.md" };
 // 需求台账：一条需求从确认到落地的唯一记录；opt-out 表示用户显式跳过文档（仍必须有验证证据与原因）。
@@ -348,7 +368,7 @@ function v2FieldBlock(body, field) {
   const value = lines[start].replace(v2FieldPatterns[field], "").trim();
   const end = lines.findIndex(
     (line, index) =>
-      index > start && (v2AllFields.some((name) => v2FieldPatterns[name].test(line)) || /^#{1,6}\s+\S/.test(line))
+      index > start && (v2BoundaryFields.some((name) => v2FieldPatterns[name]?.test(line) || interfaceFieldPattern.test(line)) || /^#{1,6}\s+\S/.test(line))
   );
   return [value, ...lines.slice(start + 1, end < 0 ? lines.length : end)].join("\n").trim();
 }
@@ -368,14 +388,108 @@ function splitTasksV2(body) {
   });
 }
 
+/** Read the header block that follows one start pattern, ending at the next structural field or heading. */
+function blockAfterPattern(body, startPattern, extraPatterns = []) {
+  const lines = body.split(/\r?\n/);
+  const start = lines.findIndex((line) => startPattern.test(line));
+  if (start < 0) return "";
+
+  const value = lines[start].replace(startPattern, "").trim();
+  const end = lines.findIndex(
+    (line, index) =>
+      index > start &&
+      (/^#{1,6}\s+\S/.test(line) ||
+        extraPatterns.some((pattern) => pattern.test(line)) ||
+        v2BoundaryFields.some((name) => v2FieldPatterns[name]?.test(line) || interfaceFieldPattern.test(line)))
+  );
+  return [value, ...lines.slice(start + 1, end < 0 ? lines.length : end)].join("\n").trim();
+}
+
+/** Read the lines that follow one heading, stopping at the next heading; null when the heading is absent. */
+function sectionAfterHeading(body, headingPattern) {
+  const lines = body.split(/\r?\n/);
+  const start = lines.findIndex((line) => headingPattern.test(line));
+  if (start < 0) return null;
+
+  const end = lines.findIndex((line, index) => index > start && /^#{1,6}\s+\S/.test(line));
+  return lines.slice(start + 1, end < 0 ? lines.length : end);
+}
+
+/** Validate every Recon bullet: a backticked command with its observed output, or an explicit none plus reason. */
+// devflow: Recon and Not doing checks validate form, not truth — an author can still write a plausible command whose
+// output was never produced. Q1 of the 2026-09-16 spec chose form checks plus Prove spot-checks over re-running commands,
+// because re-running turns a pure static checker into an executor. revisit when a plan passes the checker while an
+// executor reports that a Recon command cannot reproduce its recorded output.
+function checkRecon(lines) {
+  if (lines === null) return { present: false, invalid: [] };
+
+  const invalid = [];
+  for (const line of lines) {
+    const text = line.trim();
+    if (!text) continue;
+    if (!reconBulletPattern.test(line)) {
+      invalid.push(text);
+      continue;
+    }
+    const bullet = text.replace(/^\s*-\s+/, "");
+    if (reconNonePattern.test(bullet)) continue;
+    if (!reconOutputPattern.test(text)) invalid.push(text);
+  }
+  return { present: true, invalid };
+}
+
+/** Extract traceable terms from text: backticked spans, ASCII identifiers, and CJK three-grams. */
+function traceTerms(text) {
+  const terms = new Set();
+  for (const match of text.matchAll(backtickTermPattern)) terms.add(match[1].trim().toLowerCase());
+  for (const match of text.matchAll(asciiTermPattern)) terms.add(match[0].toLowerCase());
+  for (const match of text.matchAll(cjkRunPattern)) {
+    for (let index = 0; index + traceGramLength <= match[0].length; index += 1) {
+      terms.add(match[0].slice(index, index + traceGramLength));
+    }
+  }
+  return terms;
+}
+
+/** Return Not doing clauses that leave no verbatim trace in the Source document or the Cut line. */
+// devflow: a clause traces when a backticked span, an ASCII identifier, or a CJK three-gram also appears in the Source
+// or Cut corpus; a long Cut line can therefore cover an invented clause. revisit when a plan is found carrying a
+// Not-doing invariant that matches no requirement in its Source.
+function findUntraceableClauses(block, corpusTerms) {
+  return block
+    .split(/[。；;\n]/)
+    .map((clause) => clause.trim())
+    .filter(Boolean)
+    .filter((clause) => {
+      for (const term of traceTerms(clause)) if (corpusTerms.has(term)) return false;
+      return true;
+    });
+}
+
+/** Read a plan's Source document when it is readable; a missing source leaves only the Cut line as corpus. */
+function readSourceText(sourceValue) {
+  const match = String(sourceValue).match(sourcePathPattern);
+  if (!match) return "";
+  try {
+    return fs.readFileSync(path.join(process.cwd(), match[0]), "utf8");
+  } catch {
+    return "";
+  }
+}
+
 /** Validate one v2 task: files, change intent, acceptance, proof, and exclusion. */
-function checkTaskV2(task, enforceGranularity = true) {
+function checkTaskV2(task, enforceGranularity = true, interfacesRequired = false) {
   const missing = v2TaskFields.filter((field) => !v2FieldPatterns[field].test(task.body));
   const files = v2FieldBlock(task.body, "Files");
   const change = v2FieldBlock(task.body, "Change");
   const acceptance = v2FieldBlock(task.body, "Acceptance");
   const verify = v2FieldBlock(task.body, "Verify");
   const notDoing = v2FieldBlock(task.body, "Not doing");
+  // 跨任务通道只在子代理执行模式下要求：那时执行者拿到的是一个任务而不是整份计划。
+  const interfacesBlock = blockAfterPattern(task.body, interfaceFieldPattern, [v2FieldPatterns.Change]);
+  const missingInterfaces = interfacesRequired
+    ? interfaceFieldNames.filter((name) => !new RegExp(`^\\s*-\\s*${name}:\\s+\\S`, "im").test(interfacesBlock))
+    : [];
   const fileEntries = parseFileEntries(files);
   const invalidFiles = fileEntries.filter(({ match }) => !match).map(({ line }) => line);
   const unlocatedCodeFiles = findUnlocatedCodeFiles(fileEntries);
@@ -399,6 +513,7 @@ function checkTaskV2(task, enforceGranularity = true) {
     incompleteVerification,
     multiResult,
     missingNotDoing: !notDoing,
+    missingInterfaces,
     ok:
       missing.length === 0 &&
       unresolved.length === 0 &&
@@ -408,6 +523,7 @@ function checkTaskV2(task, enforceGranularity = true) {
       !missingChange &&
       !incompleteVerification &&
       !multiResult &&
+      missingInterfaces.length === 0 &&
       Boolean(notDoing)
   };
 }
@@ -418,12 +534,26 @@ function checkPlanV2(body) {
   const statusMatch = body.match(statusPattern);
   const status = statusMatch ? statusMatch[1].trim() : "legacy";
   const invalidStatus = statusMatch ? !validStatuses.includes(status) : false;
-  // 粒度代理只在活跃计划（draft/approved/in-progress）上强制；done 计划是历史记录，不重判，避免既有 v2 计划校验回归。
+  // 粒度与证据代理只在活跃计划（draft/approved/in-progress）上强制；done 计划是历史记录，不重判，避免既有 v2 计划校验回归。
   const enforceGranularity = status !== "done";
-  const taskResults = tasks.map((task) => checkTaskV2(task, enforceGranularity));
+  // 执行模式与 Source 只从头部读取，避免任务正文提到模式名就误触发跨任务通道要求。
+  const header = body.split(headerEndPattern)[0];
+  const executionModeMatch = header.match(executionModePattern);
+  const executionMode = executionModeMatch ? executionModeMatch[1].trim().toLowerCase() : "";
+  const interfacesRequired =
+    enforceGranularity && subagentExecutionModes.some((mode) => executionMode.includes(mode));
+  const taskResults = tasks.map((task) => checkTaskV2(task, enforceGranularity, interfacesRequired));
   const missingGlobal = v2GlobalFields.filter((field) => !v2FieldPatterns[field].test(body));
   const cutBlock = v2FieldBlock(body, "Cut");
   const missingRejected = !/Rejected\s*:\s*\S/im.test(cutBlock);
+  const recon = enforceGranularity
+    ? checkRecon(sectionAfterHeading(body, reconHeadingPattern))
+    : { present: true, invalid: [] };
+  const sourceMatch = header.match(sourceFieldPattern);
+  const sourceText = sourceMatch ? readSourceText(sourceMatch[1]) : "";
+  const notDoingTrace = enforceGranularity
+    ? findUntraceableClauses(v2FieldBlock(header, "Not doing"), traceTerms(`${sourceText}\n${cutBlock}`))
+    : [];
   const progress = [...body.matchAll(progressRowPattern)].map((match) => ({
     number: Number(match[1]),
     state: match[3],
@@ -442,6 +572,10 @@ function checkPlanV2(body) {
     tasks: taskResults,
     progress: { count: progress.length, mismatch: progressMismatch, missingEvidence },
     doneStatusNeedsAllDone,
+    executionMode,
+    interfacesRequired,
+    recon,
+    notDoingTrace,
     ok:
       missingGlobal.length === 0 &&
       !missingRejected &&
@@ -450,7 +584,9 @@ function checkPlanV2(body) {
       taskResults.every((task) => task.ok) &&
       !progressMismatch &&
       missingEvidence.length === 0 &&
-      !doneStatusNeedsAllDone
+      !doneStatusNeedsAllDone &&
+      (!enforceGranularity || (recon.present && recon.invalid.length === 0)) &&
+      notDoingTrace.length === 0
   };
 }
 
@@ -792,6 +928,12 @@ function report(body, filePath, json) {
     console.log(`Progress rows: ${result.progress.count} (tasks ${result.tasks.length})${result.progress.mismatch ? " mismatch" : ""}`);
     for (const row of result.progress.missingEvidence) console.log(`Progress row ${row.number} is done without evidence`);
     if (result.doneStatusNeedsAllDone) console.log("Status done requires every Progress row done");
+    if (result.recon && !result.recon.present) console.log("Recon: missing section");
+    if (result.recon) {
+      for (const line of result.recon.invalid) console.log(`Recon line needs a backticked command and its output: ${line}`);
+    }
+    for (const clause of result.notDoingTrace || []) console.log(`Not doing clause has no source in Source or Cut: ${clause}`);
+    if (result.interfacesRequired) console.log(`Execution mode ${result.executionMode} requires an Interfaces block per task`);
   } else {
     console.log(`Global unresolved markers: ${result.globalUnresolved.join(", ") || "none"}`);
     console.log(
@@ -817,6 +959,7 @@ function report(body, filePath, json) {
           ...(task.multiResult ? ["Acceptance lists multiple results; split the task or state one observable result"] : []),
           ...(task.missingChange ? ["Change needs an executable intent verb"] : []),
           ...(task.missingNotDoing ? ["missing Not doing exclusion"] : []),
+          ...task.missingInterfaces.map((field) => `missing interface ${field} for the subagent execution mode`),
           ...(task.incompleteVerification ? ["Verify needs command/scenario and expected result"] : [])
         ]
       : [
@@ -1047,8 +1190,11 @@ function selfTest() {
   const validV2Plan = [
     "Status: approved",
     "Goal: validate the slim v2 plan contract",
-    "Not doing: architecture review",
+    "Not doing: 迁移旧计划",
     "Cut: 做 checker | 不做 迁移旧计划 | 复用 既有 self-test | 验证 node scripts/devflow-plan.js | Rejected: 新增独立脚本 — 复用既有 checker",
+    "## Recon",
+    "- `node scripts/devflow-plan.js --self-test` → baseline self-test passed",
+    "",
     "## Tasks",
     "",
     "Task: Add v2 validation",
@@ -1091,6 +1237,39 @@ function selfTest() {
   }
   if (checkPlan(validV2Plan.replace("| 1 | Add v2 validation | todo | - |", "")).ok) {
     throw new Error("Self-test expected a Progress/task count mismatch to fail");
+  }
+  const sequentialV2Plan = validV2Plan.replace("Status: approved", "Status: approved\nExecution mode: sequential");
+  if (!checkPlan(sequentialV2Plan).ok) {
+    throw new Error("Self-test expected sequential execution to skip the interface requirement");
+  }
+  const fanOutV2Plan = validV2Plan.replace("Status: approved", "Status: approved\nExecution mode: fan-out");
+  if (checkPlan(fanOutV2Plan).ok) {
+    throw new Error("Self-test expected a subagent execution mode to require interfaces");
+  }
+  const fanOutWithInterfacesV2Plan = fanOutV2Plan.replace(
+    "Change: add v2 field validation and dispatch",
+    "Interfaces:\n- Consumes: `checkPlanV2` field results\n- Produces: `checkTaskV2` issue list\nChange: add v2 field validation and dispatch"
+  );
+  if (!checkPlan(fanOutWithInterfacesV2Plan).ok) {
+    throw new Error("Self-test expected a declared interface block to satisfy the subagent execution mode");
+  }
+  const missingReconV2Plan = validV2Plan
+    .replace("## Recon\n", "")
+    .replace("- `node scripts/devflow-plan.js --self-test` → baseline self-test passed\n", "");
+  if (checkPlan(missingReconV2Plan).ok) throw new Error("Self-test expected a missing Recon section to fail");
+  const proseReconV2Plan = validV2Plan.replace(
+    "- `node scripts/devflow-plan.js --self-test` → baseline self-test passed",
+    "- Read: scripts/devflow-plan.js"
+  );
+  if (checkPlan(proseReconV2Plan).ok) throw new Error("Self-test expected a prose recon line to fail");
+  const noneReconV2Plan = validV2Plan.replace(
+    "- `node scripts/devflow-plan.js --self-test` → baseline self-test passed",
+    "- none — the contract change needed no bounded read"
+  );
+  if (!checkPlan(noneReconV2Plan).ok) throw new Error("Self-test expected an explicit none recon line to pass");
+  const untraceableNotDoingV2Plan = validV2Plan.replace("Not doing: 迁移旧计划", "Not doing: 顺手重构无关模块");
+  if (checkPlan(untraceableNotDoingV2Plan).ok) {
+    throw new Error("Self-test expected an untraceable Not doing clause to fail");
   }
   if (typeof checkIndexes !== "function") throw new Error("Self-test expected the index checker to exist");
   if (matchIndexRows([["功能A", "计划相关", "x"]], "计划").length !== 1) throw new Error("Self-test expected index query to match a row");

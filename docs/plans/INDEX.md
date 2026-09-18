@@ -43,6 +43,7 @@
 | 2026-09-10 | [2026-09-10-requirement-loop-and-developer-profile](2026-09-10-requirement-loop-and-developer-profile.md) | done | docs/specs/2026-09-10-requirement-loop-and-developer-profile.md | verify:all 退出码 0 + --index PASS + --loop 计数 | DevFlow 需求闭环 |
 | 2026-09-10 | [2026-09-10-wiki-single-way-publish](2026-09-10-wiki-single-way-publish.md) | done | 用户请求（2026-09-10 会话，方案 A）+ Cut Decision | wiki:check 无克隆 exit 0 + --self-test PASS + verify:all 退出码 0 | Wiki 单向发布 |
 | 2026-09-14 | [2026-09-14-delivery-residue-hygiene](2026-09-14-delivery-residue-hygiene.md) | done | docs/specs/2026-09-14-delivery-residue-hygiene.md | npm run verify:all 退出码 0；六处标记 6/6；DSH sync 幂等+子包自测 PASS；Codex 副本逐字节一致+verify-plugin PASS | 交付面残留治理 |
+| 2026-09-16 | [2026-09-16-plan-contract-evidence-density](2026-09-16-plan-contract-evidence-density.md) | done | docs/specs/2026-09-16-plan-contract-evidence-density.md | npm run verify:all 退出码 0；plan/self-test/index 三处检查退出码 0；32 份计划退出码差异 0；sync 幂等 + 插件 14 skills/5 self-tests 通过；版本 0.6.0/0.10.0/0.4.0 | DevFlow 计划生成与落地 |
 
 ## 维护机制
 

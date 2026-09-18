@@ -208,6 +208,45 @@ function filesUnder(rel) {
   });
 }
 
+/**
+ * Guards the v2 plan contract against drift. A removed plan field must not reappear on a live surface, because the
+ * plan-authoring path reads those surfaces and two contracts in one path is how the 2026-09-16 drift happened.
+ * A line may still name one while it explains the legacy split — that mention is the rule, not a leak.
+ */
+const removedPlanFields = [
+  "Prewalk",
+  "Current behavior",
+  "Target behavior",
+  "Change mechanics",
+  "Call impact",
+  "Task type",
+  "File Structure",
+  "Spec coverage"
+];
+const legacyFieldContext = /legacy|v1|no longer|not part of/i;
+const liveContractSurfaces = [
+  ...filesUnder("skills").filter((file) => file.endsWith(".md")),
+  ...fs
+    .readdirSync(path.join(root, "commands"))
+    .filter((name) => name.endsWith(".toml"))
+    .map((name) => `commands/${name}`),
+  "AGENTS.md",
+  "README.md"
+];
+for (const surface of liveContractSurfaces) {
+  read(surface)
+    .split(/\r?\n/)
+    .forEach((line, lineIndex) => {
+      for (const field of removedPlanFields) {
+        if (!line.includes(field)) continue;
+        assert(
+          legacyFieldContext.test(line),
+          `${surface}:${lineIndex + 1} still references the removed plan field "${field}" without a legacy explanation — fix the surface or state the legacy split`
+        );
+      }
+    });
+}
+
 /** Fails on a missing, stale, or orphaned mirror, so a distribution copy cannot silently diverge from its repo-root source. */
 function assertMirrorTree(sourceRoot, copyRoot, hint) {
   const sources = filesUnder(sourceRoot);

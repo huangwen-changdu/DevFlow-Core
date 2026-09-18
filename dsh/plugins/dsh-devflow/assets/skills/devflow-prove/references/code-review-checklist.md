@@ -4,7 +4,7 @@ Two-layer review: general engineering dimensions (all languages) + language-spec
 
 ## How to Use
 
-1. Read the approved File Structure/Plan boundary, latest Prewalk Execution Trace, Current Handoff Facts, remaining-work completion evidence, actual changed diff, and nearest comparable code.
+1. Read the approved plan boundary, the `## Recon` record, `## Progress` completion evidence, the actual changed diff, and nearest comparable code.
 2. Run the **General Engineering Review** first — applies to all code changes regardless of language.
 3. Detect the language(s) from changed file extensions.
 4. Apply the matching **Language-Specific Checklist** below.

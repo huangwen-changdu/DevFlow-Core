@@ -92,7 +92,7 @@ The plan's `Execution mode` (`sequential` | `single-subagent` | `fan-out`) is ch
 
 ### Fan-out dispatch
 
-- Two tasks may run in parallel only when their `Files` touch disjoint file/symbol sets and neither `Interfaces` consumes a symbol the other `Produces`; otherwise run the producer first.
+- Two tasks may run in parallel only when their `Files` touch disjoint file/symbol sets and neither task's `Interfaces` block consumes what the other produces; otherwise run the producer first.
 - Each subagent receives only its task's execution spec, edits its task's `Files` directly, runs its `Verify`, and returns the task result or `BUILD_BLOCKED` facts.
 - The main agent merges returned results, reconciles cross-task file overlap, runs the unified `Diff Self-Check`, and enters `devflow-prove` once with merged evidence — never per-subagent.
 
@@ -128,7 +128,7 @@ Source Check: <version/source checked or unverified>; decision <why>
 
 ## Code Comment Discipline
 
-Comments are part of the implementation, not an afterthought. The spec's Code Documentation section and the plan's Comments field define what needs documentation — this section enforces it during Build.
+Comments are part of the implementation, not an afterthought. The spec's Code Documentation section and project convention define what needs documentation — this section enforces it during Build.
 
 ### What needs comments
 

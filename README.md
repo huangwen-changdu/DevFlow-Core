@@ -253,7 +253,7 @@ If verification is partial, say what is not covered. If verification cannot run,
 |---|---|
 | Ponytail | Minimal Solution Ladder, platform-native checklist, root-cause fix check, overengineering review tags, cut intensity, debt markers, ledger command, and repo-wide audit. |
 | Agent Skills | Skill anatomy, lifecycle commands, anti-rationalization tables, context/source discipline. |
-| Superpowers | Brainstorm-to-spec-to-plan-to-build handoff, `devflow-spec`, date-prefixed specs under `docs/specs/`, bite-sized tasks, `Source` / `Spec coverage` tracing, and verification-before-completion gate. |
+| Superpowers | Brainstorm-to-spec-to-plan-to-build handoff, `devflow-spec`, date-prefixed specs under `docs/specs/`, delivery-unit tasks, `Source` tracing with command-level evidence, and verification-before-completion gate. |
 | PUA-Driven Spec Engineering | Fast/Design/Recovery gating, project memory checks, skill activation evidence, Codex proof contract, and Method Lens routing. |
 | PUA | `devflow-pua` pressure recovery, verifier role, multi-platform packaging, explicit command routing, and lightweight local flavor-method routing without full persona theater. |
 | Harness-inspired context governance | A three-layer runtime contract: host adapters identify the route and provide their fallback, `devflow-core` loads shared routing methods, and the selected lifecycle owner loads only its local reference. |

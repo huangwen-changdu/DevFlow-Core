@@ -23,7 +23,7 @@ Before the completion report, reread every final artifact and its wrapper — fi
 
 ### Quality-Finding Recovery
 
-A Code Review Blocker or Warning requires a Build correction selected by Core. After that correction, Prove reviews the new actual diff against the same File Structure boundary, Prewalk evidence, direct contracts, and nearby convention. It explicitly records every prior finding as closed with fresh evidence or still open; stale test output, stale review output, or an implementer claim cannot close it. Ordinary quality repair remains separate from PUA unless the failure also has a user challenge, repeated miss, or changed-wrong signal.
+A Code Review Blocker or Warning requires a Build correction selected by Core. After that correction, Prove reviews the new actual diff against the same plan boundary, `## Recon` evidence, direct contracts, and nearby convention. It explicitly records every prior finding as closed with fresh evidence or still open; stale test output, stale review output, or an implementer claim cannot close it. Ordinary quality repair remains separate from PUA unless the failure also has a user challenge, repeated miss, or changed-wrong signal.
 
 ## Method 14: Recovery By Changing Approach
 

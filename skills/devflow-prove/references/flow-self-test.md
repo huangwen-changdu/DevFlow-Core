@@ -256,6 +256,7 @@ Expected behavior:
 - Must dispatch a fresh subagent.
 - High-risk unease decisions must prevent a claim that the feature fully meets requirements; medium-risk decisions must be marked `pending confirmation`.
 - Each answer must separate facts, inference, and unknowns, then state confidence and a next step; findings must use `Critical`, `Important`, or `Observation` with evidence and context limitations.
+- Must close with a necessary adjustments and fixes list: one item per required change, carrying its severity, the finding or unease decision it traces to, why the change is necessary, the smallest fix, and the verification, with no fault beyond the reported findings.
 - Must not read, require, modify, or hand off to `devflow-prove`, PUA, Build, Learn, or any completion state.
 - Must not edit code, create a task, invoke another skill, or declare global task status.
 
@@ -696,7 +697,7 @@ Expected behavior:
 - Build reads the latest Execution Trace, re-reads only the current anchors and directly changed neighbor, and does not restart a broad repository review.
 - Build stops instead of silently applying the rule to the easiest existing file or expanding the touch set.
 - It returns observed policy, affected anchor, invalidated trace/handoff fact, blocked work-item verification, and the smallest replan decision to Core.
-- After Core corrects Plan/Prewalk, Build resumes from updated anchors and appends actual verification evidence for every completed remaining item.
+- After Core corrects the legacy Plan's Prewalk record, Build resumes from updated anchors and appends actual verification evidence for every completed remaining item.
 
 Pass check:
 

@@ -16,7 +16,7 @@ Use this skill when the user asks what is missing, unrecognized, or uncertain. W
 3. Ask one smallest question when the target is unclear.
 4. As an independent manual review, do not read, require, or alter `devflow-prove`, PUA, Build, Learn, or any lifecycle state.
 
-On DeepSeek Harness (DSH), dispatch a fresh `subagent` so the critique stays independent of the main agent's reasoning. Call the `subagent` tool once with `run_in_background: false` and a complete standalone prompt that names the review target and the material paths, and instructs the subagent to read those materials and return evidence-backed findings (the subagent has no conversation seed and cannot see this conversation). Then run the review in bounded rounds, one review unit per round: after each round the subagent returns that unit's findings, you aggregate them and report progress, then continue the same subagent conversation with the `send_message` tool. After the final unit, assemble the complete `Required Output` below from the aggregated findings. The subagent returns findings only — it never declares lifecycle status, edits files, or invokes another skill. If a round returns nothing usable (timeout, truncation, or failure), record it under `Context limitations`, retry that unit once with a narrower instruction, and continue with the remaining units; never silently drop a unit.
+On DeepSeek Harness (DSH), dispatch a fresh `subagent` so the critique stays independent of the main agent's reasoning. Call the `subagent` tool once with `run_in_background: false` and a complete standalone prompt that names the review target and the material paths, and instructs the subagent to read those materials and return evidence-backed findings (the subagent has no conversation seed and cannot see this conversation). Then run the review in bounded rounds, one review unit per round: after each round the subagent returns that unit's findings, you aggregate them and report progress, then continue the same subagent conversation with the `send_message` tool. Instruct the subagent to return, for every finding and unease decision, the smallest necessary adjustment or fix with its reason and verification, so the final aggregation can assemble the `Necessary adjustments and fixes` list without inventing new faults. After the final unit, assemble the complete `Required Output` below from the aggregated findings. The subagent returns findings and proposed minimal fixes only — it never declares lifecycle status, edits files, or invokes another skill. If a round returns nothing usable (timeout, truncation, or failure), record it under `Context limitations`, retry that unit once with a narrower instruction, and continue with the remaining units; never silently drop a unit.
 
 Review units: one question per round — the three default questions and every user-supplied question — plus one final round for the unease check when the target contains implementation material.
 
@@ -85,11 +85,14 @@ Findings:
 - Important: <finding or none>; evidence: <facts>; confidence: high/medium/low
 - Observation: <finding or none>; evidence: <facts>; confidence: high/medium/low
 Repeat one bullet per finding; order findings by severity, then confidence; write none when a level has no finding.
+Necessary adjustments and fixes:
+- <n>. Adjustment or fix: <smallest necessary change>; severity: Critical/Important/Observation; evidence: <the finding or unease decision it traces to>; why necessary: <consequence if it stays undone>; suggested minimal fix: <concrete smallest change>; verification: <check that proves it is done>
+Repeat one item per necessary adjustment or fix, ordered by severity; derive every item from a reported finding or unease decision and add no new fault; write none when nothing requires adjustment or fixing.
 Context limitations: <unavailable material or none>
 Suggested next action: <manual action for the user, or none>
 ```
 
-`Suggested next action` is advice only. Do not automatically edit files, create tasks, invoke another skill, or change lifecycle state.
+`Suggested next action` and the `Necessary adjustments and fixes` list are advice only. The list is the actionable projection of the reported findings and unease decisions: a high-risk unease decision appears with `suggested minimal fix: do not proceed` and its verification is the user's confirmation. Do not automatically edit files, create tasks, invoke another skill, or change lifecycle state.
 
 ## Anti-Rationalization
 
@@ -102,6 +105,8 @@ Suggested next action: <manual action for the user, or none>
 | "The implementation is reasonable." | Reasonable defaults are still unconfirmed decisions; run the unease check. |
 | "Tests pass, so requirements are met." | Tests prove encoded behavior, not that the user confirmed its business rule. |
 | "It is only a UI detail." | Classify impact first; ordering, filters, defaults, and empty states can change user outcomes. |
+| "The findings already say what is wrong." | A finding describes the fault; the adjustments and fixes list states the smallest necessary change, why it matters, and how to verify it. |
+| "Nothing needs fixing, so the list can be omitted." | Write `none` with the reviewed evidence instead of dropping the section. |
 
 ## Verification
 
@@ -111,6 +116,7 @@ Before leaving this skill, confirm:
 - [ ] All three default questions were answered.
 - [ ] Each user-supplied question was answered.
 - [ ] Facts, inference, unknowns, confidence, next steps, and limitations are visible.
+- [ ] The `Necessary adjustments and fixes` list is present, traces every item to a reported finding or unease decision, gives severity, why it is necessary, a minimal fix, and a verification step, and writes `none` when nothing requires a change.
 - [ ] For implemented targets, the unease check ran and every material unconfirmed decision has risk, rationale, confirmation question, and temporary recommendation.
 - [ ] High-risk unease decisions are not presented as fully requirement-complete; medium-risk decisions are marked `pending confirmation`.
 - [ ] No lifecycle state, code, or other skill was changed or invoked.

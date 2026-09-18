@@ -1,6 +1,6 @@
 {
   "name": "@devflow-core/dsh-devflow",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "DevFlow for DeepSeek Harness: devflow-2 agent preset + skills + commands + verification scripts, synced into ~/.dsh on host startup.",
   "type": "module",
   "engines": {

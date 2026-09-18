@@ -265,6 +265,16 @@ const scenarios = [
       ["skills/devflow-adversarial/SKILL.md", "do not read, require, or alter `devflow-prove`"],
       ["skills/devflow-find-fault/SKILL.md", "do not read, require, or alter `devflow-prove`"]
     ]
+  },
+  {
+    name: "find-fault necessary adjustments and fixes",
+    route: "Independent manual",
+    input: "Finish a find-fault review and ask which adjustments or fixes are required.",
+    evidence: [
+      ["skills/devflow-find-fault/SKILL.md", "Necessary adjustments and fixes"],
+      ["skills/devflow-find-fault/SKILL.md", "derive every item from a reported finding or unease decision"],
+      ["commands/devflow-find-fault.toml", "necessary adjustments and fixes list"]
+    ]
   }
 ];
 

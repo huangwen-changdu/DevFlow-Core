@@ -10,7 +10,7 @@ Owner: `devflow-spec` and `devflow-plan`. Load this reference only after Core se
 
 Spec and Plan names, titles, and framing describe the accepted final state, regenerated from the positive target rather than edited from rejected wording. Keep Non-goals and Rejected as deliberate decision records; keep unrelated changes, comparisons, quotations, audits, or migration notes out unless the user asked or the document requires them.
 
-A Spec contains Goal, Context, Requirements, Non-goals, Approach, Impact, Acceptance, Verification, Code Documentation, and Open Questions. A Plan states Source, Spec coverage, Cut Decision, External Skills, exact files or anchors, interfaces, current and target behavior, mechanics, call impact, verification, comments, and exclusions.
+A Spec contains Goal, Context, Requirements, Non-goals, Approach, Impact, Acceptance, Verification, Code Documentation, and Open Questions. A Plan states Status, Goal, Not doing, Cut, and Source, then per-task Files, Change, Acceptance, Verify, and Not doing, plus a `## Recon` record of the bounded read and a `## Progress` table. Its cross-task interface block appears only under a subagent execution mode.
 
 ## Plan Contract
 

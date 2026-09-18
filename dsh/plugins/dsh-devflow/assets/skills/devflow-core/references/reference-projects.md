@@ -67,7 +67,7 @@ Absorbed into DevFlow-Core:
 - `devflow-brainstorm` includes design approval shape, assumption challenges, and approach comparison.
 - `devflow-spec`, `commands/devflow-spec.toml`, and `scripts/devflow-spec.js` add a saved requirements source for larger or explicitly spec-requested work.
 - Generated specs default to `docs/specs/YYYY-MM-DD-<short-kebab-name>.md`; `docs/plans/` remains implementation planning.
-- `devflow-plan` and Plan Pack now require `Source:` and `Spec coverage:` so tasks trace to a spec or approved design.
+- `devflow-plan` and Plan Pack require `Source:` plus an evidence rule, so tasks trace to a spec or approved design.
 - `devflow-build` includes implementation slices and exact verification per slice.
 - `skills/devflow-prove/references/flow-self-test.md` defines pressure scenarios for the framework itself.
 

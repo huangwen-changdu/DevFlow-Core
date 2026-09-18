@@ -92,6 +92,7 @@
       "Each answer must separate facts, inference, and unknowns, then state confidence and a next step; findings must use `Critical`, `Important`, or `Observation` with evidence and context limitations.",
       "Must run on DSH in bounded rounds, one round per question or unease-check block, with the subagent returning each round's findings to the main agent for aggregation.",
       "Must dispatch a fresh subagent.",
+      "Must close with a necessary adjustments and fixes list: one item per required change, carrying its severity, the finding or unease decision it traces to, why the change is necessary, the smallest fix, and the verification, with no fault beyond the reported findings.",
       "Must not read, require, modify, or hand off to `devflow-prove`, PUA, Build, Learn, or any completion state."
     ],
     "commandEvidence": ["Skill Trigger Verification Report"],

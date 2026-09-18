@@ -6,7 +6,7 @@ Use this reference after `skills/devflow-spec/references/spec-plan-methods.md` a
 
 State the intended touch set once, before tasks: the files and the responsibility each one carries. Reuse the nearest owner when it already has the responsibility. If no target can hold the responsibility without a materially different concern, return the fact to Core instead of inventing a generic abstraction.
 
-The v2 Plan Pack has no `File Structure` table. The per-task `Files` rows are the touch set; a global table would only restate them.
+The v2 Plan Pack has no `File Structure` table, and a legacy plan keeps its own. The per-task `Files` rows are the touch set; a global table would only restate them.
 
 ## Delivery Unit
 
@@ -26,6 +26,7 @@ Each task carries exactly six fields:
 ```text
 Task: <short, independently understandable title>
 Files: <Create / Modify / Test rows with path and symbol or stable anchor>
+Interfaces: <Consumes and Produces rows; only when Execution mode is single-subagent or fan-out>
 Change: <what changes and its boundary>
 Acceptance: <specific observable condition>
 Verify: <command or manual scenario with trigger, input, and expected result>
@@ -34,7 +35,28 @@ Not doing: <scope excluded by this task>
 
 `Change` states the executable intent. Add exact mechanics (pseudocode, exact replacement, or key fragment) only when the change crosses a module contract, is irreversible, touches security or data boundaries, or the mechanism cannot be inferred from the task's named anchors by a different session or model. Otherwise the executor chooses the smallest implementation inside the task boundary. This is the deliberate trade: the plan stops pre-deciding every edit, and Build regains bounded implementation authority. That trade is the fix for the bloated-plan problem, not a relaxation of proof.
 
-Investigation evidence does not belong in the plan. Keep it in the conversation, or in a `.copilot/cards/` learning card when it is reusable across tasks.
+Investigation evidence belongs in `## Recon`, as a command plus the output it produced. A learning card still carries only what stays reusable across tasks; a one-off anchor location or a measured baseline is not reusable and has no other home, which is why the plan records it.
+
+### Evidence Admission
+
+Every evidence item the plan requires is admissible at one of two levels:
+
+- **Level 1** — a re-runnable command plus the output it actually produced. A later session can re-run it and compare.
+- **Level 2** — a mechanical copy from an existing artifact: a path that exists, or a string that really appears in the source document.
+
+Pointing at an existing path or symbol is not sufficient on its own, because it proves the anchor exists rather than that it was used. A free prose assertion is never sufficient as the only evidence, because a fabricated one reads exactly like a real one. This is the rule that separates a plan carrying evidence from a plan carrying the appearance of evidence.
+
+### Recon (侦查记录)
+
+`## Recon` records the bounded read the author performed: anchors located, baseline values measured, known risks and stop conditions. Each line pairs a backticked command with that command's output. Write `none` with a reason only when the plan genuinely needed no bounded read.
+
+### Global Invariants
+
+`Not doing` carries the plan's project-level invariants alongside its per-plan exclusions. Every clause traces to the approved `Source` document's Non-goals or to the `Cut` line; when the two disagree, the `Cut` line wins. No separate global-constraints field exists, because this field already holds that material.
+
+### Cross-Task Handoff
+
+The `Interfaces` block is required when `Execution mode` is `single-subagent` or `fan-out`, and omitted under `sequential`. The trigger is a mechanical fact read from the plan header, never an author judgement, so it cannot decay into "fill it when it seems useful".
 
 ## Progress Table
 
@@ -50,7 +72,7 @@ Status values are `todo`, `doing`, and `done`. Build flips the row it is working
 
 ## Execution Handoff
 
-An executor — the main agent itself, one delegated subagent, or one fan-out subagent — receives the current task's six fields. It may read the task's named anchors and one directly changed neighbor to choose the smallest implementation; it must not broadly rediscover the repository, redesign outside the task boundary, silently repair the plan, or expand the touch set.
+An executor — the main agent itself, one delegated subagent, or one fan-out subagent — receives the current task's six fields, plus the `Interfaces` block when the plan's execution mode is a subagent mode. It may read the task's named anchors and one directly changed neighbor to choose the smallest implementation; it must not broadly rediscover the repository, redesign outside the task boundary, silently repair the plan, or expand the touch set.
 
 When an edit cannot be applied, a `Verify` fails, or a bounded read finds changed contract behavior, the executor returns the observed difference — affected file/anchor, actual behavior, blocked verification, and the smallest replan decision — as facts to `devflow-core`. It never guesses past a mismatch.
 

@@ -42,6 +42,10 @@ Source: <approved design or docs/specs/YYYY-MM-DD-<short-kebab-name>.md> (option
 Execution mode: sequential | single-subagent | fan-out (optional; ask and record at approval)
 Landed: <date and fresh evidence> (completion only)
 
+## Recon
+
+- `<command>` → <that command's actual output>
+
 ## Tasks
 
 Task: <short, independently understandable title>
@@ -49,6 +53,9 @@ Files:
 - Create: <path> | new file | <responsibility>
 - Modify: <path> | <symbol or stable anchor> | <responsibility>
 - Test: <path> | <symbol or stable anchor> | <behavior proved>  # only when applicable
+Interfaces:  # only when Execution mode is single-subagent or fan-out
+- Consumes: <names and types this task uses from another task>
+- Produces: <names and types another task relies on>
 Change: <what changes and its boundary; add the smallest mechanics (pseudocode, exact replacement, or key fragment) only when the change crosses a module contract, is irreversible, touches security or data boundaries, or the mechanism cannot be inferred from the task's named anchors by a different session or model>
 Acceptance: <specific observable condition>
 Verify: <exact command or manual scenario, trigger/input, and expected result>
@@ -62,6 +69,14 @@ Not doing: <scope excluded by this task>
 ```
 
 The v2 header is deliberately slim: the Plan owns ordering and acceptance, while Cut owns the subtraction and Build owns how the change is implemented. `Cut` is one line and must carry a non-empty `Rejected` (or `none` plus evidence), so a plan without a real subtraction is visible instead of silently passing. `## Progress` is the resume and landing record: Build flips one row to `doing` or `done` and fills its evidence, and Prove writes `Landed` on `PASS`. A plan without `## Progress` and with a `Prewalk` block is a legacy plan; `scripts/devflow-plan.js` keeps validating it with the old rules, so existing plans never need migration.
+
+Every evidence item is admissible at one of two levels. Level 1 is a re-runnable command plus the output it produced. Level 2 is a mechanical copy from an existing artifact: a path that exists, or a string that really appears in the source. A pointer to an existing path or symbol is not sufficient alone, because it proves existence rather than use; a prose assertion is never sufficient alone, because a fabricated one reads the same as a real one.
+
+`## Recon` (侦查记录) holds the bounded read: anchors located, baseline values, risks and stop conditions. Each line pairs a backticked command with that command's real output so a later session can re-run it. Write `- none — <reason>` only when no bounded read was needed.
+
+`Not doing` carries project-level invariants alongside per-plan exclusions; every clause traces to the `Source` Non-goals or the `Cut` line, and the `Cut` line wins on conflict. No separate global-constraints field exists.
+
+`Interfaces` appears only when `Execution mode` is `single-subagent` or `fan-out`, the only case where an executor receives one task without the rest of the plan.
 
 Inherit `External Skills` from the Cut Decision unchanged; the Plan Pack carries the specialist role, expected evidence, and return facts into Build and Prove. When a specialist skill is declared, merge its core quality checks into the affected tasks' `Acceptance` and `Verify` fields — the Plan Pack is the only channel that carries external-skill quality requirements into Build and Prove. A declared skill never widens the Cut scope; if its recommendation exceeds the Cut Decision, return the scope-drift facts to `devflow-core`.
 
@@ -77,6 +92,9 @@ Files:
 - Create: <path> | new file | <responsibility>
 - Modify: <path> | <symbol or stable anchor> | <responsibility>
 - Test: <path> | <symbol or stable anchor> | <behavior proved>  # only when applicable
+Interfaces:  # only when Execution mode is single-subagent or fan-out
+- Consumes: <names and types this task uses from another task>
+- Produces: <names and types another task relies on>
 Change: <what changes and its boundary; exact mechanics (pseudocode, exact replacement, or key fragment) only when the change crosses a module contract, is irreversible, touches security or data boundaries, or the mechanism cannot be inferred from the task's named anchors by a different session or model>
 Acceptance: <specific observable condition>
 Verify: <exact command or manual scenario, trigger/input, and expected result>
@@ -85,7 +103,7 @@ Not doing: <scope excluded by this task>
 
 Use only `Create`, `Modify`, and `Test` file-operation labels. `Create` rows use `new file`; every other row names a symbol or stable anchor. `Change` states the executable intent and its boundary in one or two lines; it does not restate current behavior, target behavior, call impact, or interfaces unless the task changes a cross-module contract. When the mechanism cannot be inferred from the task's named anchors — the common case when a different session or model executes the plan — `Change` carries the smallest runnable mechanics (pseudocode, exact replacement, or key fragment) so the executor acts without the author's session context. The Plan no longer classifies tasks by `Task type`: a task whose files are all documentation paths is documentation-only, and the checker treats it that way.
 
-Six fields per task is the whole contract: ordering, the touch set, the intent, the acceptance condition, the proof command, and the exclusion. `Acceptance` states one observable result; a `；`/`;`-joined multi-result acceptance is a split signal and the checker fails it while the plan is active. Plan length has no fixed total line cap: it grows with the number of delivery units while every task keeps the six-field, one-result shape. Investigation traces, handoff facts, per-task worklists, architecture, tech stack, spec coverage, and comment locations are owned by other nodes or stay in the conversation. `Prewalk`, `File Structure`, `Interfaces`, `Current behavior`, `Target behavior`, `Change mechanics`, `Call impact`, and `Comments` are not part of the v2 contract; a plan that still carries them is treated as legacy.
+Six fields per task is the whole contract: ordering, the touch set, the intent, the acceptance condition, the proof command, and the exclusion. The conditional `Interfaces` block is the one addition, and only under the execution modes named above. `Acceptance` states one observable result; a `；`/`;`-joined multi-result acceptance is a split signal and the checker fails it while the plan is active. Plan length has no fixed total line cap: it grows with the number of delivery units while every task keeps the six-field, one-result shape. Handoff facts, per-task worklists, architecture, tech stack, spec coverage, and comment locations are owned by other nodes or stay in the conversation; the bounded read belongs in `## Recon`. `Prewalk`, `File Structure`, `Current behavior`, `Target behavior`, `Change mechanics`, `Call impact`, and `Comments` are not part of the v2 contract; a plan that still carries them is treated as legacy.
 
 Keep one task understandable on its own. Do not use cross-task shorthand, generic test additions, unnamed edge cases, or cleanup entries. Name a test file only when the stated behavior needs one.
 
@@ -105,6 +123,8 @@ Plan generation does not repeat Cut, perform Build or Prove, prescribe independe
 | "The task details can broaden the solution." | If a task exceeds the Cut Decision, return the scope-drift facts to `devflow-core`; do not directly enter Build. |
 | "Two results can share one task when they ship together." | Two independently verifiable results are two delivery units; split the task or reduce `Acceptance` to one observable result. |
 | "A different session or model will figure out the how." | If the mechanism cannot be inferred from the task's named anchors, `Change` must carry the smallest runnable mechanics; otherwise the handoff stalls. |
+| "The recon line can just name the file I read." | A read self-report is indistinguishable from a fabricated one. Record the command and the output it produced. |
+| "Pointing at the anchor is enough evidence." | An existing path proves presence, not use. Level 2 requires a real copy from the source artifact. |
 
 ## Verification
 
@@ -121,4 +141,8 @@ Before leaving this skill, confirm:
 - [ ] Progress row count equals task count; every `done` row carries evidence.
 - [ ] The checker passed when available.
 - [ ] The user reviewed the written plan.
+- [ ] Every evidence item is Level 1 (re-runnable command plus its output) or Level 2 (a real copy from an existing artifact); no prose-only assertion carries a requirement.
+- [ ] `## Recon` lines pair a command with the output it produced, or write `none` with a reason.
+- [ ] Every `Not doing` clause traces to the Source Non-goals or the Cut line, with the Cut line winning on conflict.
+- [ ] `Interfaces` is present exactly when `Execution mode` is `single-subagent` or `fan-out`.
 - [ ] An approved A/B Plan entered `devflow-build`; any scope-drift facts returned to `devflow-core`.
