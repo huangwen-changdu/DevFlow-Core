@@ -185,5 +185,21 @@
       "Build stops instead of silently applying the rule to the easiest existing file or expanding the touch set.",
       "does not restart a broad repository review"
     ]
+  },
+  {
+    "id": "explicit-grill-entry",
+    "scenario": "Scenario 1H: Explicit Grill Entry And Structured Clarification",
+    "layers": ["Prompt Surface", "Harness/Validation", "Context", "Eval/Verifier"],
+    "expectedRoute": "Design",
+    "command": "trigger:verify",
+    "scenarioEvidence": [
+      "Route: Design.",
+      "explicit user request -> `devflow-brainstorm`",
+      "Must send the Semantic Echo-Back first",
+      "2-4 concrete options plus an Other field",
+      "immediately ask the next question"
+    ],
+    "commandEvidence": ["explicit grill entry: Design"],
+    "negativeConstraints": ["Must not skip the Semantic Echo-Back.", "Must not select A/B/C for the user."]
   }
 ]

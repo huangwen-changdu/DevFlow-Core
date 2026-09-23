@@ -1,6 +1,6 @@
 ---
 name: devflow-brainstorm
-description: "Use when devflow-core sends ambiguous or materially risky creative work for clarification — creating features, building components, adding functionality, modifying behavior, or defining a problem-directed change. Clarifies intent through a semantic echo-back, runs risk-relevant problem-space exploration, and stops after a fixed Confirmed request summary and explicit A/B/C depth gate. Do NOT use it for clear low-risk existing behavior, pure Q&A, lookup, verification, or an already approved change; do NOT select a route or depth, produce implementation designs, or hand off except through the user-selected predefined direct branch."
+description: "Use when devflow-core sends ambiguous or materially risky creative work for clarification, or when the user explicitly asks to stress-test, grill, 拷问, or 压力测试 a request or plan — creating features, building components, adding functionality, modifying behavior, or defining a problem-directed change. Clarifies intent through a semantic echo-back, runs risk-relevant problem-space exploration, and stops after a fixed Confirmed request summary and explicit A/B/C depth gate. Do NOT use it for clear low-risk existing behavior, pure Q&A, lookup, verification, or an already approved change; do NOT select a route or depth, produce implementation designs, or hand off except through the user-selected predefined direct branch."
 ---
 
 # DevFlow Brainstorm
@@ -26,6 +26,8 @@ Use `references/interview-discipline.md` for the Semantic Echo-Back, multi-angle
 ## Entry And Stop Condition
 
 Enter only when `devflow-core` has identified ambiguity or material risk that needs clarification. Core may bypass this skill for a clear, reversible, local existing-feature change with one plausible path, no security/data-loss/permission/contract risk, and quick proof.
+
+Or when the user explicitly requests to be grilled or stress-tested: the explicit request counts as user-selected Brainstorm clarification and still runs every duty below.
 
 After producing the fixed summary, present the A/B/C gate and wait for user selection. Start A at `devflow-spec` and B/C at `devflow-cut` only after the user chooses. Do not select Fast, Design-lite, a depth, an approach, or a method on the user's behalf. Do not create design sections, a design contract, documentation, or a visual artifact.
 
@@ -64,6 +66,8 @@ If no decision-impact gap remains after the supplied facts and echo-back, ask no
    Recommended answer: <answer and rationale>
    Why now: <risk or dependency resolved>
    ```
+
+   When the host provides a structured question tool (for example DSH `ask_user_question` or opencode `question`), ask every clarification question through it with 2-4 concrete options representing the most likely answers plus an Other field, and use it for the echo-back confirm question (Correct / Mostly correct / Let me correct something). When no such tool exists, keep the text question block unchanged. After each answer, acknowledge it in one or two sentences, then immediately ask the next question. After the echo-back is confirmed, start the clarification loop directly.
 
 5. **Revalidate every answer.** Before asking the next question, compare the answer with confirmed facts and the current request. If it introduces a load-bearing assumption, exposes a contradiction, or changes goal, scope, exclusion, constraint, acceptance, terminology, or actor, apply the Understanding Revision Rule. Otherwise record the answer and continue only when another decision-impact gap remains.
 6. **Explore the problem.** In `compact`, run only risk, edge, impact, and acceptance checks; in `standard`, run fitting angles; in `deep`, walk the full checklist from the reference. Report negative findings, name gaps and risks, offer directions with trade-offs, and recommend one inside the problem space. If exploration exposes a new decision-impact gap, return to step 4 and resolve it one question at a time before finishing.

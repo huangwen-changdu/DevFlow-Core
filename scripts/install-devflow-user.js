@@ -16,6 +16,7 @@ const userEntries = [
   "commands/devflow-adversarial.toml",
   "commands/devflow-find-fault.toml",
   "commands/devflow-audit.toml",
+  "commands/devflow-grill.toml",
   "scripts/devflow-debt.js",
   "scripts/devflow-review.js",
   "scripts/devflow-spec.js",

@@ -78,6 +78,7 @@ If a host supports slash commands, use:
 /devflow-pua      recover when a result is wrong, challenged, or repeatedly misses the target
 /devflow-learn    capture reusable corrections and pitfalls
 /devflow-audit    audit a repository or scope for overengineering candidates
+/devflow-grill    stress-test / 拷问 a request or plan with one-question clarification
 ```
 
 When installed into a target project, only the target-runtime scripts are copied. These are the scripts a developer runs inside the target project:

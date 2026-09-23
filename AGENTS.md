@@ -17,7 +17,7 @@ When skills are unavailable, use the route table and hard boundaries below as th
 | Signal | Owner | Required artifact | Return boundary |
 |---|---|---|---|
 | clear low-risk existing behavior change | `devflow-core` -> Cut | Design-lite contract, Depth C | skip Brainstorm; `CUT_PASS` enters Build; Cut/Prove remain required |
-| creative work with ambiguity or material risk: new behavior, cross-module impact, external visibility, irreversible/security/data-loss/permission/contract risk, or missing risk facts | `devflow-core` -> Brainstorm -> user-selected A/B/C | Confirmed request + depth | unique A/B/C success edges direct; other states return Core |
+| creative work with ambiguity, material risk, or explicit grill/stress-test request: new behavior, cross-module impact, external visibility, irreversible/security/data-loss/permission/contract risk, or missing risk facts | `devflow-core` -> Brainstorm -> user-selected A/B/C | Confirmed request + depth | unique A/B/C success edges direct; other states return Core |
 | investigation-only problem report, pure Q&A, lookup, or verification | `devflow-core` -> Prove facts / Fast | verified facts or narrow evidence | Core selects any later change after facts |
 | existing low-risk feature change, `implement`, `fix`, `land`, `bug report`, `error`, `failing test`, `broken` with an already approved scope | `devflow-core` -> Cut | approved scope and proof | `CUT_PASS` follows A/B -> Plan or C -> Build; other Cut states return Core |
 | `spec`, `spec doc`, `requirements doc`, `design doc` | `devflow-spec` after Core selection | approved A-branch Spec | direct Cut; all non-success states return Core |

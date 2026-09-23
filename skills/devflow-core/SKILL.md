@@ -108,6 +108,7 @@ Core selects only after a returned non-unique artifact. `CUT_REDUCE` and `CUT_RE
 - Repeated same-target correction: select `devflow-pua`, then re-read facts and switch approach.
 - Reusable correction or verified PASS: select `devflow-learn` for a selective review.
 - Matched external specialist: perform bounded work inside the current owner's node and return result, not-applicable, or failure facts; a specialist never selects a lifecycle owner, depth, or final status.
+- Explicit grill/stress-test request: select `devflow-brainstorm` directly; the explicit request is user intent, not keyword-only routing. The Semantic Echo-Back, the fixed Confirmed request, and the user-selected A/B/C gate all still apply.
 
 ## Verification
 

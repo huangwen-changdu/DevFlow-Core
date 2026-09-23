@@ -1,0 +1,9 @@
+description = "Grill the user's request or plan with one-question-at-a-time stress testing before committing to a design."
+prompt = '''
+Run DevFlow Grill.
+
+Load `skills/devflow-brainstorm/SKILL.md` and begin clarification when the user explicitly asks to be grilled, stress-tested, says 拷问我, or says 压力测试 about a request or plan.
+The explicit request selects Brainstorm clarification directly; it does not skip the Semantic Echo-Back, the fixed `Confirmed request`, or the user's A/B/C choice.
+When the host provides a structured question tool, ask every question through it with 2-4 concrete options plus an Other field; otherwise use the skill's text question block. Acknowledge each answer in one or two sentences, then immediately ask the next question.
+Do not produce design, plans, or implementation. Completion ends with the fixed `Confirmed request` summary and the A/B/C gate.
+'''

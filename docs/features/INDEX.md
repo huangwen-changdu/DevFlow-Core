@@ -1,6 +1,6 @@
 # 功能索引（INDEX）
 
-> 摘要: 用途=AI 进入仓库的第一跳，一行一路由：有什么功能、触发词是什么、入口在哪、怎么验证 | 维护=Prove PASS 后由 devflow-learn 新增或更新行 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-09-11
+> 摘要: 用途=AI 进入仓库的第一跳，一行一路由：有什么功能、触发词是什么、入口在哪、怎么验证 | 维护=Prove PASS 后由 devflow-learn 新增或更新行 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-09-23
 
 ## 检索方式（给 AI 的用法）
 
@@ -25,6 +25,7 @@
 | 循环工程 | Loop Engine 预设与独立分发插件，支撑模型自主闭环 | 循环, loop, 轮次, 失败卡, 状态文件, 循环工程 | `skills/loop-engineering` + `dsh/agent-presets/loop-engine` | active | `npm test` | skills/loop-engineering/SKILL.md, dsh/plugins/dsh-loop-engine/package.json | 2026-08-21-loop-engineering-preset.md | 2026-09-10 |
 | Wiki 单向发布 | 从仓库文档生成 GitHub Wiki 页面；repo 是源，wiki 是派生只读视图 | wiki, 发布, 派生视图, Home, Sidebar, wiki:check | `scripts/devflow-wiki.js` | active | `npm run wiki:check` | scripts/devflow-wiki.js, docs/features/INDEX.md | 2026-09-10-wiki-single-way-publish.md | 2026-09-10 |
 | 交付面残留治理 | 最终产物只描述已采纳最终状态，不回放被否方案、会话纠正与否定指令 | 交付残留, 负向回声, 会话残留, 此地无银, commit 文案, PR 标题, 交付说明, 终稿检查 | `AGENTS.md` + `skills/devflow-core/SKILL.md` + 4 个节点 references（Build/Prove/Spec-Plan/Docs） | active | `npm run verify:all` | AGENTS.md, skills/devflow-core/SKILL.md, scripts/validate-devflow.js | 2026-09-14-delivery-residue-hygiene.md | 2026-09-14 |
+| DevFlow 拷问直达 | 用户直呼 grill me / 拷问我 / 压力测试 或运行 `/devflow-grill` 直达 `devflow-brainstorm` 结构化澄清（纪律门不降） | grill me, 拷问我, 压力测试, 拷问, 直达澄清, grill | `/devflow-grill` | active | `npm run trigger:verify` | skills/devflow-brainstorm/SKILL.md, commands/devflow-grill.toml | 2026-09-23-devflow-grill-entry-and-structured-clarification.md | 2026-09-23 |
 
 ## 维护机制
 

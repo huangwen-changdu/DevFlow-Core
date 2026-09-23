@@ -32,3 +32,4 @@ Read this index first. Only read a card when its trigger and scope match the cur
 | [Plan Density Follows The Executor Contract](cards/plan-density-executor-contract.md) | 计划密度, 计划太薄, 计划太厚, 任务粒度, right-sizing, 跨会话执行, 跨模型交接, executor context, 内嵌代码, plan density | project | 0.4 |
 | [DevFlow Marker Harvest Grammar](cards/devflow-marker-harvest-grammar.md) | devflow: marker, 简化标记, devflow-debt, ceiling, revisit, no-ceiling, 债务标记, 收割不到 | project | 0.7 |
 | [Evidence Form Determines Falsifiability](cards/evidence-form-determines-falsifiability.md) | 计划或规范要求写证据, 自述式证据, Prewalk, 证据可伪造, 形状校验, 只校验形式, evidence admission, fabricated evidence, checker validates form not truth, 侦查记录, 证据分级 | project | 0.6 |
+| [Phrase Fixture Sync On Wording Change](cards/phrase-fixture-sync-on-wording-change.md) | 文本短语替换, 断言锚点, phrase assertion, replacing asserted wording, trigger:verify missing phrase, validator fixture sync, 旧短语残留 | project | 0.4 |

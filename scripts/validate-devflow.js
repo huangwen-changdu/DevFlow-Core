@@ -139,6 +139,23 @@ function assertBrainstormSelectionContract(skill) {
   assert(skill.indexOf("## A/B/C Gate") > skill.indexOf("## Fixed Output Contract"), "Brainstorm must present A/B/C after the fixed summary");
 }
 
+/** Guards the explicit grill entry: the direct request must keep every clarification gate. */
+function assertGrillEntryContract() {
+  for (const [rel, evidence] of [
+    ["AGENTS.md", "explicit grill/stress-test request"],
+    ["skills/devflow-core/SKILL.md", "Explicit grill/stress-test request"],
+    ["skills/devflow-core/references/core-methods.md", "counts as user-selected Brainstorm clarification"],
+    ["skills/devflow-brainstorm/SKILL.md", "or when the user explicitly asks to stress-test"],
+    ["skills/devflow-brainstorm/SKILL.md", "structured question tool"],
+    ["skills/devflow-brainstorm/SKILL.md", "immediately ask the next question"],
+    ["commands/devflow-grill.toml", "Run DevFlow Grill"],
+    ["commands/devflow.toml", "拷问我"]
+  ]) {
+    assert(read(rel).includes(evidence), `Grill entry contract missing: ${rel} must include ${evidence}`);
+  }
+  assert(read("skills/devflow-brainstorm/SKILL.md").includes("## A/B/C Gate"), "Grill entry must keep the A/B/C gate");
+}
+
 const brainstorm = read("skills/devflow-brainstorm/SKILL.md");
 const interviewDiscipline = read("skills/devflow-brainstorm/references/interview-discipline.md");
 assert(brainstorm.includes("Core supplies a depth hint"), "Brainstorm must consume Core-selected depth");
@@ -147,6 +164,7 @@ assert(brainstorm.includes("ask no clarification question"), "Brainstorm must av
 assert(!brainstorm.includes("There is no fast lane"), "Brainstorm must not prohibit adaptive clarification");
 assertBrainstormFollowUpContract(brainstorm, interviewDiscipline);
 assertBrainstormSelectionContract(brainstorm);
+assertGrillEntryContract();
 
 const prove = read("skills/devflow-prove/SKILL.md");
 const proofMethods = read("skills/devflow-prove/references/proof-recovery-methods.md");

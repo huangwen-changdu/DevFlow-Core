@@ -10,6 +10,8 @@ User request
 -> Semantic Echo-Back (all fields, even when none)
 -> wait for confirm or correction
 -> one question at a time, each with a recommended answer
+-> structured question tool on capable hosts (2-4 concrete options plus Other), text block otherwise
+-> one-to-two-sentence acknowledgement, then immediately ask the next question
 -> mandatory multi-angle exploration and problem-space recommendation
 -> corrected echo-back when understanding changes
 -> fixed Confirmed request summary
@@ -53,6 +55,7 @@ Rules:
 - Facts from code, configuration, tests, or documentation are stated rather than asked.
 - Business intent and user-visible boundaries are confirmed rather than inferred.
 - If the user corrects the understanding, apply the Understanding Revision Rule below.
+- Ask the confirm-or-correct question through the structured question tool when the host provides one (Correct / Mostly correct / Let me correct something + Other); the five fields stay visible in the message.
 
 ## Multi-Angle Checklist
 
@@ -122,6 +125,8 @@ After every answer, compare it with confirmed facts and the current request. An 
 
 Do not ask for an answer that project facts establish. Do not ask a later-category question while an earlier qualifying category remains unclear. Use the user's language; avoid unexplained technical terms.
 
+When using the structured tool, give 2-4 concrete options that represent realistic answers, keep the recommended answer visible, and never replace the answer with a generic Yes/No unless the question is genuinely binary.
+
 ## Ambiguity Signals
 
 Treat these as a need to clarify rather than infer:
@@ -183,3 +188,5 @@ After the fixed summary, present A, B, and C and wait for the user's explicit de
 - [ ] Changed understanding was re-echoed and confirmed before proceeding.
 - [ ] `Confirmed request` includes every fixed field, followed by an explicit A/B/C user gate.
 - [ ] The summary contains no design, route, handoff, documentation, recovery, or implementation instruction.
+- [ ] Structured question tool used for every question when the host provides one, with 2-4 concrete options and an Other field.
+- [ ] Each answer was acknowledged in one or two sentences before the next question.

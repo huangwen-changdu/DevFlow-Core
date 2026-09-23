@@ -1,6 +1,6 @@
 {
   "name": "DevFlow-Core-devflow",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Practical AI development workflow for problem reports, requirements, bug reports, implementation, minimal-change gates, and proof-before-done.",
   "license": "MIT",
   "keywords": [
@@ -48,6 +48,7 @@
     "commands/devflow-learn.toml",
     "commands/devflow-adversarial.toml",
     "commands/devflow-find-fault.toml",
-    "commands/devflow-audit.toml"
+    "commands/devflow-audit.toml",
+    "commands/devflow-grill.toml"
   ]
 }

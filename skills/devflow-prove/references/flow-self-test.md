@@ -273,6 +273,38 @@ Context limitations: ...
 Suggested next action: manual only
 ```
 
+## Scenario 1H: Explicit Grill Entry And Structured Clarification
+
+Input:
+
+```text
+Grill me on this plan before I commit to it.
+```
+
+Expected behavior:
+
+- Route: Design.
+- Skill path: explicit user request -> `devflow-brainstorm` (`AGENTS.md` declares the explicit grill/stress-test request, and `core-methods.md` records it as user-selected Brainstorm clarification).
+- Must enter clarification from the explicit request; the request is user intent, not a keyword-only route.
+- Must send the Semantic Echo-Back first, with all fields.
+- Must ask exactly one question at a time; on a host with a structured question tool, every question uses it with 2-4 concrete options plus an Other field; otherwise the text block is used.
+- Must acknowledge each answer in one or two sentences, then immediately ask the next question.
+- Must keep the mandatory formats: the fixed `Confirmed request` summary and the user-selected A/B/C gate.
+- Must not select A/B/C for the user.
+- Must not skip the Semantic Echo-Back.
+- Must not produce a design, plan, or implementation.
+
+Pass check:
+
+```text
+Grill entry: explicit request received
+Semantic Echo-Back: all fields sent and confirmed
+Questions: one at a time, structured options with Other (or text fallback)
+Momentum: each answer acknowledged, next question asked immediately
+Confirmed request: fixed summary
+A/B/C gate: presented, waiting for the user's explicit selection
+```
+
 ## Scenario 2: Small Clear Change
 
 Input:

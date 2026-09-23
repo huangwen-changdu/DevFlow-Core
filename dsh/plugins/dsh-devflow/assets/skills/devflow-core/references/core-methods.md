@@ -68,7 +68,7 @@ On DeepSeek Harness code mode (PTC, `run_code`), batch the independent Sense rea
 
 ## Method 2: Route Precedence And Risk Gate
 
-Evaluate in this order: explicit independent review -> investigation/pure inquiry -> approved scope -> risk gate -> route owner. Keywords are signals, not decisions.
+Evaluate in this order: explicit independent review or explicit grill/stress-test request -> investigation/pure inquiry -> approved scope -> risk gate -> route owner. An explicit grill/stress-test request counts as user-selected Brainstorm clarification and still runs every clarification duty. Keywords are signals, not decisions.
 
 Brainstorm is required for new behavior, ambiguity, cross-module or externally visible impact, irreversible work, security/data-loss/permission/contract risk, or any missing fact that could change the plan. A clear existing-feature change may enter Cut directly only when every low-risk condition holds: clear goal, existing local behavior, one plausible path, local impact, reversible change, no security/data-loss/permission/contract risk, and quick proof. The absence of one condition is enough to keep Brainstorm controlled.
 

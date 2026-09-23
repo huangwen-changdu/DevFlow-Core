@@ -44,6 +44,7 @@
 | 2026-09-10 | [2026-09-10-wiki-single-way-publish](2026-09-10-wiki-single-way-publish.md) | done | 用户请求（2026-09-10 会话，方案 A）+ Cut Decision | wiki:check 无克隆 exit 0 + --self-test PASS + verify:all 退出码 0 | Wiki 单向发布 |
 | 2026-09-14 | [2026-09-14-delivery-residue-hygiene](2026-09-14-delivery-residue-hygiene.md) | done | docs/specs/2026-09-14-delivery-residue-hygiene.md | npm run verify:all 退出码 0；六处标记 6/6；DSH sync 幂等+子包自测 PASS；Codex 副本逐字节一致+verify-plugin PASS | 交付面残留治理 |
 | 2026-09-16 | [2026-09-16-plan-contract-evidence-density](2026-09-16-plan-contract-evidence-density.md) | done | docs/specs/2026-09-16-plan-contract-evidence-density.md | npm run verify:all 退出码 0；plan/self-test/index 三处检查退出码 0；32 份计划退出码差异 0；sync 幂等 + 插件 14 skills/5 self-tests 通过；版本 0.6.0/0.10.0/0.4.0 | DevFlow 计划生成与落地 |
+| 2026-09-23 | [2026-09-23-devflow-grill-entry-and-structured-clarification](2026-09-23-devflow-grill-entry-and-structured-clarification.md) | done | Brainstorm Confirmed request（2026-09-23 会话，Depth B）+ 本计划随附 Cut Decision | npm run verify:all exit=0；trigger:verify 20 场景 + parity PASS；六 home --check 6/6；Scenario 1H 实走走查 | DevFlow 拷问直达 |
 
 ## 维护机制
 

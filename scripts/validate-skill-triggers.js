@@ -56,7 +56,7 @@ const scenarios = [
     route: "Design",
     input: "Add an order export feature and modify its delivery behavior.",
     evidence: [
-      ["AGENTS.md", "creative work with ambiguity or material risk"],
+      ["AGENTS.md", "creative work with ambiguity, material risk, or explicit grill/stress-test request"],
       ["skills/devflow-core/SKILL.md", "Brainstorm is required when any material risk"],
       ["skills/devflow-core/references/core-methods.md", "Brainstorm is required for new behavior"],
       ["skills/devflow-brainstorm/SKILL.md", "Use when devflow-core sends ambiguous or materially risky creative work"],
@@ -274,6 +274,20 @@ const scenarios = [
       ["skills/devflow-find-fault/SKILL.md", "Necessary adjustments and fixes"],
       ["skills/devflow-find-fault/SKILL.md", "derive every item from a reported finding or unease decision"],
       ["commands/devflow-find-fault.toml", "necessary adjustments and fixes list"]
+    ]
+  },
+  {
+    name: "explicit grill entry",
+    route: "Design",
+    input: "Grill me on this plan before I commit to it.",
+    evidence: [
+      ["AGENTS.md", "explicit grill/stress-test request"],
+      ["skills/devflow-core/SKILL.md", "Explicit grill/stress-test request"],
+      ["skills/devflow-core/references/core-methods.md", "counts as user-selected Brainstorm clarification"],
+      ["skills/devflow-brainstorm/SKILL.md", "or when the user explicitly asks to stress-test"],
+      ["commands/devflow-grill.toml", "Run DevFlow Grill"],
+      ["commands/devflow.toml", "拷问我"],
+      ["skills/devflow-prove/references/flow-self-test.md", "Scenario 1H"]
     ]
   }
 ];
