@@ -31,6 +31,8 @@ const userEntries = [
   "skills/devflow-build/references/build-methods.md",
   "skills/devflow-prove/references/proof-recovery-methods.md",
   "skills/devflow-prove/references/code-review-checklist.md",
+  "skills/devflow-prove/references/prose-quality-checklist.md",
+  "skills/devflow-prove/references/ui-slop-checklist.md",
   "skills/devflow-brainstorm/SKILL.md",
   "skills/devflow-spec/SKILL.md",
   "skills/devflow-plan/SKILL.md",

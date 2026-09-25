@@ -39,6 +39,10 @@ Readability Check:
 
 A function may contain several steps when they form one coherent business narrative. Extract or split only when doing so makes responsibility, testing, reuse, or local understanding materially better.
 
+## Quality Gates Before Handoff
+
+Run the anti-AI-voice quality gates alongside the Readability Outcome Check before handoff. Load `prose-quality-checklist.md` and clear every flagged pattern for completion messages, commit and PR text, and created documents; load `ui-slop-checklist.md` and clear all six-axis scores and gates when the change emits UI or design output. Fix every hit and rerun the check; an unfixed hit stays in Build rather than reaching Prove.
+
 ## Build Comments
 
 The approved Spec/Plan and local project convention define required code comments. Add a comment when it records a protected contract, failure condition, business rule, compatibility boundary, or other non-obvious reason; inline comments explain reasons, not syntax. Markdown runtime contracts use headings and fixed output shapes rather than narrative comments.

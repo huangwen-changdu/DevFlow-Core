@@ -53,6 +53,8 @@ When the target project has no relevant convention, use these fallback locations
 
 Do not invent code paths, API contracts, payload fields, errors, or verification results. If the selected document lacks evidence, name the missing evidence and report that document as `BLOCKED`.
 
+Before handoff, run `prose-quality-checklist.md` over the created document and fix every pattern it flags.
+
 ## Document Templates
 
 ### Technical Solution Document

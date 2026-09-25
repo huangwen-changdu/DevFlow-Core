@@ -12,6 +12,8 @@ Spec and Plan names, titles, and framing describe the accepted final state, rege
 
 A Spec contains Goal, Context, Requirements, Non-goals, Approach, Impact, Acceptance, Verification, Code Documentation, and Open Questions. A Plan states Status, Goal, Not doing, Cut, and Source, then per-task Files, Change, Acceptance, Verify, and Not doing, plus a `## Recon` record of the bounded read and a `## Progress` table. Its cross-task interface block appears only under a subagent execution mode.
 
+The prose quality gate covers delivered prose only — completion messages, commit and PR text, and created documents. Spec, Plan, and requirements internal contract documents are exempt (豁免) from that gate; their own static checks apply instead.
+
 ## Plan Contract
 
 The static plan checker validates structure, not architecture. A Plan must not expand the Cut Decision; any added dependency, abstraction, file responsibility, or feature returns scope-drift facts to Core.

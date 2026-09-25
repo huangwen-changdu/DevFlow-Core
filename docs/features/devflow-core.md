@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current Version: v56
+- Current Version: v57
 - Status: active
-- Last Change: explicit-grill-entry
+- Last Change: anti-slop-quality-gates
 - Product Area: runtime flow, plan contract, capability index, validation, learning loop
 
 ## Feature Background
@@ -66,6 +66,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 
 | Version | Change | Type | Date | Status | Summary |
 |---|---|---|---|---|---|
+| v57 | anti-slop-quality-gates | prose and UI quality gates | 2026-09-25 | active | Added two distilled in-repo quality checklists instead of installing external skills: `prose-quality-checklist.md` carries humanizer's 25 AI-writing patterns (MIT) for completion messages, commit and PR text, and created documents, and `ui-slop-checklist.md` carries hallmark's 58 design slop gates plus the six-axis pre-emit self-critique (MIT) for UI and design output. Prove loads both conditionally in `Proof Context Selection`, Build runs them beside the Readability Outcome Check in `Quality Gates Before Handoff`, and docs-followup runs the prose check before handoff; Spec, Plan, and requirements internal contract documents stay exempt. Both installers ship the two files and the Codex and DSH mirrors carry them byte-for-byte. |
 | v56 | explicit-grill-entry | routing entry | 2026-09-23 | active | Added the explicit grill/stress-test request as a direct `devflow-brainstorm` entry: `AGENTS.md` declares it in the route table, `core-methods.md` records it as user-selected Brainstorm clarification, `/devflow-grill` and the generic `/devflow` command load Brainstorm directly, and Brainstorm asks every question through the host's structured question tool with concrete options plus momentum between questions. The Semantic Echo-Back, fixed `Confirmed request`, user-selected A/B/C, Cut, and Prove are unchanged. |
 | v55 | find-fault-adjustment-list | manual review output | 2026-09-17 | active | `devflow-find-fault` now closes every review with a `Necessary adjustments and fixes` list: one item per required change, each carrying its severity, the finding or unease decision it traces to, why the change is necessary, the smallest suggested fix, and the verification that proves it is done. The list is a projection of already-reported findings and adds no new fault; a high-risk unease decision enters it as `do not proceed` pending user confirmation. Review rounds on DSH return the proposed minimal fix with each finding so aggregation assembles the list, the command prompt requires the same closing list, and `npm run trigger:verify` locks the contract on both surfaces while the capability-eval self-test scenario carries the same evidence. The list stays advisory: no automatic edit, task creation, skill invocation, or lifecycle change. |
 | v54 | requirement-loop-and-developer-profile | requirement ledger, developer profile | 2026-09-10 | active | Added `docs/requirements.md` as the single requirement record: one row per confirmed requirement, statuses `open` through `landed` plus `opt-out` and `dropped`, written by each lifecycle node and closed by Prove, which now requires a terminal row before `PASS`. An explicit user skip records `opt-out` with a reason and evidence, so skipping documentation stays the user's choice but is never silent. `node scripts/devflow-plan.js --loop` reports status counts, plan landing rate, and promotion candidates; `--index` validates the ledger. `devflow-learn` records repeated how-to corrections as `Scope: global` preference cards, Sense applies them first and reports the count, and a card at confidence 0.7 creates a requirement row for its promotion proposal. |
@@ -170,6 +171,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - 2026-07-28: Upgrade the existing `devflow-plan` command into one dedicated `devflow-plan` skill rather than adding a `devflow-writing-plans` alias or second plan skill. Reason: planning has one lifecycle position and one checker; file operations, interface contracts, and concrete steps improve its existing contract without creating routing ambiguity or duplicate install surfaces.
 - 2026-07-26: Add `devflow-adversarial` and `devflow-find-fault` as separate manual skills instead of extending `devflow-prove` or PUA. Reason: users need an on-demand challenge at any task stage, while Prove is completion-gated and PUA is recovery-gated; coupling either would make manual critique unexpectedly alter lifecycle behavior or completion semantics.
 - 2026-09-23: Add the explicit grill/stress-test request as a direct `devflow-brainstorm` entry with a dedicated `/devflow-grill` command instead of a new skill or a keyword-only trigger. Reason: adoption needs a visible, invocable entry, while a new skill would duplicate routing and a keyword-only trigger would be undeclarable and uncheckable; the explicit request still runs every clarification gate.
+- 2026-09-25: Distill humanizer's 25 prose patterns and hallmark's 58 UI slop gates into two in-repo checklists instead of installing either external skill. Reason: the gates are the value we want, while an external skill adds an install and refresh dependency, a vendor lifecycle, and a routing surface DevFlow does not own; both upstreams are MIT and the distilled criteria keep their attribution.
 
 ## Known Constraints
 

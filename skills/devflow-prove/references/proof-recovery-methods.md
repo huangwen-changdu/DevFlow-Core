@@ -4,7 +4,7 @@ Owners: `devflow-prove` and `devflow-pua`. Load this reference after completed B
 
 ## Proof Context Selection
 
-Keep proof context proportional to the change. Always load this reference. Load `flow-self-test.md` only for DevFlow runtime, skill, command, host, hook, validator, scenario, installer, or harness changes; ordinary application changes use the changed file, its direct contract, and the relevant proof command. Load `code-review-checklist.md` for code and apply General Engineering Review plus only language sections matching changed extensions. Narrow context does not weaken diff review, adversarial review, or fresh proof.
+Keep proof context proportional to the change. Always load this reference. Load `flow-self-test.md` only for DevFlow runtime, skill, command, host, hook, validator, scenario, installer, or harness changes; ordinary application changes use the changed file, its direct contract, and the relevant proof command. Load `code-review-checklist.md` for code and apply General Engineering Review plus only language sections matching changed extensions. Narrow context does not weaken diff review, adversarial review, or fresh proof. Load `prose-quality-checklist.md` for completion messages, commit and PR text, and created documents, and load `ui-slop-checklist.md` only when the change emits UI or design output; both are bounded post-write checks inside the existing Prove and Build nodes.
 
 ## Method 13: Proof Before Done
 
