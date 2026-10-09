@@ -337,7 +337,9 @@ for (const installer of ["scripts/install-devflow.js", "scripts/install-devflow-
     "skills/devflow-build/references/build-methods.md",
     "skills/devflow-prove/references/proof-recovery-methods.md",
     "skills/devflow-plan/references/plan-methods.md",
-    "skills/devflow-prove/references/code-review-checklist.md"
+    "skills/devflow-prove/references/code-review-checklist.md",
+    "skills/devflow-prove/references/prose-quality-checklist.md",
+    "skills/devflow-prove/references/ui-slop-checklist.md"
   ]) {
     assert(body.includes(reference), `${installer} must install ${reference}`);
   }

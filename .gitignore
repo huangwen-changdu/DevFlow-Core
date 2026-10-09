@@ -2,3 +2,10 @@
 nul
 .devflow-observe.log
 /sync-agents-claude.bat
+/.scratch-skill
+/.codegraph
+/graphify-out
+.opencode/plugins/graphify.js
+.codex/devflow-prompt-probe.json
+opencode.json
+.graphifyignore

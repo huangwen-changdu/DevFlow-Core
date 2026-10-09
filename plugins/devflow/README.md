@@ -9,6 +9,27 @@ Install this plugin from the repository or copy the `plugins/devflow` directory 
 your local plugin source directory. The required manifest is
 `.codex-plugin/plugin.json`; Codex discovers the 14 skill trees through `./skills/`.
 
+### Make the routing contract always-on (manual step)
+
+Codex reads `AGENTS.md` from the workspace root and `~/.codex/AGENTS.md`. This plugin ships
+skills only, so installing it neither writes nor replaces either file. Until a pointer exists,
+DevFlow routing depends on the `devflow-core` skill description being matched.
+
+To make routing automatic, add this thin pointer to `~/.codex/AGENTS.md` (every project) or to
+the target project's `AGENTS.md`:
+
+````markdown
+# DevFlow
+Development work: load the `devflow-core` skill first, then `skills/devflow-core/references/core-methods.md`, then only the lifecycle reference Core selects.
+Independent review: load `devflow-adversarial` or `devflow-find-fault` directly only when explicitly requested.
+Do not claim completion without `devflow-prove` evidence and its adversarial review.
+````
+
+Keep the full contract in this repository's `AGENTS.md` as the single source rather than copying
+its body, so the two copies cannot drift. When a project also needs the full contract and the
+`commands/*.toml` slash commands, run `npm run install:target -- <project> --write` from the
+repository root.
+
 Validate a checkout before sharing it:
 
 ```sh
