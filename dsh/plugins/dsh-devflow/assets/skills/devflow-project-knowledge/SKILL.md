@@ -17,7 +17,7 @@ description: "Use when initializing a project-knowledge pack, adding a business 
 
 普通任务的 `devflow-core` 只探测本知识包；存在时先读 `AI-START-HERE.md`，回退 `index.md`，再用 `registry.json` 定位相关业务域、模块、风险或任务入口文档，禁止全量读取知识包。
 
-缺失的知识包、入口或注册表不阻塞任务，也不得因读取尝试创建目录。只有用户确认 `devflow-learn` 报告的代码支撑业务事实候选后，本 Skill 才创建或维护 `docs/project-knowledge/`；本 Skill 是该业务知识存储的唯一维护者。
+缺失的知识包、入口或注册表不阻塞任务，也不得因读取尝试创建目录。本 Skill 是该业务知识存储的唯一维护者：仅在用户直接要求初始化/维护知识包，或用户确认 `devflow-learn` 报告的代码支撑业务事实候选后，才创建或维护目录。
 
 ---
 
@@ -97,7 +97,7 @@ docs/project-knowledge/
 - 现有文档（when present: README.md / docs / AGENTS.md）
 ```
 
-**Step 2：生成核心骨架文件**（按顺序，每个文件生成后停下确认再继续；AI 推断的内容标 `confidence: low`，代码扫描有直接证据标 `medium`，人工明确确认后标 `high`）
+**Step 2：生成核心骨架文件**（按顺序，每批不超过 3 个文件，批次间 🔴 停下确认；AI 推断标 `confidence: low`，代码扫描直接证据标 `medium`，人工明确确认后标 `high`）
 
 生成顺序：
 1. `AI-START-HERE.md` — 执行心智 + 防误判清单
@@ -111,7 +111,7 @@ docs/project-knowledge/
 9. `registry.json` — 机器可读索引
 10. 其余文件按需生成（`02/03/05/06/07/10/11`）
 
-**Step 3：生成 `registry.json`**
+**Step 3：`registry.json` 字段规范（随 Step 2 生成）**
 
 必须包含以下顶层 key：
 ```json
@@ -129,7 +129,7 @@ docs/project-knowledge/
 }
 ```
 
-**Step 4：生成 `AI-START-HERE.md`**
+**Step 4：`AI-START-HERE.md` 内容规范（随 Step 2 生成）**
 
 必须包含：
 - 项目是什么（一句话 + 技术栈）
@@ -273,8 +273,8 @@ Metadata:
 
 | 值 | 含义 |
 |---|---|
-| `high` | 基于代码扫描确认，主要结构不太可能快速变化 |
-| `medium` | 基于代码扫描，但细节可能有遗漏或已部分过期 |
+| `high` | 经人工明确确认，主要结构不太可能快速变化 |
+| `medium` | 基于代码扫描直接证据，细节可能有遗漏或已部分过期 |
 | `low` | 基于推断或用户口述，未经代码验证 |
 
 ---
