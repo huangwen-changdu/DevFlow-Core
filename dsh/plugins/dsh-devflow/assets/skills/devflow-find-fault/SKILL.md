@@ -35,7 +35,7 @@ When the target contains no implementation material (no diff, no new code, no co
 
 | Level | Meaning | Typical signals | Completion constraint |
 |---|---|---|---|
-| **High** | A missing decision could materially change the business result, user rights, data correctness, security, money/inventory, irreversible state, or produce clearly different outcomes under reasonable interpretations. | Permission boundary, settlement rule, destructive transition, ownership, data visibility, compliance, or mutually exclusive workflow result. | Do not state that the feature fully meets requirements. Request user confirmation before that claim. |
+| **High** | A missing decision could materially change the business result, user rights, data correctness, security, money/inventory, irreversible state, or produce clearly different outcomes under reasonable interpretations. | Permission boundary, settlement rule, destructive transition, ownership, data visibility, compliance, or mutually exclusive workflow result. | 🔴 Do not state that the feature fully meets requirements. Request user confirmation before that claim. |
 | **Medium** | A missing decision changes primary-path experience or rule consistency, but is reversible and does not directly threaten protected rights or correctness. | Sort priority, filter composition, default value, pagination, empty state, retry, or normal error path. | Label the implementation `pending confirmation`; explicitly surface it before delivery. |
 | **Low** | A missing decision does not change business semantics, is easy to reverse, and has a clear ordinary convention. | Non-core wording, visual spacing, or a presentational detail with no rule impact. | Record it; it does not block a completion claim. |
 

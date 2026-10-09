@@ -58,7 +58,7 @@ If no decision-impact gap remains after the supplied facts and echo-back, ask no
    Is this right? (correct me / confirm)
    ```
 
-3. **Wait.** Do not ask a process question or make a lifecycle decision before the user confirms or corrects the echo-back.
+3. 🛑 **STOP — wait.** Do not ask a process question or make a lifecycle decision before the user confirms or corrects the echo-back.
 4. **Clarify one decision-impact gap at a time.** Ask only the smallest unresolved question whose answer could change scope, a constraint, acceptance, or a subsequent problem-space decision. Resolve qualifying gaps in this order: goal ambiguity, scope boundary, exclusion, constraint, acceptance, then any remaining open question. Do not ask merely because a category is unfilled: record a fact-backed `none` or non-blocking unknown instead. Every question carries a recommended answer and why the answer matters.
 
    ```text
@@ -130,7 +130,7 @@ On `Status: clarified`, create or update the requirement row in `docs/requiremen
 
 ## A/B/C Gate
 
-After the fixed summary, present these choices and wait for one explicit user selection:
+🛑 STOP — after the fixed summary, present these choices and wait for one explicit user selection:
 
 On DeepSeek Harness (DSH), present the gate through the structured `ask_user_question` tool as one single-select question with options A / B / C.
 

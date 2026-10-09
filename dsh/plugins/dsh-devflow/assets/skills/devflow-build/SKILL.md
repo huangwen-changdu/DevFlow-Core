@@ -202,7 +202,7 @@ If any file has no goal link, remove that change.
 
 ## Stop Protocol
 
-Stop executing immediately and return `BUILD_BLOCKED` with the blocking facts to `devflow-core` when:
+🛑 STOP — stop executing immediately and return `BUILD_BLOCKED` with the blocking facts to `devflow-core` when:
 
 - an edit cannot be applied or a verification fails (dead anchor, stale behavior, missing interface, unclear step)
 - a dependency, tool, or declared external skill is missing and the task depends on it, or its returned failure facts block the approved work
@@ -213,7 +213,7 @@ Do not guess, do not force through blockers, and do not broaden scope to escape.
 
 ## Handoff Gate
 
-Do not say done. A completed Build directly enters `devflow-prove` with:
+🛑 STOP — do not say done. A completed Build directly enters `devflow-prove` with:
 
 ```text
 Proof target: ...

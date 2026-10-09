@@ -94,7 +94,7 @@ Proof FAIL or BLOCKED, and PUA recovery -> Core selects the next owner or stop.
 - PUA returns recovery facts after its method switch.
 - Prove returns PASS, FAIL, or BLOCKED and invokes Learn after PASS.
 
-Core selects only after a returned non-unique artifact. `CUT_REDUCE` and `CUT_REUSE` stop for user confirmation. Independent `devflow-adversarial` and `devflow-find-fault` review current material only and do not enter lifecycle routing.
+Core selects only after a returned non-unique artifact. 🔴 CHECKPOINT — `CUT_REDUCE` and `CUT_REUSE` stop for user confirmation. Independent `devflow-adversarial` and `devflow-find-fault` review current material only and do not enter lifecycle routing.
 
 ## Capability Dispatch
 

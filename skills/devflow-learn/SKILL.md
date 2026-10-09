@@ -54,7 +54,7 @@ Project-knowledge candidates include changed domain semantics, rules, boundaries
 
 ## Repeat Correction Gate
 
-Repeated correction is not optional learning. If the user corrects the same boundary, placement, workflow, or wording rule twice in one task lifecycle, create or update a learning card before claiming completion.
+🔴 CHECKPOINT — repeated correction is not optional learning. If the user corrects the same boundary, placement, workflow, or wording rule twice in one task lifecycle, create or update a learning card before claiming completion.
 
 Repeated challenge is also not optional learning. If the user says the result was wrong, changed wrong, missed the target, missing pieces, or not what they wanted twice in one task lifecycle, record the next-time intercept after `devflow-pua` identifies the reusable mistake pattern.
 
