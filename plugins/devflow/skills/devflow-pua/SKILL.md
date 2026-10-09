@@ -40,7 +40,7 @@ Load `skills/devflow-prove/references/proof-recovery-methods.md` before applying
 9. **Ask what is wrong and what result is wanted**: ask the smallest concrete set when the answer is not already explicit.
 10. **Restate the goal**: say what you now believe the user wants and what result they should see.
 11. **List 3 hypotheses**: include at least one hypothesis that the previous approach was solving the wrong problem.
-12. **Switch method if needed**: if the last guiding method still missed, mark it failed, choose a different or opposite method lens, and restart checks from facts before editing again.
+12. **Switch method if needed**: if the last guiding method still missed, mark it failed, choose a different or opposite method lens, and restart checks from facts on the changed approach; Core selects who executes it.
 13. **Change approach**: name the old approach being abandoned and the materially different path now chosen.
 14. **Prepare the handoff**: include only recovery facts, including any request re-confirmation need, in the required output for Core selection.
 15. **Close learning**: if the miss is reusable, load `devflow-learn` before returning recovery facts to Core; PUA itself never claims completion.
