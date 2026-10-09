@@ -28,6 +28,8 @@ Choose the lightest level that fits the risk:
 | `full` | Default for coding, fixes, dependencies, abstractions, and framework work. | Enforce the ladder and block avoidable new structure. |
 | `ultra` | User asks to simplify, remove bloat, avoid overengineering, or review a diff/repo for cuts. | Prefer deletion before addition and challenge the requirement when a smaller outcome covers it. |
 
+When multiple levels fit, dependency, abstraction, framework, or config work uses `full`; a user-requested simplification or bloat review uses `ultra`; otherwise `lite` applies only when its trigger exactly matches.
+
 ## Minimal Solution Ladder
 
 This is the canonical ladder; `cut-methods.md` does not redefine it. **Ponytail** names the reference project whose smallest-solution ladder this section absorbs natively — the `Ponytail Rung` field in the Required Gates reports the numbered rung where this ladder stops.
@@ -37,7 +39,7 @@ After reading the touched flow, stop at the first rung that works:
 1. Does this need to exist?
 2. Can the user goal be met by not changing code?
 3. Does it already exist in this codebase?
-4. Does an available skill in the environment handle this without writing new code? (e.g., `pdf` for reading a PDF, `understand` for codebase analysis. If a skill like `frontend-design` can perform bounded specialist work, load it alongside the devflow route — it complements, not replaces, the devflow chain. Produce `CUT_REUSE` only when the skill fully handles the task with no new code needed.)
+4. Does an available skill in the environment handle this without writing new code? (e.g., a `pdf`-reading or codebase-analysis skill when the host provides one. If a specialist skill like `frontend-design` can perform bounded specialist work, load it alongside the devflow route — it complements, not replaces, the devflow chain. Produce `CUT_REUSE` only when the skill fully handles the task with no new code needed.)
 5. Does the standard library do it?
 6. Does the native platform do it?
 7. Does an already-installed dependency do it?
@@ -166,6 +168,8 @@ CUT_REDUCE: proposed scope is too heavy; reduce to <smaller option>
 CUT_REUSE: existing capability can be reused; do not write new implementation
 CUT_BLOCKED: missing facts or risk too high; return the blocking facts to `devflow-core`
 ```
+
+When the request is advice-only — no approved design and no change requested — return the ladder result as advice and stop; do not enter Plan or Build until the user asks for the change.
 
 Every result also records a four-line decision plus a mandatory subtraction record:
 
