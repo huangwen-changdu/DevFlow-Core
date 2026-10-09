@@ -29,7 +29,7 @@ These files are the runtime method source. Do not link out to the original PUA p
 
 Load `skills/devflow-prove/references/proof-recovery-methods.md` before applying recovery proof rules. Keep the PUA methodology router, library, and flavor-display assets as the owner of method selection and output display.
 
-1. **Stop the current path**: do not keep editing with the same assumption when the user repeatedly reports that the same function, result, or requested capability remains wrong, incomplete, or missing.
+1. 🛑 **Stop the current path**: do not keep editing with the same assumption when the user repeatedly reports that the same function, result, or requested capability remains wrong, incomplete, or missing. This skill returns recovery facts; it never executes the new approach itself.
 2. **Name the pressure signal**: repeated same-target dissatisfaction in one task lifecycle, including after an attempted correction; record the function/result/capability that the user keeps identifying as problematic.
 3. **Quarantine wrong context**: keep only verified facts and user-stated constraints; discard the previous solution hypothesis, implementation path, and "almost fixed" assumptions.
 4. **Load methodology**: read `references/methodology-router.md`, `references/methodology-library.md`, and `references/flavor-display.md`.
@@ -43,7 +43,7 @@ Load `skills/devflow-prove/references/proof-recovery-methods.md` before applying
 12. **Switch method if needed**: if the last guiding method still missed, mark it failed, choose a different or opposite method lens, and restart checks from facts before editing again.
 13. **Change approach**: name the old approach being abandoned and the materially different path now chosen.
 14. **Prepare the handoff**: include only recovery facts, including any request re-confirmation need, in the required output for Core selection.
-15. **Close learning**: if the miss is reusable, load `devflow-learn` before claiming completion.
+15. **Close learning**: if the miss is reusable, load `devflow-learn` before returning recovery facts to Core; PUA itself never claims completion.
 
 ## Guiding Principles
 
@@ -98,12 +98,6 @@ SWITCH: <old flavor>/<old method> -> <new flavor>/<new method>: <reason>
 If the switched method also fails once, stop editing and ask the user to confirm the new success contract before another patch. If it fails twice, record the reusable miss through `devflow-learn`.
 
 On DeepSeek Harness (DSH), fresh-agent iteration via the `ralph` tool (each round a fresh agent, workspace as durable memory) is an available form of the materially-different-approach switch, but only when the user explicitly requests fresh-agent iteration; otherwise keep the normal re-read-facts-and-switch-method flow above.
-
-## Hard Restart Rule
-
-Trigger this rule when, in one task lifecycle, the user repeatedly points out that the same function, result, or requested capability remains wrong, incomplete, or missing, including after an attempted correction.
-
-The trigger is repeated dissatisfaction with the same target; do not infer it from an isolated keyword or from message count alone.
 
 ## Pointed Questions
 
