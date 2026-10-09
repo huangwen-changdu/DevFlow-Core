@@ -13,7 +13,7 @@ This is repo-wide `devflow-cut`, not correctness review and not implementation.
 
 1. Define scope: whole repo, directory, file set, or user-provided focus.
 2. Read project rules and obvious ignore paths before scanning.
-3. Inspect files with `rg --files`, then read representative code in the chosen scope.
+3. Inspect files with `rg --files` (when ripgrep is unavailable, use `git ls-files` or the platform's file listing), then read representative code in the chosen scope.
 4. Hunt for delete-list findings:
    - `delete`: dead code, speculative feature, unused flexibility.
    - `reuse`: duplicate code or helper that should use an existing project helper, utility, type, or pattern.
@@ -40,6 +40,8 @@ End with:
 ```text
 net: -<N> lines, -<M> deps possible.
 ```
+
+Count only confirmed findings with a concrete replacement in `net`; mark unconfirmed items `candidate` and exclude them from the count. For `delete` findings with no replacement, write `Nothing replaces it.`
 
 If nothing material should be cut:
 
