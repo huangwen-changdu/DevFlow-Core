@@ -31,7 +31,7 @@ graph TD
     PUA -->|"recovery facts"| CORE
     CORE -->|"recovery"| PUA
     EXT -.->|"guides selected work"| CUT
-    EXT -.->|"guides selected work"| BUILD
+    EXT -.->|"declared at Cut; Build loads and returns facts"| BUILD
 ```
 
 ## Runtime Chain
@@ -51,6 +51,7 @@ Proof FAIL/BLOCKED, and PUA recovery return facts to Core.
 - Brainstorm preserves Semantic Echo-Back, clarification, and the fixed Confirmed request before it presents A/B/C.
 - Users select A/B/C. Brainstorm never infers a depth.
 - Spec, Cut, Plan, and Build follow only the direct success edges shown above.
+- External Skills: Cut declares the specialist, Plan inherits the declaration, Build loads it; the returned result / not-applicable / failure facts travel with the single Prove handoff. A loaded skill without returned facts is 已加载, not 已执行.
 - Core decides every non-unique, blocked, failed, recovery, or changed-intent transition.
 - Any completion claim enters Prove. PASS enters Learn; FAIL or BLOCKED returns facts to Core.
 - Only after a verified feature implementation with source-behavior or interface-contract change may Learn hand off to `devflow-docs-followup` for an optional documentation inquiry.

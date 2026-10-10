@@ -138,6 +138,12 @@ Expected behavior:
 - `devflow-brainstorm` confirms the requested outcome, scope, constraints, acceptance, and open questions without proposing an architecture.
 - After `Confirmed request`, Core separates verified facts, constraints, invariants, and assumptions before selecting the smallest necessary mechanism.
 - `devflow-cut` still runs Reuse, Native, Overbuild, Diff, and Scope gates before implementation.
+- The lens result is produced in the owning node — route-level lens reasoning rides Core's activation evidence, and the First Principles output (facts, constraints, invariants, smallest mechanism) is emitted by the node that owns the work, then recorded in its execution receipt (`core-methods.md`). Naming the lens without the output is 已加载, not 已执行.
+
+Negative checks (负例):
+
+- A reply that only prints "First Principles Cut" or any method name, without facts, constraints, or the smallest mechanism, is not execution — it is a receipt failure (已加载 posing as 已执行).
+- Brainstorm proposing the architecture, or the lens output appearing in a node that does not own the mechanism, is an owner violation.
 
 Pass check:
 
@@ -149,6 +155,10 @@ Invariants: ...
 Assumptions removed: ...
 Smallest necessary mechanism: ...
 Not doing: ...
+执行回执: <owning node / First Principles Cut> | 已执行
+依据与动作: <hidden-constraint trigger; mechanism comparison run in the owning node>
+结果与证据: <facts/constraints/invariants output, cited in the node's own artifact>
+Negative: method name without output = not executed; mechanism decided outside its owner = owner violation
 ```
 
 ## Scenario 1D: Codex Trigger Surface

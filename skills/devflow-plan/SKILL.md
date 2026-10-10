@@ -38,6 +38,7 @@ Status: draft | approved | in-progress | done | abandoned
 Goal: <outcome>
 Not doing: <scope excluded>
 Cut: 做 <included> | 不做 <excluded> | 复用 <reused capability> | 验证 <verification> | Rejected: <at least one cut candidate, or none plus evidence why nothing could be cut>
+External Skills: none | <specialist declaration> (optional; inherited from the Cut Decision)
 Source: <approved design or docs/specs/YYYY-MM-DD-<short-kebab-name>.md> (optional)
 Execution mode: sequential | single-subagent | fan-out (optional; ask and record at approval)
 Landed: <date and fresh evidence> (completion only)
@@ -78,7 +79,7 @@ Every evidence item is admissible at one of two levels. Level 1 is a re-runnable
 
 `Interfaces` appears only when `Execution mode` is `single-subagent` or `fan-out`, the only case where an executor receives one task without the rest of the plan.
 
-Inherit `External Skills` from the Cut Decision unchanged; the Plan Pack carries the specialist role, expected evidence, and return facts into Build and Prove. When a specialist skill is declared, merge its core quality checks into the affected tasks' `Acceptance` and `Verify` fields — the Plan Pack is the only channel that carries external-skill quality requirements into Build and Prove. A declared skill never widens the Cut scope; if its recommendation exceeds the Cut Decision, return the scope-drift facts to `devflow-core`.
+Inherit `External Skills` from the Cut Decision unchanged; the plan header `External Skills` line is the carrier into Build and Prove: it records `none` or the specialist declaration (role, expected evidence, return facts). A plan without the line keeps validating — absence reads as no declaration. When a specialist skill is declared, merge its core quality checks into the affected tasks' `Acceptance` and `Verify` fields — the Plan Pack is the only channel that carries external-skill quality requirements into Build and Prove. A declared skill never widens the Cut scope; if its recommendation exceeds the Cut Decision, return the scope-drift facts to `devflow-core`.
 
 `Execution mode` is not part of Cut scope and does not change the checker. It is asked at approval and recorded so Build knows how to run tasks: sequentially as the Build agent itself, through one delegated subagent while the main agent only schedules, or fan out independent tasks to parallel subagents.
 

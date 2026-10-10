@@ -62,6 +62,8 @@ const interfaceFieldPattern = /^(?:\*\*)?Interfaces(?:\*\*)?\s*:/im;
 const interfaceFieldNames = ["Consumes", "Produces"];
 const subagentExecutionModes = ["single-subagent", "fan-out"];
 const executionModePattern = /^\s*(?:\*\*)?Execution mode(?:\*\*)?\s*:\s*([^\n]+)/im;
+// v2 可选头部行：External Skills 声明继承自 Cut；有声明必须携带角色/预期证据/返回事实，或记 none；缺行 = 无声明，旧计划不受影响。
+const externalSkillsPattern = /^\s*(?:\*\*)?External Skills(?:\*\*)?\s*:\s*([^\n]+)/im;
 const sourceFieldPattern = /^\s*(?:\*\*)?Source(?:\*\*)?\s*:\s*([^\n]+)/im;
 const sourcePathPattern = /[A-Za-z0-9_./-]+\.md/;
 const traceGramLength = 3;
@@ -540,6 +542,11 @@ function checkPlanV2(body) {
   const header = body.split(headerEndPattern)[0];
   const executionModeMatch = header.match(executionModePattern);
   const executionMode = executionModeMatch ? executionModeMatch[1].trim().toLowerCase() : "";
+  const externalSkillsMatch = header.match(externalSkillsPattern);
+  const externalSkillsIssue =
+    externalSkillsMatch && !/^none\b/i.test(externalSkillsMatch[1].trim()) && !/role|expected evidence|return facts/i.test(externalSkillsMatch[1])
+      ? "a declared External Skills line must carry role / expected evidence / return facts, or record none"
+      : "";
   const interfacesRequired =
     enforceGranularity && subagentExecutionModes.some((mode) => executionMode.includes(mode));
   const taskResults = tasks.map((task) => checkTaskV2(task, enforceGranularity, interfacesRequired));
@@ -574,6 +581,7 @@ function checkPlanV2(body) {
     doneStatusNeedsAllDone,
     executionMode,
     interfacesRequired,
+    externalSkillsIssue,
     recon,
     notDoingTrace,
     ok:
@@ -585,6 +593,7 @@ function checkPlanV2(body) {
       !progressMismatch &&
       missingEvidence.length === 0 &&
       !doneStatusNeedsAllDone &&
+      !externalSkillsIssue &&
       (!enforceGranularity || (recon.present && recon.invalid.length === 0)) &&
       notDoingTrace.length === 0
   };
@@ -934,6 +943,7 @@ function report(body, filePath, json) {
     }
     for (const clause of result.notDoingTrace || []) console.log(`Not doing clause has no source in Source or Cut: ${clause}`);
     if (result.interfacesRequired) console.log(`Execution mode ${result.executionMode} requires an Interfaces block per task`);
+    if (result.externalSkillsIssue) console.log(`External Skills: ${result.externalSkillsIssue}`);
   } else {
     console.log(`Global unresolved markers: ${result.globalUnresolved.join(", ") || "none"}`);
     console.log(
@@ -1253,6 +1263,18 @@ function selfTest() {
   if (!checkPlan(fanOutWithInterfacesV2Plan).ok) {
     throw new Error("Self-test expected a declared interface block to satisfy the subagent execution mode");
   }
+  const noneExternalV2Plan = validV2Plan.replace("Status: approved", "Status: approved\nExternal Skills: none");
+  if (!checkPlan(noneExternalV2Plan).ok) throw new Error("Self-test expected External Skills: none to pass");
+  const declaredExternalV2Plan = validV2Plan.replace(
+    "Status: approved",
+    "Status: approved\nExternal Skills: pdf-skill; role: bounded specialist work; expected evidence: parsed PDF text; return facts: result"
+  );
+  if (!checkPlan(declaredExternalV2Plan).ok) throw new Error("Self-test expected a declared External Skills line with role/evidence/return to pass");
+  const bareExternalV2Plan = validV2Plan.replace("Status: approved", "Status: approved\nExternal Skills: pdf-skill");
+  if (checkPlan(bareExternalV2Plan).ok) {
+    throw new Error("Self-test expected a bare External Skills declaration without role/evidence/return to fail");
+  }
+  if (!checkPlan(validV2Plan).ok) throw new Error("Self-test expected a v2 plan without an External Skills line to keep passing");
   const missingReconV2Plan = validV2Plan
     .replace("## Recon\n", "")
     .replace("- `node scripts/devflow-plan.js --self-test` → baseline self-test passed\n", "");

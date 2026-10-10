@@ -14,6 +14,7 @@ Red line — do not invent: a name, number, date, quote, citation, or other fact
 2. Rewrite without treating the original structure as fixed; keep every supported claim.
 3. Check the draft against the 25 patterns and against the original claims.
 4. Ship the final version; a name, number, date, or quote not present in the source is a defect, not a candidate for embellishment.
+5. Record the check in the node's execution receipt (`core-methods.md`): the checked objects, the hits found and fixed or 无命中 — the receipt names which draft it covered.
 
 ## The 25 patterns
 
@@ -71,4 +72,4 @@ Numbered by strength and frequency. The first five justify an edit on a single s
 
 ## Exit check
 
-Every answer must be no, or the tell is fixed: no staged run-up, no significance dressed as a fact, no invented name, number, date, or quote, no chatbot wrapper, and no formatting applied by rule. If a fix needs a fact you do not have, ask instead of writing it.
+Every answer must be no, or the tell is fixed: no staged run-up, no significance dressed as a fact, no invented name, number, date, or quote, no chatbot wrapper, and no formatting applied by rule. If a fix needs a fact you do not have, ask instead of writing it. A revision after the check invalidates its receipt — re-run on the new draft before shipping.

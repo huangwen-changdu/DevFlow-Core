@@ -90,7 +90,7 @@ Absorbed into DevFlow-Core:
 - `devflow-core` now includes Fast / Design / Recovery routing.
 - `skills/devflow-core/references/core-methods.md` includes Method Lens so Design, Recovery, and high-risk proof can choose a task-specific working strategy.
 - `devflow-pua` now owns a local pressure-recovery methodology stack under `skills/devflow-pua/references/`: router, method library, and flavor display protocol.
-- `devflow-brainstorm` now requires Method Lens selection or an explicit "standard route is enough" decision before the design contract.
+- Method Lens selection runs in the node that owns the work: `core-methods.md` Method 4 owns lens selection, and `devflow-cut` produces the First Principles Cut output before implementation. `devflow-brainstorm` confirms the request and does not own lens selection in its fixed output.
 - `devflow-learn` preserves the learning/pitfall card loop with `.copilot/LEARNING_INDEX.md` and matched cards.
 - `AGENTS.md`, `.github/copilot-instructions.md`, and CodeBuddy rules stay semantically aligned.
 - `devflow-prove` requires command/result/judgment and separates `candidate_pass` from external final approval when relevant.

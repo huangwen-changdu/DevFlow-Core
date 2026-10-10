@@ -91,6 +91,8 @@ Scope Check: what unrequested behavior was cut?
 External Skills: <skill-name>; role: <bounded specialist work>; expected evidence: <result needed by this node>; return facts: <result / not-applicable / failure> / none — matched at Sense via Skill Discovery; inherited by the Plan Pack and loaded by Build.
 ```
 
+These gate answers are the Cut node's execution receipt (`core-methods.md`): each gate actually run with its result records 已执行; a conditional gate that did not apply records 不适用 with the trigger that was absent (for example Root-Cause on non-bug work, or `none` when no specialist matched); a gate whose condition held but did not run records 未执行 or 受阻 — never relabeled 不适用.
+
 ## Overengineering Review Tags
 
 When reviewing a diff or plan, output one line per finding:
@@ -207,7 +209,7 @@ When `CUT_BLOCKED` occurs, return the blocking facts to `devflow-core`. Core dec
 
 ## Handoff
 
-After `CUT_PASS`, record a Cut Decision containing the four-line decision, the `Rejected` subtraction record, allowed scope, reuse conclusion, exclusions, required verification, `External Skills`, and `Depth`. When a plan file is produced, the four lines and `Rejected` go into the plan header; at depth C they stay in the Build Contract message. A recorded specialist role performs bounded work only; Cut retains reuse and scope authority, and `CUT_PASS` is never delegated. A/B directly enter `devflow-plan`; C directly enters `devflow-build`. `CUT_REDUCE`, `CUT_REUSE`, and `CUT_BLOCKED` return facts to `devflow-core`; `CUT_REDUCE` and `CUT_REUSE` remain stopped until user confirmation. A Plan Pack that broadens scope returns affected-gate facts to Core before any later selection.
+After `CUT_PASS`, record a Cut Decision containing the four-line decision, the `Rejected` subtraction record, allowed scope, reuse conclusion, exclusions, required verification, `External Skills`, and `Depth`. The Cut Decision doubles as the Cut node's execution receipt — cite its existing lines instead of emitting a second form. `External Skills` is inherited unchanged: the Plan Pack carries the declaration in its header, Build loads the skill and returns its facts through the single Prove gate, and a declaration whose specialist never returned facts stays 已加载/未执行 or 受阻 in the receipt, never 不适用. When a plan file is produced, the four lines and `Rejected` go into the plan header; at depth C they stay in the Build Contract message. A recorded specialist role performs bounded work only; Cut retains reuse and scope authority, and `CUT_PASS` is never delegated. A/B directly enter `devflow-plan`; C directly enters `devflow-build`. `CUT_REDUCE`, `CUT_REUSE`, and `CUT_BLOCKED` return facts to `devflow-core`; `CUT_REDUCE` and `CUT_REUSE` remain stopped until user confirmation. A Plan Pack that broadens scope returns affected-gate facts to Core before any later selection.
 
 ## Verification
 

@@ -13,6 +13,8 @@ Trigger this skill only when the user repeatedly points out that the **same func
 
 Do not infer pressure recovery from an isolated phrase alone. The decisive fact is repeated dissatisfaction with the same target, not whether a message is labeled as a first correction.
 
+A single ordinary correction is not an entry: its failure facts return to `devflow-core` for normal repair routing (`proof-recovery-methods.md` Method 13B owns the boundary). The recovery output records the repeated target and the trigger basis that admitted this run, so Core can audit why pressure recovery fired.
+
 The direct `/devflow-pua` command remains an explicit opt-in and may activate this skill immediately.
 
 ## Methodology Assets

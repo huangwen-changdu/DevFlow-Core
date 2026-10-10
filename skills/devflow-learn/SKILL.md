@@ -156,9 +156,13 @@ Learning closure:
 - Knowledge recall: none/learning index + matched card/project knowledge candidate
 - Review result: learning card/capability row/project-knowledge candidate/no useful record
 - Capability entry: added/updated/no-change
+- Docs follow-up branch: applicable — pending user selection / not applicable — <reason>
+- Project-knowledge branch: candidate awaiting user confirmation / maintained after confirmation / not applicable — <reason>
 - New sediment: none/learning card/rule/skill
 - Next intercept: next time <X>, first do <Y>, do not do <Z>
 ```
+
+The two branch lines are the closure receipt for the conditional post-PASS handoffs: a no-record review still reports 已复盘 with both branches, silence or an ambiguous answer stays pending user selection (never opt-out), and an unconfirmed business candidate stays candidate — nothing is auto-maintained.
 
 ## Anti-Rationalization
 

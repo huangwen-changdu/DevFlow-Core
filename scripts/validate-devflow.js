@@ -103,6 +103,24 @@ function assertCapabilityContract(coreMethods, handoffSurfaces) {
   for (const [rel, body] of handoffSurfaces) {
     assert(!body.includes("(role: guides execution)"), `${rel} must not fix External Skills to guidance-only`);
   }
+
+  // Shared execution receipt: one definition in core-methods.md; owners cite it instead of redefining a form.
+  assert(coreMethods.includes("Execution receipt (执行回执)"), "core-methods.md must define the shared execution receipt");
+  assert(coreMethods.includes("已加载/已执行/不适用/受阻/未执行"), "core-methods.md must define the receipt states");
+  assert(coreMethods.includes("never relabel it 不适用"), "core-methods.md must forbid relabeling a missed run as not-applicable");
+  for (const [rel, evidence] of [
+    ["skills/devflow-core/SKILL.md", "execution receipt"],
+    ["skills/devflow-cut/SKILL.md", "execution receipt"],
+    ["skills/devflow-build/references/build-methods.md", "execution receipt"],
+    ["skills/devflow-plan/references/plan-methods.md", "returned facts"],
+    ["skills/devflow-prove/SKILL.md", "cite their receipts"],
+    ["skills/devflow-prove/references/proof-recovery-methods.md", "execution receipt"],
+    ["skills/devflow-learn/SKILL.md", "closure receipt"],
+    ["skills/devflow-docs-followup/SKILL.md", "execution receipt"],
+    ["skills/devflow-project-knowledge/SKILL.md", "执行回执"]
+  ]) {
+    assert(read(rel).includes(evidence), `${rel} must reference the shared execution receipt: ${evidence}`);
+  }
 }
 
 const coreMethods = read("skills/devflow-core/references/core-methods.md");

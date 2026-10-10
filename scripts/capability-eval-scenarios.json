@@ -43,10 +43,16 @@
     "scenarioEvidence": [
       "`devflow-core` selects First Principles Cut",
       "facts, constraints, invariants",
-      "Smallest necessary mechanism"
+      "Smallest necessary mechanism",
+      "The lens result is produced in the owning node",
+      "Naming the lens without the output is 已加载, not 已执行"
     ],
     "commandEvidence": ["first principles architecture problem: Build"],
-    "negativeConstraints": ["without proposing an architecture."]
+    "negativeConstraints": [
+      "without proposing an architecture.",
+      "Naming the lens without the output is 已加载, not 已执行",
+      "method name without output = not executed"
+    ]
   },
   {
     "id": "host-adapter-drift",

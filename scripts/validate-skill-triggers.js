@@ -289,6 +289,42 @@ const scenarios = [
       ["commands/devflow.toml", "拷问我"],
       ["skills/devflow-prove/references/flow-self-test.md", "Scenario 1H"]
     ]
+  },
+  {
+    name: "external skill result continuity",
+    route: "Cut -> Plan -> Build -> Prove",
+    input: "Use a specialist skill inside the approved export change and carry its returned facts to proof.",
+    evidence: [
+      ["skills/devflow-cut/SKILL.md", "inherited by the Plan Pack and loaded by Build"],
+      ["skills/devflow-plan/SKILL.md", "the plan header `External Skills` line is the carrier into Build and Prove"],
+      ["skills/devflow-plan/references/plan-methods.md", "returned facts"],
+      ["skills/devflow-build/SKILL.md", "External skill results: <facts/blocked/none>"],
+      ["skills/devflow-build/references/build-methods.md", "a specialist that cannot run records 受阻, not 不适用 or a silent skip"],
+      ["skills/devflow-prove/references/proof-recovery-methods.md", "execution receipt"]
+    ]
+  },
+  {
+    name: "single correction versus repeated recovery",
+    route: "Recovery boundary",
+    input: "One correction on the export result; later the same export is flagged wrong again after the fix.",
+    evidence: [
+      ["skills/devflow-prove/SKILL.md", "Single correction: failure facts -> devflow-core; no automatic PUA"],
+      ["skills/devflow-core/SKILL.md", "Ordinary single correction: failure facts return to Core"],
+      ["skills/devflow-pua/SKILL.md", "A single ordinary correction is not an entry"],
+      ["skills/devflow-prove/references/proof-recovery-methods.md", "Method 13B: Ordinary Correction Versus Pressure Recovery"]
+    ]
+  },
+  {
+    name: "post-write quality receipt",
+    route: "Build -> Prove",
+    input: "Finish the change and report the prose and UI quality checks with their objects and results.",
+    evidence: [
+      ["skills/devflow-build/references/build-methods.md", "execution receipt"],
+      ["skills/devflow-prove/references/prose-quality-checklist.md", "execution receipt"],
+      ["skills/devflow-prove/references/ui-slop-checklist.md", "execution receipt"],
+      ["skills/devflow-prove/SKILL.md", "cite their receipts"],
+      ["skills/devflow-prove/references/proof-recovery-methods.md", "an earlier 无命中 does not carry over"]
+    ]
   }
 ];
 

@@ -76,6 +76,8 @@ An executor — the main agent itself, one delegated subagent, or one fan-out su
 
 When an edit cannot be applied, a `Verify` fails, or a bounded read finds changed contract behavior, the executor returns the observed difference — affected file/anchor, actual behavior, blocked verification, and the smallest replan decision — as facts to `devflow-core`. It never guesses past a mismatch.
 
+The executor also receives the header `External Skills` declaration with the six fields. A declared specialist's return facts — result, not-applicable, or failure — belong to that task's Progress evidence and travel with the merged handoff into Prove. Loading a skill without its returned facts stays 已加载, and a specialist that could not run is recorded 未执行 or 受阻 in the receipt; neither may be relabeled 不适用 or omitted from the handoff.
+
 ### Fan-out
 
 When the plan's `Execution mode` is `fan-out`, one Build orchestrator partitions tasks into parallel groups and dispatches each task to a subagent. Every subagent receives only its own task's six fields, reads its anchors, edits its task's `Files`, runs its task's `Verify`, flips its Progress row, and returns evidence or failure facts. Two tasks may run in parallel only when their `Files` touch disjoint file/symbol sets and neither task's `Change` consumes what the other produces; tasks sharing a file/symbol or with a dependency run in sequence. The orchestrator merges returned results, reconciles cross-task overlap, and enters Prove once with merged evidence.

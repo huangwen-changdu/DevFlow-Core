@@ -1,6 +1,6 @@
 # 功能索引（INDEX）
 
-> 摘要: 用途=AI 进入仓库的第一跳，一行一路由：有什么功能、触发词是什么、入口在哪、怎么验证 | 维护=Prove PASS 后由 devflow-learn 新增或更新行 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-09-25
+> 摘要: 用途=AI 进入仓库的第一跳，一行一路由：有什么功能、触发词是什么、入口在哪、怎么验证 | 维护=Prove PASS 后由 devflow-learn 新增或更新行 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-10-10
 
 ## 检索方式（给 AI 的用法）
 
@@ -27,6 +27,7 @@
 | 交付面残留治理 | 最终产物只描述已采纳最终状态，不回放被否方案、会话纠正与否定指令 | 交付残留, 负向回声, 会话残留, 此地无银, commit 文案, PR 标题, 交付说明, 终稿检查 | `AGENTS.md` + `skills/devflow-core/SKILL.md` + 4 个节点 references（Build/Prove/Spec-Plan/Docs） | active | `npm run verify:all` | AGENTS.md, skills/devflow-core/SKILL.md, scripts/validate-devflow.js | 2026-09-14-delivery-residue-hygiene.md | 2026-09-14 |
 | DevFlow 拷问直达 | 用户直呼 grill me / 拷问我 / 压力测试 或运行 `/devflow-grill` 直达 `devflow-brainstorm` 结构化澄清（纪律门不降） | grill me, 拷问我, 压力测试, 拷问, 直达澄清, grill | `/devflow-grill` | active | `npm run trigger:verify` | skills/devflow-brainstorm/SKILL.md, commands/devflow-grill.toml | 2026-09-23-devflow-grill-entry-and-structured-clarification.md | 2026-09-23 |
 | 反 AI 味质量门 | 把 humanizer 25 写作模式与 hallmark 58 设计门蒸馏成两份清单，接进 Build 与 Prove 的写后检查 | AI味, slop, humanizer, hallmark, 文案质量, 设计门, 六轴, 25 模式, 58 门, prose check | `skills/devflow-prove/references/prose-quality-checklist.md` | active | `npm test` | skills/devflow-prove/references/prose-quality-checklist.md, skills/devflow-prove/references/ui-slop-checklist.md | 2026-09-25-anti-slop-prose-design-quality.md | 2026-09-25 |
+| DevFlow 执行回执 | 每个生命周期节点用统一执行回执区分已加载/已执行/不适用/受阻/未执行，附依据、证据与交接 | 执行回执, 已加载, 已执行, 不适用, 受阻, 未执行, 编排可见性, 能力可见性, 回执 | `skills/devflow-core/references/core-methods.md` | active | `npm test` | skills/devflow-core/references/core-methods.md, scripts/validate-devflow.js | 2026-10-10-skill-orchestration-visibility.md | 2026-10-10 |
 
 ## 维护机制
 

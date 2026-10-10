@@ -111,6 +111,8 @@ Select one lens only when it changes execution judgment:
 | Data/Proof | Metrics or verifier-sensitive work | Define evidence and owner before implementation. |
 | Operational Owner | Cross-file or release work | Name responsible surface and rollback or follow-through evidence. |
 
+A lens is selected only where it changes judgment, and its result belongs to the node that owns the work: Core records route-level lens reasoning in its activation evidence, and `devflow-cut` runs the First Principles Cut output (facts, constraints, invariants, smallest mechanism) when cause, invariant, or the smallest mechanism is unclear. Naming or selecting a lens without the owning node's result is 已加载, not 已执行 — the receipt carries the lens's actual output.
+
 ## Method 15: Skill As Executable Contract
 
 Every skill must state when it applies, concrete actions, artifact or output, stop or return boundary, and verification. Put trigger language in its description. Do not duplicate the full framework in every skill or entry file.
@@ -136,6 +138,25 @@ Result: ...
 Adversarial review: ...
 Judgment: PASS / FAIL / BLOCKED
 ```
+
+Execution receipt (执行回执), the shared per-node visibility contract that every owner references — it adds no gate, no verdict power, and no second form:
+
+```text
+执行回执: <节点/适用方法> | <已加载/已执行/不适用/受阻/未执行>
+依据与动作: <触发依据；本次具体动作>
+结果与证据: <发现/修正/无发现/待验证；实际命令结果、diff、产物片段或人工检查观察>
+交接: <既有直接后继，或交 Core 的原因；相关结果的既有载体>
+```
+
+Receipt rules:
+
+- Reading a file or loading a skill is only 已加载; 已执行 requires an actual action with a result. Execution完成 is not business acceptance; judgment stays with the original owner.
+- 不适用 must name the trigger condition that was not met. When a trigger condition was met but the action did not run, record 未执行 or 受阻 — never relabel it 不适用.
+- With a command, record that run's output and exit code; a manual check records the inspected object, the observation, and its basis, marked as human judgment rather than mechanical proof.
+- A node may show only the first line plus the trigger basis at start and complete the receipt at handoff, on exceptions, or at key decisions; ordinary intermediate reads are not re-announced. Small tasks run 1-3 receipt lines per relevant node, never a full per-capability checklist.
+- Fully existing outputs — the Cut Decision, `METHOD`/`SWITCH`, the Code Review Report, a Learning closure, the six-axis UI scores in proof evidence — are themselves receipts: the summary cites them instead of duplicating a form.
+- Receipt content stays in the session receipt, existing `## Progress`, or proof evidence; commit text, product UI, and document bodies keep describing the final result. The receipt itself has no verdict power over approvals, depth, or lifecycle routing.
+- In the completion summary, list the applicable capabilities that materially acted with their evidence, plus blocked or not-executed items; request-driven reviews, Audit, and Loop are not re-listed as untriggered.
 
 ## Script Path Resolution
 

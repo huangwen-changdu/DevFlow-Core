@@ -1,6 +1,6 @@
 # 需求台账（Requirements）
 
-> 摘要: 用途=一条需求从确认到落地的唯一记录，补上 Spec/Plan/能力行之间缺失的那一环 | 维护=各生命周期节点推进状态，Prove 写终态 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-09-10
+> 摘要: 用途=一条需求从确认到落地的唯一记录，补上 Spec/Plan/能力行之间缺失的那一环 | 维护=各生命周期节点推进状态，Prove 写终态 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-10-10
 
 ## 状态机
 
@@ -35,6 +35,7 @@ open -> designed -> planned -> built -> landed
 | 2026-09-18 | 规则补充第一原理说明、按现实需求控制扩展点、可回滚改动与破坏性修改确认门槛 | 用户请求 | C | - | landed | `node scripts/devflow-plan.js --index` PASS；`npm test` PASS；AGENTS.md 规则段落与主机适配器约束核对通过 | 2026-09-18 |
 | 2026-09-23 | grill-me 式直达与结构化澄清体验：devflow-brainstorm 吸收直呼入口、全问题结构化弹窗、节奏规则与激活面描述（保留全部纪律门） | 用户请求 | B | docs/plans/2026-09-23-devflow-grill-entry-and-structured-clarification.md | landed | npm run verify:all exit=0；trigger:verify 20 场景 + parity PASS；六 home（55 文件/家）--check 6/6；Scenario 1H 实走走查；版本 0.7.0/0.11.0/0.5.0（npm publish 待用户执行） | 2026-09-23 |
 | 2026-09-25 | 反 AI 味质量门：humanizer 25 写作模式 + hallmark 58 设计门与六轴自评蒸馏内嵌，接进 Build 交付与 Prove 证明写后检查 | 用户请求 | B | docs/plans/2026-09-25-anti-slop-prose-design-quality.md | landed | npm run verify:all 退出码 0（18 项全 PASS，budget 165457/280000）；--index PASS；verify-plugin 14 skills/5 self-tests；sync-assets 幂等；两清单 + 四处接线 + 双安装器条目 + 版本 0.7.1 / 0.7.1 / 0.5.1 / 0.11.1（npm publish 待用户执行） | 2026-09-25 |
+| 2026-10-10 | 开发流程编排可见性：统一执行回执契约（已加载/已执行/不适用/受阻/未执行）+ 各节点回执与外部技能交接补齐 + 单次纠正/重复恢复边界对齐 + 正反例验证面扩展 + 运行时副本同步 | 用户请求 | B | docs/plans/2026-10-10-skill-orchestration-visibility.md | landed | npm run verify:all 退出码 0（18 项全 PASS，budget 169148/280000）；trigger:verify 23 场景含 3 新场景；capability:eval 13/13 PASS；plan:verify 增 External Skills 条件校验；doctor 六 home 6/6 pass（57 文件/家）；verify-plugin 14 skills/5 self-tests PASS；版本保持不变（npm publish 待用户执行） | 2026-10-10 |
 ## 维护机制
 
 - **建档**：Brainstorm 输出 `Confirmed request`，或 Core 判为创造性工作（Design / Build 路由）时，立即写 `open` 行；纯问答、纯查询、只读验证不建档。

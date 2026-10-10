@@ -104,7 +104,7 @@ Verification:
 
 ## Completion Output
 
-Report the follow-up result without hiding unselected or blocked items:
+Report the follow-up result without hiding unselected or blocked items — this output doubles as the node's execution receipt (`core-methods.md`):
 
 ```text
 Documentation follow-up:
@@ -113,7 +113,10 @@ Documentation follow-up:
 - Created: <paths or none>
 - Blocked: <missing evidence or none>
 - Not created: <unselected document types>
+- Pending: <awaiting user selection / none>
 ```
+
+`Pending` reports the applicable branch whose user has not answered; silence or an ambiguous reply stays Pending and never becomes `opt-out`.
 
 ## Anti-Rationalization
 

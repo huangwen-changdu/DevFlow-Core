@@ -13,6 +13,7 @@ Route work through the smallest reliable lifecycle. Core owns next-step selectio
 Skill Activation: devflow-core
 Trigger: <user words or task shape>
 Route: Problem / Fast / Design-lite / Design / Build / Recovery
+Route basis: <why this route; a skipped Brainstorm, gate, or competing route names its reason>
 Brainstorm required: yes/no
 Depth hint: skip / compact / standard / deep / none
 Preferences applied: <count of global preference cards matched this turn>
@@ -35,6 +36,8 @@ Before completion, reread every user-visible surface and wrapper, including file
 Read `skills/devflow-core/references/core-methods.md` before route selection. It supplies Method 0, shared route rules, and the owner map. Do not load all lifecycle references by default.
 
 Read the narrowest relevant project facts, then match the task keywords against `docs/features/INDEX.md` and `docs/plans/INDEX.md` when present and open only the matched row's entry file or ledger section; an index over 40 rows is filtered with `node scripts/devflow-plan.js --index --query 关键词`. Do not bulk-read capability documents. Then progressively recall learning and project knowledge. Scan available skills and record a matching external specialist skill; a specialist may perform bounded specialist work inside the current node while DevFlow retains route and node ownership.
+
+At handoff, the shared execution receipt (`core-methods.md`) explains this route, the preference application, and the recall outcome: cite which matched records actually changed a decision this session and where they were applied. A missing index, card, or knowledge pack is a non-blocking fact reported as such — it must never be reported as recalled, applied, or executed.
 
 Before a route-specific decision, load only the selected owner reference:
 
@@ -105,7 +108,7 @@ Core selects only after a returned non-unique artifact. 🔴 CHECKPOINT — `CUT
 - New structure, dependency, abstraction, configuration, folder, or generic capability: select `devflow-cut`.
 - Approved construction work: select `devflow-build` when Core receives a non-unique construction artifact; A/B approved Plans and C `CUT_PASS` enter Build directly.
 - Completion claim: select `devflow-prove` and require fresh evidence plus adversarial review.
-- Repeated same-target correction: select `devflow-pua`, then re-read facts and switch approach.
+- Ordinary single correction: failure facts return to Core for normal repair routing; Core re-reads facts and selects the owner. Repeated same-target dissatisfaction in one task lifecycle, or the explicit `/devflow-pua` command, selects `devflow-pua` (`proof-recovery-methods.md` Method 13B owns the boundary), then re-read facts and switch approach.
 - Reusable correction or verified PASS: select `devflow-learn` for a selective review.
 - Matched external specialist: perform bounded work inside the current owner's node and return result, not-applicable, or failure facts; a specialist never selects a lifecycle owner, depth, or final status.
 - Explicit grill/stress-test request: select `devflow-brainstorm` directly; the explicit request is user intent, not keyword-only routing. The Semantic Echo-Back, the fixed Confirmed request, and the user-selected A/B/C gate all still apply.

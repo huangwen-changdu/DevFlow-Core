@@ -19,7 +19,7 @@ Run this **before** the gate list, not after. Score the planned output 1–5 on 
 | E | Restraint | Have you removed everything that isn't earning its place — decoration, redundancy, padding for padding's sake? |
 | F | Variety | Does this output share a structural fingerprint with a previous output in this project? Score by structural distance, not visual distance — color swaps do not count as variety. |
 
-Record the six scores in the proof evidence so the next run can avoid repeating the same weakness.
+Record the six scores in the proof evidence and cite them in the node's execution receipt (`core-methods.md`) so the next run can avoid repeating the same weakness. A non-visual task records this checklist 不适用 with that reason instead of scoring axes it cannot observe.
 
 ## The 58 gates (numbered 1–57 plus 38a)
 

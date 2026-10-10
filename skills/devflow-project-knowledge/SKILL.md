@@ -314,11 +314,12 @@ Metadata:
 
 ## 完成钩子
 
-生成或更新知识包后，必须报告：
+生成或更新知识包后，必须报告（该输出即本节点的执行回执，含业务事实确认状态）：
 
 ```
 知识包更新闭环：
 - 操作类型：初始化 / 追加域 / 更新现有文件
+- 业务事实确认：已确认并维护 / 候选待用户确认 / 无候选，不适用
 - Recall source: `AI-START-HERE.md` / `index.md` / `registry.json` / none for first initialization
 - 新增/更新文件：{列表}
 - registry.json 更新：是/否

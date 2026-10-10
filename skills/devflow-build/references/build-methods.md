@@ -43,6 +43,10 @@ A function may contain several steps when they form one coherent business narrat
 
 Run the anti-AI-voice quality gates alongside the Readability Outcome Check before handoff. Load `prose-quality-checklist.md` and clear every flagged pattern for completion messages, commit and PR text, and created documents; load `ui-slop-checklist.md` and clear all six-axis scores and gates when the change emits UI or design output. Fix every hit and rerun the check; an unfixed hit stays in Build rather than reaching Prove.
 
+Close the gates with the shared execution receipt (`core-methods.md`): name the checked objects — which message, commit text, document, or UI output — the hits found and fixed or 无命中, and cite the existing artifact (for UI output the recorded six-axis scores ride in proof evidence). A non-visual task records the visual check 不适用 with that reason; a gate whose condition held but did not run stays 未执行 or 受阻 in the receipt.
+
+The same receipt discipline covers dispatch and specialists: when the plan's execution mode cannot run — the subagent tool or a declared specialist is unavailable — record 受阻 with the missing capability and the facts it would have produced. Silently switching modes, or claiming subagent output without a returned result, is 未执行; a specialist that cannot run records 受阻, not 不适用 or a silent skip. Neither is ever relabeled into a completed task.
+
 ## Build Comments
 
 The approved Spec/Plan and local project convention define required code comments. Add a comment when it records a protected contract, failure condition, business rule, compatibility boundary, or other non-obvious reason; inline comments explain reasons, not syntax. Markdown runtime contracts use headings and fixed output shapes rather than narrative comments.
