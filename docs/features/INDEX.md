@@ -1,6 +1,6 @@
 # 功能索引（INDEX）
 
-> 摘要: 用途=AI 进入仓库的第一跳，一行一路由：有什么功能、触发词是什么、入口在哪、怎么验证 | 维护=Prove PASS 后由 devflow-learn 新增或更新行 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-10-10
+> 摘要: 用途=AI 进入仓库的第一跳，一行一路由：有什么功能、触发词是什么、入口在哪、怎么验证 | 维护=Prove PASS 后由 devflow-learn 新增或更新行 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-10-16
 
 ## 检索方式（给 AI 的用法）
 
@@ -28,6 +28,8 @@
 | DevFlow 拷问直达 | 用户直呼 grill me / 拷问我 / 压力测试 或运行 `/devflow-grill` 直达 `devflow-brainstorm` 结构化澄清（纪律门不降） | grill me, 拷问我, 压力测试, 拷问, 直达澄清, grill | `/devflow-grill` | active | `npm run trigger:verify` | skills/devflow-brainstorm/SKILL.md, commands/devflow-grill.toml | 2026-09-23-devflow-grill-entry-and-structured-clarification.md | 2026-09-23 |
 | 反 AI 味质量门 | 把 humanizer 25 写作模式与 hallmark 58 设计门蒸馏成两份清单，接进 Build 与 Prove 的写后检查 | AI味, slop, humanizer, hallmark, 文案质量, 设计门, 六轴, 25 模式, 58 门, prose check | `skills/devflow-prove/references/prose-quality-checklist.md` | active | `npm test` | skills/devflow-prove/references/prose-quality-checklist.md, skills/devflow-prove/references/ui-slop-checklist.md | 2026-09-25-anti-slop-prose-design-quality.md | 2026-09-25 |
 | DevFlow 执行回执 | 每个生命周期节点用统一执行回执区分已加载/已执行/不适用/受阻/未执行，附依据、证据与交接 | 执行回执, 已加载, 已执行, 不适用, 受阻, 未执行, 编排可见性, 能力可见性, 回执 | `skills/devflow-core/references/core-methods.md` | active | `npm test` | skills/devflow-core/references/core-methods.md, scripts/validate-devflow.js | 2026-10-10-skill-orchestration-visibility.md | 2026-10-10 |
+| DevFlow 简化评审门 | Prove 的代码变更在对抗式与质量评审前先跑简化 pass：五视角查重复/冗余/死代码，治理 AI 式超长命名与冗余备注，只剪枝本次改动引入的无效测试与注释，行为不变，改完必须重跑证明 | 简化代码, 代码简化, 精简, simplify, 清理重复代码, 冗余代码, 死代码, 命名过长, 名字太长, 备注冗余, 注释剪枝, 测试剪枝, 简化评审 | `skills/devflow-prove/references/simplify-pass.md` + `/devflow-simplify` | active | `npm run trigger:verify` | skills/devflow-prove/references/simplify-pass.md, skills/devflow-prove/SKILL.md, skills/devflow-prove/references/code-review-checklist.md, commands/devflow-simplify.toml | - | 2026-10-16 |
+| 代码可读性门 | 把"AI 写的代码读不动"拆成七维可检查门（流程自上而下、决策就近、命名与备注、类型与取值、失败与副作用可见、与邻居一致、测试与 diff 叙事），Build 写后跑、Simplify 修、评审按改动行证据分级，配首读测试与执行回执 | 代码可读性, 可读性, 读不懂, 看不懂代码, 读起来费劲, 让人看得更清晰, 代码清晰度, readability | `skills/devflow-prove/references/code-readability-checklist.md` | active | `npm run trigger:verify` | skills/devflow-prove/references/code-readability-checklist.md, skills/devflow-build/references/build-methods.md, skills/devflow-prove/references/code-review-checklist.md, skills/devflow-prove/references/simplify-pass.md | - | 2026-10-16 |
 
 ## 维护机制
 

@@ -27,9 +27,13 @@ After a slice passes its verification, write back the plan's `## Progress` row: 
 
 Before handoff, review changed code from the perspective of a maintainer familiar with the project but not this change. Use names, structure, extraction, comments, and tests as appropriate; do not apply any technique mechanically.
 
+Read that check against `code-readability-checklist.md`, which expands `Intent`, `Rules`, `Failure paths`, `Side effects`, and `Convention` into observable dimensions and adds tests plus diff hygiene. Clear every dimension the change can observe; a dimension that cannot pass inside the approved scope returns its facts to Core instead of shipping.
+
 ```text
 Readability Check:
 - Intent: each changed unit has a business-purpose name or locally clear role
+- Name economy: added names are as short as the surrounding scope allows and do not restate module, type, or full responsibility
+- Remarks: added comments and doc remarks state intent or a non-obvious reason; they do not paraphrase the identifier or the body
 - Rules: important conditions use domain terms or small named predicates
 - Failure paths: invalid, exceptional, and boundary behavior is locally visible
 - Side effects: authorization, persistence, cache changes, remote calls, and response mapping are not hidden in an opaque block

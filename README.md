@@ -75,6 +75,7 @@ If a host supports slash commands, use:
 /devflow-review   review a diff or plan for overengineering and scope drift
 /devflow-debt     harvest intentional devflow: simplification markers
 /devflow-prove    verify before claiming done
+/devflow-simplify simplify a change before review, behavior unchanged
 /devflow-pua      recover when a result is wrong, challenged, or repeatedly misses the target
 /devflow-learn    capture reusable corrections and pitfalls
 /devflow-audit    audit a repository or scope for overengineering candidates
@@ -208,7 +209,7 @@ npm run install:verify
 | `devflow-plan` | From A/B `CUT_PASS`, write one reviewed code-level construction Plan Pack with exact file locations, interface contracts, current/target behavior, change mechanics, call impact, proof-ready steps, and source tracing; after approval, directly enter Build while scope-drift facts return to Core. |
 | `devflow-cut` | Apply reuse ladder, root-cause check, platform-native checklist, overbuild gate, cut intensity, and delete-list review. |
 | `devflow-build` | Execute the smallest approved change in verifiable slices. |
-| `devflow-prove` | Run the proof command or scenario, including Skill Activation Check for rule/skill changes, and report command/result/judgment. |
+| `devflow-prove` | Run the proof command or scenario, including Skill Activation Check for rule/skill changes; run the simplify pass on code changes before the adversarial and quality reviews, then report command/result/judgment. |
 | `devflow-pua` | Stop wrong-path recovery when the same function, result, or requested capability is repeatedly reported as wrong, incomplete, or missing; re-ask or infer the desired result, switch approach, and return recovery facts plus any Brainstorm re-confirmation need to Core. |
 | `devflow-learn` | Capture reusable corrections and pitfalls into `.copilot` learning cards. |
 | `devflow-audit` | Run a repo-wide audit for overengineering candidates without applying fixes. |

@@ -59,5 +59,6 @@ Every `SKILL.md` must include:
 | `/devflow-plan` | Plan creation from spec or approved design |
 | `/devflow-review` | `devflow-cut` |
 | `/devflow-prove` | `devflow-prove` |
+| `/devflow-simplify` | Prove simplify pass (`devflow-prove` reference) |
 | `/devflow-pua` | `devflow-pua` |
 | `/devflow-audit` | `devflow-audit` |

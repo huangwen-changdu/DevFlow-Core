@@ -325,6 +325,37 @@ const scenarios = [
       ["skills/devflow-prove/SKILL.md", "cite their receipts"],
       ["skills/devflow-prove/references/proof-recovery-methods.md", "an earlier 无命中 does not carry over"]
     ]
+  },
+  {
+    name: "post-implementation simplify pass before review",
+    route: "Build -> Prove",
+    input: "Simplify this change before the code review: remove the duplication and prune the comments and tests it added.",
+    evidence: [
+      ["commands/devflow-simplify.toml", "Run DevFlow Simplify"],
+      ["skills/devflow-prove/SKILL.md", "simplify-pass.md"],
+      ["skills/devflow-prove/SKILL.md", "cite the Simplify pass receipt"],
+      ["skills/devflow-prove/references/simplify-pass.md", "Keep List"],
+      ["skills/devflow-prove/references/simplify-pass.md", "Re-proof"],
+      ["skills/devflow-prove/references/simplify-pass.md", "Naming and Readability"],
+      ["skills/devflow-prove/references/code-review-checklist.md", "Added names are clear on one read"],
+      ["skills/devflow-build/references/build-methods.md", "Name economy"],
+      ["skills/skill-call-diagram.md", "simplify pass"],
+      ["docs/features/INDEX.md", "命名过长"]
+    ]
+  },
+  {
+    name: "readability pass over AI-drafted code",
+    route: "Build -> Prove",
+    input: "AI 生成的代码读起来费劲：命名冗长、嵌套很深、参数是裸字符串，帮我让人看得更清晰。",
+    evidence: [
+      ["skills/devflow-prove/references/code-readability-checklist.md", "First-read test"],
+      ["skills/devflow-prove/references/code-readability-checklist.md", "R1 Flow reads top-down"],
+      ["skills/devflow-prove/references/code-readability-checklist.md", "R5 Failure and side effects stay visible"],
+      ["skills/devflow-build/references/build-methods.md", "code-readability-checklist.md"],
+      ["skills/devflow-prove/references/code-review-checklist.md", "code-readability-checklist.md"],
+      ["skills/devflow-prove/references/simplify-pass.md", "code-readability-checklist.md"],
+      ["docs/features/INDEX.md", "代码可读性"]
+    ]
   }
 ];
 
@@ -335,7 +366,8 @@ for (const [command, owner] of [
   ["commands/devflow-spec.toml", "DevFlow spec"],
   ["commands/devflow-plan.toml", "devflow-plan"],
   ["commands/devflow-prove.toml", "Run DevFlow Prove"],
-  ["commands/devflow-pua.toml", "Run DevFlow PUA"]
+  ["commands/devflow-pua.toml", "Run DevFlow PUA"],
+  ["commands/devflow-simplify.toml", "Run DevFlow Simplify"]
 ]) {
   assert(read(command).includes(owner), `${command} must identify ${owner}`);
 }
@@ -344,7 +376,7 @@ assertPackagedAssetParity();
 
 console.log("Skill Trigger Verification Report");
 console.log(`Scenario cases: ${scenarios.length}`);
-console.log("Command cases: 5");
+console.log("Command cases: 6");
 for (const scenario of scenarios) console.log(`- ${scenario.name}: ${scenario.route}`);
 console.log("Packaged asset parity: PASS");
 console.log("Judgment: PASS");

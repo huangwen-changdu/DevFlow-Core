@@ -54,5 +54,6 @@ Proof FAIL/BLOCKED, and PUA recovery return facts to Core.
 - External Skills: Cut declares the specialist, Plan inherits the declaration, Build loads it; the returned result / not-applicable / failure facts travel with the single Prove handoff. A loaded skill without returned facts is 已加载, not 已执行.
 - Core decides every non-unique, blocked, failed, recovery, or changed-intent transition.
 - Any completion claim enters Prove. PASS enters Learn; FAIL or BLOCKED returns facts to Core.
+- Prove runs the simplify pass (`simplify-pass.md`) on code changes before its reviews; applied simplifications make earlier evidence stale and require a re-run.
 - Only after a verified feature implementation with source-behavior or interface-contract change may Learn hand off to `devflow-docs-followup` for an optional documentation inquiry.
 - Independent adversarial and find-fault reviews remain outside the lifecycle.

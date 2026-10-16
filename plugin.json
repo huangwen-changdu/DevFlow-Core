@@ -1,6 +1,6 @@
 {
   "name": "DevFlow-Core-devflow",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "description": "Practical AI development workflow for problem reports, requirements, bug reports, implementation, minimal-change gates, and proof-before-done.",
   "license": "MIT",
   "keywords": [
@@ -25,6 +25,7 @@
     "skills/devflow-cut/SKILL.md",
     "skills/devflow-build/SKILL.md",
     "skills/devflow-prove/SKILL.md",
+    "skills/devflow-prove/references/simplify-pass.md",
     "skills/devflow-pua/SKILL.md",
     "skills/devflow-pua/references/methodology-router.md",
     "skills/devflow-pua/references/methodology-library.md",
@@ -49,6 +50,7 @@
     "commands/devflow-adversarial.toml",
     "commands/devflow-find-fault.toml",
     "commands/devflow-audit.toml",
-    "commands/devflow-grill.toml"
+    "commands/devflow-grill.toml",
+    "commands/devflow-simplify.toml"
   ]
 }

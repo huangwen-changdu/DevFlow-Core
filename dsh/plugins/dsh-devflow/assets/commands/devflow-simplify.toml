@@ -1,0 +1,19 @@
+description = "Simplify a change for clarity and reuse before review, preserving behavior."
+prompt = '''
+Run DevFlow Simplify (Prove's simplify pass).
+
+Load `skills/devflow-prove/references/simplify-pass.md` and run its five lenses on the scope in this order: the files or paths the user named, else the current branch against its base, else the staged and unstaged changes.
+Apply only local, behavior-preserving simplifications inside that scope; record each edit as `file:line` plus its reason, and report the ones that need a behavior or contract decision instead of applying them.
+Keep behavior, outputs, public contracts, error semantics, ordering, and guards (permission, validation, retry, fallback, exit-code). Do not add abstractions, dependencies, configuration, or drive-by refactors, and do not prune tests or comments this change did not touch.
+Re-run the narrowest sufficient check after anything is applied; a pass that applied edits without a re-run is 未执行, not 不适用.
+Report:
+
+Simplify pass:
+- Scope: ...
+- Applied: ...
+- Reported only: ...
+- Kept deliberately: ...
+- Receipt: 已执行 / 不适用 / 受阻 / 未执行
+- Re-proof: <command or scenario> -> <result>
+- Judgment: PASS / FAIL / BLOCKED
+'''

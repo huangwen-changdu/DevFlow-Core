@@ -32,6 +32,9 @@ Applies to all code changes. Review the items proportionately to the changed beh
 #### 2.1 Readability
 
 - [ ] A maintainer can identify business intent, key rules, failure paths, and side effects from local names and structure.
+- [ ] Added names are clear on one read: they do not restate their module, type, or full responsibility, and they scale with the scope that reads them. Evidence of a changed line that defeats local understanding is a Warning (rename or restructure); sheer length or style preference alone is a Recommendation.
+- [ ] Added or edited comments and doc remarks state intent, constraints, or non-obvious reasons instead of paraphrasing the identifier or the body; a changed remark that restates the code is a Warning (delete it).
+- [ ] Changed code clears the readability dimensions R1, R2, R4, R5, R6, and R7 in `code-readability-checklist.md`; a named signal on a changed line is a Warning with the smallest fix requested, while a style-only difference is a Recommendation.
 - [ ] Types and functions have one dominant, coherent responsibility; boundaries are changed only when dependencies, lifecycle, or change reasons justify it.
 - [ ] Important conditions use domain language; code avoids unexplained flags, magic values, and opaque control flow where a clearer local expression is warranted.
 - [ ] Comments explain WHY, not WHAT; names and structure carry ordinary explanation.
