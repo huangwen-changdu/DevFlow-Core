@@ -32,12 +32,23 @@ One runtime pack, every platform reads its own entry:
 | Skill-capable hosts | `skills/devflow-*/SKILL.md` |
 | Command-capable hosts | `commands/*.toml` |
 
-Install the pack into a target project (dry-run first):
+Install the pack into a target project with one command:
+
+```bash
+npm run onboard:target -- ../my-project            # runtime + docs map + checks
+npm run onboard:target -- ../my-project --dry-run  # preview only
+```
+
+The shortcut installs the runtime, creates `docs/INDEX.md` when it is missing, then verifies the map and the installed indexes. It never overwrites existing files and is safe to rerun.
+
+Or run the steps individually:
 
 ```bash
 npm run install:target -- ../my-project
 npm run install:target -- ../my-project --write
 npm run install:target -- ../my-project --check
+node scripts/devflow-docs.js --init
+node scripts/devflow-docs.js --check
 ```
 
 The installer copies runtime entry files, hook files, skills, commands, and the target-runtime checkers. It does not copy product docs or validation harness files. Existing files are skipped unless `--force` is passed; use `--check` later to detect drift.
@@ -209,6 +220,16 @@ Inventory the project artifacts, install the runtime, initialize the docs map, a
 ```
 
 Expected route: `Fast -> Prove`.
+
+One command covers the install and verification steps:
+
+```bash
+npm run onboard:target -- ../my-project
+```
+
+It runs the sequence below internally and stops at the first failure: install the runtime pack, create `docs/INDEX.md` when missing, run the map check, then run the installed index check. Reruns are idempotent because existing files are skipped and the map is never overwritten. Use `--dry-run` to preview.
+
+The underlying steps, for troubleshooting:
 
 ```bash
 # 1. Inventory (read-only; prints the next command for each missing artifact)
