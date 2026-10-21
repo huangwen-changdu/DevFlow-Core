@@ -23,6 +23,7 @@ const userEntries = [
   "scripts/devflow-spec.js",
   "scripts/devflow-plan.js",
   "scripts/devflow-audit.js",
+  "scripts/devflow-docs.js",
   "scripts/devflow-doctor.js",
   "skills/devflow-core/SKILL.md",
   "skills/devflow-core/references/core-methods.md",
@@ -55,6 +56,7 @@ const userEntries = [
     "skills/devflow-adversarial/SKILL.md",
     "skills/devflow-find-fault/SKILL.md",
     "skills/devflow-project-knowledge/SKILL.md",
+    "skills/devflow-project-knowledge/references/auto-loop.md",
     "skills/devflow-audit/SKILL.md",
   "skills/devflow-brainstorm/references/interview-discipline.md",
   "skills/skill-call-diagram.md"

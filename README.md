@@ -93,6 +93,7 @@ When installed into a target project, only the target-runtime scripts are copied
 | `node scripts/devflow-review.js <plan-or-diff-file>` | Check whether a plan or diff includes the required reuse, native, overbuild, diff, and scope gates before detailed review. |
 | `node scripts/devflow-debt.js .` | Harvest intentional `devflow:` simplification markers into a debt report. |
 | `node scripts/devflow-audit.js <target-directory>` | Run a repo-wide audit candidate scan for overengineering, missed reuse, stdlib/native replacements, and YAGNI abstractions. |
+| `node scripts/devflow-docs.js --status` / `--init` / `--check` | Report which project artifacts exist and the next command for each missing one, create `docs/INDEX.md` from the detected documentation tree, then verify that every root doc and spec is registered and every registered path exists. `--init` never overwrites without `--force`, and the generated map marks unknown authority rows as `[待确认]`. |
 
 Saved specs should land in the current target project's `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` unless that project already documents another specs path. Saved implementation plans should land in the current target project's `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`. `docs/features/` is for feature ledgers and the capability index, not generated specs or task plans.
 
@@ -199,6 +200,35 @@ npm run install:target -- ../my-project --check
 npm run install:verify
 ```
 
+### Project Artifact Onboarding Workflow
+
+Use this when a target project should answer the five repository questions from its own files.
+
+```text
+Inventory the project artifacts, install the runtime, initialize the docs map, and verify it.
+```
+
+Expected route: `Fast -> Prove`.
+
+```bash
+# 1. Inventory (read-only; prints the next command for each missing artifact)
+node scripts/devflow-docs.js --status --root ../my-project
+
+# 2. Runtime pack (run from this repository)
+npm run install:target -- ../my-project --write
+
+# 3. Docs map (run inside the target project)
+node scripts/devflow-docs.js --init
+node scripts/devflow-docs.js --check
+
+# 4. Index and ledger checks (they validate only when the files exist)
+node scripts/devflow-plan.js --index
+```
+
+The inventory covers nine artifacts: `AGENTS.md`, `scripts/devflow-docs.js`, `skills/devflow-core/SKILL.md`, `docs/INDEX.md`, `docs/project-knowledge/AI-START-HERE.md`, `docs/requirements.md`, `docs/features/INDEX.md`, `docs/plans/INDEX.md`, and `.copilot/LEARNING_INDEX.md`. The first three may resolve at user level instead of project level.
+
+`--init` generates the map from the detected tree and marks any authority row it cannot confirm as `[待确认]`; review those rows before relying on it. The knowledge pack, requirement ledger, both indexes, and the learning index are created by the lifecycle after the first landed requirement, not by a scaffold script.
+
 ## Core Skills
 
 | Skill | Responsibility |
@@ -292,13 +322,17 @@ npm run debt:verify
 npm run review:verify
 npm run spec:verify
 npm run plan:verify
+npm run index:verify
+npm run docs:verify
 npm run audit:verify
 npm run doctor:verify
 ```
 
 The scripts check required files, the PRD, skill frontmatter, output contracts, command entries, learning-card schema, Learning closure, learning-loop recall, Scenario Coverage Report, Skill Trigger Verification Report, Host Adapter Verification Report, Installer validation, path consistency, and required method terms.
 
-`npm run verify:all` runs the full local matrix in sequence: package validation, learning-loop validation, scenario coverage, trigger verification, host adapter verification, installer safety verification, debt scanner verification, review gate verification, spec checker verification, plan-pack verification, audit scanner verification, and doctor self-test.
+`npm run docs:verify` runs `scripts/devflow-docs.js --self-test` and checks map initialization, unregistered-document detection, and dangling-path detection. Inside a target project, `node scripts/devflow-docs.js --check` is the gate and `--status` is a read-only inventory that prints the next command for each missing artifact.
+
+`npm run verify:all` runs the full local matrix in sequence: package validation, learning-loop validation, scenario coverage, trigger verification, host adapter verification, installer safety verification, debt scanner verification, review gate verification, spec checker verification, plan-pack verification, audit scanner verification, docs map verification, and doctor self-test.
 
 `npm run learn:verify` prints `Learning loop validation passed` when the repeated-correction scenario can route from `devflow-core` to `devflow-prove`, recall the matched `.copilot` card, and verify the next-time intercept.
 

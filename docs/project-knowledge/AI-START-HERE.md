@@ -2,16 +2,16 @@
 
 Metadata:
 - repo: DevFlow-Core（本仓库根目录）
-- last_updated: 2026-08-13
-- updated_from: 全量结构探索 + 四路交叉评审 + 三项改进落地（2026-08-13 会话）
+- last_updated: 2026-10-21
+- updated_from: 全量结构探索 + 四路交叉评审 + 三项改进落地（2026-08-13 会话）；2026-10-21 按代码证据刷新命令数、验证矩阵与进度入口
 - confidence: high（所有路径经 glob/read 核实）
-- coverage: 目录/技能/命令/脚本/宿主入口地图、生命周期路由、验证矩阵、已确认改进点清单、关键结论
+- coverage: 目录/技能/命令/脚本/宿主入口地图、生命周期路由、验证矩阵、启动就绪清单、进度来源、关键结论
 - stale_risk: medium（结构随重构过期；改进点清单随排期过期）
-- next_review_hint: 结构或技能增删时同步本文；改进点落地后更新其状态列
+- next_review_hint: 结构、技能、命令或验证矩阵增删时同步本文；改进点落地后更新其状态列
 
 ## 项目是什么
 
-DevFlow-Core 是一个可安装的 AI 编码代理工作流框架：把问题/需求通过 `Sense → Brainstorm 澄清（用户选 A/B/C）→ Spec/Cut → Plan → Build → Prove → Learn` 变成小步、验证过的改动，内置防过度工程阶梯与防自欺完成闸门。零运行时依赖；载体是 AGENTS.md、14 个技能、11 个命令、Node 校验脚本；支持 Codex、Claude Code、Copilot、CodeBuddy、WorkBuddy、Gemini、DSH。
+DevFlow-Core 是一个可安装的 AI 编码代理工作流框架：把问题/需求通过 `Sense → Brainstorm 澄清（用户选 A/B/C）→ Spec/Cut → Plan → Build → Prove → Learn` 变成小步、验证过的改动，内置防过度工程阶梯与防自欺完成闸门。零运行时依赖；载体是 AGENTS.md、15 个技能、13 个命令、Node 校验脚本；支持 Codex、Claude Code、Copilot、CodeBuddy、WorkBuddy、Gemini、DSH。
 
 ## 进入任务前先冻结的 5 个问题
 
@@ -25,9 +25,12 @@ DevFlow-Core 是一个可安装的 AI 编码代理工作流框架：把问题/�
 
 必读（新会话建上下文）：
 
-1. 本文件（结构导航）
-2. `AGENTS.md`（启动接口 + 路由表 + 硬边界，≤8 KiB）
-3. `.copilot/LEARNING_INDEX.md` → 只读 Trigger/Scope 匹配的卡，禁止全量读 cards/
+1. 本文件（结构导航 + 启动就绪清单）
+2. `AGENTS.md`（启动接口 + 七阶段流程 + 硬边界，≤8 KiB）
+3. `README.md`（产品定位、安装与验证命令）
+4. `docs/INDEX.md`（文档地图：五问直达 + 目录台账）
+5. `docs/requirements.md`（当前进度与状态）
+6. `.copilot/LEARNING_INDEX.md` → 只读 Trigger/Scope 匹配的卡，禁止全量读 cards/
 
 按任务类型追加：
 
@@ -73,10 +76,18 @@ DevFlow-Core 是一个可安装的 AI 编码代理工作流框架：把问题/�
 ## 验证矩阵
 
 - `npm test`：包校验（必需文件、精确短语断言、学习卡字段、宿主/触发/路由一致性）
-- `npm run verify:all`：17 项全矩阵（test、learn、scenario、trigger、host、install、user、debt、review、spec、plan、audit、doctor、capability:verify/eval、budget、route）
+- `npm run verify:all`：19 项全矩阵（test、learn、scenario、trigger、host、install、user、debt、review、spec、plan、index、audit、doctor、capability:verify/eval、budget、docs、route）
+- `node scripts/devflow-docs.js --check`：`docs/INDEX.md` 的覆盖与路径校验（`npm run docs:verify` 跑自测）
 - `npm run install:user -- --home <home> --write --force` 后 `--check`：用户级同步（本机六个 home：`.dsh`、`.claude`、`.codebuddy`、`.codex`、`.workbuddy`、`.zcode`，见卡片 skill-sync-after-update）
 - `npm run install:target -- <project> --check`：项目级安装校验
 - `node scripts/devflow-doctor.js`：六个 home 完整性快检（失败时打印具体 missing/changed 文件）
+
+## 启动就绪清单（新会话）
+
+- 能启动：`npm test` 通过（必需文件、精确短语断言、宿主/触发/路由一致性）
+- 能验证：`npm run verify:all` 退出码 0（19 项）
+- 能看进度：`docs/requirements.md` 状态列 + `docs/plans/INDEX.md`
+- 能接手：只读仓库即可回答"这是什么 / 怎么组织 / 怎么跑 / 怎么验证 / 做到哪"
 
 ## 已确认改进点清单（2026-08-13 全量探索 + 交叉评审）
 
@@ -111,6 +122,7 @@ DevFlow-Core 是一个可安装的 AI 编码代理工作流框架：把问题/�
 - 开发工作先加载 `devflow-core` 技能 + `core-methods.md`，只加载选中 owner 的 reference
 - 创造性工作必须过 Brainstorm 的 A/B/C；本文件中的改进点清单是排期依据，不构成授权
 - 生命周期节点活跃时消息尾部带状态行（AGENTS.md 硬边界）
+- 知识包闭环：首次落地创建最小包，此后每次落地刷新代码支撑的结构事实并追加 change-log；业务语义需用户确认后写入（`skills/devflow-project-knowledge/references/auto-loop.md`）
 - 改完 skills/commands/scripts 后 overlay-sync 六个 home 并 `--check`，再报完成
 
 ## 改完后至少要回传的证据

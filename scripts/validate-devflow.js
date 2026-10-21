@@ -68,6 +68,53 @@ assert(agents.toLowerCase().includes("runtime prompt"), "AGENTS.md must identify
 assert(agents.includes("When skills are unavailable"), "AGENTS.md must retain portable fallback");
 assert(!agents.includes("Method 0 (Architect Mindset) through Method 15"), "AGENTS.md must not require every lifecycle method");
 
+/** Guards the process kernel: AGENTS.md must stay an ordered procedure, not drift back into a signal table. */
+const processStages = ["**Sense**", "**Route**", "**Gate**", "**Contract**", "**Change**", "**Prove**", "**Record**"];
+const stagePositions = processStages.map((stage) => agents.indexOf(stage));
+assert(stagePositions.every((position) => position >= 0), `AGENTS.md must keep every process stage: ${processStages.join(", ")}`);
+assert(
+  stagePositions.every((position, index) => index === 0 || position > stagePositions[index - 1]),
+  "AGENTS.md process stages must stay in lifecycle order"
+);
+
+/** Guards the knowledge-pack loop: a missing pack is created, structure refreshes automatically, semantics stay gated. */
+assert(
+  fs.existsSync(path.join(root, "skills/devflow-project-knowledge/references/auto-loop.md")),
+  "project-knowledge auto loop reference is missing"
+);
+assert(
+  read("skills/devflow-project-knowledge/SKILL.md").includes("references/auto-loop.md"),
+  "project-knowledge must point at the auto loop reference"
+);
+assert(agents.includes("Keep the knowledge pack current"), "AGENTS.md must require keeping the knowledge pack current");
+assert(agents.includes("docs/INDEX.md"), "AGENTS.md must route Sense to the docs map");
+assert(
+  read("skills/devflow-learn/SKILL.md").includes("refresh code-evidenced structure"),
+  "devflow-learn must hand structural facts to the knowledge pack"
+);
+
+/** Guards the docs map: every doc directly under docs/ and docs/specs/ is registered, and every registered path exists. */
+const docsMap = read("docs/INDEX.md");
+for (const entry of fs.readdirSync(path.join(root, "docs"), { withFileTypes: true })) {
+  if (!entry.isFile() || !entry.name.endsWith(".md") || entry.name === "INDEX.md") continue;
+  assert(docsMap.includes(entry.name), `docs/INDEX.md must register docs/${entry.name}`);
+}
+for (const name of fs.readdirSync(path.join(root, "docs/specs"))) {
+  if (!name.endsWith(".md")) continue;
+  assert(docsMap.includes(name), `docs/INDEX.md must register docs/specs/${name}`);
+}
+for (const match of docsMap.matchAll(/`([^`]+\.md)`/g)) {
+  const rel = match[1].replace(/^\.\.\//, "");
+  if (rel.includes("*")) continue;
+  const candidates = [
+    path.join(root, rel),
+    path.join(root, "docs", rel),
+    path.join(root, "docs", "specs", rel),
+    path.join(root, "docs", "project-knowledge", rel)
+  ];
+  assert(candidates.some((file) => fs.existsSync(file)), `docs/INDEX.md references a missing file: ${match[1]}`);
+}
+
 const core = read("skills/devflow-core/SKILL.md");
 for (const reference of [
   "cut-methods.md",
@@ -109,6 +156,7 @@ function assertCapabilityContract(coreMethods, handoffSurfaces) {
   assert(coreMethods.includes("已加载/已执行/不适用/受阻/未执行"), "core-methods.md must define the receipt states");
   assert(coreMethods.includes("never relabel it 不适用"), "core-methods.md must forbid relabeling a missed run as not-applicable");
   for (const [rel, evidence] of [
+    ["AGENTS.md", "执行回执"],
     ["skills/devflow-core/SKILL.md", "execution receipt"],
     ["skills/devflow-cut/SKILL.md", "execution receipt"],
     ["skills/devflow-build/references/build-methods.md", "execution receipt"],

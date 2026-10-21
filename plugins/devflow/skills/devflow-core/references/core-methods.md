@@ -34,7 +34,7 @@ Apply these principles to every route:
 
 Read the narrowest useful facts:
 
-1. Project rules and relevant source, tests, commands, and current docs.
+1. Project rules and relevant source, tests, commands, and current docs. Locate runnable commands in the project's own manifests, scripts, README, CI config, or knowledge-pack playbook; a command you cannot locate is a named unknown, never an invented verification command.
 2. `docs/features/INDEX.md` and `docs/plans/INDEX.md` when present: match the task keywords against the index rows and read only the matched row's entry file or ledger section; an index over 40 rows is filtered with `node scripts/devflow-plan.js --index --query 关键词`. Do not bulk-read capability documents. Missing indexes are non-blocking.
 3. `.copilot/LEARNING_INDEX.md`: match `Scope: global` preference cards first (few, cross-project), then `project` cards whose Trigger and Scope match. Apply known preferences and report the count in Activation Evidence.
 4. `docs/project-knowledge/AI-START-HERE.md` or `index.md`, then only navigation-selected documents.

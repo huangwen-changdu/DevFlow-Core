@@ -29,12 +29,13 @@ Extract only knowledge that can help a future task:
 | Reusable execution experience or proven work pattern | Create or update one focused card | `.copilot/cards/` |
 | User-visible capability or interface contract changed | Add or update one row: what it does, its trigger words, its entry point, its verify command, and its source plan | `docs/features/INDEX.md` |
 | The same how-to preference was corrected twice | Create or update one `Scope: global` preference card | `.copilot/cards/` |
-| Confirmed business fact changed | Report a project-knowledge candidate and wait for user confirmation | `docs/project-knowledge/` after confirmation via `devflow-project-knowledge` |
+| Code-evidenced structure changed | Refresh the pack structure through `devflow-project-knowledge` without waiting for confirmation | `docs/project-knowledge/` |
+| Business semantics changed | Report a project-knowledge candidate and wait for user confirmation | `docs/project-knowledge/` after confirmation via `devflow-project-knowledge` |
 | Ordinary detail, one-off fact, already-covered lesson, or pure refactor without insight | Report no useful record | none |
 
 The capability row is a mechanical duty, not a documentation inquiry: a verified change that alters what a user can do, or an interface contract others depend on, must be findable from one index on the next session. Writing a longer document still needs explicit user confirmation through `devflow-docs-followup`.
 
-Project-knowledge candidates include changed domain semantics, rules, boundaries, entity/DTO/enum meaning, API or table boundaries, module responsibility, job behavior, and task entry points. `devflow-learn` must not update the package itself or infer business facts without evidence.
+Project-knowledge candidates include changed domain semantics, rules, boundaries, entity/DTO/enum meaning, API or table boundaries, module responsibility, job behavior, and task entry points. Structural facts — paths, module responsibility, runnable commands — may be refreshed from code evidence; `devflow-learn` must not infer business facts without evidence or update them without confirmation.
 
 ## Process
 
@@ -46,7 +47,7 @@ Project-knowledge candidates include changed domain semantics, rules, boundaries
 5. Decide whether to record:
    - record if the candidate is cross-task reusable and proven useful, costly if missed, counterintuitive, non-obvious, repeated, or project-wide
    - add or update one capability row in `docs/features/INDEX.md` with trigger words if the verified change altered user-visible behavior or an interface contract; report `no-change` otherwise
-   - report a project-knowledge candidate if code-backed business semantics changed; wait for user confirmation before calling `devflow-project-knowledge`
+   - refresh code-evidenced structure through `devflow-project-knowledge` without waiting for confirmation; report business-semantic candidates and wait for user confirmation
    - skip if it is ordinary narration, a one-off fact, already covered, or too context-specific
 6. Create `.copilot/LEARNING_INDEX.md`, `.copilot/cards/`, and one focused card only when the result belongs in project learning; do not create empty learning storage after a no-record review.
 7. Update `.copilot/LEARNING_INDEX.md` when a card changed.
@@ -106,7 +107,7 @@ Learning storage is lazily created only by this skill after a qualifying reusabl
 | `docs/features/INDEX.md` | The capability routing index: what a feature does, its trigger words, its entry point, its verify command, and its source plan | Execution lessons, business reference docs, version history, feature bodies |
 | `docs/project-knowledge/` | Curated, code-backed business facts, boundaries, and task entry points | Agent mistakes or raw implementation history |
 
-Handoff: `devflow-prove PASS` -> `devflow-learn` review -> capability row in `docs/features/INDEX.md` and/or a project-knowledge candidate -> user confirmation -> `devflow-project-knowledge` lazy maintenance of `docs/project-knowledge/`. Only after a verified feature implementation with an actual source-behavior or interface-contract change may `devflow-learn` hand off to `devflow-docs-followup` for an optional documentation inquiry. Do not automatically hand off validation-only, documentation-only, rule-only, skill-only, or no-diff `PASS` results.
+Handoff: `devflow-prove PASS` -> `devflow-learn` review -> capability row in `docs/features/INDEX.md` and/or a structure refresh through `devflow-project-knowledge` -> business-semantic candidate -> user confirmation -> `devflow-project-knowledge` maintenance of `docs/project-knowledge/`. Only after a verified feature implementation with an actual source-behavior or interface-contract change may `devflow-learn` hand off to `devflow-docs-followup` for an optional documentation inquiry. Do not automatically hand off validation-only, documentation-only, rule-only, skill-only, or no-diff `PASS` results.
 
 ## Card Format
 
@@ -157,7 +158,7 @@ Learning closure:
 - Review result: learning card/capability row/project-knowledge candidate/no useful record
 - Capability entry: added/updated/no-change
 - Docs follow-up branch: applicable — pending user selection / not applicable — <reason>
-- Project-knowledge branch: candidate awaiting user confirmation / maintained after confirmation / not applicable — <reason>
+- Project-knowledge branch: structure refreshed automatically / business candidate awaiting user confirmation / not applicable — <reason>
 - New sediment: none/learning card/rule/skill
 - Next intercept: next time <X>, first do <Y>, do not do <Z>
 ```

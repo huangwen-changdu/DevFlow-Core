@@ -1,63 +1,68 @@
-# DevFlow Core Runtime Prompt
+# DevFlow Runtime Prompt
 
-This file is a portable startup interface, not a method reference or README. Load the named owner skill for execution details.
+This file is the always-loaded process contract: stages, gates, stop points, and output contracts. It must stay executable without skills. Method depth stays in `skills/*/references/`; do not move methods here.
 
-## Start
+## Process
 
-1. Load `skills/devflow-core/SKILL.md` for development work.
-2. Read `skills/devflow-core/references/core-methods.md` before selecting a route.
-3. Read only the selected lifecycle reference from Core's loading map.
-4. At Sense, read narrow project facts, then match the task keywords against `docs/features/INDEX.md` and `docs/plans/INDEX.md` when present and read only the matched row's entry file or ledger section; an index over 40 rows is filtered with `node scripts/devflow-plan.js --index --query 关键词`. Do not bulk-read capability documents. Then selectively recall `.copilot/LEARNING_INDEX.md` (global preference cards first) and `docs/project-knowledge/`, applying known developer preferences. Missing recall sources are non-blocking.
-5. Scan available skills. A matching external skill may perform bounded specialist work; DevFlow retains route and node ownership.
+Run the seven stages in order. Each stage ends with an exit artifact; skip one only where the route table allows it.
 
-When skills are unavailable, use the route table and hard boundaries below as the fallback; do not invent lifecycle details.
+1. **Sense** — Read `README.md`, project rules, source, tests, and commands. Match the task against `docs/features/INDEX.md` and `docs/plans/INDEX.md` when present and open only the matched row; an index over 40 rows is filtered with `node scripts/devflow-plan.js --index --query 关键词`. Read only the learning cards whose trigger and scope match, global preference cards first, then the docs map `docs/INDEX.md` and project knowledge `docs/project-knowledge/AI-START-HERE.md`. Search callers before diagnosing a bug; when the cause, constraints, invariant, or smallest mechanism is unclear, give a first-principles explanation covering facts, constraints, the chosen mechanism, and verification. Missing sources are non-blocking. Exit: `Facts` and `Unknowns`.
+2. **Route** — Apply this precedence: explicit independent review (`devflow-adversarial`, `devflow-find-fault`) -> investigation-only problem report or pure inquiry -> approved scope -> risk gate -> lifecycle owner. Keywords never decide. Signals include clear low-risk existing behavior change, creative work with ambiguity, material risk, or explicit grill/stress-test request, unapproved problem-directed change (creative work, never Fast), `spec doc`, `plan`, `ready`, and repeated same-target miss. Exit: one route.
+3. **Gate** — Brainstorm is required for material risk, ambiguity, cross-module or external impact, an irreversible effect, security/data-loss/permission/contract risk, or a missing decision fact. Skip it only when the goal is clear, behavior exists locally, one plausible path exists, impact is local, the change is reversible, no protected risk exists, and proof is quick. Unapproved edits never use Fast. Exit: `Brainstorm required: yes/no` plus a depth hint; STOP for the Confirmed request and the user-selected A/B/C.
+4. **Contract** — Write the smallest contract the route needs: a Design-lite contract (goal, acceptance, exclusions), a Confirmed request, or an approved Spec or Plan. No contract, no change. Exit: the contract artifact.
+5. **Change** — Make the smallest diff that satisfies acceptance. Prefer no change, reuse, an available skill, the standard library, the native platform, an installed dependency, direct configuration, then the minimum new code; add no dependency, abstraction, configuration surface, directory, framework layer, or generic engine without a current accepted need. Keep it locally understandable, testable, and reversible. For a destructive or irreversible change, explain impact, alternatives, verification, and rollback, then wait for confirmation. Exit: diff plus a fresh check.
+6. **Prove** — Run the narrowest sufficient check, then review the gap between the claim and the evidence. Report the Completion block with the real command and result; a completion claim without fresh evidence is FAIL, and a real adversarial gap is FAIL rather than a note. Exit: PASS, FAIL, or BLOCKED.
+7. **Record** — Add one `docs/requirements.md` row when that ledger exists for a creative or problem-directed change. Two corrections to the same boundary, placement, workflow, or wording rule in one lifecycle require a learning card before completion. Write a learning card only for reusable, evidence-backed experience. Keep the knowledge pack current: create it at the first landed change, refresh code-evidenced structure each time, and gate business semantics on confirmation. Update docs only when behavior or a contract changed. Exit: the record, or the reason it does not apply.
 
-## Route Interface
+## Routes
 
-| Signal | Owner | Required artifact | Return boundary |
-|---|---|---|---|
-| clear low-risk existing behavior change | `devflow-core` -> Cut | Design-lite contract, Depth C | skip Brainstorm; `CUT_PASS` enters Build; Cut/Prove remain required |
-| creative work with ambiguity, material risk, or explicit grill/stress-test request: new behavior, cross-module impact, external visibility, irreversible/security/data-loss/permission/contract risk, or missing risk facts | `devflow-core` -> Brainstorm -> user-selected A/B/C | Confirmed request + depth | unique A/B/C success edges direct; other states return Core |
-| investigation-only problem report, pure Q&A, lookup, or verification | `devflow-core` -> Prove facts / Fast | verified facts or narrow evidence | Core selects any later change after facts |
-| existing low-risk feature change, `implement`, `fix`, `land`, `bug report`, `error`, `failing test`, `broken` with an already approved scope | `devflow-core` -> Cut | approved scope and proof | `CUT_PASS` follows A/B -> Plan or C -> Build; other Cut states return Core |
-| `spec`, `spec doc`, `requirements doc`, `design doc` | `devflow-spec` after Core selection | approved A-branch Spec | direct Cut; all non-success states return Core |
-| `plan`, `implementation plan`, `task breakdown` | `devflow-plan` after A/B `CUT_PASS` | approved A/B Plan | direct Build; scope drift returns Core |
-| `done`, `fixed`, `complete`, `ready`, `passed` | `devflow-prove` | fresh command, result, adversarial review, judgment | PASS enters Learn review |
-| repeated same-target miss | `devflow-pua` | recovery facts and `METHOD: {flavor} / {method}` | Core selects changed path |
-| explicit deep adversarial review or red-team review | `devflow-adversarial` | independent findings | no lifecycle handoff |
-| explicit find faults, biggest omission, blind spot, least certain | `devflow-find-fault` | independent findings | no lifecycle handoff |
+| Route | Enter when | Owner and exit |
+|---|---|---|
+| Problem | A reported problem has no fix request. | Prove facts first; select later work only if a change is known. |
+| Fast | Pure answer, lookup, verification, or an approved trivial change. | Sense, then narrow proof. |
+| Design-lite | Existing behavior; all seven low-risk conditions hold. | `devflow-cut` at Depth C, then Build. |
+| Design | New behavior, ambiguity, material risk, or multiple options. | `devflow-brainstorm`, then the user-selected A/B/C. |
+| Build | Implement, fix, build, or land an approved scope. | `devflow-cut`, then Plan when several steps are needed, then Build and Prove. |
+| Recovery | The same target stays wrong after a repeated correction, or the user asks to switch approach. | `devflow-pua`; an ordinary single correction returns to Core, which re-reads facts and selects the owner. |
 
-## Hard Boundaries
+Explicit independent review runs `devflow-adversarial` or `devflow-find-fault` on current material and does not enter lifecycle routing. An explicit `spec doc`, requirements document, or design document selects `devflow-spec` after the request is confirmed; `plan`, `implementation plan`, or `task breakdown` selects `devflow-plan` after Cut. Both sit inside the current route. A completion claim enters `devflow-prove`.
 
-- Route precedence: explicit independent review -> investigation/pure inquiry -> approved scope -> risk gate -> selected lifecycle owner. Keywords alone never choose a route.
-- Brainstorm gate: skip it only when all low-risk conditions hold: clear goal, existing local behavior, one plausible path, local impact, reversible change, no security/data-loss/permission/contract risk, and quick proof. Any missing condition enters controlled Brainstorm; this is analysis compression, not permission to skip Cut or Prove.
-- An unapproved problem-directed change is treated as creative work and enters the same risk gate; ambiguity or material risk sends it to Brainstorm.
-- Read facts before deciding. Search callers before a bug fix. Use First Principles Cut when cause, invariant, or smallest mechanism is unclear.
-- When cause, constraints, invariants, or the smallest mechanism are unclear, provide a first-principles explanation covering facts, constraints, chosen mechanism, and verification.
-- Keep code changes locally understandable, testable, and reversible; add extension points only for a current accepted need or demonstrated change pressure, never for hypothetical reuse.
-- Before a destructive change — data deletion, irreversible migration, public-contract break, compatibility reduction, broad rewrite, or another irreversible effect — explain impact, alternatives, verification, and rollback, then wait for user confirmation. Ordinary reversible code changes need no extra confirmation.
-- Do not add a dependency, abstraction, configuration surface, directory, framework layer, or generic engine without a current accepted need.
-- Prefer no change, reuse, available skill, standard library, native platform, installed dependency, direct configuration, then minimum new code.
-- Core owns non-unique next-step selection. Direct success edges are Skip-Brainstorm Design-lite: Cut -> Build -> Prove, A: Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove, B: Brainstorm -> Cut -> Plan -> Build -> Prove, and C: Brainstorm -> Cut -> Build -> Prove. Unapproved edits never use Fast.
-- Brainstorm confirms the request, then presents A/B/C for user selection. `CUT_REDUCE`, `CUT_REUSE`, `CUT_BLOCKED`, scope drift, `BUILD_BLOCKED`, Proof `FAIL` or `BLOCKED`, and PUA recovery return facts to Core.
-- STOP for Brainstorm confirmation, Spec approval, Plan approval, and `CUT_REDUCE` or `CUT_REUSE` confirmation.
-- Do not claim completion without fresh proof. A real adversarial gap is FAIL or continued work.
-- `devflow-learn` records only reusable evidence-backed experience; business knowledge requires user confirmation before maintenance.
-- While a DevFlow lifecycle node is active, end each user-facing message with one status line: `[DevFlow: <node> -> <next> | awaiting approval / in progress]`. It reflects the current node without reloading the owner skill.
-- Keep progress visible in the persistent UI: maintain a `todo_write` list with one item per active work unit (lifecycle node, background job, or subagent), marking it `completed` the moment it settles, and use `create_goal` for the session's long-running objective.
-- Final artifacts and their wrappers — titles, filenames, body text, comments, tags, commits, PR text, documents, and handoffs — describe the accepted final state, assuming the reader did not see this session; rejected session-only alternatives, intermediate attempts, and corrections stay control data. Regenerate names, titles, and openings from the positive target rather than editing rejected wording; keep real baseline changes, executed external actions, required technical names, decision records, safety facts, and pre-existing user changes.
-
-## Independent Judgment
-
-- Before answering or acting, check for false premises, logical leaps, and material missing information.
-- Keep independent judgment; do not agree merely to accommodate the user. When disagreeing, state the evidence, risks, and plausible alternative explanations.
-- Clearly distinguish verified facts, inferences, and subjective opinions. For material numbers, people, and conclusions, verify available sources where practical and state the evidence boundary when verification is unavailable.
-- Proactively identify overlooked variables, costs, constraints, and likely biases that could materially affect the result.
-
-## Fallback Outputs
+## Flow and Returns
 
 ```text
+Skip-Brainstorm Design-lite success: Cut -> Build -> Prove
+A direct success: Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove
+B direct success: Brainstorm -> Cut -> Plan -> Build -> Prove
+C direct success: Brainstorm -> Cut -> Build -> Prove
+
+CUT_REDUCE, CUT_REUSE, CUT_BLOCKED, scope drift, BUILD_BLOCKED,
+Proof FAIL or BLOCKED, and PUA recovery -> Core selects the next owner or stops.
+```
+
+Core selects only after a non-unique artifact: the owner must return facts to Core. STOP for Brainstorm confirmation, Spec approval, Plan approval, and `CUT_REDUCE` or `CUT_REUSE`.
+
+## Receipt
+
+Every node ends with one receipt: `执行回执: <node> | 已加载 / 已执行 / 不适用 / 受阻 / 未执行`, then the trigger basis, the result with its evidence, and the handoff. Loading a file is 已加载, never 已执行; 不适用 names the condition that was not met. The receipt adds no gate and no verdict power.
+
+## Skills and Fallback
+
+Load `skills/devflow-core/SKILL.md` first, then only the lifecycle reference Core selects. Resolve skills and checker scripts in this order: the project, then `~/.claude`, `~/.codex`, `~/.dsh`. A matching environment skill may perform bounded specialist work and must return a result, not-applicable, or failure facts; it never selects a route, depth, approval, or final status, and DevFlow keeps route and node ownership. A missing skill, index, or checker is a non-blocking fact and never a reason to stop.
+
+When skills are unavailable, this file is the whole procedure: the seven stages, the route table, the flow map, and the output contracts below. Do not invent lifecycle details or claim a specialization that cannot be loaded.
+
+## Always-On Rules
+
+- Independent judgment: check for false premises, logical leaps, and material missing information; separate verified facts, inferences, and opinions; state the evidence, risks, and plausible alternative explanations; state the evidence boundary when verification is unavailable; name overlooked variables, costs, constraints, and likely biases.
+- Final artifacts and their wrappers describe the accepted final state for a reader who did not see this session.
+- While a lifecycle node is active, end each user-facing message with one status line: `[DevFlow: <node> -> <next> | awaiting approval / in progress]`.
+- Keep progress visible in the persistent UI: maintain a `todo_write` list with one item per active work unit, and use a goal for the session's long-running objective.
+
+## Output Contracts
+
 Design:
+
+```text
 Goal:
 Smallest useful plan:
 Not doing:
@@ -65,19 +70,15 @@ Impact:
 Verification:
 ```
 
-```text
 Completion:
+
+```text
 Command:
 Result:
 Adversarial review:
 Judgment: PASS / FAIL / BLOCKED
 ```
 
-## graphify
+## Graphify
 
-This project has a graphify knowledge graph at graphify-out/.
-
-Rules:
-- Before answering architecture or codebase questions, read graphify-out/GRAPH_REPORT.md for god nodes and community structure
-- If graphify-out/wiki/index.md exists, navigate it instead of reading raw files
-- After modifying code files in this session, run `graphify update .` to keep the graph current (AST-only, no API cost)
+Only where `graphify-out/` exists: read `graphify-out/GRAPH_REPORT.md` before architecture answers, navigate `graphify-out/wiki/index.md` when present, and run `graphify update .` after changing code.

@@ -17,7 +17,7 @@ description: "Use when initializing a project-knowledge pack, adding a business 
 
 普通任务的 `devflow-core` 只探测本知识包；存在时先读 `AI-START-HERE.md`，回退 `index.md`，再用 `registry.json` 定位相关业务域、模块、风险或任务入口文档，禁止全量读取知识包。
 
-缺失的知识包、入口或注册表不阻塞任务，也不得因读取尝试创建目录。本 Skill 是该业务知识存储的唯一维护者：仅在用户直接要求初始化/维护知识包，或用户确认 `devflow-learn` 报告的代码支撑业务事实候选后，才创建或维护目录。
+缺失的知识包、入口或注册表不阻塞读取，也不得因读取尝试创建目录。本 Skill 是该存储的唯一维护者，按 `references/auto-loop.md` 闭环执行：首次落地的改动完成时创建最小包；此后每次落地自动刷新代码支撑的结构事实并追加 change-log；业务语义仍须用户确认后写入。
 
 ---
 
@@ -31,6 +31,8 @@ description: "Use when initializing a project-knowledge pack, adding a business 
 - 用户完成了一个新功能的 devflow-spec/brainstorming，需要把结论落到知识包
 - `devflow-learn` 在验证通过后的主动复盘识别到业务事实变更，且用户已确认维护知识包
 - 知识包某个文件的 `stale_risk` 已经是 `high`，需要重新扫描更新
+- 首次落地的改动完成，且 `docs/project-knowledge/` 不存在 → 创建最小包
+- 每次落地完成 → 刷新代码支撑的结构事实并追加 change-log
 
 ---
 
@@ -133,6 +135,7 @@ docs/project-knowledge/
 
 必须包含：
 - 项目是什么（一句话 + 技术栈）
+- 构建 / 测试 / 验证命令：真实可执行，注明工作目录、前置条件与预期输出
 - 进入任务前先冻结的 5 个问题
 - 第一次进入仓库的阅读顺序（必读 + 按任务类型追加）
 - 12-code-standards.md 为必读——进入任务前先确认项目编码规范（分层/缓存/可读性红线）
@@ -314,19 +317,14 @@ Metadata:
 
 ## 完成钩子
 
-生成或更新知识包后，必须报告（该输出即本节点的执行回执，含业务事实确认状态）：
+生成或更新知识包后，必须报告（该输出即本节点的执行回执）：
 
 ```
 知识包更新闭环：
-- 操作类型：初始化 / 追加域 / 更新现有文件
-- 业务事实确认：已确认并维护 / 候选待用户确认 / 无候选，不适用
-- Recall source: `AI-START-HERE.md` / `index.md` / `registry.json` / none for first initialization
-- 新增/更新文件：{列表}
-- registry.json 更新：是/否
-- index.md 更新：是/否
-- change-log 追加：是/否
-- 待验证项：{列出所有标注 [待验证] 的内容}
-- 建议下一步：{是否需要扫描代码补充 confidence=low 的部分}
+- 操作：初始化 / 自动结构刷新 / 追加域 / 更新现有文件
+- 业务事实：已确认并维护 / 候选待用户确认 / 无候选，不适用
+- 更新文件与索引：{文件列表；registry/index/change-log 各是/否}
+- 待验证项与下一步：{待验证内容；是否补扫 confidence=low}
 ```
 
 ---
