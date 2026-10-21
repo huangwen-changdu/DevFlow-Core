@@ -335,7 +335,7 @@ It also checks `--check` mode for matching, missing, and changed target runtime 
 | devflow-adversarial | 说 对抗审查 / 红队审查 / 升级版对抗审查 / 五角度挑战，或用命令 /devflow-adversarial | 五个固定角度攻击当前结论：需求覆盖、可达性、边界与回归、证据强度、用户可见结果 | 分级发现（Critical / Important / Observation）加五角度覆盖、上下文限制与建议 |
 | devflow-find-fault | 说 找茬 / 最大遗漏是什么 / 我没有意识到什么 / 需求细节是否确认 / 眼下你最没把握的事情是什么 / 不安感检查，或用命令 /devflow-find-fault | 最大遗漏、未意识到的盲点、最不确定的点，加实现后未确认的业务决定（不安感检查） | 每个答案分事实、推断、未知，带置信度与下一步，加分级发现 |
 
-在 DeepSeek Harness（DSH）上，两个技能都按轮执行：子代理每轮只完成一个审查单元（对抗审查一个角度一轮；找茬一个问题或不安感检查一轮）并回报，主代理逐轮汇总进度，全部轮次后输出完整报告，避免审查被子代理单次运行时长截断。
+两个技能都按轮执行：每轮只完成一个审查单元并先汇报该轮结果与进度，再进入下一轮（对抗审查一个角度一轮；找茬一个问题或不安感检查一轮），全部轮次后输出完整报告。
 
 拿到审查结论后怎么修：Critical 或 High 发现带回 DevFlow 主流程按正常修复链处理；Medium 级未确认业务决定先按输出里的确认问题问用户再改；每条 next step 是最小的人工动作；Context limitations 说明缺材料时先补齐材料再动手。
 

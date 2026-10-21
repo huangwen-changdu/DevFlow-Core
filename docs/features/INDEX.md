@@ -1,6 +1,6 @@
 # 功能索引（INDEX）
 
-> 摘要: 用途=AI 进入仓库的第一跳，一行一路由：有什么功能、触发词是什么、入口在哪、怎么验证 | 维护=Prove PASS 后由 devflow-learn 新增或更新行 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-10-16
+> 摘要: 用途=AI 进入仓库的第一跳，一行一路由：有什么功能、触发词是什么、入口在哪、怎么验证 | 维护=Prove PASS 后由 devflow-learn 新增或更新行 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-10-19
 
 ## 检索方式（给 AI 的用法）
 
@@ -20,7 +20,7 @@
 | DevFlow 验证矩阵 | 17 项校验把框架规则变成可执行证据，防止规则与实现漂移 | 校验, verify, 测试, CI, 断言, 打包一致性, budget, 验证矩阵 | `npm run verify:all` | active | `npm run verify:all` | package.json, scripts/validate-devflow.js | 2026-07-31-devflow-harness-iteration.md | 2026-09-10 |
 | DevFlow 学习闭环 | 把用户纠正与踩坑沉淀成可召回的索引卡片，PASS 后强制复盘 | 学习, 沉淀, 学习卡, 纠正, 踩坑, 召回, learn | `/devflow-learn` | active | `npm run learn:verify` | skills/devflow-learn/SKILL.md, .copilot/LEARNING_INDEX.md | 2026-07-16-completion-knowledge-capture.md | 2026-09-10 |
 | DevFlow 需求闭环 | 一条需求从确认到落地的台账；跳过文档必须由用户显式选择并留痕 | 需求台账, 闭环, 落地, 跳过留痕, opt-out, 落地率, loop | `docs/requirements.md` | active | `node scripts/devflow-plan.js --index` | docs/requirements.md, skills/devflow-prove/SKILL.md | 2026-09-10-requirement-loop-and-developer-profile.md | 2026-09-10 |
-| DevFlow 独立评审 | 用户显式请求的对抗审查与找茬，独立于生命周期之外 | 对抗审查, 找茬, 红队, 最大遗漏, 盲点, 不安感, 独立评审 | `/devflow-adversarial` + `/devflow-find-fault` | active | `npm run trigger:verify` | skills/devflow-adversarial/SKILL.md, skills/devflow-find-fault/SKILL.md | 2026-07-26-independent-manual-review-skills.md | 2026-09-10 |
+| DevFlow 独立评审 | 用户显式请求的对抗审查与找茬，独立于生命周期之外；分轮执行，每轮汇报后再进入下一轮 | 对抗审查, 找茬, 红队, 最大遗漏, 盲点, 不安感, 独立评审 | `/devflow-adversarial` + `/devflow-find-fault` | active | `npm run trigger:verify` | skills/devflow-adversarial/SKILL.md, skills/devflow-find-fault/SKILL.md | 2026-07-26-independent-manual-review-skills.md | 2026-10-19 |
 | DSH 分发与预设 | 把技能、命令、脚本打包成 DSH 插件与预设，源与副本逐字节一致 | DSH, 插件, 预设, preset, 分发, 同步资产, 打包 | `dsh/plugins/dsh-devflow` | active | `npm test` | dsh/plugins/dsh-devflow/scripts/sync-assets.js, dsh/agent-presets/devflow-2 | 2026-08-19-devflow-dsh-plugin-pack.md | 2026-09-10 |
 | 循环工程 | Loop Engine 预设与独立分发插件，支撑模型自主闭环 | 循环, loop, 轮次, 失败卡, 状态文件, 循环工程 | `skills/loop-engineering` + `dsh/agent-presets/loop-engine` | active | `npm test` | skills/loop-engineering/SKILL.md, dsh/plugins/dsh-loop-engine/package.json | 2026-08-21-loop-engineering-preset.md | 2026-09-10 |
 | Wiki 单向发布 | 从仓库文档生成 GitHub Wiki 页面；repo 是源，wiki 是派生只读视图 | wiki, 发布, 派生视图, Home, Sidebar, wiki:check | `scripts/devflow-wiki.js` | active | `npm run wiki:check` | scripts/devflow-wiki.js, docs/features/INDEX.md | 2026-09-10-wiki-single-way-publish.md | 2026-09-10 |

@@ -185,7 +185,7 @@ Daily use:
 
 - DSH injects `AGENTS.md` automatically; the `devflow-*` skills trigger by wording.
 - Run checkers through the DSH shell tool: `node scripts/devflow-spec.js <spec-file>` and `node scripts/devflow-plan.js <plan-file>`.
-- DSH-native gates: present A/B/C and approval choices with the `ask_user_question` tool; run independent reviews (`devflow-adversarial`, `devflow-find-fault`) as fresh `subagent` runs.
+- DSH-native gates: present A/B/C and approval choices with the `ask_user_question` tool; run independent reviews (`devflow-adversarial`, `devflow-find-fault`) in bounded rounds, one review unit per round, directly in the current session.
 
 DSH agent presets (optional):
 

@@ -230,8 +230,8 @@ Expected behavior:
 - Must begin after the explicit review request without a separate confirmation prompt. Must not add a second confirmation gate after the explicit review request.
 - Must ask one smallest question only when the review target is unclear.
 - Must cover all five fixed dimensions: requirement coverage, reachability, boundaries and regressions, evidence strength, and user-visible outcome.
-- Must run on DSH in bounded rounds, one round per review angle, with the subagent returning each round's findings to the main agent for aggregation.
-- Must dispatch a fresh subagent.
+- Must run in bounded rounds, one round per review angle, reporting that round's findings and progress before starting the next angle.
+- Must perform every angle in the current session, reading the target material directly.
 - Findings must use `Critical`, `Important`, or `Observation` and include evidence, confidence, and context limitations.
 - Must not read, require, modify, or hand off to `devflow-prove`, PUA, Build, Learn, or any completion state.
 - Must not edit code, create a task, invoke another skill, or declare global task status.
@@ -262,8 +262,8 @@ Expected behavior:
 - Must run only because the user explicitly requested it; it may inspect materials from any task stage.
 - Must answer biggest omission, unrecognized blind spot, and least certain point, plus every explicit user follow-up question.
 - When target material contains implemented work, a diff, or a completion-ready result, must also run the post-implementation unease check: find materially unconfirmed business decisions, show the encoded assumption and alternatives, then classify high/medium/low risk with rationale, a user confirmation question, and temporary recommendation.
-- Must run on DSH in bounded rounds, one round per question or unease-check block, with the subagent returning each round's findings to the main agent for aggregation.
-- Must dispatch a fresh subagent.
+- Must run in bounded rounds, one round per question or unease-check block, reporting that round's findings and progress before starting the next round.
+- Must perform every round in the current session, reading the target material directly.
 - High-risk unease decisions must prevent a claim that the feature fully meets requirements; medium-risk decisions must be marked `pending confirmation`.
 - Each answer must separate facts, inference, and unknowns, then state confidence and a next step; findings must use `Critical`, `Important`, or `Observation` with evidence and context limitations.
 - Must close with a necessary adjustments and fixes list: one item per required change, carrying its severity, the finding or unease decision it traces to, why the change is necessary, the smallest fix, and the verification, with no fault beyond the reported findings.

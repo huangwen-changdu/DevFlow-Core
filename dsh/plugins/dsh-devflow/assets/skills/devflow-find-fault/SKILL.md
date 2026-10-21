@@ -16,7 +16,7 @@ Use this skill when the user asks what is missing, unrecognized, or uncertain. W
 3. Ask one smallest question when the target is unclear.
 4. As an independent manual review, do not read, require, or alter `devflow-prove`, PUA, Build, Learn, or any lifecycle state.
 
-On DeepSeek Harness (DSH), dispatch a fresh `subagent` so the critique stays independent of the main agent's reasoning. Call the `subagent` tool once with `run_in_background: false` and a complete standalone prompt that names the review target and the material paths, and instructs the subagent to read those materials and return evidence-backed findings (the subagent has no conversation seed and cannot see this conversation). Then run the review in bounded rounds, one review unit per round: after each round the subagent returns that unit's findings, you aggregate them and report progress, then continue the same subagent conversation with the `send_message` tool. Instruct the subagent to return, for every finding and unease decision, the smallest necessary adjustment or fix with its reason and verification, so the final aggregation can assemble the `Necessary adjustments and fixes` list without inventing new faults. After the final unit, assemble the complete `Required Output` below from the aggregated findings. The subagent returns findings and proposed minimal fixes only — it never declares lifecycle status, edits files, or invokes another skill. If a round returns nothing usable (timeout, truncation, or failure), record it under `Context limitations`, retry that unit once with a narrower instruction, and continue with the remaining units; never silently drop a unit.
+This skill runs the review itself in bounded rounds, one review unit per round. Before moving to the next round, report that round's findings and the review's progress. Record, for every finding and unease decision, the smallest necessary adjustment or fix with its reason and verification, so the `Necessary adjustments and fixes` list below is assembled from recorded items without inventing new faults. After the final round, assemble the complete `Required Output` below from the recorded round findings. If a round yields nothing usable, record it under `Context limitations`, retry that unit once with a narrower instruction, and continue with the remaining units; never silently drop a unit.
 
 Review units: one question per round — the three default questions and every user-supplied question — plus one final round for the unease check when the target contains implementation material.
 
@@ -114,6 +114,7 @@ Before leaving this skill, confirm:
 
 - [ ] The user explicitly requested find-fault review.
 - [ ] All three default questions were answered.
+- [ ] Each round reported its findings and progress before the next round started.
 - [ ] Each user-supplied question was answered.
 - [ ] Facts, inference, unknowns, confidence, next steps, and limitations are visible.
 - [ ] The `Necessary adjustments and fixes` list is present, traces every item to a reported finding or unease decision, gives severity, why it is necessary, a minimal fix, and a verification step, and writes `none` when nothing requires a change.

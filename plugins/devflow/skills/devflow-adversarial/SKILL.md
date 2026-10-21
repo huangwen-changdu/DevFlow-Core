@@ -16,7 +16,7 @@ Use this skill when the user asks to challenge whether the current result holds.
 3. If the target is unclear, ask one smallest question to identify it.
 4. As an independent manual review, do not read, require, or alter `devflow-prove`, PUA, Build, Learn, or any lifecycle state.
 
-On DeepSeek Harness (DSH), dispatch a fresh `subagent` so the challenge stays independent of the main agent's reasoning. Call the `subagent` tool once with `run_in_background: false` and a complete standalone prompt that names the review target and the material paths, and instructs the subagent to read those materials and return evidence-backed findings (the subagent has no conversation seed and cannot see this conversation). Then run the review in bounded rounds, one review unit per round: after each round the subagent returns that unit's findings, you aggregate them and report progress, then continue the same subagent conversation with the `send_message` tool. After the final unit, assemble the complete `Required Output` below from the aggregated findings. The subagent returns findings only — it never declares lifecycle status, edits files, or invokes another skill. If a round returns nothing usable (timeout, truncation, or failure), record it under `Context limitations`, retry that unit once with a narrower instruction, and continue with the remaining units; never silently drop a unit.
+This skill runs the review itself in bounded rounds, one review unit per round. Before moving to the next round, report that round's findings and the review's progress. After the final round, assemble the complete `Required Output` below from the recorded round findings. If a round yields nothing usable, record it under `Context limitations`, retry that unit once with a narrower instruction, and continue with the remaining units; never silently drop a unit.
 
 Review units: one of the five angles per round, five rounds in total.
 
@@ -71,6 +71,7 @@ Before leaving this skill, confirm:
 - [ ] The user explicitly requested adversarial review.
 - [ ] The review started without a second confirmation gate.
 - [ ] The review covers all five angles.
+- [ ] Each round reported its findings and progress before the next angle started.
 - [ ] Findings have level, evidence, and confidence.
 - [ ] Context limitations are visible.
 - [ ] No lifecycle state, code, or other skill was changed or invoked.
