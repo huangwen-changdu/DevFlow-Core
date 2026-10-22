@@ -379,6 +379,22 @@ function render(root, detected, planned = new Set()) {
   lines.push("- 新增 spec：运行 `--refresh` 重建 `docs/specs/INDEX.md`；主地图不逐条登记。");
   lines.push("- 能力行为变化：更新能力索引与需求台账。");
   lines.push("- 安装或命令变化：更新根目录 README 与项目知识包的启动就绪清单。", "");
+  // Generated maps state the record rules once, so every onboarded project answers "where does this go" from the map.
+  // Paths that do not exist yet stay plain text: the map check rejects backticked files that are missing.
+  const pathCell = (rel) => (has(rel) ? `\`${rel}\`` : rel);
+  const learnIndex = has(".copilot/LEARNING_INDEX.md") ? " + `../.copilot/LEARNING_INDEX.md`" : " + ../.copilot/LEARNING_INDEX.md";
+  lines.push("## 记录规范", "");
+  lines.push("新数据按下表落位；字段与状态机以各文件表头为准。机检：`node scripts/devflow-plan.js --index`、`node scripts/devflow-docs.js --check`。", "");
+  lines.push("| 事件 | 落位 | 必填 | 机检 |");
+  lines.push("|---|---|---|---|");
+  lines.push(`| 需求确认 → Spec → Plan → 构建 → 落地 | ${pathCell("docs/requirements.md")} 同一行逐格推进 | 状态、落地物路径、终态证据；\`opt-out\` 写原因 | index |`);
+  lines.push(`| 计划新建或完成 | ${pathCell("docs/plans/INDEX.md")} 一行 + 计划头 \`Status\` | Status 与文件头一致；done 有落地证据 | index |`);
+  lines.push(`| 新增 spec | 跑 \`--refresh\` 重建 ${pathCell("docs/specs/INDEX.md")} | 派生索引覆盖全部 spec，不手写 | check |`);
+  lines.push(`| 能力或接口契约变化 | ${pathCell("docs/features/INDEX.md")} 一行 | 触发词、入口、验证命令、关键文件、来源计划 | index |`);
+  lines.push("| 每次落地 | 项目根 PROGRESS.md 摘要；`docs/project-knowledge/` change-log | 日期、变更、涉及模块；业务语义待确认 | 无 |");
+  lines.push("| 新根文档 | 本页「根文档」区登记 | 路径真实存在 | check |");
+  lines.push(`| 可复用经验 | \`.copilot/cards/*.md\`${learnIndex} | Trigger、Lesson、Next action、Evidence | 无 |`, "");
+  lines.push("需求状态机：`open -> designed -> planned -> built -> landed`；非终态可转 `opt-out` 或 `dropped`。", "");
   lines.push("## 启动就绪", "");
   lines.push("- 能启动 / 能验证 / 能看进度 / 能接手：四个问题的答案都应有真实文件承载。");
   lines.push("");
@@ -560,6 +576,14 @@ function selfTest() {
   if (fs.existsSync(path.join(tmp, "src", "api", "ARCHITECTURE.md"))) {
     throw new Error("self-test expected no per-directory architecture file");
   }
+  const generatedMap = fs.readFileSync(path.join(tmp, "docs", "INDEX.md"), "utf8");
+  if (!generatedMap.includes("## 记录规范")) throw new Error("self-test expected the generated map to publish the record rules");
+  if (generatedMap.includes("`../.copilot/LEARNING_INDEX.md`")) {
+    throw new Error("self-test expected no learning index code span when .copilot is absent");
+  }
+  if (!generatedMap.includes("../.copilot/LEARNING_INDEX.md")) {
+    throw new Error("self-test expected the record rules to name the learning index");
+  }
 
   // A new spec must fail until the derived index is refreshed.
   fs.writeFileSync(path.join(tmp, "docs", "specs", "2026-02-02-new.md"), "# New spec\n", "utf8");
@@ -591,7 +615,7 @@ function selfTest() {
   }
 
   console.log("DevFlow docs self-test passed");
-  console.log("Checked init, generated skeletons, dry-run, coverage failure, and dangling-path failure");
+  console.log("Checked init, record rules, generated skeletons, dry-run, coverage failure, and dangling-path failure");
 }
 
 function main() {
