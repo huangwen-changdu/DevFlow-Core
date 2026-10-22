@@ -60,18 +60,18 @@ for (const line of (install.stdout || "").split(/\r?\n/)) {
   else if (line.startsWith("would ")) actions.preview += 1;
 }
 
-// 2. Docs map. Run this repository's checker against the target so behavior stays current.
+// 2. Docs map and project skeletons. Run this repository's checker against the target so behavior stays current.
 const docsScript = path.join(repo, "scripts", "devflow-docs.js");
-const mapPath = path.join(target, "docs", "INDEX.md");
-let mapAction = "existing";
-if (!fs.existsSync(mapPath)) {
-  if (dryRun) {
-    mapAction = "would create";
-  } else {
-    const init = run(docsScript, ["--init", "--root", target]);
-    if (init.status !== 0) fail("docs init", init);
-    mapAction = "created";
-  }
+const initArgs = ["--init", "--root", target, "--json"];
+if (dryRun) initArgs.push("--dry-run");
+const init = run(docsScript, initArgs);
+if (init.status !== 0) fail("docs init", init);
+let mapAction = "unknown";
+try {
+  const initResult = JSON.parse(init.stdout.trim());
+  mapAction = `${initResult.map}${initResult.written.length ? ` (+${initResult.written.length} created)` : ""}`;
+} catch {
+  mapAction = "unreadable init output";
 }
 
 // 3. Verify the map.
@@ -83,21 +83,18 @@ try {
   mapCheck.reason = tail(check.stdout) || tail(check.stderr);
 }
 
-// 4. Verify requirement, feature, and plan indexes with the installed checker.
-const planScript = path.join(target, "scripts", "devflow-plan.js");
-let indexCheck = { status: "skipped", detail: "installed plan checker not found" };
-if (fs.existsSync(planScript)) {
-  const index = spawnSync(process.execPath, [planScript, "--index"], { cwd: target, encoding: "utf8" });
-  const problem = (index.stdout || "")
-    .split(/\r?\n/)
-    .find((line) => line.startsWith("Problem:") || line.startsWith("Problems:"));
-  indexCheck = {
-    status: index.status === 0 ? "PASS" : "FINDINGS",
-    detail: problem || tail(index.stderr, 2)
-  };
-}
+// 4. Verify requirement, feature, and plan indexes with this repository's checker so behavior stays current.
+const planScript = path.join(repo, "scripts", "devflow-plan.js");
+const index = spawnSync(process.execPath, [planScript, "--index", "--root", target], { encoding: "utf8" });
+const problem = (index.stdout || "")
+  .split(/\r?\n/)
+  .find((line) => line.startsWith("Problem:") || line.startsWith("Problems:"));
+const indexCheck = {
+  status: index.status === 0 ? "PASS" : "FINDINGS",
+  detail: problem || tail(index.stderr, 2)
+};
 
-const mapJudgment = dryRun && mapAction === "would create" ? "PREVIEW" : mapCheck.judgment;
+const mapJudgment = dryRun ? "PREVIEW" : mapCheck.judgment;
 const judgment = mapJudgment === "FAIL" ? "FAIL" : "PASS";
 
 console.log(`DevFlow onboard: ${target}${dryRun ? " (dry-run)" : ""}`);

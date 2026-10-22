@@ -56,7 +56,7 @@ At Sense, compare `Metadata.last_updated` with the newest source commit date. A 
 
 ## Documentation Map
 
-The same loop keeps the docs map honest. When a project's state is unknown, run `node scripts/devflow-docs.js --status` first: it lists which artifacts exist and the next command for each missing one. When a project has no `docs/INDEX.md`, create it with `node scripts/devflow-docs.js --init` at the first landed change, then review its `[待确认]` rows before relying on it. After that, run `node scripts/devflow-docs.js --check` on every landed change that adds, moves, or deletes a document. A missing checker or map is a non-blocking fact; never hand-invent a map the checker cannot verify.
+The same loop keeps the docs map honest. When a project's state is unknown, run `node scripts/devflow-docs.js --status` first: it lists which artifacts exist and the next command for each missing one. When a project has no `docs/INDEX.md`, create it with `node scripts/devflow-docs.js --init` at the first landed change; the same command also scaffolds `PROGRESS.md`, a `Makefile` command entry, one layered `docs/ARCHITECTURE.md` built from the detected layer directories, and the derived spec index. Review every `[待确认]` row before relying on those files. The master map stays a router (90-line limit): leaf specs are covered by `docs/specs/INDEX.md`, rebuilt with `--refresh`, so new specs never enlarge the map. After that, run `node scripts/devflow-docs.js --check` on every landed change that adds, moves, or deletes a document, and refresh `PROGRESS.md` after each landed change. A missing checker or map is a non-blocking fact; never hand-invent a map the checker cannot verify.
 
 ## Guardrails
 

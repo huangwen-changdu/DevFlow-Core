@@ -81,7 +81,7 @@ const promotionConfidence = 0.7;
 
 /** Print the checker command contract and default plan landing. */
 function usage() {
-  console.log("Usage: node scripts/devflow-plan.js [plan-file] [--index] [--self-test] [--json]");
+  console.log("Usage: node scripts/devflow-plan.js [plan-file] [--index] [--root <dir>] [--self-test] [--json]");
   console.log("Checks whether a DevFlow Plan Pack has an executable header, task contracts, and plan landing.");
   console.log("v2 plans carry a slim header, per-task Files/Change/Acceptance/Verify/Not doing, and a ## Progress table; legacy plans keep the old contract.");
   console.log("--index checks docs/plans/INDEX.md and docs/features/INDEX.md against the filesystem.");
@@ -720,8 +720,8 @@ function checkIndexes(root) {
 }
 
 /** Run the plan and feature index consistency check, or answer a single query. */
-function runIndexCheck(json, query) {
-  const root = path.resolve(__dirname, "..");
+function runIndexCheck(json, query, rootArg) {
+  const root = rootArg ? path.resolve(rootArg) : path.resolve(__dirname, "..");
   if (query) {
     const featureMatches = matchIndexRows(readIndexRows(root, "features"), query);
     const planMatches = matchIndexRows(readIndexRows(root, "plans"), query);
@@ -751,6 +751,7 @@ function runIndexCheck(json, query) {
 /** Validate the requirement ledger table: status whitelist, terminal evidence, opt-out reason, artifact paths. */
 function checkRequirementTable(header, rows, exists) {
   const problems = [];
+  if (header.length === 0) return problems;
   const cols = columnIndexes(header, ["需求", "日期", "落地物", "状态", "证据或跳过"]);
   if (cols["状态"] < 0 || cols["证据或跳过"] < 0) {
     problems.push("docs/requirements.md header must contain 状态 and 证据或跳过 columns");
@@ -1333,7 +1334,7 @@ if (args.includes("--loop")) {
   process.exit(runLoopReport(args.includes("--json")));
 }
 if (args.includes("--index")) {
-  process.exit(runIndexCheck(args.includes("--json"), argValue(args, "--query")));
+  process.exit(runIndexCheck(args.includes("--json"), argValue(args, "--query"), argValue(args, "--root")));
 }
 const targetArg = args.find((arg) => !arg.startsWith("-"));
 process.exitCode = report(readInput(args), targetArg, args.includes("--json"));

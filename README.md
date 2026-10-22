@@ -39,7 +39,7 @@ npm run onboard:target -- ../my-project            # runtime + docs map + checks
 npm run onboard:target -- ../my-project --dry-run  # preview only
 ```
 
-The shortcut installs the runtime, creates `docs/INDEX.md` when it is missing, then verifies the map and the installed indexes. It never overwrites existing files and is safe to rerun.
+The shortcut installs the runtime, scaffolds `PROGRESS.md`, a `Makefile` command entry, a layered `docs/ARCHITECTURE.md` skeleton, and a derived `docs/specs/INDEX.md` when missing, then creates `docs/INDEX.md` and verifies the map and the installed indexes. It never overwrites existing files and is safe to rerun.
 
 Or run the steps individually:
 
@@ -104,7 +104,7 @@ When installed into a target project, only the target-runtime scripts are copied
 | `node scripts/devflow-review.js <plan-or-diff-file>` | Check whether a plan or diff includes the required reuse, native, overbuild, diff, and scope gates before detailed review. |
 | `node scripts/devflow-debt.js .` | Harvest intentional `devflow:` simplification markers into a debt report. |
 | `node scripts/devflow-audit.js <target-directory>` | Run a repo-wide audit candidate scan for overengineering, missed reuse, stdlib/native replacements, and YAGNI abstractions. |
-| `node scripts/devflow-docs.js --status` / `--init` / `--check` | Report which project artifacts exist and the next command for each missing one, create `docs/INDEX.md` from the detected documentation tree, then verify that every root doc and spec is registered and every registered path exists. `--init` never overwrites without `--force`, and the generated map marks unknown authority rows as `[待确认]`. |
+| `node scripts/devflow-docs.js --status` / `--init` / `--refresh` / `--check` | Inventory, scaffold, refresh the derived spec index, and verify. The master map stays a router (90-line limit); leaf specs live in the derived `docs/specs/INDEX.md`, rebuilt by `--refresh`. `--init` never overwrites existing files and marks unknown authority rows as `[待确认]`. |
 
 Saved specs should land in the current target project's `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` unless that project already documents another specs path. Saved implementation plans should land in the current target project's `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`. `docs/features/` is for feature ledgers and the capability index, not generated specs or task plans.
 
@@ -227,7 +227,7 @@ One command covers the install and verification steps:
 npm run onboard:target -- ../my-project
 ```
 
-It runs the sequence below internally and stops at the first failure: install the runtime pack, create `docs/INDEX.md` when missing, run the map check, then run the installed index check. Reruns are idempotent because existing files are skipped and the map is never overwritten. Use `--dry-run` to preview.
+It runs the sequence below internally and stops at the first failure: install the runtime pack, scaffold `PROGRESS.md`, a `Makefile`, a layered `docs/ARCHITECTURE.md`, and the derived spec index, create `docs/INDEX.md` when missing, run the map check, then run the index check. Reruns are idempotent because existing files are skipped and the map is never overwritten. Use `--dry-run` or `--preview` to inspect first.
 
 The underlying steps, for troubleshooting:
 
@@ -246,7 +246,7 @@ node scripts/devflow-docs.js --check
 node scripts/devflow-plan.js --index
 ```
 
-The inventory covers nine artifacts: `AGENTS.md`, `scripts/devflow-docs.js`, `skills/devflow-core/SKILL.md`, `docs/INDEX.md`, `docs/project-knowledge/AI-START-HERE.md`, `docs/requirements.md`, `docs/features/INDEX.md`, `docs/plans/INDEX.md`, and `.copilot/LEARNING_INDEX.md`. The first three may resolve at user level instead of project level.
+The inventory covers eleven artifacts: `AGENTS.md`, `scripts/devflow-docs.js`, `skills/devflow-core/SKILL.md`, `docs/INDEX.md`, `PROGRESS.md`, `Makefile`, `docs/project-knowledge/AI-START-HERE.md`, `docs/requirements.md`, `docs/features/INDEX.md`, `docs/plans/INDEX.md`, and `.copilot/LEARNING_INDEX.md`. The first three may resolve at user level instead of project level.
 
 `--init` generates the map from the detected tree and marks any authority row it cannot confirm as `[待确认]`; review those rows before relying on it. The knowledge pack, requirement ledger, both indexes, and the learning index are created by the lifecycle after the first landed requirement, not by a scaffold script.
 

@@ -93,15 +93,24 @@ assert(
   "devflow-learn must hand structural facts to the knowledge pack"
 );
 
-/** Guards the docs map: every doc directly under docs/ and docs/specs/ is registered, and every registered path exists. */
+/** Guards progressive disclosure: the map routes, the derived spec index owns leaf specs, and the map stays a router. */
 const docsMap = read("docs/INDEX.md");
+const docsMapLines = docsMap.split(/\r?\n/).length;
+assert(docsMapLines <= 90, `docs/INDEX.md must stay at or below 90 lines, found ${docsMapLines}`);
 for (const entry of fs.readdirSync(path.join(root, "docs"), { withFileTypes: true })) {
   if (!entry.isFile() || !entry.name.endsWith(".md") || entry.name === "INDEX.md") continue;
   assert(docsMap.includes(entry.name), `docs/INDEX.md must register docs/${entry.name}`);
 }
+const specIndexRel = "docs/specs/INDEX.md";
+const specIndex = fs.existsSync(path.join(root, specIndexRel)) ? read(specIndexRel) : null;
 for (const name of fs.readdirSync(path.join(root, "docs/specs"))) {
-  if (!name.endsWith(".md")) continue;
-  assert(docsMap.includes(name), `docs/INDEX.md must register docs/specs/${name}`);
+  if (!name.endsWith(".md") || name === "INDEX.md") continue;
+  const registered = specIndex ? specIndex.includes(`docs/specs/${name}`) : docsMap.includes(name);
+  assert(registered, `spec ${name} must be registered in ${specIndex ? specIndexRel : "docs/INDEX.md"}`);
+}
+for (const rel of ["docs/specs/INDEX.md", "docs/plans/INDEX.md", "docs/features/INDEX.md"]) {
+  if (!fs.existsSync(path.join(root, rel))) continue;
+  assert(docsMap.includes(rel), `docs/INDEX.md must route to ${rel}`);
 }
 for (const match of docsMap.matchAll(/`([^`]+\.md)`/g)) {
   const rel = match[1].replace(/^\.\.\//, "");
