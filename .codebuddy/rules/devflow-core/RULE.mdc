@@ -1,8 +1,9 @@
 ---
-description: DevFlow Core startup interface
+description: 
 alwaysApply: true
-enabled: true
-provider:
+enabled: false
+updatedAt: 2026-10-24T18:30:47.129Z
+provider: 
 ---
 
 # DevFlow Core

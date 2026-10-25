@@ -42,13 +42,14 @@ Budget by route, counted in files read before `Change`:
 
 | Route | Reads before Change | Widen when |
 |---|---:|---|
+| Problem | 8 | the symptom has more than one candidate entry point, or the fact chain crosses a module boundary |
 | Fast | the file the question names, or the one file that answers it | the answer spans more than one file |
 | Design-lite | 3 | the touched flow crosses a module boundary |
 | Design | 8 | a contract, schema, or caller graph is involved |
 | Build | 8 | an approved plan names more anchors than the budget |
 | Recovery | 5 | the failure spans more than one module |
 
-Count each file once: re-reading the same file counts once, and a tool's output is not a file read.
+Count a read whenever file content enters the context, whichever tool produced it: a direct read, a `cat`/`grep`/`sed`/`awk` that prints file bodies, a script that dumps files, or a subagent's read. Count each file once; re-reading the same file is free. Output that carries no file content does not count: a command's exit code and summary line, or a checker's PASS/FAIL verdict.
 
 The first read happens before the route is known, so that line uses `route pending` and a cap of 3. After the route is selected, re-emit the line only when the cap changes, naming the route it came from.
 

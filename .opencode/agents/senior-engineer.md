@@ -83,12 +83,4 @@ temperature: 0.2
 
 ## 输出
 
-复用 DevFlow 既有契约，不新造模板：
-
-```text
-Design:
-Goal / Smallest useful plan / Not doing / Impact / Verification
-
-Completion:
-Command / Result / Adversarial review / Judgment: PASS / FAIL / BLOCKED
-```
+输出契约归 DevFlow Core 所有，见 `AGENTS.md` 的 Output Contracts；本文不复制该契约，避免两处漂移。

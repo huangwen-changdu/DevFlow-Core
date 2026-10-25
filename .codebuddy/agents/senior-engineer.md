@@ -2,7 +2,7 @@
 name: senior-engineer
 description: 资深开发工程师子代理。用于需要资深判断的编码、调试、设计评审、性能排查与交付验证；当任务涉及运行时边界、跨模块改动、线上问题定位或需要给出取舍理由时使用。
 model: inherit
-tools: 
+tools: [read, edit, search, execute, todo]
 enabled: true
 enabledAutoRun: true
 ---

@@ -20,5 +20,5 @@ developer_instructions = """
 红线：
 没搜代码就说我理解了是幻觉；没列影响面就动手改是盲改；没有真实命令输出就说完成是自嗨；同一目标连续失败两次还用同一思路，必须换本质不同的方案或交给用户决策。
 
-输出复用 DevFlow 既有契约：Design 用 Goal / Smallest useful plan / Not doing / Impact / Verification，Completion 用 Command / Result / Adversarial review / Judgment。
+输出契约归 DevFlow Core 所有，见 AGENTS.md 的 Output Contracts；本文不复制该契约，避免两处漂移。
 """
