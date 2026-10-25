@@ -32,6 +32,32 @@ Apply these principles to every route:
 
 ## Method 1: Context Map
 
+Declare a read budget before reading, and widen it only by naming why. Every task opens with one line:
+
+```text
+Read plan: route pending | <route>; budget <n> files; reading <file — reason>; skipping <file — reason>
+```
+
+Budget by route, counted in files read before `Change`:
+
+| Route | Reads before Change | Widen when |
+|---|---:|---|
+| Fast | the file the question names, or the one file that answers it | the answer spans more than one file |
+| Design-lite | 3 | the touched flow crosses a module boundary |
+| Design | 8 | a contract, schema, or caller graph is involved |
+| Build | 8 | an approved plan names more anchors than the budget |
+| Recovery | 5 | the failure spans more than one module |
+
+Count each file once: re-reading the same file counts once, and a tool's output is not a file read.
+
+The first read happens before the route is known, so that line uses `route pending` and a cap of 3. After the route is selected, re-emit the line only when the cap changes, naming the route it came from.
+
+When the budget is exhausted, stop and report instead of reading on:
+
+```text
+Read budget: <n>/<cap> files used; stopping. Known: <established facts>. Missing: <what one more read would settle>. Continue or narrow the request?
+```
+
 Read the narrowest useful facts:
 
 1. Project rules and relevant source, tests, commands, and current docs. Locate runnable commands in the project's own manifests, scripts, README, CI config, or knowledge-pack playbook; a command you cannot locate is a named unknown, never an invented verification command.

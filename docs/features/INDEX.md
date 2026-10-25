@@ -1,6 +1,6 @@
 # 功能索引（INDEX）
 
-> 摘要: 用途=AI 进入仓库的第一跳，一行一路由：有什么功能、触发词是什么、入口在哪、怎么验证 | 维护=Prove PASS 后由 devflow-learn 新增或更新行 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-10-19
+> 摘要: 用途=AI 进入仓库的第一跳，一行一路由：有什么功能、触发词是什么、入口在哪、怎么验证 | 维护=Prove PASS 后由 devflow-learn 新增或更新行 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-10-25
 
 ## 检索方式（给 AI 的用法）
 
@@ -18,7 +18,7 @@
 | DevFlow 计划生成与落地 | 把 CUT_PASS 变成按交付单元拆分、跨会话/跨模型可执行的施工单；证据按"可重跑命令 / 可机械追溯"两级准入，`## Recon` 记录锚点侦查，Build 回写进度、Prove 回写 Status 与 Landed | 计划, plan, 任务拆解, 任务粒度, 交付单元, 拆分, 跨会话, 跨模型, right-sizing, 施工单, Progress, 落地, Landed, 计划校验, 侦查记录, Recon, 证据准入, 全局不变量, 跨任务通道 | `/devflow-plan` | active | `node scripts/devflow-plan.js plan-file` | skills/devflow-plan/SKILL.md, scripts/devflow-plan.js | 2026-09-10-devflow-usability-flow-reconfiguration.md | 2026-09-16 |
 | DevFlow 功能索引 | 一行一路由：是什么、触发词、入口在哪、怎么验证、来自哪份计划 | 功能索引, INDEX, 有哪些功能, 入口定位, 渐进加载, 触发词, 查询模式 | `docs/features/INDEX.md` | active | `node scripts/devflow-plan.js --index` | docs/features/INDEX.md, skills/devflow-learn/SKILL.md | 2026-09-10-feature-index-progressive-loading.md | 2026-09-10 |
 | DevFlow 验证矩阵 | 17 项校验把框架规则变成可执行证据，防止规则与实现漂移 | 校验, verify, 测试, CI, 断言, 打包一致性, budget, 验证矩阵 | `npm run verify:all` | active | `npm run verify:all` | package.json, scripts/validate-devflow.js | 2026-07-31-devflow-harness-iteration.md | 2026-09-10 |
-| DevFlow 学习闭环 | 把用户纠正与踩坑沉淀成可召回的索引卡片，PASS 后强制复盘 | 学习, 沉淀, 学习卡, 纠正, 踩坑, 召回, learn | `/devflow-learn` | active | `npm run learn:verify` | skills/devflow-learn/SKILL.md, .copilot/LEARNING_INDEX.md | 2026-07-16-completion-knowledge-capture.md | 2026-09-10 |
+| DevFlow 学习闭环 | 把用户纠正与踩坑沉淀成可召回的索引卡片，PASS 后强制复盘；每张卡记录被否方案（Rejected）并按证据形态分 L1–L4 级，置信度受等级上限约束，防止规则复述卡冒充经验卡 | 学习, 沉淀, 学习卡, 纠正, 踩坑, 召回, learn, 证据等级, 被否方案, Rejected, Evidence Level, 置信度上限 | `/devflow-learn` | active | `npm run learn:verify` | skills/devflow-learn/SKILL.md, .copilot/LEARNING_INDEX.md, scripts/validate-learning-loop.js | 2026-07-16-completion-knowledge-capture.md | 2026-10-25 |
 | DevFlow 需求闭环 | 一条需求从确认到落地的台账；跳过文档必须由用户显式选择并留痕 | 需求台账, 闭环, 落地, 跳过留痕, opt-out, 落地率, loop | `docs/requirements.md` | active | `node scripts/devflow-plan.js --index` | docs/requirements.md, skills/devflow-prove/SKILL.md | 2026-09-10-requirement-loop-and-developer-profile.md | 2026-09-10 |
 | DevFlow 独立评审 | 用户显式请求的对抗审查与找茬，独立于生命周期之外；分轮执行，每轮汇报后再进入下一轮 | 对抗审查, 找茬, 红队, 最大遗漏, 盲点, 不安感, 独立评审 | `/devflow-adversarial` + `/devflow-find-fault` | active | `npm run trigger:verify` | skills/devflow-adversarial/SKILL.md, skills/devflow-find-fault/SKILL.md | 2026-07-26-independent-manual-review-skills.md | 2026-10-19 |
 | DSH 分发与预设 | 把技能、命令、脚本打包成 DSH 插件与预设，源与副本逐字节一致 | DSH, 插件, 预设, preset, 分发, 同步资产, 打包 | `dsh/plugins/dsh-devflow` | active | `npm test` | dsh/plugins/dsh-devflow/scripts/sync-assets.js, dsh/agent-presets/devflow-2 | 2026-08-19-devflow-dsh-plugin-pack.md | 2026-09-10 |
@@ -30,6 +30,7 @@
 | DevFlow 执行回执 | 每个生命周期节点用统一执行回执区分已加载/已执行/不适用/受阻/未执行，附依据、证据与交接 | 执行回执, 已加载, 已执行, 不适用, 受阻, 未执行, 编排可见性, 能力可见性, 回执 | `skills/devflow-core/references/core-methods.md` | active | `npm test` | skills/devflow-core/references/core-methods.md, scripts/validate-devflow.js | 2026-10-10-skill-orchestration-visibility.md | 2026-10-10 |
 | DevFlow 简化评审门 | Prove 的代码变更在对抗式与质量评审前先跑简化 pass：五视角查重复/冗余/死代码，治理 AI 式超长命名与冗余备注，只剪枝本次改动引入的无效测试与注释，行为不变，改完必须重跑证明 | 简化代码, 代码简化, 精简, simplify, 清理重复代码, 冗余代码, 死代码, 命名过长, 名字太长, 备注冗余, 注释剪枝, 测试剪枝, 简化评审 | `skills/devflow-prove/references/simplify-pass.md` + `/devflow-simplify` | active | `npm run trigger:verify` | skills/devflow-prove/references/simplify-pass.md, skills/devflow-prove/SKILL.md, skills/devflow-prove/references/code-review-checklist.md, commands/devflow-simplify.toml | - | 2026-10-16 |
 | 代码可读性门 | 把"AI 写的代码读不动"拆成七维可检查门（流程自上而下、决策就近、命名与备注、类型与取值、失败与副作用可见、与邻居一致、测试与 diff 叙事），Build 写后跑、Simplify 修、评审按改动行证据分级，配首读测试与执行回执 | 代码可读性, 可读性, 读不懂, 看不懂代码, 读起来费劲, 让人看得更清晰, 代码清晰度, readability | `skills/devflow-prove/references/code-readability-checklist.md` | active | `npm run trigger:verify` | skills/devflow-prove/references/code-readability-checklist.md, skills/devflow-build/references/build-methods.md, skills/devflow-prove/references/code-review-checklist.md, skills/devflow-prove/references/simplify-pass.md | - | 2026-10-16 |
+| Sense 读取预算与加载可见性 | 每次任务先声明读取预算（按路由 Fast 1 / Design-lite 3 / Design 8 / Build 8 / Recovery 5 个文件）并输出一行读取计划，说明读什么、跳什么；越界时停止并报告而不是静默续读 | 读取预算, 读取计划, Read plan, 读太多, 看太多, 上下文预算, 越界, 少读, Sense 读取 | `skills/devflow-core/references/core-methods.md` + `skills/devflow-core/SKILL.md` | active | `npm test` | skills/devflow-core/references/core-methods.md, skills/devflow-core/SKILL.md, scripts/validate-devflow.js | 2026-10-25-read-budget-and-load-visibility.md | 2026-10-25 |
 
 ## 维护机制
 

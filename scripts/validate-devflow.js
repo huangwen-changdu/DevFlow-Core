@@ -180,6 +180,14 @@ function assertCapabilityContract(coreMethods, handoffSurfaces) {
   }
 }
 
+/** Guards the read budget: Sense must declare a countable cap and a stop rule, not an adjective. */
+function assertReadBudgetContract(coreMethods, coreSkill) {
+  for (const term of ["Read plan:", "Read budget:", "Reads before Change", "route pending"]) {
+    assert(coreMethods.includes(term), `core-methods.md must own the read-budget contract: ${term}`);
+  }
+  assert(coreSkill.includes("Read plan:"), "devflow-core/SKILL.md must require the read plan line before the first read");
+}
+
 const coreMethods = read("skills/devflow-core/references/core-methods.md");
 assertCapabilityContract(coreMethods, [
   ["skills/devflow-cut/SKILL.md", read("skills/devflow-cut/SKILL.md")],
@@ -187,6 +195,8 @@ assertCapabilityContract(coreMethods, [
   ["commands/devflow-plan.toml", read("commands/devflow-plan.toml")],
   ["skills/devflow-build/SKILL.md", read("skills/devflow-build/SKILL.md")]
 ]);
+
+assertReadBudgetContract(coreMethods, read("skills/devflow-core/SKILL.md"));
 
 /** Protects Brainstorm from regressing to either premature completion or category-by-category interrogation. */
 function assertBrainstormFollowUpContract(skill, discipline) {
@@ -425,7 +435,7 @@ const cards = linkedCards(index);
 assert(cards.length > 0, "learning index must link at least one card");
 for (const card of cards) {
   const body = read(card);
-  for (const field of ["- Trigger:", "- Lesson:", "- Next action:", "- Scope:", "- Related:", "- Evidence:", "- Invalidation:"]) {
+  for (const field of ["- Trigger:", "- Lesson:", "- Rejected:", "- Next action:", "- Scope:", "- Related:", "- Evidence:", "- Evidence Level:", "- Invalidation:"]) {
     assert(body.includes(field), `${card} missing learning-card field ${field}`);
   }
 }

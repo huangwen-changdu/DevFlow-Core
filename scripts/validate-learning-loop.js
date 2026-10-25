@@ -13,9 +13,17 @@ function assert(condition, message) {
 
 /** Parses index rows without loading card bodies, preserving progressive recall. */
 function parseLearningCards(indexBody) {
-  return [...indexBody.matchAll(/\| \[([^\]]+)\]\((cards\/[^)]+\.md)\) \| ([^|]+) \| ([^|]+) \| ([^|]+) \|/g)].map(
-    (match) => ({ title: match[1], rel: `.copilot/${match[2]}`, trigger: match[3].trim(), scope: match[4].trim() })
-  );
+  return [
+    ...indexBody.matchAll(
+      /\| \[([^\]]+)\]\((cards\/[^)]+\.md)\) \| ([^|]+) \| ([^|]+) \| ([^|]+) \|(?: ([^|]+) \|)?/g
+    )
+  ].map((match) => ({
+    title: match[1],
+    rel: `.copilot/${match[2]}`,
+    trigger: match[3].trim(),
+    scope: match[4].trim(),
+    evidenceLevel: (match[6] || "").trim()
+  }));
 }
 
 /** Returns zero cards for unrelated work so callers never bulk-load card bodies. */
@@ -45,17 +53,31 @@ for (const term of [
   "do not load all `.copilot/cards/**`",
   "do not create empty learning storage after a no-record review",
   "Evidence:",
-  "Invalidation:"
+  "Invalidation:",
+  "Rejected:",
+  "Evidence Level",
+  "Confidence cap"
 ]) {
   assert(learn.includes(term), `devflow-learn missing recall contract: ${term}`);
 }
 
 assert(cards.length > 0, "Learning index must contain at least one card");
+
+const EVIDENCE_LEVELS = ["L1", "L2", "L3", "L4"];
+for (const card of cards) {
+  assert(
+    EVIDENCE_LEVELS.includes(card.evidenceLevel),
+    `${card.rel} index row must carry an Evidence Level of L1-L4, got "${card.evidenceLevel}"`
+  );
+}
+// An all-L1 index is a legitimate end state, so it is not asserted here. The
+// grade's honesty is guarded by the Anti-Rationalization table in
+// skills/devflow-learn/SKILL.md, not by a count that would fail on good data.
 const boundaryCard = cards.find((card) => card.rel.endsWith("agents-runtime-prompt-boundary.md"));
 assert(boundaryCard, "Runtime prompt boundary card must remain indexed");
 
 const body = read(boundaryCard.rel);
-for (const field of ["- Trigger:", "- Lesson:", "- Next action:", "- Scope:", "- Related:", "- Evidence:", "- Invalidation:"]) {
+for (const field of ["- Trigger:", "- Lesson:", "- Rejected:", "- Next action:", "- Scope:", "- Related:", "- Evidence:", "- Evidence Level:", "- Invalidation:"]) {
   assert(body.includes(field), `${boundaryCard.rel} missing field: ${field}`);
 }
 

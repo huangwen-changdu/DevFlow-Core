@@ -1,6 +1,6 @@
 # 需求台账（Requirements）
 
-> 摘要: 用途=一条需求从确认到落地的唯一记录，补上 Spec/Plan/能力行之间缺失的那一环 | 维护=各生命周期节点推进状态，Prove 写终态 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-10-16
+> 摘要: 用途=一条需求从确认到落地的唯一记录，补上 Spec/Plan/能力行之间缺失的那一环 | 维护=各生命周期节点推进状态，Prove 写终态 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-10-25
 
 ## 状态机
 
@@ -41,10 +41,17 @@ open -> designed -> planned -> built -> landed
 | 2026-10-21 | AGENTS.md 重规划为流程内核：七阶段（Sense/Route/Gate/Contract/Change/Prove/Record，各带退出产物）+ 六路由表 + 技能与脚本解析顺序 + 无 skill 完整回退 + graphify 条件化；方法深度仍留 skills，触发短语逐字保留以复用既有校验面 | 用户请求 | A | - | landed | npm run verify:all 退出码 0（18 项全 PASS，含新增阶段顺序断言）；route:verify 四表面 PASS；host:verify 8 适配器 PASS；trigger:verify 25 场景 PASS；AGENTS.md 7951/8192 字节；补回执段、global 卡优先、重复纠正建卡与专家返回契约，并恢复 spec/plan 归属映射、完整最小方案阶梯与第一原理说明措辞；`commands/devflow.toml` 由 6357 收敛为 1934 字节（AGENTS.md 指针 + 七阶段回退 + 直达入口 + 输出契约），DSH 资产已同步；补命令来源规则（manifest/脚本/README/CI/playbook，找不到即具名未知）、知识包必填验证命令清单、Sense 点名 `AI-START-HERE.md`；知识包闭环：首次落地创建最小包（3 文件）、每次落地自动刷新代码支撑的结构事实并追加 change-log、业务语义仍需用户确认（新增 `references/auto-loop.md` 与校验断言，AGENTS.md 8100/8192）；按讲义 03/04/06 做全新会话测试并刷新 `AI-START-HERE.md`（15 技能、13 命令、18 项验证、启动就绪清单、进度入口、知识包闭环规则）；新增 `docs/INDEX.md` 文档地图（五问直达 + 目录台账 + 快照规则 + 更新契约），并把根文档/specs 登记与路径存在性校验挂进 `npm test`，AI-START-HERE 阅读顺序指向它；新增 `scripts/devflow-docs.js`（`--status` 盘点 9 项产物并给出缺失项命令、`--init` 生成、`--check` 校验、`--self-test`，随双安装器分发，`verify:all` 增至 19 项），知识包闭环在首次落地时初始化文档地图、每次文档增删后校验；`AGENTS.md` Sense 点名 `docs/INDEX.md` 与 `AI-START-HERE.md`（8116/8192）；分发面（8 项目副本）已一致：verify-plugin PASS、trigger 资产对等 PASS、DSH sync 幂等；用户级同步完成：`.codex`/`.codebuddy`/`.workbuddy` 三份 AGENTS.md 换为新七阶段契约（`.codex` 保留 CODEGRAPH/GRAPHIFY/caveman 全局块，旧文件留 `bak-before-sync-20261021-175456`），六个 home `--write --force` 后 `--check` 6/6 exit 0（62 文件/家）、doctor 6/6 pass、user:verify PASS；双安装器补齐 `skills/devflow-project-knowledge/references/auto-loop.md` 分发（此前仅 SKILL.md 引用但未安装）；verify:all 19 项退出码 0；README 新增“Project Artifact Onboarding Workflow”（status → install → init → check → index）与 docs:verify 说明；新增 `npm run onboard:target` 一键上车（install + init + check + index，幂等，`--dry-run` 预览），README Quick Start 置顶；`--init` 增加 PROGRESS.md、Makefile（setup/test/lint/check）与按项目分层生成的单一 `docs/ARCHITECTURE.md` 骨架（API/服务/数据层，检测 src/api、Controllers、Service、Repository 等，最多 4 层，全部 [待确认]；`--preview` 只打印不写入）；`devflow-plan --index` 支持 `--root` 且缺失台账不再误判 FAIL；KocServer 实际落地：生成 PROGRESS.md、Makefile、docs/ARCHITECTURE.md 并按最新结构重建地图（54/54 PASS，原地图备份于临时目录）；渐进披露：主地图只做路由（≤90 行），specs 移入派生 `docs/specs/INDEX.md`（`--refresh` 重建），`--check` 分层校验 + 行数门；本仓库地图 70→66 行，KocServer 107→59 行（specs 索引 62 行） | 2026-10-21 |
 | 2026-10-22 | 文档记录规范固化：`docs/INDEX.md` 新增「记录规范」表（事件、落位、必填、机检）与需求状态机，补齐 AGENTS.md 只定义记录义务、未定义字段格式的缺口 | 用户请求 | C | docs/INDEX.md | landed | `npm test` 退出码 0；`devflow-docs --check` PASS（11/11，地图 82/90 行） | 2026-10-22 |
 
+| 2026-10-25 | 学习卡抗退化：卡格式加 `Rejected`（被否方案与理由）与 L1–L4 证据等级（置信度上限随证据形态），索引加 `Evidence Level` 列并按 8 张超上限卡压置信度；两校验器把字段设为硬约束并拒绝全 L1 索引；30 张存量卡显式记 `not-recorded` 而非编造被否方案 | 用户请求 | C | - | landed | `npm test` 退出码 0（18 runtime 文件、30 卡字段校验）；`npm run learn:verify` PASS（30 行等级合法且非全 L1）；`npm run verify:all` 退出码 0（19 项，capability:eval Judgment PASS / Gaps none）；budget PASS 且 devflow-learn 14164/15360；源 + Codex 副本 + DSH 资产 md5 一致 c2a955d5 | 2026-10-25 |
+| 2026-10-25 | 代理读取预算与加载可见性：把 Sense 的"narrowest"换成可核对的读取预算与一行读取计划，让"读太多"与"读太少"都变成显式声明而非默认行为 | 用户请求 | B | docs/plans/2026-10-25-read-budget-and-load-visibility.md | landed | `npm run verify:all` 退出码 0（19 项全 PASS，budget PASS）；`npm test` 18 runtime 文件；`node scripts/devflow-plan.js --index` PASS；反向用例移除 `Read plan:` 后 `npm test` 退出码 1 且报 `read-budget contract: Read plan:`；SKILL 三处 md5 05bc9bc9、core-methods 三处 md5 16c97d1e | 2026-10-25 |
+| 2026-10-25 | 证据写法升级为逐项摘要：终态证据要求列出 `verify:all` 的逐项结果而不是只写整体退出码，让"哪一项曾经拦下过问题"可被回答 | 用户请求 | C | - | landed | `npm test` 退出码 0；`node scripts/devflow-plan.js --index` Problems: none | 2026-10-25 |
+| 2026-10-25 | 资深工程师代理跨主机分发：同一份能力契约落到 `.github/agents`（完整契约）、`.codebuddy/agents`、`.codex/agents`（TOML，sandbox workspace-write）、`.opencode/agents` 四份主机格式，CodeBuddy 另配 `alwaysApply` 规则；四份均声明"流程归 DevFlow Core，本定义只补能力标准与交付下限" | 用户请求 | C | - | landed | `npm run verify:all` 退出码 0（19 项全 PASS，host:verify 8 适配器 PASS）；`npm test` PASS；四份文件均含"不新增流程、不重写生命周期"的权威顺序声明，`.codex` 版本保留该声明 | 2026-10-25 |
+| 2026-10-26 | senior-engineer 输出契约去重：两份 agent 定义里的 Design/Completion 文本块替换为指向 `AGENTS.md` 的一行指针，消除"声明复用却复制内容"的漂移源 | 用户请求 | C | - | landed | `npm run verify:all` EXIT:0（19/19 PASS）；残留拷贝 `grep -c` 两份均 0；两份正文 diff 仅剩 CodeBuddy 子代理约定 | 2026-10-26 |
+
 ## 维护机制
 
 - **建档**：Brainstorm 输出 `Confirmed request`，或 Core 判为创造性工作（Design / Build 路由）时，立即写 `open` 行；纯问答、纯查询、只读验证不建档。
 - **推进**：每个节点只把状态推进一格，不回退；「落地物」列填 spec 或计划路径，路径必须真实存在。
 - **终态**：`landed` 与 `opt-out` 都必须填证据；`opt-out` 还必须写原因（谁在何时选择跳过哪类文档）。
+- **证据写逐项摘要**：写 `verify:all: test PASS / learn PASS / trigger PASS …`，不要只写"退出码 0"。汇总数字只能证明整体通过，逐项摘要才能回答"哪一项曾经拦下过问题"；连续三次全项 PASS 后，才值得追问某一项是否还在起作用。
 - **跳过权在用户**：沉默或含糊回复不算跳过，默认记录照常生成；只有用户显式说不需要文档才写 `opt-out`。跳过只豁免文档正文，不豁免验证。
 - **机检**：`node scripts/devflow-plan.js --index` 校验状态白名单、终态证据、`opt-out` 原因与落地物路径；`node scripts/devflow-plan.js --loop` 输出各状态计数、计划落地率与晋升候选。

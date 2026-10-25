@@ -70,12 +70,14 @@
 
 | 事件 | 落位 | 必填 | 机检 |
 |---|---|---|---|
-| 需求确认 → Spec → Plan → 构建 → 落地 | `docs/requirements.md` 同一行逐格推进 | 状态、落地物路径、终态证据；`opt-out` 写原因 | index |
+| 需求确认 → Spec → Plan → 构建 → 落地 | `docs/requirements.md` 同一行逐格推进 | 状态、落地物路径、终态证据（逐项摘要，非仅整体退出码）；`opt-out` 写原因 | index |
 | 计划新建或完成 | `docs/plans/INDEX.md` 一行 + 计划头 `Status` | Status 与文件头一致；done 有落地证据 | index |
 | 新增 spec | 跑 `--refresh` 重建 `docs/specs/INDEX.md` | 派生索引覆盖全部 spec，不手写 | check |
 | 能力或接口契约变化 | `docs/features/INDEX.md` 一行 | 触发词、入口、验证命令、关键文件、来源计划 | index |
 | 每次落地 | 项目根 PROGRESS.md 摘要；`docs/project-knowledge/` change-log | 日期、变更、涉及模块；业务语义待确认 | 无 |
 | 新根文档 | 本页「根文档」区登记 | 路径真实存在 | check |
 | 可复用经验 | `.copilot/cards/*.md` + `../.copilot/LEARNING_INDEX.md` | Trigger、Lesson、Next action、Evidence | learn |
+
+终态证据写逐项摘要（`verify:all: test PASS / learn PASS / …`），不写"退出码 0"。汇总数字只能证明整体通过，逐项摘要才能回答"哪一项曾经拦下过问题"。
 
 需求状态机：`open -> designed -> planned -> built -> landed`；非终态可转 `opt-out` 或 `dropped`。
