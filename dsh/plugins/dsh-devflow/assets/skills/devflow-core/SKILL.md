@@ -35,6 +35,8 @@ Before completion, reread every user-visible surface and wrapper, including file
 
 Read `skills/devflow-core/references/core-methods.md` before route selection. It supplies Method 0, shared route rules, and the owner map. Do not load all lifecycle references by default.
 
+Before the first read, emit one line: `Read plan:` followed by the route state, the budget in files, what you are reading and why, and what you are skipping and why. Apply the budget and the over-budget rule from `skills/devflow-core/references/core-methods.md` Method 1.
+
 Read the narrowest relevant project facts, then match the task keywords against `docs/features/INDEX.md` and `docs/plans/INDEX.md` when present and open only the matched row's entry file or ledger section; an index over 40 rows is filtered with `node scripts/devflow-plan.js --index --query 关键词`. Do not bulk-read capability documents. Then progressively recall learning and project knowledge. Scan available skills and record a matching external specialist skill; a specialist may perform bounded specialist work inside the current node while DevFlow retains route and node ownership.
 
 At handoff, the shared execution receipt (`core-methods.md`) explains this route, the preference application, and the recall outcome: cite which matched records actually changed a decision this session and where they were applied. A missing index, card, or knowledge pack is a non-blocking fact reported as such — it must never be reported as recalled, applied, or executed.

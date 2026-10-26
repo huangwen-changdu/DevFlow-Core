@@ -2,8 +2,10 @@
 
 - Trigger: sync rules, update rule documents, rules synchronization, 规则同步, 规则文件同步, 合并更新.
 - Lesson: Rule documentation sync is a merge/overlay update. Copy current source rules into each active target without deleting target-only rules.
+- Rejected: not-recorded (legacy card; the rejected alternative was never captured before this field existed)
 - Next action: Next time syncing rules, use overlay copy to `C:\Users\huangwen\.codebuddy\rules` and `C:\Users\huangwen\.workbuddy\rules`, then verify every source rule hash matches each target.
 - Scope: project
 - Related: `.codebuddy/rules/`, `C:\Users\huangwen\.codebuddy\rules`, `C:\Users\huangwen\.workbuddy\rules`
 - Evidence: overlay synchronization procedure and source-hash verification rule.
+- Evidence Level: L4
 - Invalidation: Revise when managed target locations or merge semantics change.

@@ -2,8 +2,10 @@
 
 - Trigger: reference project, Ponytail, agent-skills, superpowers, pua, methodology, skill migration, adapt a skill to DevFlow, absorbed capability, actual usage, not just mentioned.
 - Lesson: Saying a reference project or methodology was absorbed is not enough, and copying the source skill files is often the wrong artifact. The useful behavior must be traced from the source project's actual rules/skills into this project's existing runtime flow, local reference files, commands, entry rules, installers, user-level sync, and validation.
+- Rejected: not-recorded (legacy card; the rejected alternative was never captured before this field existed)
 - Next action: Next time asked to migrate or absorb a reference skill, first read the source project's real entry files/SKILL.md/references, then decide whether the behavior belongs inside an existing DevFlow skill or as a new skill. Prefer adapting the behavior into the current DevFlow route when the user asks it to "work with this project's flow"; land a local runtime asset under `skills/*/references/*`, require the existing skill or command to read it, include it in target/user installers and manifests, and add validation checks.
 - Scope: project
 - Related: `skills/devflow-core/references/reference-projects.md`, `skills/devflow-brainstorm/references/interview-discipline.md`, `skills/devflow-pua/references/methodology-router.md`, `skills/devflow-pua/references/methodology-library.md`, `skills/devflow-pua/references/flavor-display.md`, `skills/devflow-cut/SKILL.md`, `commands/devflow-*.toml`, `scripts/install-devflow*.js`, `scripts/validate-devflow.js`
 - Evidence: local reference-project audit and installed runtime contracts.
+- Evidence Level: L4
 - Invalidation: Revise when a source capability is removed or its local owner changes.

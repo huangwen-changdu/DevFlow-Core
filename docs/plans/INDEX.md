@@ -1,6 +1,6 @@
 # 计划索引（INDEX）
 
-> 摘要: 用途=一眼看清每份计划的状态与落地证据 | 维护=Plan 批准与 Prove PASS 时更新本表 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-10-10
+> 摘要: 用途=一眼看清每份计划的状态与落地证据 | 维护=Plan 批准与 Prove PASS 时更新本表 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-10-25
 
 ## 检索方式（给 AI 的用法）
 
@@ -47,6 +47,7 @@
 | 2026-09-23 | [2026-09-23-devflow-grill-entry-and-structured-clarification](2026-09-23-devflow-grill-entry-and-structured-clarification.md) | done | Brainstorm Confirmed request（2026-09-23 会话，Depth B）+ 本计划随附 Cut Decision | npm run verify:all exit=0；trigger:verify 20 场景 + parity PASS；六 home --check 6/6；Scenario 1H 实走走查 | DevFlow 拷问直达 |
 | 2026-09-25 | [2026-09-25-anti-slop-prose-design-quality](2026-09-25-anti-slop-prose-design-quality.md) | done | 用户请求（2026-09-25 会话确认：提炼内嵌 + 暂不安装，Depth B）+ 本计划随附 Cut Decision | npm run verify:all 退出码 0（18 项全 PASS）；--index PASS；budget 165457/280000；verify-plugin 14 skills/5 self-tests；sync-assets 幂等；版本 0.7.1 / 0.7.1 / 0.5.1 / 0.11.1 | 反 AI 味质量门 |
 | 2026-10-10 | [2026-10-10-skill-orchestration-visibility](2026-10-10-skill-orchestration-visibility.md) | done | 用户请求（2026-10-10：skills 开发编排统计与修复方案）+ 用户指令批准实施（B 深度） | npm run verify:all 退出码 0（18 项全 PASS，budget 169148/280000）；trigger:verify 23 场景；capability:eval 13/13 PASS；doctor 六 home 6/6 pass；verify-plugin PASS | DevFlow 执行回执 |
+| 2026-10-25 | [2026-10-25-read-budget-and-load-visibility](2026-10-25-read-budget-and-load-visibility.md) | done | Brainstorm Confirmed request（2026-10-25，Depth B）+ 本计划随附 Cut Decision | npm run verify:all 退出码 0（19 项全 PASS）；npm test 18 runtime 文件；SKILL 三处 md5 05bc9bc9、core-methods 三处 md5 16c97d1e；反向用例 BROKEN 1 报 `read-budget contract` | Sense 读取预算与加载可见性 |
 
 ## 维护机制
 

@@ -180,6 +180,26 @@ function assertCapabilityContract(coreMethods, handoffSurfaces) {
   }
 }
 
+/** Guards the read budget: Sense must declare a countable cap and a stop rule, not an adjective. */
+function assertReadBudgetContract(coreMethods, coreSkill) {
+  for (const term of ["Read plan:", "Read budget:", "Reads before Change", "route pending"]) {
+    assert(coreMethods.includes(term), `core-methods.md must own the read-budget contract: ${term}`);
+  }
+  assert(coreSkill.includes("Read plan:"), "devflow-core/SKILL.md must require the read plan line before the first read");
+  assert(
+    coreMethods.includes("file content enters the context"),
+    "core-methods.md read budget must count reads by content rather than by tool, or grep/cat bypasses the cap"
+  );
+  // The budget table and the route table are separate lists; without this guard a route can be
+  // added to one and silently missing from the other, which is how Problem went unbudgeted.
+  for (const route of ["Problem", "Fast", "Design-lite", "Design", "Build", "Recovery"]) {
+    assert(
+      new RegExp(`^\\| ${route} \\|`, "m").test(coreMethods),
+      `core-methods.md read budget must cover every route; missing ${route}`
+    );
+  }
+}
+
 const coreMethods = read("skills/devflow-core/references/core-methods.md");
 assertCapabilityContract(coreMethods, [
   ["skills/devflow-cut/SKILL.md", read("skills/devflow-cut/SKILL.md")],
@@ -187,6 +207,8 @@ assertCapabilityContract(coreMethods, [
   ["commands/devflow-plan.toml", read("commands/devflow-plan.toml")],
   ["skills/devflow-build/SKILL.md", read("skills/devflow-build/SKILL.md")]
 ]);
+
+assertReadBudgetContract(coreMethods, read("skills/devflow-core/SKILL.md"));
 
 /** Protects Brainstorm from regressing to either premature completion or category-by-category interrogation. */
 function assertBrainstormFollowUpContract(skill, discipline) {
@@ -385,6 +407,38 @@ for (const [label, agentsClause, personaClause] of [
   }
 }
 
+/**
+ * Guards the senior-engineer persona family: four host formats plus the read-only subagent must restate the
+ * authority order, while the Design/Completion contract stays AGENTS.md-owned. The 2026-10-26 dedup was verified
+ * with a hand-picked grep, so .opencode and .codex kept their copies until this assertion existed.
+ */
+const personaFiles = [
+  ".github/agents/senior-engineer.agent.md",
+  ".opencode/agents/senior-engineer.md",
+  ".opencode/agents/senior-engineer-investigate.md",
+  ".codebuddy/agents/senior-engineer.md",
+  ".codex/agents/senior-engineer.toml"
+];
+for (const rel of personaFiles) {
+  const body = read(rel);
+  assert(body.includes("不新增流程、不重写生命周期"), `${rel} must restate the DevFlow Core authority order`);
+  assert(body.includes("Output Contracts"), `${rel} must point at the AGENTS.md Output Contracts instead of restating them`);
+  for (const marker of ["Goal / Smallest useful plan", "Command / Result / Adversarial review"]) {
+    assert(
+      !body.includes(marker),
+      `${rel} copies the output contract (${marker}); keep it single-sourced in AGENTS.md Output Contracts`
+    );
+  }
+}
+// The subagent reads the canonical capability contract instead of forking a fifth copy of it, and stays read-only.
+const investigateAgent = read(".opencode/agents/senior-engineer-investigate.md");
+assert(
+  investigateAgent.includes(".github/agents/senior-engineer.agent.md"),
+  "senior-engineer-investigate must read the canonical capability contract rather than copy it"
+);
+assert(investigateAgent.includes("edit: deny"), "senior-engineer-investigate must stay read-only (edit: deny)");
+assert(investigateAgent.includes("mode: subagent"), "senior-engineer-investigate must stay dispatchable (mode: subagent)");
+
 for (const directory of fs.readdirSync(path.join(root, "skills"), { withFileTypes: true })) {
   if (!directory.isDirectory() || !directory.name.startsWith("devflow-")) continue;
   const rel = `skills/${directory.name}/SKILL.md`;
@@ -425,7 +479,7 @@ const cards = linkedCards(index);
 assert(cards.length > 0, "learning index must link at least one card");
 for (const card of cards) {
   const body = read(card);
-  for (const field of ["- Trigger:", "- Lesson:", "- Next action:", "- Scope:", "- Related:", "- Evidence:", "- Invalidation:"]) {
+  for (const field of ["- Trigger:", "- Lesson:", "- Rejected:", "- Next action:", "- Scope:", "- Related:", "- Evidence:", "- Evidence Level:", "- Invalidation:"]) {
     assert(body.includes(field), `${card} missing learning-card field ${field}`);
   }
 }

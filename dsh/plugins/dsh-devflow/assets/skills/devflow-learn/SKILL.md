@@ -116,12 +116,29 @@ Handoff: `devflow-prove PASS` -> `devflow-learn` review -> capability row in `do
 
 - Trigger: <next time signal>
 - Lesson: <what this work taught>
+- Rejected: <the alternative that was tried or seriously considered, and why it lost; write not-recorded only when no alternative faced a real decision>
 - Next action: Next time encountering <X>, first do <Y>, do not do <Z>.
 - Scope: session | project | global | skill | module
 - Related: <files or commands>
 - Evidence: <checked source, command, or verified correction that supports this card>
+- Evidence Level: L1 | L2 | L3 | L4
 - Invalidation: <changed contract, failed proof, or review trigger that requires this card to be revised or retired>
 ```
+
+`Lesson` answers what happened; `Rejected` answers why the other path lost. A card without `Rejected` records a rule, not a decision, and cannot explain itself six months later.
+
+## Evidence Level
+
+Grade a card by the form of its `Evidence`, never by the conviction of its wording:
+
+| Level | Evidence form | Confidence cap |
+|---|---|---|
+| L1 | a rerunnable command quoted with its actual output or exit code | 0.9 |
+| L2 | mechanically copyable from an existing artifact: hash, byte parity, row count, diff | 0.8 |
+| L3 | a path, symbol, or contract that must exist, with no observed result | 0.5 |
+| L4 | free-form self-report such as "inspected during implementation" | 0.4 |
+
+`Promotion Rules` cannot push a card above its level's cap. A card at L3 or L4 that needs more authority first upgrades its evidence form, not its confidence number.
 
 ## Index Format
 
@@ -130,10 +147,12 @@ Handoff: `devflow-prove PASS` -> `devflow-learn` review -> capability row in `do
 
 Read this index first. Only read a card when its trigger matches the current task.
 
-| Card | Trigger | Scope | Confidence |
-|---|---|---|---:|
-| [Card Name](cards/card-name.md) | trigger words | project | 0.5 |
+| Card | Trigger | Scope | Confidence | Evidence Level |
+|---|---|---|---:|---|
+| [Card Name](cards/card-name.md) | trigger words | project | 0.5 | L1 |
 ```
+
+`Evidence Level` makes a rule-restatement card visible beside a real lesson: a high-confidence L4 row is the signal that the number is unsupported.
 
 ## Promotion Rules
 
@@ -142,7 +161,7 @@ Read this index first. Only read a card when its trigger matches the current tas
 | 1 | Create/update card, confidence 0.3-0.5 |
 | 2 | Raise confidence and force recall before acting |
 | 3 | Propose `AGENTS.md` or platform rule update |
-| Card confidence reaches 0.7 | Propose the rule or skill change and create one `docs/requirements.md` row for the proposal, so learning returns to the requirement loop |
+| Card confidence reaches 0.7 within its `Evidence Level` cap | Propose the rule or skill change and create one `docs/requirements.md` row for the proposal, so learning returns to the requirement loop |
 | 4+ | Propose skill or command automation |
 | User explicitly says remember/learn/沉淀 | Promote immediately if scope is clear |
 
@@ -176,6 +195,8 @@ The two branch lines are the closure receipt for the conditional post-PASS hando
 | "I'll remember it." | Memory without an index is not recallable. |
 | "Let's store everything." | Too many cards become noise; record only repeatable or costly lessons. |
 | "Read all cards just in case." | Index first, matched card only. |
+| "The other option was obviously worse." | An obvious alternative still needs one line in `Rejected`, or the next reader re-litigates it. |
+| "This card is proven, so confidence 0.8 is fair." | Confidence follows evidence form. An L4 card claiming 0.8 is unsupported no matter how true it sounds. |
 
 ## Verification
 
@@ -186,7 +207,8 @@ Before leaving this skill, confirm:
 - [ ] `LEARNING_INDEX.md` was checked or created.
 - [ ] Only matched cards were read.
 - [ ] Repeated user corrections, repeated user challenges, and misplaced content were recorded or explicitly classified as already covered.
-- [ ] New or updated card has trigger, lesson, next action, scope, related files, evidence, and invalidation condition.
+- [ ] New or updated card has trigger, lesson, rejected alternative, next action, scope, related files, evidence, evidence level, and invalidation condition.
+- [ ] Card confidence does not exceed its `Evidence Level` cap, and the index row carries the same level.
 - [ ] A user-visible capability or interface-contract change added or updated one `docs/features/INDEX.md` row with trigger words, or was reported as `no-change`.
 - [ ] Business-semantic changes were reported as candidates and await user confirmation before knowledge-package maintenance.
 - [ ] Completion output includes learning closure.
