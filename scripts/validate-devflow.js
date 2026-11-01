@@ -64,7 +64,7 @@ for (const rel of requiredFiles) assert(fs.existsSync(path.join(root, rel)), `mi
 
 const agents = read("AGENTS.md");
 assert(Buffer.byteLength(agents, "utf8") <= 8 * 1024, `AGENTS.md must be 8 KiB or smaller, found ${Buffer.byteLength(agents, "utf8")} bytes`);
-assert(agents.toLowerCase().includes("runtime prompt"), "AGENTS.md must identify its startup-only boundary");
+assert(agents.toLowerCase().includes("harness contract"), "AGENTS.md must identify its startup-only harness boundary");
 assert(agents.includes("When skills are unavailable"), "AGENTS.md must retain portable fallback");
 assert(!agents.includes("Method 0 (Architect Mindset) through Method 15"), "AGENTS.md must not require every lifecycle method");
 
@@ -301,9 +301,10 @@ assert(cutSkill.includes("Ponytail"), "cut SKILL.md must define the Ponytail ter
 assert(cutMethods.includes("canonical Minimal Solution Ladder lives in `skills/devflow-cut/SKILL.md`"), "cut-methods.md must point at the canonical ladder");
 assert(!cutMethods.includes("1. No change."), "cut-methods.md must not define a second ladder");
 
-/** Guards the lifecycle status-line rule on both always-visible surfaces. */
-assert(agents.includes("end each user-facing message with one status line"), "AGENTS.md must require the lifecycle status line");
-assert(core.includes("end each user-facing message with one status line"), "devflow-core must require the lifecycle status line");
+/** Guards the lifecycle receipt/status rule on both always-visible surfaces. */
+assert(agents.includes("one fenced receipt"), "AGENTS.md must require the single fenced receipt");
+assert(core.includes("merge it into the same fenced receipt block"), "devflow-core must require merging the status into the fenced receipt");
+assert(agents.includes("changes no action does not appear"), "AGENTS.md must forbid a status line that changes no action");
 assert(agents.includes("maintain a `todo_write` list with one item per active work unit"), "AGENTS.md must require todo/goal status visibility");
 assert(core.includes("maintain a `todo_write` list with one item per active work unit"), "devflow-core must require todo/goal status visibility");
 
@@ -428,6 +429,46 @@ for (const rel of personaFiles) {
       !body.includes(marker),
       `${rel} copies the output contract (${marker}); keep it single-sourced in AGENTS.md Output Contracts`
     );
+  }
+  // Notes addressed to the file's maintainer get recited as answers; keep them in HTML comments or the ledger.
+  const spoken = body.replace(/<!--[\s\S]*?-->/g, "");
+  for (const note of ["以上是取舍倾向", "不复制该契约", "改那份，别改这份", "归 DevFlow Core 所有"]) {
+    assert(!spoken.includes(note), `${rel} states a maintenance note (${note}) that will be recited as an answer`);
+  }
+}
+
+/**
+ * The persona loads on every turn next to AGENTS.md's 8 KiB-capped contract, so it carries its own ceiling and growth
+ * has to displace something. Host copies compare byte for byte after the legitimate deltas are stripped: a handful of
+ * anchor phrases let .opencode and .codebuddy drift through the rest of the body for a whole release.
+ */
+const canonicalPersona = read(".github/agents/senior-engineer.agent.md");
+assert(
+  Buffer.byteLength(canonicalPersona, "utf8") <= 15 * 1024,
+  `senior-engineer.agent.md must stay within 15 KiB, found ${Buffer.byteLength(canonicalPersona, "utf8")} bytes`
+);
+const personaBody = (rel) =>
+  read(rel)
+    .replace(/^---\n[\s\S]*?\n---\n/, "")
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/## 作为 CodeBuddy 子代理的额外约定[\s\S]*$/, "")
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join("\n");
+for (const rel of [".opencode/agents/senior-engineer.md", ".codebuddy/agents/senior-engineer.md"]) {
+  assert(
+    personaBody(rel) === personaBody(".github/agents/senior-engineer.agent.md"),
+    `${rel} body drifted from the canonical persona; re-sync it instead of editing the copy`
+  );
+}
+// The CodeBuddy rule file restates the standards without being a persona copy, so it is not body-compared; it must
+// still point at the canonical contract, and no restatement may quietly re-add a rule the persona family ruled out.
+const personaRule = ".codebuddy/rules/senior-engineer/RULE.mdc";
+assert(read(personaRule).includes(".github/agents/senior-engineer.agent.md"), `${personaRule} must point at the canonical persona`);
+for (const rel of [...personaFiles, personaRule]) {
+  for (const ruledOut of ["至少 3 个可证伪假设", "没有这张图不动手", "先产出模块边界"]) {
+    assert(!read(rel).includes(ruledOut), `${rel} re-adds a ruled-out rule (${ruledOut})`);
   }
 }
 // The subagent reads the canonical capability contract instead of forking a fifth copy of it, and stays read-only.

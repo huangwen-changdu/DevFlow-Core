@@ -18,10 +18,10 @@ Brainstorm required: yes/no
 Depth hint: skip / compact / standard / deep / none
 Preferences applied: <count of global preference cards matched this turn>
 Next skill: <skill name or none>
-Status: [DevFlow: <node> -> <next> | awaiting approval / in progress]
+Status: none | ▸ devflow · <node> → <next> · awaiting approval
 ```
 
-While a DevFlow lifecycle node is active, end each user-facing message with one status line: `[DevFlow: <node> -> <next> | awaiting approval / in progress]`. It reflects the current node without reloading the owner skill. Keep progress visible in the persistent UI: maintain a `todo_write` list with one item per active work unit (lifecycle node, background job, or subagent), marking it `completed` the moment it settles, and use `create_goal` for the session's long-running objective.
+A status line never stands alone: while a DevFlow lifecycle node is active, merge it into the same fenced receipt block at the end of the message, as `▸ devflow · <node> → <next> · awaiting approval`, and only when the user must decide. It reflects the current node without reloading the owner skill. Keep progress visible in the persistent UI: maintain a `todo_write` list with one item per active work unit (lifecycle node, background job, or subagent), marking it `completed` the moment it settles, and use `create_goal` for the session's long-running objective.
 
 ## Delivery Surfaces
 

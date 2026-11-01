@@ -808,18 +808,18 @@ Requirement: implement CSV export for orders. Do it.
 
 Expected behavior:
 
-- While any lifecycle node is active — Brainstorm clarification, user-selected Cut, Build, Prove — every user-facing message ends with one status line: `[DevFlow: <node> -> <next> | awaiting approval / in progress]`.
-- The status line follows the handoff without reloading the owner skill: `[DevFlow: Brainstorm -> Cut | awaiting approval]` becomes `[DevFlow: Cut -> Build | in progress]` after the user selects a depth.
-- The status line marks gates explicitly: `awaiting approval` at Brainstorm confirmation, Spec or Plan approval, and `CUT_REDUCE`/`CUT_REUSE` confirmation; `in progress` during execution.
-- The status line is one line; it does not replace the node's required output contract (Confirmed request, Cut Decision, Implementation Slices, Completion report).
+- While any lifecycle node is active — Brainstorm clarification, user-selected Cut, Build, Prove — every user-facing message ends with one fenced receipt whose single line is `▸ devflow · <node> · <state> · <evidence>`, carrying the status only when the user must decide.
+- The status follows the handoff without reloading the owner skill: `▸ devflow · Brainstorm → Cut · awaiting approval` becomes `▸ devflow · Cut → Build · in progress` after the user selects a depth.
+- The status marks gates explicitly: `awaiting approval` at Brainstorm confirmation, Spec or Plan approval, and `CUT_REDUCE`/`CUT_REUSE` confirmation; `in progress` during execution. It never stands outside the fenced block, and it does not appear at all when it would not change the user's next action.
+- The receipt is one line; it does not replace the node's required output contract (Confirmed request, Cut Decision, Implementation Slices, Completion report).
 - The persistent todo list stays current: one `todo_write` item per active work unit (lifecycle node, background job, subagent), marked `completed` the moment it settles; a long-running session objective lives in `create_goal`.
 
 Pass check:
 
 ```text
-Status: [DevFlow: Brainstorm -> Cut | awaiting approval]
-Status: [DevFlow: Cut -> Build | in progress]
-Status: [DevFlow: Build -> Prove | in progress]
+Status: ▸ devflow · Brainstorm → Cut · awaiting approval
+Status: ▸ devflow · Cut → Build · in progress
+Status: ▸ devflow · Build → Prove · in progress
 Todo: [node items in_progress] -> completed on settle
 Command: <actual verification>
 Result: <key output>

@@ -71,7 +71,7 @@ DevFlow-Core 是一个可安装的 AI 编码代理工作流框架：把问题/�
 - 路由表 6 条：Problem / Fast / Design-lite / Design / Build / Recovery
 - 直接成功边：A `Brainstorm→Spec→Cut→Plan→Build→Prove`；B `Brainstorm→Cut→Plan→Build→Prove`；C `Brainstorm→Cut→Build→Prove`
 - 回 Core 的非唯一状态：`CUT_REDUCE/REUSE/BLOCKED`、scope drift、`BUILD_BLOCKED`、Proof `FAIL/BLOCKED`、PUA recovery
-- 生命周期节点活跃时，每条用户可见消息尾部带状态行：`[DevFlow: <node> -> <next> | awaiting approval / in progress]`
+- 生命周期节点活跃时，只在需要你拍板的情况下，把状态并入消息末尾那个 fenced 回执块：`▸ devflow · <node> → <next> · awaiting approval`；不改变你下一步动作的行不出现
 
 ## 验证矩阵
 

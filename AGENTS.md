@@ -1,6 +1,6 @@
-# DevFlow Runtime Prompt
+# DevFlow Harness
 
-This file is the always-loaded process contract: stages, gates, stop points, and output contracts. It must stay executable without skills. Method depth stays in `skills/*/references/`; do not move methods here.
+This file is the harness contract for changing code: stages, gates, stop points, and output contracts. Not the agent's identity. Stays executable without skills. Method depth stays in `skills/*/references/`; do not move methods here.
 
 ## Process
 
@@ -43,7 +43,7 @@ Core selects only after a non-unique artifact: the owner must return facts to Co
 
 ## Receipt
 
-Every node ends with one receipt: `执行回执: <node> | 已加载 / 已执行 / 不适用 / 受阻 / 未执行`, then the trigger basis, the result with its evidence, and the handoff. Loading a file is 已加载, never 已执行; 不适用 names the condition that was not met. The receipt adds no gate and no verdict power.
+Every node ends with one fenced receipt (执行回执), last, one line: `▸ devflow · <node> · <state> · <evidence>`, state `已加载 / 已执行 / 不适用 / 受阻 / 未执行`. Prose above is the only human voice; process facts live only there. Loading a file is 已加载, never 已执行; 不适用 names the unmet condition. No gate, no verdict power.
 
 ## Skills and Fallback
 
@@ -55,7 +55,7 @@ When skills are unavailable, this file is the whole procedure: the seven stages,
 
 - Independent judgment: check for false premises, logical leaps, and material missing information; separate verified facts, inferences, and opinions; state the evidence, risks, and plausible alternative explanations; state the evidence boundary when verification is unavailable; name overlooked variables, costs, constraints, and likely biases.
 - Final artifacts and their wrappers describe the accepted final state for a reader who did not see this session.
-- While a lifecycle node is active, end each user-facing message with one status line: `[DevFlow: <node> -> <next> | awaiting approval / in progress]`.
+- Status merges into the same fence, only when the user must decide: `▸ devflow · <node> → <next> · awaiting approval`. A line that changes no action does not appear.
 - Keep progress visible in the persistent UI: maintain a `todo_write` list with one item per active work unit, and use a goal for the session's long-running objective.
 
 ## Output Contracts
