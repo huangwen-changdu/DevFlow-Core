@@ -13,7 +13,7 @@
 | 现在做到哪 | `requirements.md` | 活 |
 | 某个能力现状 | `docs/features/INDEX.md` | 活 |
 | 某项设计为什么这样 | `docs/specs/INDEX.md`、`docs/plans/INDEX.md` | 快照 |
-| 踩过什么坑 | `../.copilot/LEARNING_INDEX.md` | 活 |
+| 踩过什么坑 | `../.copilot/LEARNING_INDEX.md`、`hotfix-log.md` | 活 |
 
 ## 目录台账
 
@@ -23,6 +23,7 @@
 | `../README.md` | 产品定位、安装、验证命令 | 活 | 安装面或验证命令变化 |
 | `project-knowledge/AI-START-HERE.md` | 项目执行心智、启动就绪 | 活 | 结构、命令数、技能数变化 |
 | `requirements.md` | 需求台账与状态机（唯一进度真相） | 活 | 每次需求推进 |
+| `hotfix-log.md` | 缺陷修复的改动点台账 | 活 | 每次缺陷修复 |
 | `features/INDEX.md` | 能力现状与触发词 | 活 | 能力新增或行为变化 |
 | `plans/INDEX.md` | 计划状态与落地率 | 活 | 计划新建或落地 |
 | `specs/` | 设计契约快照 | 快照 | 由 `specs/INDEX.md` 维护 |
@@ -37,6 +38,7 @@
 
 - `PRD.md` — 产品方向与边界
 - `requirements.md` — 需求台账
+- `hotfix-log.md` — 缺陷修复改动点台账
 - `iteration-plan.md` — 阶段排期
 - `platform-setup.md` — 各宿主安装与配置
 - `dsh-plugins-guide.md` — DSH 插件包开发与发布
@@ -75,6 +77,7 @@
 | 新增 spec | 跑 `--refresh` 重建 `docs/specs/INDEX.md` | 派生索引覆盖全部 spec，不手写 | check |
 | 能力或接口契约变化 | `docs/features/INDEX.md` 一行 | 触发词、入口、验证命令、关键文件、来源计划 | index |
 | 每次落地 | 项目根 PROGRESS.md 摘要；`docs/project-knowledge/` change-log | 日期、变更、涉及模块；业务语义待确认 | 无 |
+| 一次缺陷修复 | `docs/hotfix-log.md` 表尾追加一行 | 日期、症状、根因、改动点、涉及模块、验证命令；可复用则建卡并回填 | 无 |
 | 新根文档 | 本页「根文档」区登记 | 路径真实存在 | check |
 | 可复用经验 | `.copilot/cards/*.md` + `../.copilot/LEARNING_INDEX.md` | Trigger、Lesson、Next action、Evidence | learn |
 

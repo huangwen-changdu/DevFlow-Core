@@ -27,6 +27,7 @@ Extract only knowledge that can help a future task:
 | Review result | Action | Store |
 |---|---|---|
 | Reusable execution experience or proven work pattern | Create or update one focused card | `.copilot/cards/` |
+| A defect fix landed | Append one row: symptom, root cause, change points, modules, verify command, and the linked card or `no` | `docs/hotfix-log.md` |
 | User-visible capability or interface contract changed | Add or update one row: what it does, its trigger words, its entry point, its verify command, and its source plan | `docs/features/INDEX.md` |
 | The same how-to preference was corrected twice | Create or update one `Scope: global` preference card | `.copilot/cards/` |
 | Code-evidenced structure changed | Refresh the pack structure through `devflow-project-knowledge` without waiting for confirmation | `docs/project-knowledge/` |
@@ -51,7 +52,8 @@ Project-knowledge candidates include changed domain semantics, rules, boundaries
    - skip if it is ordinary narration, a one-off fact, already covered, or too context-specific
 6. Create `.copilot/LEARNING_INDEX.md`, `.copilot/cards/`, and one focused card only when the result belongs in project learning; do not create empty learning storage after a no-record review.
 7. Update `.copilot/LEARNING_INDEX.md` when a card changed.
-8. Report learning closure before completion.
+8. Append one `docs/hotfix-log.md` row when the task repaired a defect; `no` in the sediment column means this fix and any later occurrence of the same pattern must become a card.
+9. Report learning closure before completion.
 
 ## Repeat Correction Gate
 

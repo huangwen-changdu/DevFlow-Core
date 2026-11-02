@@ -392,6 +392,7 @@ function render(root, detected, planned = new Set()) {
   lines.push(`| 新增 spec | 跑 \`--refresh\` 重建 ${pathCell("docs/specs/INDEX.md")} | 派生索引覆盖全部 spec，不手写 | check |`);
   lines.push(`| 能力或接口契约变化 | ${pathCell("docs/features/INDEX.md")} 一行 | 触发词、入口、验证命令、关键文件、来源计划 | index |`);
   lines.push("| 每次落地 | 项目根 PROGRESS.md 摘要；`docs/project-knowledge/` change-log | 日期、变更、涉及模块；业务语义待确认 | 无 |");
+  lines.push(`| 一次缺陷修复 | ${pathCell("docs/hotfix-log.md")} 表尾追加一行 | 日期、症状、根因、改动点、涉及模块、验证命令；可复用则建卡并回填 | 无 |`);
   lines.push("| 新根文档 | 本页「根文档」区登记 | 路径真实存在 | check |");
   lines.push(`| 可复用经验 | \`.copilot/cards/*.md\`${learnIndex} | Trigger、Lesson、Next action、Evidence | 无 |`, "");
   lines.push("需求状态机：`open -> designed -> planned -> built -> landed`；非终态可转 `opt-out` 或 `dropped`。", "");
@@ -578,6 +579,7 @@ function selfTest() {
   }
   const generatedMap = fs.readFileSync(path.join(tmp, "docs", "INDEX.md"), "utf8");
   if (!generatedMap.includes("## 记录规范")) throw new Error("self-test expected the generated map to publish the record rules");
+  if (!generatedMap.includes("docs/hotfix-log.md")) throw new Error("self-test expected the record rules to route defect fixes to the hotfix log");
   if (generatedMap.includes("`../.copilot/LEARNING_INDEX.md`")) {
     throw new Error("self-test expected no learning index code span when .copilot is absent");
   }

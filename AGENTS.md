@@ -11,8 +11,8 @@ Run the seven stages in order. Each stage ends with an exit artifact; skip one o
 3. **Gate** — Brainstorm is required for material risk, ambiguity, cross-module or external impact, an irreversible effect, security/data-loss/permission/contract risk, or a missing decision fact. Skip it only when the goal is clear, behavior exists locally, one plausible path exists, impact is local, the change is reversible, no protected risk exists, and proof is quick. Unapproved edits never use Fast. Exit: `Brainstorm required: yes/no` plus a depth hint; STOP for the Confirmed request and the user-selected A/B/C.
 4. **Contract** — Write the smallest contract the route needs: a Design-lite contract (goal, acceptance, exclusions), a Confirmed request, or an approved Spec or Plan. No contract, no change. Exit: the contract artifact.
 5. **Change** — Make the smallest diff that satisfies acceptance. Prefer no change, reuse, an available skill, the standard library, the native platform, an installed dependency, direct configuration, then the minimum new code; add no dependency, abstraction, configuration surface, directory, framework layer, or generic engine without a current accepted need. Keep it locally understandable, testable, and reversible. For a destructive or irreversible change, explain impact, alternatives, verification, and rollback, then wait for confirmation. Exit: diff plus a fresh check.
-6. **Prove** — Run the narrowest sufficient check, then review the gap between the claim and the evidence. Report the Completion block with the real command and result; a completion claim without fresh evidence is FAIL, and a real adversarial gap is FAIL rather than a note. Exit: PASS, FAIL, or BLOCKED.
-7. **Record** — Add one `docs/requirements.md` row when that ledger exists for a creative or problem-directed change. Two corrections to the same boundary, placement, workflow, or wording rule in one lifecycle require a learning card before completion. Write a learning card only for reusable, evidence-backed experience. Keep the knowledge pack current: create it at the first landed change, refresh code-evidenced structure each time, and gate business semantics on confirmation. Update docs only when behavior or a contract changed. Exit: the record, or the reason it does not apply.
+6. **Prove** — Run the narrowest sufficient check, then review the gap between the claim and the evidence. Report the Completion block with the real command and result; a completion claim without fresh evidence is FAIL, and a real adversarial gap is FAIL rather than a note. Recall learning cards and `docs/hotfix-log.md` rows matching this task and what each changed; a card that would have caught a defect here is FAIL. Exit: PASS, FAIL, or BLOCKED.
+7. **Record** — Add one `docs/requirements.md` row when that ledger exists for a creative or problem-directed change. Append one `docs/hotfix-log.md` row for a landed defect fix. Two corrections to the same boundary, placement, workflow, or wording rule in one lifecycle require a learning card before completion. Write a learning card only for reusable, evidence-backed experience. Keep the knowledge pack current: create it at the first landed change, refresh code-evidenced structure each time, and gate business semantics on confirmation. Update docs only when behavior or a contract changed. Exit: the record, or the reason it does not apply.
 
 ## Routes
 
@@ -25,7 +25,7 @@ Run the seven stages in order. Each stage ends with an exit artifact; skip one o
 | Build | Implement, fix, build, or land an approved scope. | `devflow-cut`, then Plan when several steps are needed, then Build and Prove. |
 | Recovery | The same target stays wrong after a repeated correction, or the user asks to switch approach. | `devflow-pua`; an ordinary single correction returns to Core, which re-reads facts and selects the owner. |
 
-Explicit independent review runs `devflow-adversarial` or `devflow-find-fault` on current material and does not enter lifecycle routing. An explicit `spec doc`, requirements document, or design document selects `devflow-spec` after the request is confirmed; `plan`, `implementation plan`, or `task breakdown` selects `devflow-plan` after Cut. Both sit inside the current route. A completion claim enters `devflow-prove`.
+An explicit `spec doc`, requirements document, or design document selects `devflow-spec` after the request is confirmed; `plan`, `implementation plan`, or `task breakdown` selects `devflow-plan` after Cut. Both sit inside the current route. A completion claim enters `devflow-prove`.
 
 ## Flow and Returns
 
@@ -39,7 +39,7 @@ CUT_REDUCE, CUT_REUSE, CUT_BLOCKED, scope drift, BUILD_BLOCKED,
 Proof FAIL or BLOCKED, and PUA recovery -> Core selects the next owner or stops.
 ```
 
-Core selects only after a non-unique artifact: the owner must return facts to Core. STOP for Brainstorm confirmation, Spec approval, Plan approval, and `CUT_REDUCE` or `CUT_REUSE`.
+Core selects only after a non-unique artifact: the owner must return facts to Core. STOP for Brainstorm confirmation, Spec approval, Plan approval, `CUT_REDUCE`, and `CUT_REUSE`.
 
 ## Receipt
 
@@ -49,14 +49,14 @@ Every node ends with one fenced receipt (执行回执), last, one line: `▸ dev
 
 Load `skills/devflow-core/SKILL.md` first, then only the lifecycle reference Core selects. Resolve skills and checker scripts in this order: the project, then `~/.claude`, `~/.codex`, `~/.dsh`. A matching environment skill may perform bounded specialist work and must return a result, not-applicable, or failure facts; it never selects a route, depth, approval, or final status, and DevFlow keeps route and node ownership. A missing skill, index, or checker is a non-blocking fact and never a reason to stop.
 
-When skills are unavailable, this file is the whole procedure: the seven stages, the route table, the flow map, and the output contracts below. Do not invent lifecycle details or claim a specialization that cannot be loaded.
+When skills are unavailable, this file is the whole procedure: the stages, routes, flow map, and contracts below. Do not invent lifecycle details or claim a specialization that cannot be loaded.
 
 ## Always-On Rules
 
 - Independent judgment: check for false premises, logical leaps, and material missing information; separate verified facts, inferences, and opinions; state the evidence, risks, and plausible alternative explanations; state the evidence boundary when verification is unavailable; name overlooked variables, costs, constraints, and likely biases.
 - Final artifacts and their wrappers describe the accepted final state for a reader who did not see this session.
 - Status merges into the same fence, only when the user must decide: `▸ devflow · <node> → <next> · awaiting approval`. A line that changes no action does not appear.
-- Keep progress visible in the persistent UI: maintain a `todo_write` list with one item per active work unit, and use a goal for the session's long-running objective.
+- Keep progress visible in the persistent UI: maintain a `todo_write` list with one item per active work unit, and a goal for the long-running objective.
 
 ## Output Contracts
 
@@ -81,4 +81,4 @@ Judgment: PASS / FAIL / BLOCKED
 
 ## Graphify
 
-Only where `graphify-out/` exists: read `graphify-out/GRAPH_REPORT.md` before architecture answers, navigate `graphify-out/wiki/index.md` when present, and run `graphify update .` after changing code.
+Only where `graphify-out/` exists: read `GRAPH_REPORT.md` before architecture answers, `wiki/index.md` when present, and run `graphify update .` after changing code.

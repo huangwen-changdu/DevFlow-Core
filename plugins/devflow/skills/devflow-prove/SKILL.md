@@ -56,6 +56,7 @@ After development work, adversarial review (对抗式审查) is mandatory before
 
 Adversarial review checklist for code changes:
 
+- **Recall check**: Before editing, name the learning cards and `docs/hotfix-log.md` rows whose trigger matched this task, each with a one-line outcome: prevented, considered and rejected, or not applicable. A matched card that would have prevented a defect this diff introduced is a Blocker; reporting no match without reading `.copilot/LEARNING_INDEX.md` and `docs/hotfix-log.md` is a rubber-stamp.
 - **Correctness**: Does the code actually solve the stated goal? Are edge cases handled?
 - **Regression**: Could this change break sibling callers, shared state, or downstream consumers?
 - **Activation path**: Is the new code actually reachable? Can the user/trigger reach it?
@@ -126,11 +127,9 @@ Rules:
 
 ## Learning Check
 
-Every `PASS` must load `devflow-learn` before the final completion report. The review actively extracts reusable implementation patterns, constrained decisions, effective proof, conventions, invariants, and business-fact candidates from verified work. A card is conditional on useful future-task value; the review itself is mandatory.
+Every `PASS` loads `devflow-learn` before the final completion report. The review is mandatory; a card is conditional on useful future-task value. A code-backed business-semantic change stays a candidate until the user confirms it.
 
-If the user corrected the result, repeated the same rule, or a non-obvious pitfall appeared, preserve the existing `devflow-learn` recovery capture in addition to the `PASS` review.
-
-When a review identifies a code-backed business-semantic change, report the candidate and wait for user confirmation before loading `devflow-project-knowledge`. Do not update `docs/project-knowledge/` automatically.
+When the change repaired a defect, also append one `docs/hotfix-log.md` row: symptom, root cause, change points, modules, verify command, and whether it earned a card. A defect fix without its row is an incomplete record, not a `PASS`.
 
 Report:
 
@@ -142,8 +141,6 @@ Learning closure:
 - New sediment: none/card/rule/skill
 - Next intercept: next time <X>, first do <Y>, do not do <Z>
 ```
-
-Do not create noisy learning entries for one-off facts, raw implementation narration, already-covered lessons, or pure refactors without reusable insight.
 
 ## Pressure Recovery Check
 
