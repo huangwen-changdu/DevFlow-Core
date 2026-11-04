@@ -95,7 +95,7 @@ These gate answers are the Cut node's execution receipt (`core-methods.md`): eac
 
 ## Overengineering Review Tags
 
-When reviewing a diff or plan, output one line per finding:
+When reviewing a diff or plan, output one line per finding. Evidence rules and the Prove boundary for change review live in `references/cut-methods.md` Method 9.
 
 ```text
 <file>:L<line>: <tag>: <what to cut>. <replacement>.
@@ -109,6 +109,8 @@ Tags:
 - `native`: dependency or code doing what the platform already does
 - `yagni`: abstraction/config/layer with no current need
 - `shrink`: same behavior with fewer moving parts
+- `merge`: near-copies that must change together
+- `split`: one unit doing unrelated jobs, hard to read or test; split by job, never by line count
 
 End with:
 

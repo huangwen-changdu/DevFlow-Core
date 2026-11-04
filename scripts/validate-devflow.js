@@ -50,6 +50,7 @@ const requiredFiles = [
   "skills/devflow-core/SKILL.md",
   "skills/devflow-core/references/core-methods.md",
   "skills/devflow-cut/references/cut-methods.md",
+  "skills/devflow-audit/references/full-quality-audit.md",
   "skills/devflow-spec/references/spec-plan-methods.md",
   "skills/devflow-build/references/build-methods.md",
   "skills/devflow-prove/references/proof-recovery-methods.md",
@@ -506,6 +507,7 @@ for (const installer of ["scripts/install-devflow.js", "scripts/install-devflow-
   const body = read(installer);
   for (const reference of [
     "skills/devflow-cut/references/cut-methods.md",
+    "skills/devflow-audit/references/full-quality-audit.md",
     "skills/devflow-spec/references/spec-plan-methods.md",
     "skills/devflow-build/references/build-methods.md",
     "skills/devflow-prove/references/proof-recovery-methods.md",

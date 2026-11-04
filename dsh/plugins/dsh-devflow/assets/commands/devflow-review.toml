@@ -29,7 +29,7 @@ Check:
 - Debt Marker Check: intentional `devflow:` shortcuts include both a ceiling and a revisit trigger
 
 For findings, use:
-<file>:L<line>: <delete|reuse|stdlib|native|yagni|shrink>: <what to cut>. <replacement>.
+<file>:L<line>: <delete|reuse|stdlib|native|yagni|shrink|merge|split>: <what to cut>. <replacement>.
 
 If nothing should be cut, say:
 Lean already. Ship.

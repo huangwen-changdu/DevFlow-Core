@@ -1,6 +1,6 @@
 # 功能索引（INDEX）
 
-> 摘要: 用途=AI 进入仓库的第一跳，一行一路由：有什么功能、触发词是什么、入口在哪、怎么验证 | 维护=Prove PASS 后由 devflow-learn 新增或更新行 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-10-25
+> 摘要: 用途=AI 进入仓库的第一跳，一行一路由：有什么功能、触发词是什么、入口在哪、怎么验证 | 维护=Prove PASS 后由 devflow-learn 新增或更新行 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-11-04
 
 ## 检索方式（给 AI 的用法）
 
@@ -31,6 +31,7 @@
 | DevFlow 简化评审门 | Prove 的代码变更在对抗式与质量评审前先跑简化 pass：五视角查重复/冗余/死代码，治理 AI 式超长命名与冗余备注，只剪枝本次改动引入的无效测试与注释，行为不变，改完必须重跑证明 | 简化代码, 代码简化, 精简, simplify, 清理重复代码, 冗余代码, 死代码, 命名过长, 名字太长, 备注冗余, 注释剪枝, 测试剪枝, 简化评审 | `skills/devflow-prove/references/simplify-pass.md` + `/devflow-simplify` | active | `npm run trigger:verify` | skills/devflow-prove/references/simplify-pass.md, skills/devflow-prove/SKILL.md, skills/devflow-prove/references/code-review-checklist.md, commands/devflow-simplify.toml | - | 2026-10-16 |
 | 代码可读性门 | 把"AI 写的代码读不动"拆成七维可检查门（流程自上而下、决策就近、命名与备注、类型与取值、失败与副作用可见、与邻居一致、测试与 diff 叙事），Build 写后跑、Simplify 修、评审按改动行证据分级，配首读测试与执行回执 | 代码可读性, 可读性, 读不懂, 看不懂代码, 读起来费劲, 让人看得更清晰, 代码清晰度, readability | `skills/devflow-prove/references/code-readability-checklist.md` | active | `npm run trigger:verify` | skills/devflow-prove/references/code-readability-checklist.md, skills/devflow-build/references/build-methods.md, skills/devflow-prove/references/code-review-checklist.md, skills/devflow-prove/references/simplify-pass.md | - | 2026-10-16 |
 | Sense 读取预算与加载可见性 | 每次任务先声明读取预算（按路由 Fast 1 / Design-lite 3 / Design 8 / Build 8 / Recovery 5 个文件）并输出一行读取计划，说明读什么、跳什么；越界时停止并报告而不是静默续读 | 读取预算, 读取计划, Read plan, 读太多, 看太多, 上下文预算, 越界, 少读, Sense 读取 | `skills/devflow-core/references/core-methods.md` + `skills/devflow-core/SKILL.md` | active | `npm test` | skills/devflow-core/references/core-methods.md, skills/devflow-core/SKILL.md, scripts/validate-devflow.js | 2026-10-25-read-budget-and-load-visibility.md | 2026-10-25 |
+| 仓库级质量审计 | 按 bug → 风险 → 规模 → 测试 → 速度 → lean 排序，先声明 assumed load，每条 finding 带具体案例与四要素报告；只报告，不设完成门，完成判定仍归 `devflow-prove` | 审计, audit, 代码体检, 全仓检查, 有什么问题, 能删什么, 过度工程, 死代码, 风险, 性能隐患 | `/devflow-audit` | active | `npm run verify:all` | skills/devflow-audit/SKILL.md, skills/devflow-audit/references/full-quality-audit.md | - | 2026-11-04 |
 
 ## 维护机制
 

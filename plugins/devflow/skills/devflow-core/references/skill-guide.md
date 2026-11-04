@@ -10,7 +10,7 @@ devflow-core -> devflow-brainstorm -> user-selected A/B/C
   -> non-unique artifact: return facts to devflow-core
   -> devflow-pua (when user challenge/repeated miss appears)
   -> devflow-learn (when correction/pitfall appears)
-  -> devflow-audit (when repo-wide overengineering audit is requested)
+  -> devflow-audit (when a repo-wide quality audit is requested)
 ```
 
 ## Skill Responsibilities
@@ -26,7 +26,7 @@ devflow-core -> devflow-brainstorm -> user-selected A/B/C
 | `devflow-prove` | Verify and report evidence before completion. |
 | `devflow-pua` | Stop wrong-path recovery, re-ask or infer the desired result, switch approach, and hand back to Prove/Learn. |
 | `devflow-learn` | Capture reusable corrections and pitfalls into `.copilot` learning cards. |
-| `devflow-audit` | Audit a repository or scope for overengineering candidates without editing files. |
+| `devflow-audit` | Audit a repository or scope for bugs, risk, load failure, missing tests, and cuts without editing files. |
 
 ## Authoring Rules
 

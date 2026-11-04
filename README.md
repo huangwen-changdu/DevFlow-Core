@@ -89,7 +89,7 @@ If a host supports slash commands, use:
 /devflow-simplify simplify a change before review, behavior unchanged
 /devflow-pua      recover when a result is wrong, challenged, or repeatedly misses the target
 /devflow-learn    capture reusable corrections and pitfalls
-/devflow-audit    audit a repository or scope for overengineering candidates
+/devflow-audit    audit a repository or scope for bugs, risk, load failures, missing tests, slowness, and cuts
 /devflow-grill    stress-test / 拷问 a request or plan with one-question clarification
 ```
 
@@ -103,7 +103,7 @@ When installed into a target project, only the target-runtime scripts are copied
 | `node scripts/devflow-plan.js --loop` | Print a read-only loop report: requirement status counts, plan landing rate, feature rows, and learning-card promotion candidates. |
 | `node scripts/devflow-review.js <plan-or-diff-file>` | Check whether a plan or diff includes the required reuse, native, overbuild, diff, and scope gates before detailed review. |
 | `node scripts/devflow-debt.js .` | Harvest intentional `devflow:` simplification markers into a debt report. |
-| `node scripts/devflow-audit.js <target-directory>` | Run a repo-wide audit candidate scan for overengineering, missed reuse, stdlib/native replacements, and YAGNI abstractions. |
+| `node scripts/devflow-audit.js <target-directory>` | Run a repo-wide lean candidate scan for overengineering, missed reuse, stdlib/native replacements, and YAGNI abstractions. The full audit reads this as first-pass evidence and reports correctness, safety, load, and tests separately. |
 | `node scripts/devflow-docs.js --status` / `--init` / `--refresh` / `--check` | Inventory, scaffold, refresh the derived spec index, and verify. The master map stays a router (90-line limit); leaf specs live in the derived `docs/specs/INDEX.md`, rebuilt by `--refresh`. `--init` never overwrites existing files and marks unknown authority rows as `[待确认]`. |
 
 Saved specs should land in the current target project's `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` unless that project already documents another specs path. Saved implementation plans should land in the current target project's `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`. `docs/features/` is for feature ledgers and the capability index, not generated specs or task plans.
@@ -263,7 +263,7 @@ The inventory covers eleven artifacts: `AGENTS.md`, `scripts/devflow-docs.js`, `
 | `devflow-prove` | Run the proof command or scenario, including Skill Activation Check for rule/skill changes; run the simplify pass on code changes before the adversarial and quality reviews, then report command/result/judgment. |
 | `devflow-pua` | Stop wrong-path recovery when the same function, result, or requested capability is repeatedly reported as wrong, incomplete, or missing; re-ask or infer the desired result, switch approach, and return recovery facts plus any Brainstorm re-confirmation need to Core. |
 | `devflow-learn` | Capture reusable corrections and pitfalls into `.copilot` learning cards. |
-| `devflow-audit` | Run a repo-wide audit for overengineering candidates without applying fixes. |
+| `devflow-audit` | Run a repo-wide quality audit — bug, risk, scale, test, speed, lean — without applying fixes; lean-only when the user asks only what can be cut. |
 
 ## DevFlow Brainstorm Interview Discipline
 
@@ -304,7 +304,7 @@ If verification is partial, say what is not covered. If verification cannot run,
 
 | Source Strength | DevFlow-Core Native Capability |
 |---|---|
-| Ponytail | Minimal Solution Ladder, platform-native checklist, root-cause fix check, overengineering review tags, cut intensity, debt markers, ledger command, and repo-wide audit. |
+| Ponytail | Minimal Solution Ladder, platform-native checklist, root-cause fix check, overengineering review tags, cut intensity, debt markers, ledger command, and a repo-wide quality audit with lean as its last dimension. |
 | Agent Skills | Skill anatomy, lifecycle commands, anti-rationalization tables, context/source discipline. |
 | Superpowers | Brainstorm-to-spec-to-plan-to-build handoff, `devflow-spec`, date-prefixed specs under `docs/specs/`, delivery-unit tasks, `Source` tracing with command-level evidence, and verification-before-completion gate. |
 | PUA-Driven Spec Engineering | Fast/Design/Recovery gating, project memory checks, skill activation evidence, Codex proof contract, and Method Lens routing. |

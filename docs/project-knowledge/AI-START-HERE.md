@@ -54,7 +54,7 @@ DevFlow-Core 是一个可安装的 AI 编码代理工作流框架：把问题/�
 | `skills/devflow-pua/` | 压力恢复（停、隔离、换方法） | `references/methodology-router.md`、`references/methodology-library.md`、`references/flavor-display.md` |
 | `skills/devflow-learn/` | PASS 复盘 + 学习卡（索引先行） | — |
 | `skills/devflow-adversarial/` / `skills/devflow-find-fault/` | 用户显式请求的独立评审（不进入生命周期） | — |
-| `skills/devflow-audit/` | 仓库级过度工程扫描 | — |
+| `skills/devflow-audit/` | 仓库级质量审计（bug/风险/规模/测试/速度/lean 六维，lean 在最后；只报告，不设完成门） | `references/full-quality-audit.md` |
 | `skills/devflow-project-knowledge/` | 业务知识包维护（唯一维护者） | — |
 | `skills/devflow-docs-followup/` | 验证过的功能完成后的可选文档询问 | — |
 

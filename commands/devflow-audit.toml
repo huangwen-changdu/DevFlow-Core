@@ -1,6 +1,9 @@
-description = "Audit a repository or scope for overengineering and code that can be deleted."
+description = "Audit a repository or named scope for bugs, risk, load failures, missing tests, slowness, and code that can be deleted."
 prompt = '''
-Audit the repository or named scope for overengineering only.
+Audit the repository or named scope like the senior developer who will be paged when it breaks.
+Load `skills/devflow-audit/SKILL.md`, then `skills/devflow-audit/references/full-quality-audit.md`.
+
+Order of importance: correct, safe, holds under load, tested, fast, lean. State the assumed load.
 
 When `scripts/devflow-audit.js` exists, run:
 
@@ -16,17 +19,16 @@ node ~/.codex/scripts/devflow-audit.js <target-directory>
 node ~/.claude/scripts/devflow-audit.js <target-directory>
 ```
 
-Use the script output as a first-pass candidate scan, then read referenced code before reporting important findings.
+The script is a first-pass scan for lean candidates only. Read referenced code before reporting any finding.
 
-Scope: overengineering and complexity only. Do not report correctness, security, performance, or style issues as audit findings.
+Report numbered findings in Must fix / Should fix / Nice to have, each with What this is, Problem, Fix, and If we skip it. End with:
 
-Findings use:
-<file>:L<line>: <delete|reuse|stdlib|native|yagni|shrink>: <what to cut>. <replacement>.
-
-Rank biggest useful cut first.
-End with:
+Verdict: ...
 net: -<N> lines, -<M> deps possible.
+Not checked: ...
 
-If nothing should be cut:
-Lean already. Ship.
+When the user asks only what can be cut, report the lean dimension alone, one line per finding:
+<file>:L<line>: <delete|reuse|stdlib|native|yagni|shrink|merge|split>: <what to cut>. <replacement>.
+
+Change no files.
 '''

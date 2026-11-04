@@ -58,6 +58,26 @@ Readability Check: local names/structure expose <intent, key rules, failure path
 
 A simpler solution may replace a nearby pattern when it improves correctness, readability, maintainability, or measured performance without breaking an accepted contract. Do not add a structure merely to satisfy a principle name.
 
+## Method 9: Change Review, Cut Dimension
+
+Load this section when the subject is a change — uncommitted diff, branch, commit, PR, or file set — and the question is what should not exist or should be smaller.
+
+Correctness, security, load behavior, test coverage, and speed belong to `devflow-prove` and its Code Review Report. Do not rebuild that report here. Report the cut findings, and name the dimensions left to Prove.
+
+- Read wider than the diff: callers of every changed function, the functions it calls, the tests, and the nearest convention.
+- Every finding needs a concrete case and a smaller current replacement. Size alone is not a finding.
+- Search the whole tree — tests, fixtures, config, string and dynamic references — before calling code unused.
+- A `devflow: <ceiling>, revisit when <trigger>` marker inside the change is a recorded decision, not a finding, unless the assumed load already crosses the ceiling.
+- Tags: the eight in `SKILL.md` — `delete`, `reuse`, `stdlib`, `native`, `yagni`, `shrink`, `merge`, `split`.
+
+Output stays the one-line form:
+
+```text
+<file>:L<line>: <tag>: <what to cut>. <replacement>.
+net: -<N> lines, -<M> deps possible.
+```
+
+
 
 When a safe, deliberate shortcut has a known ceiling, mark it near the choice:
 

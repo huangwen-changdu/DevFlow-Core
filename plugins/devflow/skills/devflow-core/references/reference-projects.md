@@ -10,25 +10,30 @@ What it does:
 - Prioritizes existing code, standard library, native platform, installed dependencies, one-line/config, then minimum new code.
 - Runs the ladder after reading and tracing the touched flow.
 - For bug fixes, searches callers and prefers the shared root-cause fix when it is the smaller correct fix.
-- Provides overengineering review and whole-repo audit tags: `delete`, `reuse`, `stdlib`, `native`, `yagni`, `shrink`.
+- Audits a whole repo in order — correct, safe, holds under load, tested, fast, lean — with an assumed load stated up front. Audit is a report, not a completion gate.
+- Provides overengineering review and whole-repo audit tags: `delete`, `reuse`, `stdlib`, `native`, `yagni`, `shrink`, `merge`, `split`.
 - Tracks deliberate simplifications with debt markers.
 - Provides `lite`, `full`, and `ultra` intensity modes.
 - Ships multi-host adapters and command entries.
 
 Absorbed into DevFlow-Core:
 
-- `devflow-cut` now owns the Minimal Solution Ladder and overengineering review tags.
+- `devflow-cut` now owns the Minimal Solution Ladder and overengineering review tags, including `merge` and `split`.
 - `devflow-cut` now includes cut intensity levels and the bug-fix Root-Cause Check.
 - `skills/devflow-cut/references/native-capability-checklist.md` provides platform and standard-library alternatives.
 - `devflow-build` allows intentional simplification markers with explicit ceiling and revisit trigger.
 - `commands/devflow-debt.toml` harvests `devflow:` markers into a shortcut ledger.
-- `commands/devflow-review.toml` exposes a delete-list style review.
-- `commands/devflow-audit.toml`, `skills/devflow-audit/SKILL.md`, and `scripts/devflow-audit.js` expose a repo-wide overengineering audit without applying fixes.
+- `commands/devflow-review.toml` exposes the change review.
+- `devflow-audit` runs the full quality audit — bug, risk, scale, test, speed, lean — with lean as the last dimension, and keeps a lean-only mode when the user asks only what can be cut. It stays a report: `devflow-prove` keeps the change-level completion gate and `devflow-cut` keeps the plan/diff cut review.
+- `skills/devflow-audit/references/full-quality-audit.md` holds the audit method, per-dimension checklist, and report example.
+- `commands/devflow-audit.toml`, `skills/devflow-audit/SKILL.md`, and `scripts/devflow-audit.js` expose a repo-wide audit without applying fixes; the script scans lean candidates only.
 - `reuse` is a first-class overengineering tag for repeated helpers, utilities, types, or patterns that should use existing project code.
 
 Not absorbed:
 
 - Benchmark scoreboard and hook-based mode persistence. They are useful product features, but not required for the first practical DevFlow release.
+- The `shortcut:` comment prefix; DevFlow uses `devflow:` for the same ceiling-and-revisit record.
+- A separate full change-review report inside Cut. `devflow-prove` owns correctness, safety, load, tests, and speed, so Cut keeps only the cut-dimension review (evidence rules and Prove handoff in `cut-methods.md` Method 9).
 
 ## Agent Skills
 

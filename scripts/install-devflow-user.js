@@ -58,6 +58,7 @@ const userEntries = [
     "skills/devflow-project-knowledge/SKILL.md",
     "skills/devflow-project-knowledge/references/auto-loop.md",
     "skills/devflow-audit/SKILL.md",
+    "skills/devflow-audit/references/full-quality-audit.md",
   "skills/devflow-brainstorm/references/interview-discipline.md",
   "skills/skill-call-diagram.md"
 ];
