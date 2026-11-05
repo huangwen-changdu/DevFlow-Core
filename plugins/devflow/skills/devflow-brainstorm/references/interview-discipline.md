@@ -72,6 +72,16 @@ Mandatory on every request (default `deep`). Walk every angle and report what ea
 
 Findings feed the summary: gaps and risks go to `Identified gaps/risks`; direction thinking goes to `Directions considered` and `Recommended direction`. When every angle finds nothing, write `none` in those fields — do not invent findings. If an angle exposes a new decision-impact gap, return to One-Question Discipline and resolve it before producing `Confirmed request`.
 
+## Requirement Baseline
+
+The exploration must produce a baseline, not only answers:
+
+- `Required behaviors`: B1..Bn observable outcomes the user would accept; one result per ID.
+- `Invariants`: conditions that must always hold; write `none — <reason>` when none.
+- `Edge/failure cases`: inputs, actors, or states that break the happy path; write `none — <reason>` when none.
+
+Derive it from Goal, Scope, Acceptance, and the multi-angle findings. A behavior is what must be true after the change, never an implementation step. If the user cannot confirm a behavior, record it under `Open questions`; do not invent it and do not silently drop it. The Plan Pack copies these B IDs into its `## Baseline`; a missing or renumbered ID returns the fact to `devflow-core`.
+
 ## Problem-Space Recommendation
 
 Expected on every request, not only when asked:

@@ -58,6 +58,24 @@ Pointing at an existing path or symbol is not sufficient on its own, because it 
 
 The `Interfaces` block is required when `Execution mode` is `single-subagent` or `fan-out`, and omitted under `sequential`. The trigger is a mechanical fact read from the plan header, never an author judgement, so it cannot decay into "fill it when it seems useful".
 
+## Baseline And Coverage
+
+Every active plan (`draft`, `approved`, `in-progress`) carries two header sections:
+
+```text
+## Baseline
+- B1 <observable behavior> → <acceptance>
+
+## Coverage
+| B | Tasks |
+|---|---|
+| B1 | 1 |
+```
+
+- A Baseline row is one observable behavior the user would accept, not an implementation step; copy the B IDs from the Confirmed request or the A-branch Spec Requirements.
+- Coverage maps every B to at least one task number; every task number must exist. A missing section, missing B, unknown B, or unknown task number fails the checker.
+- `done` and legacy plans keep the old rules; existing plans are never migrated.
+
 ## Progress Table
 
 Close the plan with one row per task:

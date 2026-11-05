@@ -98,7 +98,7 @@ When installed into a target project, only the target-runtime scripts are copied
 | Script | Use inside target project |
 |---|---|
 | `node scripts/devflow-spec.js <spec-file>` | Check that a DevFlow spec has required sections, clear content, and the right `docs/specs/` landing path before planning. |
-| `node scripts/devflow-plan.js <plan-file>` | Check a Plan Pack. v2 plans need a slim header, six fields per task (`Task` / `Files` / `Change` / `Acceptance` / `Verify` / `Not doing`), a `Cut` line with a non-empty `Rejected`, and a `## Progress` table whose `done` rows carry evidence. Legacy plans that still carry `Task type`, `Interfaces`, `Change mechanics`, `Steps`, and `Prewalk` keep validating under the legacy rules. The checker validates structure rather than generating plans or judging architecture. |
+| `node scripts/devflow-plan.js <plan-file>` | Check a Plan Pack. v2 plans need a slim header, a valid `Status`, six fields per task (`Task` / `Files` / `Change` / `Acceptance` / `Verify` / `Not doing`), a `Cut` line with a non-empty `Rejected`, and a `## Progress` table whose `done` rows carry evidence; Chinese or English Change/Verify wording is accepted. Legacy plans that still carry `Task type`, `Change mechanics`, `Steps`, and `Prewalk` keep validating under the legacy rules. The checker validates structure rather than generating plans or judging architecture. |
 | `node scripts/devflow-plan.js --index` | Check that `docs/plans/INDEX.md` and `docs/features/INDEX.md` match the filesystem: every plan has exactly one row, row status matches the file header, `done` rows carry landing evidence, and feature rows point at real files and plans. It also validates `docs/requirements.md` when present: status whitelist, terminal evidence, `opt-out` reasons, and artifact paths. |
 | `node scripts/devflow-plan.js --loop` | Print a read-only loop report: requirement status counts, plan landing rate, feature rows, and learning-card promotion candidates. |
 | `node scripts/devflow-review.js <plan-or-diff-file>` | Check whether a plan or diff includes the required reuse, native, overbuild, diff, and scope gates before detailed review. |
@@ -124,7 +124,7 @@ The generator renders `Home.md`, `_Sidebar.md`, and one page per source file (`d
 
 First-time setup: create any page in the GitHub wiki UI so the wiki repository exists, then clone it. `npm run wiki:check` prints the exact command when the local clone is missing and exits 0, so it never blocks local work. Set `DEVFLOW_WIKI_DIR` to use another clone location. Editing a wiki page by hand makes the next check report `wiki page out of date`, which is the intended drift alarm.
 
-Specs and plans may carry an optional `Status: draft | approved | in-progress | done` header for cross-session lifecycle tracking; `node scripts/devflow-spec.js` and `node scripts/devflow-plan.js` validate the value and treat a missing field as legacy. Long-term iteration planning for DevFlow-Core itself lives in [docs/iteration-plan.md](docs/iteration-plan.md).
+Specs and plans may carry an optional `Status: draft | approved | in-progress | done | abandoned` header for cross-session lifecycle tracking; `node scripts/devflow-spec.js` and `node scripts/devflow-plan.js` validate the value and treat a missing field as legacy. Long-term iteration planning for DevFlow-Core itself lives in [docs/iteration-plan.md](docs/iteration-plan.md).
 
 All checker scripts accept `--json` for a single-line machine-readable summary. `npm run install:target -- <project> --write` records `.devflow-manifest.json` (package version + file hashes) in the target; `--check` then reports upstream version changes with an upgrade command.
 
@@ -257,7 +257,7 @@ The inventory covers eleven artifacts: `AGENTS.md`, `scripts/devflow-docs.js`, `
 | `devflow-core` | Route the work, load the right next skill, preserve the output contract. |
 | `devflow-brainstorm` | 通过 Semantic Echo-Back、Understanding Revision Rule 和逐项澄清确认 Goal、Scope、Out of scope、Constraints、Acceptance 与 Open questions；输出 `Confirmed request` 后停止。 |
 | `devflow-spec` | For user-selected A, compare real options, write the reviewable design contract and saved spec, wait for approval, then directly enter Cut; non-success facts return to Core. |
-| `devflow-plan` | From A/B `CUT_PASS`, write one reviewed code-level construction Plan Pack with exact file locations, interface contracts, current/target behavior, change mechanics, call impact, proof-ready steps, and source tracing; after approval, directly enter Build while scope-drift facts return to Core. |
+| `devflow-plan` | From A/B `CUT_PASS`, write one reviewed v2 Plan Pack: slim header, per-task six fields (`Task` / `Files` / `Change` / `Acceptance` / `Verify` / `Not doing`), `## Recon` evidence, and `## Progress`; on approval record execution mode, update the plan index and requirement ledger, then directly enter Build while scope-drift facts return to Core. |
 | `devflow-cut` | Apply reuse ladder, root-cause check, platform-native checklist, overbuild gate, cut intensity, and delete-list review. |
 | `devflow-build` | Execute the smallest approved change in verifiable slices. |
 | `devflow-prove` | Run the proof command or scenario, including Skill Activation Check for rule/skill changes; run the simplify pass on code changes before the adversarial and quality reviews, then report command/result/judgment. |
@@ -375,7 +375,7 @@ It also checks `--check` mode for matching, missing, and changed target runtime 
 
 `npm run spec:verify` runs `scripts/devflow-spec.js --self-test` and checks required section detection, vague spec blocking, and Spec landing guidance. It prints `DevFlow spec self-test passed` when the checker contract works.
 
-`npm run plan:verify` runs `scripts/devflow-plan.js --self-test` and checks executable plan headers, task types, categorized file operations with precise locations, interface contracts, code-task behavior/mechanics/call-impact fields, proof-ready verification expectations, the `Documentation-only` exception, and plan landing guidance. It prints `DevFlow plan self-test passed` when the checker contract works. It does not score architecture or generate plans.
+`npm run plan:verify` runs `scripts/devflow-plan.js --self-test` and checks v2 and legacy plan headers, status values including `abandoned`, Chinese and English Change/Verify wording, categorized file operations with precise locations, legacy task types and code-task fields, proof-ready verification expectations, the `Documentation-only` exception, and plan landing guidance. It prints `DevFlow plan self-test passed` when the checker contract works. It does not score architecture or generate plans.
 
 `npm run audit:verify` runs `scripts/devflow-audit.js --self-test` and checks reuse, stdlib, native, YAGNI, and delete candidate detection. It prints `DevFlow audit self-test passed` when the scanner contract works.
 

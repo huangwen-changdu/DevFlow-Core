@@ -17,13 +17,13 @@ Turn an A/B `CUT_PASS`-bounded approved design or confirmed Spec into one review
 
 1. Read only source material, code, tests, and conventions relevant to the approved scope. Load `skills/devflow-spec/references/spec-plan-methods.md` and `skills/devflow-plan/references/plan-methods.md` before applying Plan Pack mechanics.
 2. Map the intended touch set once: list the files and the responsibility each one carries. Reuse existing modules and name the intended file operation.
-3. Do the bounded investigation needed to write correct tasks. Keep that evidence in the conversation or in a learning card; it is not a plan field.
+3. Do the bounded investigation needed to write correct tasks and record it under `## Recon` as a command plus the output it produced; only reusable lessons belong in a learning card.
 4. Split by delivery unit: one task = one independently verifiable deliverable and the smallest unit worth a fresh reviewer's gate — split only where a reviewer could meaningfully reject one task while approving its neighbor, and fold setup, configuration, scaffolding, and documentation into the task whose deliverable needs them. Split whenever `Acceptance` needs `且`/`and` to join two independently verifiable results; keep one task when the same rule mirrors across files — mirrored edits are one delivery unit, not one task per file. Each task carries `Files`, `Change`, `Acceptance`, `Verify`, and `Not doing` so an executor can act on it without reading another task.
 5. Write the plan using the required header, task contract, and `## Progress` table below.
 6. Self-review Cut fidelity, touch-set coverage, acceptance proof, scope exclusions, and Progress row count against the task count.
 7. Run `node scripts/devflow-plan.js <plan-file>` when the project-level checker exists. Otherwise resolve the user-level checker according to `core-methods.md` Script Path Resolution.
-8. **STOP — request user review.** On DSH, request review with the structured `ask_user_question` tool (single-select: approve / request changes). Revise and revalidate when requested. On approval, ask execution mode (single-select: `sequential` — the Build agent runs tasks in dependency order / `single-subagent` — the main agent only schedules: one subagent runs tasks one per round in dependency order / `fan-out` — independent tasks run as parallel subagents) and record it as the plan's optional `Execution mode` header. Then perform only a lightweight Cut-consistency review. An approved A/B Plan directly enters `devflow-build`; scope-drift facts return to `devflow-core`.
-9. On approval, advance the requirement row in `docs/requirements.md` to `planned` and fill the plan path in its artifact column.
+8. **STOP — request user review.** On DSH, request review with the structured `ask_user_question` tool (single-select: approve / request changes). Revise and revalidate when requested. On approval, ask execution mode (single-select: `sequential` — the Build agent runs tasks in dependency order / `single-subagent` — the main agent only schedules: one subagent runs tasks one per round in dependency order / `fan-out` — independent tasks run as parallel subagents) and record it as the plan's optional `Execution mode` header. When the chosen mode is `single-subagent` or `fan-out`, add each task's `Interfaces` block, re-run the checker, and report that structural delta; task boundaries and approved scope do not change. Then perform only a lightweight Cut-consistency review. An approved A/B Plan directly enters `devflow-build`; scope-drift facts return to `devflow-core`.
+9. On approval, set the plan header `Status: approved`, add or update the plan's row in `docs/plans/INDEX.md` (Status `approved`, source, feature entry when one exists), and advance the requirement row in `docs/requirements.md` to `planned`, filling the plan path in its artifact column.
 
 Default landing is `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`, resolved from the target project root. Do not place implementation plans in `docs/features/` or `docs/specs/`.
 
@@ -47,6 +47,16 @@ Landed: <date and fresh evidence> (completion only)
 
 - `<command>` → <that command's actual output>
 
+## Baseline
+
+- B1 <observable behavior> → <acceptance>
+
+## Coverage
+
+| B | Tasks |
+|---|---|
+| B1 | 1 |
+
 ## Tasks
 
 Task: <short, independently understandable title>
@@ -69,7 +79,7 @@ Not doing: <scope excluded by this task>
 | 1 | <task title> | todo | - |
 ```
 
-The v2 header is deliberately slim: the Plan owns ordering and acceptance, while Cut owns the subtraction and Build owns how the change is implemented. `Cut` is one line and must carry a non-empty `Rejected` (or `none` plus evidence), so a plan without a real subtraction is visible instead of silently passing. `## Progress` is the resume and landing record: Build flips one row to `doing` or `done` and fills its evidence, and Prove writes `Landed` on `PASS`. A plan without `## Progress` and with a `Prewalk` block is a legacy plan; `scripts/devflow-plan.js` keeps validating it with the old rules, so existing plans never need migration.
+Active plans carry `## Baseline` and `## Coverage`; every B maps to a task, and `done`/legacy plans keep the old rules. The v2 header is deliberately slim: the Plan owns ordering and acceptance, while Cut owns the subtraction and Build owns how the change is implemented. `Cut` is one line and must carry a non-empty `Rejected` (or `none` plus evidence), so a plan without a real subtraction is visible instead of silently passing. `## Progress` is the resume and landing record: Build flips one row to `doing` or `done` and fills its evidence, and Prove writes `Landed` on `PASS`. A plan without `## Progress` and with a `Prewalk` block is a legacy plan; `scripts/devflow-plan.js` keeps validating it with the old rules, so existing plans never need migration.
 
 Every evidence item is admissible at one of two levels. Level 1 is a re-runnable command plus the output it produced. Level 2 is a mechanical copy from an existing artifact: a path that exists, or a string that really appears in the source. A pointer to an existing path or symbol is not sufficient alone, because it proves existence rather than use; a prose assertion is never sufficient alone, because a fabricated one reads the same as a real one.
 
@@ -81,30 +91,17 @@ Every evidence item is admissible at one of two levels. Level 1 is a re-runnable
 
 Inherit `External Skills` from the Cut Decision unchanged; the plan header `External Skills` line is the carrier into Build and Prove: it records `none` or the specialist declaration (role, expected evidence, return facts). A plan without the line keeps validating — absence reads as no declaration. When a specialist skill is declared, merge its core quality checks into the affected tasks' `Acceptance` and `Verify` fields — the Plan Pack is the only channel that carries external-skill quality requirements into Build and Prove. A declared skill never widens the Cut scope; if its recommendation exceeds the Cut Decision, return the scope-drift facts to `devflow-core`.
 
-`Execution mode` is not part of Cut scope and does not change the checker. It is asked at approval and recorded so Build knows how to run tasks: sequentially as the Build agent itself, through one delegated subagent while the main agent only schedules, or fan out independent tasks to parallel subagents.
+`Execution mode` is not part of Cut scope; it changes only whether the checker requires each task's `Interfaces` block. It is asked at approval and recorded so Build knows how to run tasks: sequentially as the Build agent itself, through one delegated subagent while the main agent only schedules, or fan out independent tasks to parallel subagents.
 
 Each task's `Files`, `Change`, `Acceptance`, `Verify`, and `Not doing` form the execution basis（执行规范）handed to the executor. Build may read the current task's named anchors and a directly changed neighbor to choose the smallest implementation; it must not broadly rediscover the repository, redesign outside the task boundary, silently repair the plan, or expand the touch set. A real anchor mismatch or verification failure returns `BUILD_BLOCKED` facts to `devflow-core` instead of a guessed edit.
 
 ## Required Task Contract
 
-```text
-Task: <short, independently understandable title>
-Files:
-- Create: <path> | new file | <responsibility>
-- Modify: <path> | <symbol or stable anchor> | <responsibility>
-- Test: <path> | <symbol or stable anchor> | <behavior proved>  # only when applicable
-Interfaces:  # only when Execution mode is single-subagent or fan-out
-- Consumes: <names and types this task uses from another task>
-- Produces: <names and types another task relies on>
-Change: <what changes and its boundary; exact mechanics (pseudocode, exact replacement, or key fragment) only when the change crosses a module contract, is irreversible, touches security or data boundaries, or the mechanism cannot be inferred from the task's named anchors by a different session or model>
-Acceptance: <specific observable condition>
-Verify: <exact command or manual scenario, trigger/input, and expected result>
-Not doing: <scope excluded by this task>
-```
+The task block in the header template above is the complete contract: `Task`, `Files`, `Change`, `Acceptance`, `Verify`, `Not doing`, plus `Interfaces` only under a subagent execution mode.
 
 Use only `Create`, `Modify`, and `Test` file-operation labels. `Create` rows use `new file`; every other row names a symbol or stable anchor. `Change` states the executable intent and its boundary in one or two lines; it does not restate current behavior, target behavior, call impact, or interfaces unless the task changes a cross-module contract. When the mechanism cannot be inferred from the task's named anchors — the common case when a different session or model executes the plan — `Change` carries the smallest runnable mechanics (pseudocode, exact replacement, or key fragment) so the executor acts without the author's session context. The Plan no longer classifies tasks by `Task type`: a task whose files are all documentation paths is documentation-only, and the checker treats it that way.
 
-Six fields per task is the whole contract: ordering, the touch set, the intent, the acceptance condition, the proof command, and the exclusion. The conditional `Interfaces` block is the one addition, and only under the execution modes named above. `Acceptance` states one observable result; a `；`/`;`-joined multi-result acceptance is a split signal and the checker fails it while the plan is active. Plan length has no fixed total line cap: it grows with the number of delivery units while every task keeps the six-field, one-result shape. Handoff facts, per-task worklists, architecture, tech stack, spec coverage, and comment locations are owned by other nodes or stay in the conversation; the bounded read belongs in `## Recon`. `Prewalk`, `File Structure`, `Current behavior`, `Target behavior`, `Change mechanics`, `Call impact`, and `Comments` are not part of the v2 contract; a plan that still carries them is treated as legacy.
+Six fields per task is the whole contract: ordering, the touch set, the intent, the acceptance condition, the proof command, and the exclusion. The conditional `Interfaces` block is the one addition, and only under the execution modes named above. `Acceptance` states one observable result; a `；`/`;`-joined multi-result acceptance is a split signal and the checker fails it while the plan is active. Plan length grows with delivery units; the six-field shape keeps each task slim. Handoff facts, per-task worklists, architecture, tech stack, spec coverage, and comment locations are owned by other nodes or stay in the conversation; the bounded read belongs in `## Recon`. `Prewalk`, `File Structure`, `Current behavior`, `Target behavior`, `Change mechanics`, `Call impact`, and `Comments` are not part of the v2 contract; a plan that still carries `Prewalk` is treated as legacy, and the checker ignores the other legacy fields.
 
 Keep one task understandable on its own. Do not use cross-task shorthand, generic test additions, unnamed edge cases, or cleanup entries. Name a test file only when the stated behavior needs one.
 
@@ -133,7 +130,8 @@ Before leaving this skill, confirm:
 
 - [ ] `Cut` is one line with 做 / 不做 / 复用 / 验证 and a non-empty `Rejected`.
 - [ ] `External Skills` is inherited from the Cut Decision; declared skills' quality checks are merged into task `Acceptance`/`Verify`.
-- [ ] Execution mode was asked at approval and recorded as the optional `Execution mode` header.
+- [ ] Execution mode was asked at approval and recorded; a subagent mode added the `Interfaces` blocks and re-ran the checker.
+- [ ] Plan header `Status` and the `docs/plans/INDEX.md` row both read `approved` on approval.
 - [ ] Approved design or saved spec is cited as optional `Source`.
 - [ ] Header, tasks, and `## Progress` match the v2 contract; each task has six fields and no legacy field.
 - [ ] Every task is independently understandable and has no unresolved or vague placeholder.

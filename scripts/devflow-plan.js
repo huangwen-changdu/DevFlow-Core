@@ -7,7 +7,7 @@ const codeChangeFields = ["Current behavior", "Target behavior", "Change mechani
 const allFields = [...requiredGlobalFields, ...requiredTaskFields, ...codeChangeFields];
 const taskTypes = ["Code change", "Documentation-only"];
 // 可选生命周期状态字段：缺失视为 legacy（向后兼容），存在时值域受限；checker 只校验格式，不裁决状态转换。
-const validStatuses = ["draft", "approved", "in-progress", "done"];
+const validStatuses = ["draft", "approved", "in-progress", "done", "abandoned"];
 const statusPattern = /^\s*(?:\*\*)?Status(?:\*\*)?\s*:\s*([^\n]+)/im;
 
 const fieldPatterns = Object.fromEntries(
@@ -20,12 +20,14 @@ const fileOperationPattern = /^\s*-\s*(Create|Modify|Test):\s+([^|\n]+?)\s*\|\s*
 const checkboxPattern = /^\s*-\s*\[ \]\s+(.+)$/gim;
 const concreteStepPattern = /(?:[A-Za-z0-9_.-]+\/)+[A-Za-z0-9_.-]+|`[^`]+`|\b(?:node|npm|git)\b|\b(?:function|class|method|API|command|behavior|symbol|anchor)\b/i;
 const locationPattern = /^(?:(?:symbol|symbols|anchor|anchors)\s*:\s*)?(?:`[^`]{3,}`(?:\s*,\s*`[^`]{3,}`)*|(?:function|class|method|const|let|var|export|interface|type|enum|heading|section|key|keys)\s+[`#A-Za-z_$][\w.$#:/ -]*|#{1,6}\s+\S.+)$/i;
-const implementationVerbPattern = /\b(?:parse|validate|require|reject|map|filter|return|add|remove|replace|insert|delete|set|check|compare|append|emit)\b|(?:增加|添加|解析|验证|拒绝|替换|输出|收集|要求|检查)/;
+// 中文动词白名单与英文动词同权：计划正文允许用用户语言书写，不能只认英文。
+const implementationVerbPattern = /\b(?:parse|validate|require|reject|map|filter|return|add|remove|replace|insert|delete|set|check|compare|append|emit)\b|(?:修改|调整|更新|删除|移除|重命名|改名|改为|补充|记录|新增|增加|添加|解析|验证|拒绝|替换|输出|收集|要求|检查|重构|移动|拆分|合并|引入|接入|实现|支持|禁用|启用|修正|修复|迁移|抽取|封装|注册|挂载|注入|渲染|读取|写入|保存|发送|接收|抛出|捕获|排序|过滤|映射|转换|格式化|校验|补齐|放宽|限制|截断|转义)/;
 const genericMechanicsPattern = /^\s*(?:pseudocode|exact replacement)\s*:\s*(?:update|change|modify)\s+(?:it|this|implementation|code)\s*$/i;
 const codeActionStepPattern = /\b(?:modify|create|update|replace|insert|delete|remove|add|change|refactor)\b/i;
 const mechanicsPattern = /```[\s\S]*?```|\b(?:pseudocode|exact replacement|replace .* with|insert .* before|delete .* after)\b/i;
 const verificationCommandPattern = /`[^`]+`|\b(?:node|npm|npx|pnpm|yarn|git)\b/i;
-const verificationExpectationPattern = /\b(?:expect|expected|passes|pass|fails|fail|returns|result)\b/i;
+// 期望词同样接受中英文；裸“通过”不算，避免“通过运行命令”这种无预期结果的写法混过。
+const verificationExpectationPattern = /\b(?:expect|expected|passes|pass|fails|fail|returns|result)\b|(?:期望|预期|应当|应该|应返回|应输出|测试通过|用例通过|校验通过|验证通过|全部通过|失败|返回|结果|退出码|输出|得到|显示)/i;
 const documentationPathPattern = /\.(?:md|mdc|toml|txt)$/i;
 const fileStructureHeadingPattern = /^##\s+File Structure\s*$/im;
 const prewalkPattern = /^\s*Prewalk\s*:\s*$/im;
@@ -52,6 +54,12 @@ const v2FieldPatterns = Object.fromEntries(
 );
 const progressHeadingPattern = /^##\s+Progress\s*$/im;
 const progressRowPattern = /^\s*\|\s*(\d+)\s*\|\s*([^|]*)\|\s*(todo|doing|done)\s*\|\s*([^|]*)\|/gim;
+// v2 completeness baseline (2026-11-05): active plans carry B rows and a B→task coverage table;
+// done/legacy plans keep the old rules, so existing plans never need migration.
+const baselineHeadingPattern = /^##\s+Baseline\s*$/im;
+const coverageHeadingPattern = /^##\s+Coverage\s*$/im;
+const baselineRowPattern = /^\s*-\s*(B\d+)\s+(.+?)\s*(?:→|->)\s*(\S.*)$/gim;
+const coverageRowPattern = /^\s*\|\s*(B\d+)\s*\|\s*([^|]+)\|/gim;
 // v2 证据准入（2026-09-16）：侦查小节只接受"命令 + 输出"或"none 加理由"；跨任务通道由执行模式这一机械事实触发；
 // Not doing 的每句必须能在 Source 文档或 Cut 行里找到逐字痕迹，防止把凭空不变量写成计划约束。
 const reconHeadingPattern = /^##\s+Recon\b.*$/im;
@@ -530,6 +538,40 @@ function checkTaskV2(task, enforceGranularity = true, interfacesRequired = false
   };
 }
 
+/** Validate the active-plan Baseline/Coverage trace: every B row maps to at least one existing task. */
+function checkBaselineCoverage(body, tasks, enforce) {
+  if (!enforce) return { ok: true, issues: [], baseline: 0, coverage: 0 };
+  const issues = [];
+  const baselineLines = sectionAfterHeading(body, baselineHeadingPattern);
+  const coverageLines = sectionAfterHeading(body, coverageHeadingPattern);
+  const baseline = baselineLines ? [...baselineLines.join("\n").matchAll(baselineRowPattern)].map((match) => match[1]) : [];
+  const coverage = coverageLines
+    ? [...coverageLines.join("\n").matchAll(coverageRowPattern)].map((match) => ({ id: match[1], tasks: match[2] }))
+    : [];
+  if (!baselineLines) issues.push("missing ## Baseline section");
+  else if (baseline.length === 0) issues.push("## Baseline needs at least one - B<n> ... → ... row");
+  const duplicateIds = [...new Set(baseline.filter((id, index) => baseline.indexOf(id) !== index))];
+  for (const id of duplicateIds) issues.push(`duplicate baseline id ${id}`);
+  if (!coverageLines) issues.push("missing ## Coverage section");
+  else if (coverage.length === 0) issues.push("## Coverage needs at least one B<n> row");
+  const baselineSet = new Set(baseline);
+  for (const row of coverage) {
+    if (!baselineSet.has(row.id)) issues.push(`## Coverage references unknown baseline ${row.id}`);
+    const numbers = row.tasks.split(",").map((value) => value.trim()).filter(Boolean);
+    if (numbers.length === 0) issues.push(`## Coverage row ${row.id} needs a task number`);
+    for (const value of numbers) {
+      const number = Number(value);
+      if (!Number.isInteger(number) || number < 1 || number > tasks.length) {
+        issues.push(`## Coverage row ${row.id} references unknown task ${value}`);
+      }
+    }
+  }
+  for (const id of baselineSet) {
+    if (!coverage.some((row) => row.id === id)) issues.push(`baseline ${id} is not covered in ## Coverage`);
+  }
+  return { ok: issues.length === 0, issues, baseline: baseline.length, coverage: coverage.length };
+}
+
 /** Validate the v2 plan contract: slim header, task rows, Progress table, and Cut subtraction. */
 function checkPlanV2(body) {
   const tasks = splitTasksV2(body);
@@ -544,8 +586,8 @@ function checkPlanV2(body) {
   const executionMode = executionModeMatch ? executionModeMatch[1].trim().toLowerCase() : "";
   const externalSkillsMatch = header.match(externalSkillsPattern);
   const externalSkillsIssue =
-    externalSkillsMatch && !/^none\b/i.test(externalSkillsMatch[1].trim()) && !/role|expected evidence|return facts/i.test(externalSkillsMatch[1])
-      ? "a declared External Skills line must carry role / expected evidence / return facts, or record none"
+    externalSkillsMatch && !/^none\b/i.test(externalSkillsMatch[1].trim()) && !/role|expected evidence|return facts|角色|职责|预期证据|返回事实/i.test(externalSkillsMatch[1])
+      ? "a declared External Skills line must carry role / expected evidence / return facts (角色 / 预期证据 / 返回事实), or record none"
       : "";
   const interfacesRequired =
     enforceGranularity && subagentExecutionModes.some((mode) => executionMode.includes(mode));
@@ -569,6 +611,7 @@ function checkPlanV2(body) {
   const missingEvidence = progress.filter((row) => row.state === "done" && (!row.evidence || row.evidence === "-"));
   const progressMismatch = progress.length !== tasks.length;
   const doneStatusNeedsAllDone = status === "done" && progress.some((row) => row.state !== "done");
+  const baselineCoverage = checkBaselineCoverage(body, tasks, enforceGranularity);
 
   return {
     v2: true,
@@ -579,6 +622,7 @@ function checkPlanV2(body) {
     tasks: taskResults,
     progress: { count: progress.length, mismatch: progressMismatch, missingEvidence },
     doneStatusNeedsAllDone,
+    baselineCoverage,
     executionMode,
     interfacesRequired,
     externalSkillsIssue,
@@ -593,6 +637,7 @@ function checkPlanV2(body) {
       !progressMismatch &&
       missingEvidence.length === 0 &&
       !doneStatusNeedsAllDone &&
+      baselineCoverage.ok &&
       !externalSkillsIssue &&
       (!enforceGranularity || (recon.present && recon.invalid.length === 0)) &&
       notDoingTrace.length === 0
@@ -719,9 +764,23 @@ function checkIndexes(root) {
   return problems;
 }
 
+/** Resolve the project root for index checks: explicit --root, else the nearest ancestor carrying a docs ledger, else the script's project root, else cwd. */
+function resolveProjectRoot(rootArg) {
+  if (rootArg) return path.resolve(rootArg);
+  const start = process.cwd();
+  const markers = ["docs/plans/INDEX.md", "docs/features/INDEX.md", "docs/requirements.md"];
+  const hasLedger = (dir) => markers.some((rel) => fs.existsSync(path.join(dir, ...rel.split("/"))));
+  for (let dir = start; ; dir = path.dirname(dir)) {
+    if (hasLedger(dir)) return dir;
+    if (path.dirname(dir) === dir) break;
+  }
+  const scriptRoot = path.resolve(__dirname, "..");
+  return hasLedger(scriptRoot) ? scriptRoot : start;
+}
+
 /** Run the plan and feature index consistency check, or answer a single query. */
 function runIndexCheck(json, query, rootArg) {
-  const root = rootArg ? path.resolve(rootArg) : path.resolve(__dirname, "..");
+  const root = resolveProjectRoot(rootArg);
   if (query) {
     const featureMatches = matchIndexRows(readIndexRows(root, "features"), query);
     const planMatches = matchIndexRows(readIndexRows(root, "plans"), query);
@@ -919,6 +978,7 @@ function report(body, filePath, json) {
               missingEvidence: result.progress.missingEvidence.length
             }
           : null,
+        baselineCoverage: result.v2 ? result.baselineCoverage : null,
         tasks: result.tasks.map((task) => ({ number: task.number, ok: task.ok })),
         judgment
       })
@@ -943,6 +1003,7 @@ function report(body, filePath, json) {
       for (const line of result.recon.invalid) console.log(`Recon line needs a backticked command and its output: ${line}`);
     }
     for (const clause of result.notDoingTrace || []) console.log(`Not doing clause has no source in Source or Cut: ${clause}`);
+    for (const issue of result.baselineCoverage?.issues || []) console.log(`Baseline/Coverage: ${issue}`);
     if (result.interfacesRequired) console.log(`Execution mode ${result.executionMode} requires an Interfaces block per task`);
     if (result.externalSkillsIssue) console.log(`External Skills: ${result.externalSkillsIssue}`);
   } else {
@@ -1206,6 +1267,14 @@ function selfTest() {
     "## Recon",
     "- `node scripts/devflow-plan.js --self-test` → baseline self-test passed",
     "",
+    "## Baseline",
+    "- B1 v2 plans keep passing the slim contract → `--self-test` exits 0",
+    "",
+    "## Coverage",
+    "| B | Tasks |",
+    "|---|---|",
+    "| B1 | 1 |",
+    "",
     "## Tasks",
     "",
     "Task: Add v2 validation",
@@ -1224,6 +1293,19 @@ function selfTest() {
   ].join("\n");
   if (!detectV2(validV2Plan)) throw new Error("Self-test expected v2 detection to pass");
   if (!checkPlan(validV2Plan).ok) throw new Error("Self-test expected valid v2 plan to pass");
+  const missingBaselineV2Plan = validV2Plan.replace(
+    "## Baseline\n- B1 v2 plans keep passing the slim contract → `--self-test` exits 0\n\n",
+    ""
+  );
+  if (checkPlan(missingBaselineV2Plan).ok) throw new Error("Self-test expected a missing Baseline section to fail");
+  const missingCoverageV2Plan = validV2Plan.replace("## Coverage\n| B | Tasks |\n|---|---|\n| B1 | 1 |\n\n", "");
+  if (checkPlan(missingCoverageV2Plan).ok) throw new Error("Self-test expected a missing Coverage section to fail");
+  const unknownTaskV2Plan = validV2Plan.replace("| B1 | 1 |", "| B1 | 9 |");
+  if (checkPlan(unknownTaskV2Plan).ok) throw new Error("Self-test expected an unknown Coverage task number to fail");
+  const unknownBaselineV2Plan = validV2Plan.replace("| B1 | 1 |", "| B2 | 1 |");
+  if (checkPlan(unknownBaselineV2Plan).ok) throw new Error("Self-test expected an unknown Coverage baseline id to fail");
+  const uncoveredBaselineV2Plan = validV2Plan.replace("| B1 | 1 |\n", "");
+  if (checkPlan(uncoveredBaselineV2Plan).ok) throw new Error("Self-test expected an uncovered baseline id to fail");
   const multiResultV2Plan = validV2Plan.replace(
     "Acceptance: v2 plans pass the slim contract",
     "Acceptance: v2 plans pass；legacy plans keep passing"
@@ -1275,6 +1357,27 @@ function selfTest() {
   if (checkPlan(bareExternalV2Plan).ok) {
     throw new Error("Self-test expected a bare External Skills declaration without role/evidence/return to fail");
   }
+  const chineseV2Plan = validV2Plan
+    .replace("Change: add v2 field validation and dispatch", "Change: 修改 v2 字段校验与分发")
+    .replace("Verify: run `node scripts/devflow-plan.js --self-test` expect exit 0", "Verify: 运行 `node scripts/devflow-plan.js --self-test`，期望退出码 0");
+  if (!checkPlan(chineseV2Plan).ok) throw new Error("Self-test expected Chinese Change and Verify wording to pass");
+  if (checkPlan(chineseV2Plan.replace("Change: 修改 v2 字段校验与分发", "Change: v2 字段的分发逻辑")).ok) {
+    throw new Error("Self-test expected a Chinese Change without an implementation verb to fail");
+  }
+  if (
+    checkPlan(
+      chineseV2Plan.replace("Verify: 运行 `node scripts/devflow-plan.js --self-test`，期望退出码 0", "Verify: 运行 `node scripts/devflow-plan.js --self-test`")
+    ).ok
+  ) {
+    throw new Error("Self-test expected a Chinese Verify without an expectation to fail");
+  }
+  const abandonedV2Plan = validV2Plan.replace("Status: approved", "Status: abandoned");
+  if (!checkPlan(abandonedV2Plan).ok) throw new Error("Self-test expected Status abandoned to pass");
+  const chineseExternalV2Plan = validV2Plan.replace(
+    "Status: approved",
+    "Status: approved\nExternal Skills: pdf-skill；角色：解析 PDF；预期证据：正文；返回事实：结果"
+  );
+  if (!checkPlan(chineseExternalV2Plan).ok) throw new Error("Self-test expected a Chinese External Skills declaration to pass");
   if (!checkPlan(validV2Plan).ok) throw new Error("Self-test expected a v2 plan without an External Skills line to keep passing");
   const missingReconV2Plan = validV2Plan
     .replace("## Recon\n", "")
@@ -1318,7 +1421,7 @@ function selfTest() {
   if (missingArtifact.length === 0) throw new Error("Self-test expected a missing requirement artifact to fail");
 
   console.log("DevFlow plan self-test passed");
-  console.log("Checked v2 and legacy plan contracts, Progress evidence, Cut Rejected, single-result Acceptance granularity, code-level fields, precise file locations, verification expectations, documentation-only exception, external-skill declaration, and plan landing guidance");
+  console.log("Checked v2 and legacy plan contracts, Chinese and English Change/Verify wording, Status values including abandoned, Progress evidence, Baseline/Coverage trace, Cut Rejected, single-result Acceptance granularity, code-level fields, precise file locations, verification expectations, documentation-only exception, external-skill declaration, and plan landing guidance");
 }
 
 const args = process.argv.slice(2);

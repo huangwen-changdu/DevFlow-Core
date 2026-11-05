@@ -39,6 +39,8 @@ Do not force a spec for Design-lite work where a short design contract and quick
 
    In `Approach`, record the compared options, trade-offs, chosen design, boundaries, and why rejected options do not meet the current request. Section content should be written in the user's language, but section headers must remain in English so `scripts/devflow-spec.js` can validate them.
 
+   Each `Requirements` row carries the `Confirmed request` baseline B ID (`B1`, `B2`, ...) plus its acceptance, for example `- B1 <behavior> → <acceptance>`. Copy the IDs; do not renumber or silently drop a baseline behavior. A dropped or changed behavior returns the fact to `devflow-core`.
+
    The **Code Documentation** section records the documentation requirements this feature actually creates:
    - Which modules/files or public interfaces need an explanation, and why
    - Which functions/classes need a comment because their contract, failure behavior, or decision is not evident from code

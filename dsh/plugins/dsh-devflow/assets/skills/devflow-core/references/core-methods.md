@@ -99,7 +99,7 @@ Evaluate in this order: explicit independent review or explicit grill/stress-tes
 
 Brainstorm is required for new behavior, ambiguity, cross-module or externally visible impact, irreversible work, security/data-loss/permission/contract risk, or any missing fact that could change the plan. A clear existing-feature change may enter Cut directly only when every low-risk condition holds: clear goal, existing local behavior, one plausible path, local impact, reversible change, no security/data-loss/permission/contract risk, and quick proof. The absence of one condition is enough to keep Brainstorm controlled.
 
-Unapproved edits never use Fast. A skip records `Brainstorm required: no` and `Depth hint: skip`, writes a Design-lite contract (goal, acceptance, exclusions), and enters Cut at Depth C. Compact is only for a Core-sent hint where goal, scope, and acceptance are already clear and one named residual risk remains that is not security, data-loss, permission, contract, or irreversible work. Core never lets Brainstorm choose skip or depth.
+Unapproved edits never use Fast. A skip records `Brainstorm required: no` and `Depth hint: skip`, writes a Design-lite contract (goal, acceptance, exclusions, required behaviors with B IDs, invariants, edge cases), and enters Cut at Depth C. Compact is only for a Core-sent hint where goal, scope, and acceptance are already clear and one named residual risk remains that is not security, data-loss, permission, contract, or irreversible work. Core never lets Brainstorm choose skip or depth.
 
 Low-risk autonomy compresses clarification; it does not authorize implementation. Cut still checks reuse, native options, overbuild, diff, and scope, and Prove still requires fresh evidence and adversarial review.
 

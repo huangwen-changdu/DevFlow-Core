@@ -24,6 +24,18 @@ Landed: <date and fresh evidence> (completion only)
 
 Record the bounded read under `## Recon`: one line per finding, each pairing a backticked command with the output it produced, or `none` with a reason. Every evidence item the plan asks for is either a re-runnable command with its output or a mechanical copy from an existing artifact; a pointer to an existing path or symbol is not enough on its own.
 
+Active plans carry `## Baseline` and `## Coverage`:
+
+```text
+## Baseline
+- B1 <observable behavior> → <acceptance>
+
+## Coverage
+| B | Tasks |
+|---|---|
+| B1 | 1 |
+```
+
 Each independently understandable task must contain:
 
 ```text
@@ -45,5 +57,5 @@ Every existing-file row names a symbol or stable anchor; every `Create` row uses
 
 Run `node scripts/devflow-plan.js <plan-file>` when it exists; otherwise use the user-level fallback specified in `core-methods.md`. Self-review Cut fidelity, touch-set coverage, acceptance proof, scope exclusions, and Progress row count before presenting the plan.
 
-STOP after writing and validating the plan: request user review. On approval, ask execution mode (`sequential` — the Build agent runs tasks in dependency order / `single-subagent` — the main agent only schedules while one subagent runs tasks one per round / `fan-out` — independent tasks run as parallel subagents) and record it as the plan's optional `Execution mode` header, then perform a lightweight Cut-consistency review. An approved A/B Plan directly starts `devflow-build`; any scope-drift or non-success facts return to `devflow-core`. Do not perform Cut, Build, Prove, test-first workflow, version-control task steps, independent review, or automatic execution here.
+STOP after writing and validating the plan: request user review. On approval, ask execution mode (`sequential` — the Build agent runs tasks in dependency order / `single-subagent` — the main agent only schedules while one subagent runs tasks one per round / `fan-out` — independent tasks run as parallel subagents) and record it as the plan's optional `Execution mode` header; for `single-subagent` or `fan-out`, add the `Interfaces` blocks and re-run the checker. Set the plan header `Status: approved` and add or update the plan's row in `docs/plans/INDEX.md`, then perform a lightweight Cut-consistency review. An approved A/B Plan directly starts `devflow-build`; any scope-drift or non-success facts return to `devflow-core`. Do not perform Cut, Build, Prove, test-first workflow, version-control task steps, independent review, or automatic execution here.
 '''

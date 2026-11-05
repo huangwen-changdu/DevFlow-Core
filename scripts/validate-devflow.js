@@ -541,13 +541,17 @@ runVerifier("scripts/devflow-debt.js", ["dsh/plugins/dsh-devflow/assets/presets/
 
 // v2 计划契约与双索引：契约文本、机检入口与索引文件必须同时存在，否则规则会与实现漂移。
 const usabilityPlanSkill = read("skills/devflow-plan/SKILL.md");
-for (const marker of ["## Progress", "Rejected", "Six fields per task", "Landed:", "one delivery unit", "one observable result", "fresh reviewer's gate", "cannot be inferred from the task's named anchors"]) {
+for (const marker of ["## Progress", "Rejected", "Six fields per task", "Landed:", "one delivery unit", "one observable result", "fresh reviewer's gate", "cannot be inferred from the task's named anchors", "## Baseline", "## Coverage"]) {
   assert(usabilityPlanSkill.includes(marker), `devflow-plan must publish the v2 contract marker ${marker}`);
 }
 const usabilityPlanChecker = read("scripts/devflow-plan.js");
-for (const marker of ["v2TaskFields", "detectV2", "checkIndexes", "--index", "multiResult"]) {
+for (const marker of ["v2TaskFields", "detectV2", "checkIndexes", "--index", "multiResult", "baselineRowPattern", "coverageRowPattern"]) {
   assert(usabilityPlanChecker.includes(marker), `devflow-plan.js must implement the v2/index marker ${marker}`);
 }
+assert(read("commands/devflow-plan.toml").includes("## Baseline"), "devflow-plan command must carry the Baseline template");
+assert(read("commands/devflow-plan.toml").includes("## Coverage"), "devflow-plan command must carry the Coverage template");
+assert(read("skills/devflow-brainstorm/SKILL.md").includes("Required behaviors"), "devflow-brainstorm must publish the requirement baseline");
+assert(read("skills/devflow-prove/SKILL.md").includes("B IDs"), "devflow-prove must map Coverage to B IDs");
 for (const indexFile of ["docs/plans/INDEX.md", "docs/features/INDEX.md"]) {
   assert(fs.existsSync(path.join(root, indexFile)), `capability index missing: ${indexFile}`);
 }

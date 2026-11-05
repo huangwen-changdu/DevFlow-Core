@@ -70,7 +70,7 @@ If no decision-impact gap remains after the supplied facts and echo-back, ask no
    When the host provides a structured question tool (for example DSH `ask_user_question` or opencode `question`), ask every clarification question through it with 2-4 concrete options representing the most likely answers plus an Other field, and use it for the echo-back confirm question (Correct / Mostly correct / Let me correct something). When no such tool exists, keep the text question block unchanged. After each answer, acknowledge it in one or two sentences, then immediately ask the next question. After the echo-back is confirmed, start the clarification loop directly.
 
 5. **Revalidate every answer.** Before asking the next question, compare the answer with confirmed facts and the current request. If it introduces a load-bearing assumption, exposes a contradiction, or changes goal, scope, exclusion, constraint, acceptance, terminology, or actor, apply the Understanding Revision Rule. Otherwise record the answer and continue only when another decision-impact gap remains.
-6. **Explore the problem.** In `compact`, run only risk, edge, impact, and acceptance checks; in `standard`, run fitting angles; in `deep`, walk the full checklist from the reference. Report negative findings, name gaps and risks, offer directions with trade-offs, and recommend one inside the problem space. If exploration exposes a new decision-impact gap, return to step 4 and resolve it one question at a time before finishing.
+6. **Explore the problem.** In `compact`, run only risk, edge, impact, and acceptance checks; in `standard`, run fitting angles; in `deep`, walk the full checklist from the reference. Report negative findings, name gaps and risks, offer directions with trade-offs, and recommend one inside the problem space. The exploration produces the requirement baseline — `Required behaviors` (B IDs), `Invariants`, and `Edge/failure cases` — which the summary carries. If exploration exposes a new decision-impact gap, return to step 4 and resolve it one question at a time before finishing.
 7. **Finish.** When no decision-impact gap remains and every non-blocking unknown is recorded, output the fixed summary, present the A/B/C gate, and wait. On user selection, follow only the corresponding predefined direct branch.
 
 ## Problem-Space Recommendation
@@ -117,6 +117,9 @@ Confirmed request:
 - Out of scope: <explicit exclusions>
 - Constraints: <must-not-change conditions, or none>
 - Acceptance: <observable proof of success>
+- Required behaviors: <B1..Bn observable outcomes, or none — reason>
+- Invariants: <conditions that must always hold, or none>
+- Edge/failure cases: <inputs, actors, or states that must be handled, or none>
 - Identified gaps/risks: <holes, risks, and blind spots surfaced during exploration, or none>
 - Directions considered: <directions discussed with trade-offs, including rejected ones, or none>
 - Recommended direction: <recommendation and rationale within the problem space, or none>
@@ -176,6 +179,7 @@ Before leaving this skill, confirm:
 - [ ] The echo-back was confirmed or corrected before further clarification.
 - [ ] Each additional question resolved one real gap and used the `Question / Recommended answer / Why now` block.
 - [ ] The multi-angle exploration ran and its per-angle findings reached the summary fields.
+- [ ] The summary carries required behaviors (B IDs), invariants, and edge/failure cases.
 - [ ] Recommendations stayed inside the problem space.
 - [ ] Any changed understanding was re-echoed and confirmed.
 - [ ] The fixed `Confirmed request` summary contains every required field, including gaps/risks, directions, and recommendation.

@@ -70,7 +70,7 @@ Brainstorm is required when any material risk or decision-impact uncertainty exi
 |---|---|---|
 | Problem | A reported problem has no explicit fix request. | Prove facts first, then select later work only if a change is known. |
 | Fast | Pure answer, lookup, verification, or an already approved trivial change. | Sense, then narrow proof. |
-| Design-lite | Existing feature, all seven low-risk conditions hold. | Record `Brainstorm required: no` and `Depth hint: skip`; state goal, acceptance, exclusions; select Cut with Depth C, then Build. |
+| Design-lite | Existing feature, all seven low-risk conditions hold. | Record `Brainstorm required: no` and `Depth hint: skip`; state goal, acceptance, exclusions, and the requirement baseline (B IDs, invariants, edge cases); select Cut with Depth C, then Build. |
 | Design | New requirement, behavior or architecture change, ambiguity, or multiple options. | Select Brainstorm; after confirmation its user-selected A/B/C path directly starts Spec or Cut. |
 | Build | User asks to implement, fix, build, or land an approved change. | Select Cut, then Plan when construction needs several steps, then Build and Prove. |
 | Recovery | Same target remains wrong after correction or proof failure. | Select PUA, consume recovery facts, then choose a different path. |

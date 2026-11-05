@@ -48,6 +48,7 @@
 | 2026-09-25 | [2026-09-25-anti-slop-prose-design-quality](2026-09-25-anti-slop-prose-design-quality.md) | done | 用户请求（2026-09-25 会话确认：提炼内嵌 + 暂不安装，Depth B）+ 本计划随附 Cut Decision | npm run verify:all 退出码 0（18 项全 PASS）；--index PASS；budget 165457/280000；verify-plugin 14 skills/5 self-tests；sync-assets 幂等；版本 0.7.1 / 0.7.1 / 0.5.1 / 0.11.1 | 反 AI 味质量门 |
 | 2026-10-10 | [2026-10-10-skill-orchestration-visibility](2026-10-10-skill-orchestration-visibility.md) | done | 用户请求（2026-10-10：skills 开发编排统计与修复方案）+ 用户指令批准实施（B 深度） | npm run verify:all 退出码 0（18 项全 PASS，budget 169148/280000）；trigger:verify 23 场景；capability:eval 13/13 PASS；doctor 六 home 6/6 pass；verify-plugin PASS | DevFlow 执行回执 |
 | 2026-10-25 | [2026-10-25-read-budget-and-load-visibility](2026-10-25-read-budget-and-load-visibility.md) | done | Brainstorm Confirmed request（2026-10-25，Depth B）+ 本计划随附 Cut Decision | npm run verify:all 退出码 0（19 项全 PASS）；npm test 18 runtime 文件；SKILL 三处 md5 05bc9bc9、core-methods 三处 md5 16c97d1e；反向用例 BROKEN 1 报 `read-budget contract` | Sense 读取预算与加载可见性 |
+| 2026-11-05 | [2026-11-05-first-principles-completeness-baseline](2026-11-05-first-principles-completeness-baseline.md) | done | 2026-11-05 会话 Confirmed request（B 深度） | npm run verify:all exit 0；plan:verify PASS（Baseline/Coverage 正反用例）；verify-plugin 14 skills/5 self-tests；三份副本逐字节一致 | DevFlow 计划生成与落地 |
 
 ## 维护机制
 

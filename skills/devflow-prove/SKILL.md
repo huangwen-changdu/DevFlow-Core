@@ -91,13 +91,13 @@ Judgment: PASS / FAIL / BLOCKED
 Add coverage when useful:
 
 ```text
-Coverage: <what was verified>
-Not covered: <none or explicit gap>
+Coverage: <B IDs → evidence; every baseline B mapped>
+Not covered: <missing B IDs or none>
 ```
 
 When Build ran the prose or UI gates, cite their receipts: objects, findings or 无命中, six-axis scores; non-visual 不适用, post-revision unre-run 未执行. When code changed, cite the Simplify pass receipt: scope, applied count, kept guards, re-proof result.
 
-On `PASS` with a plan file, write back before reporting: header `Status: done` plus `Landed: <date> · <evidence>`; every `## Progress` row must already be `done` with evidence. `PASS` also requires the `docs/requirements.md` row to be terminal — write `landed` with the evidence, or return the missing-row facts to Core. On `FAIL` or `BLOCKED`, leave `Status` unchanged and report facts to Core.
+On `PASS` with a plan file, write back: header `Status: done` plus `Landed: <date> · <evidence>`; every `## Progress` row must already be `done` with evidence; set the plan's `docs/plans/INDEX.md` row to `done` with the landing evidence. `PASS` also requires the `docs/requirements.md` row terminal — write `landed` with evidence, or return the missing-row facts to Core. On `FAIL` / `BLOCKED`, leave `Status` unchanged and report facts to Core.
 
 ## Code Review Report
 
