@@ -91,7 +91,8 @@ assert(agents.includes("Keep the knowledge pack current"), "AGENTS.md must requi
 assert(agents.includes("docs/INDEX.md"), "AGENTS.md must route Sense to the docs map");
 // 闭环可执行性：AGENTS.md 是唯一的无 skill 回退程序，回看踩坑与写 hotfix 行必须在这里也成立。
 assert(agents.includes("Recall learning cards"), "AGENTS.md must make pitfall recall a Prove duty");
-assert(agents.includes("Append one `docs/hotfix-log.md` row for a landed defect fix"), "AGENTS.md must route landed defect fixes to the hotfix log");
+assert(agents.includes("Append one `docs/hotfix-log.md` row per landed defect fix"), "AGENTS.md must route landed defect fixes to the hotfix log");
+assert(agents.includes("create a missing ledger from its header, never skip"), "AGENTS.md must create a missing ledger instead of skipping the record");
 assert(
   read("skills/devflow-learn/SKILL.md").includes("refresh code-evidenced structure"),
   "devflow-learn must hand structural facts to the knowledge pack"
@@ -575,11 +576,16 @@ assert(read("skills/devflow-learn/SKILL.md").includes("global"), "devflow-learn 
 assert(read("skills/devflow-prove/SKILL.md").includes("Recall check"), "devflow-prove must consult prior pitfalls during adversarial review");
 assert(read("skills/devflow-prove/SKILL.md").includes("docs/hotfix-log.md"), "devflow-prove must require the hotfix row on a defect fix");
 assert(read("skills/devflow-learn/SKILL.md").includes("docs/hotfix-log.md"), "devflow-learn must own the hotfix log row");
+assert(
+  read("skills/devflow-learn/SKILL.md").includes("create it with the standard header"),
+  "devflow-learn must create a missing hotfix log from its header instead of skipping the record"
+);
 const hotfixLog = read("docs/hotfix-log.md");
 for (const column of ["日期", "症状", "根因", "改动点", "涉及模块", "验证命令", "是否已沉淀"]) {
   assert(hotfixLog.includes(column), `docs/hotfix-log.md must publish the ${column} column`);
 }
 assert(docsMap.includes("hotfix-log.md"), "docs/INDEX.md must route defect fixes to the hotfix log");
+assert(docsMap.includes("缺失时先建表头"), "docs/INDEX.md must say a missing ledger is created before appending");
 
 console.log("DevFlow validation passed");
 console.log(`Checked ${requiredFiles.length} runtime files, ${cards.length} learning cards, and selected host and trigger contracts`);

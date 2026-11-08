@@ -15,7 +15,7 @@ const FILE_EXT = /\.(cs|ts|tsx|js|jsx|py|go|java|kt|rb|php|fs)$/;
 function usage() {
   console.log("Usage: node scripts/devflow-docs.js [--status] [--init] [--check] [--refresh] [--root <dir>] [--force] [--dry-run] [--preview] [--json] [--self-test]");
   console.log("  --status   report which project artifacts exist and the next command for each missing one (read-only)");
-  console.log("  --init     create the docs map plus PROGRESS.md, a command entry, docs/ARCHITECTURE.md, and the spec index");
+  console.log("  --init     scaffold the docs map, PROGRESS.md, a command entry, docs/ARCHITECTURE.md, the spec index, and ledger skeletons when the map is built");
   console.log("  --check    verify the map routes, the spec index covers every spec, and the map stays within 90 lines");
   console.log("  --refresh  rebuild docs/specs/INDEX.md from the filesystem (derived, safe to rerun)");
   console.log("  --preview  with --init, print the generated file bodies without writing");
@@ -189,6 +189,31 @@ function detect(root) {
 
 const STATUSES = ["open", "designed", "planned", "built", "landed", "opt-out", "dropped"];
 
+// 台账骨架：目标项目没有台账时由 --init 创建；生命周期节点直接追加，不因文件缺失跳过记录。
+const REQUIREMENTS_SKELETON = [
+  "# 需求台账（Requirements）",
+  "",
+  "> 摘要: 用途=一条需求从确认到落地的唯一记录 | 维护=各生命周期节点推进状态，Prove 写终态 | 机检=node scripts/devflow-plan.js --index",
+  "",
+  "## 台账",
+  "",
+  "| 日期 | 需求 | 来源 | 深度 | 落地物 | 状态 | 证据或跳过 | 更新日 |",
+  "|---|---|---|---|---|---|---|---|",
+  ""
+].join("\n");
+
+const HOTFIX_LOG_SKELETON = [
+  "# Hotfix 记录（Hotfix Log）",
+  "",
+  "> 摘要: 用途=一行一次记录缺陷修复的改动点 | 维护=每次缺陷修复由 devflow-learn 追加一行 | 机检=无",
+  "",
+  "## 记录",
+  "",
+  "| 日期 | 症状 | 根因 | 改动点 | 涉及模块 | 关联学习卡 | 验证命令 | 是否已沉淀 |",
+  "|---|---|---|---|---|---|---|---|",
+  ""
+].join("\n");
+
 function ledgerRows(root) {
   const ledger = path.join(root, "docs", "requirements.md");
   if (!fs.existsSync(ledger)) return { landed: [], active: [] };
@@ -270,7 +295,7 @@ function progressContent(root) {
   if (rows.landed.length) {
     for (const row of rows.landed) lines.push(`- ${row.date} — ${row.name.slice(0, 80)}`);
   } else {
-    lines.push("- 暂无（或需求台账尚未建立）");
+    lines.push("- 暂无");
   }
   lines.push("", "## 进行中", "");
   if (rows.active.length) {
@@ -387,12 +412,12 @@ function render(root, detected, planned = new Set()) {
   lines.push("新数据按下表落位；字段与状态机以各文件表头为准。机检：`node scripts/devflow-plan.js --index`、`node scripts/devflow-docs.js --check`。", "");
   lines.push("| 事件 | 落位 | 必填 | 机检 |");
   lines.push("|---|---|---|---|");
-  lines.push(`| 需求确认 → Spec → Plan → 构建 → 落地 | ${pathCell("docs/requirements.md")} 同一行逐格推进 | 状态、落地物路径、终态证据；\`opt-out\` 写原因 | index |`);
+  lines.push(`| 需求确认 → Spec → Plan → 构建 → 落地 | ${pathCell("docs/requirements.md")} 同一行逐格推进；缺失时先建表头 | 状态、落地物路径、终态证据；\`opt-out\` 写原因 | index |`);
   lines.push(`| 计划新建或完成 | ${pathCell("docs/plans/INDEX.md")} 一行 + 计划头 \`Status\` | Status 与文件头一致；done 有落地证据 | index |`);
   lines.push(`| 新增 spec | 跑 \`--refresh\` 重建 ${pathCell("docs/specs/INDEX.md")} | 派生索引覆盖全部 spec，不手写 | check |`);
   lines.push(`| 能力或接口契约变化 | ${pathCell("docs/features/INDEX.md")} 一行 | 触发词、入口、验证命令、关键文件、来源计划 | index |`);
   lines.push("| 每次落地 | 项目根 PROGRESS.md 摘要；`docs/project-knowledge/` change-log | 日期、变更、涉及模块；业务语义待确认 | 无 |");
-  lines.push(`| 一次缺陷修复 | ${pathCell("docs/hotfix-log.md")} 表尾追加一行 | 日期、症状、根因、改动点、涉及模块、验证命令；可复用则建卡并回填 | 无 |`);
+  lines.push(`| 一次缺陷修复 | ${pathCell("docs/hotfix-log.md")} 表尾追加一行；缺失时先建表头 | 日期、症状、根因、改动点、涉及模块、验证命令；可复用则建卡并回填 | 无 |`);
   lines.push("| 新根文档 | 本页「根文档」区登记 | 路径真实存在 | check |");
   lines.push(`| 可复用经验 | \`.copilot/cards/*.md\`${learnIndex} | Trigger、Lesson、Next action、Evidence | 无 |`, "");
   lines.push("需求状态机：`open -> designed -> planned -> built -> landed`；非终态可转 `opt-out` 或 `dropped`。", "");
@@ -479,7 +504,8 @@ const INVENTORY = [
   ["PROGRESS.md", "进度摘要（做了什么/在做什么/被什么阻塞）", "node scripts/devflow-docs.js --init"],
   ["Makefile", "标准命令入口（setup/test/lint/check）", "node scripts/devflow-docs.js --init"],
   ["docs/project-knowledge/AI-START-HERE.md", "项目知识包入口", "首次落地时由 devflow-project-knowledge 创建"],
-  ["docs/requirements.md", "需求台账", "首次 /devflow 需求时创建"],
+  ["docs/requirements.md", "需求台账", "新项目由 --init 建表头；已有项目首次记录时创建"],
+  ["docs/hotfix-log.md", "缺陷修复改动点台账", "新项目由 --init 建表头；已有项目首次记录时创建"],
   ["docs/features/INDEX.md", "能力索引", "首次 /devflow 需求时创建"],
   ["docs/plans/INDEX.md", "计划索引", "首次批准计划时创建"],
   [".copilot/LEARNING_INDEX.md", "学习卡索引", "devflow-learn 首次复盘时创建"]
@@ -502,7 +528,18 @@ function init(root, force, dryRun) {
   const detected = detect(root);
   const commands = detectCommands(root, detected);
 
+  const mapExists = fs.existsSync(mapPath);
+  const writeMap = !mapExists || force;
+
   const writes = [];
+  // 台账与地图同批生成：已有旧地图时不单补文件，避免未登记的新根文档让 --check 失败；
+  // 已有项目由记录节点按标准表头在首次记录时创建。
+  if (writeMap && !fs.existsSync(path.join(root, "docs", "requirements.md"))) {
+    writes.push({ rel: "docs/requirements.md", body: REQUIREMENTS_SKELETON });
+  }
+  if (writeMap && !fs.existsSync(path.join(root, "docs", "hotfix-log.md"))) {
+    writes.push({ rel: "docs/hotfix-log.md", body: HOTFIX_LOG_SKELETON });
+  }
   if (!fs.existsSync(path.join(root, "PROGRESS.md"))) {
     writes.push({ rel: "PROGRESS.md", body: progressContent(root) });
   }
@@ -517,9 +554,6 @@ function init(root, force, dryRun) {
     const specIndex = specsIndexContent(root);
     if (specIndex) writes.push({ rel: "docs/specs/INDEX.md", body: specIndex });
   }
-
-  const mapExists = fs.existsSync(mapPath);
-  const writeMap = !mapExists || force;
 
   if (!dryRun) {
     for (const item of writes) {
@@ -571,15 +605,25 @@ function selfTest() {
 
   init(tmp, false, false);
   if (check(tmp).judgment !== "PASS") throw new Error("self-test expected a passing initialized map");
-  for (const rel of ["PROGRESS.md", "Makefile", "docs/ARCHITECTURE.md", "docs/specs/INDEX.md"]) {
+  for (const rel of ["PROGRESS.md", "Makefile", "docs/ARCHITECTURE.md", "docs/specs/INDEX.md", "docs/requirements.md", "docs/hotfix-log.md"]) {
     if (!fs.existsSync(path.join(tmp, rel))) throw new Error(`self-test expected ${rel} to be created`);
+  }
+  const requirementsSkeleton = fs.readFileSync(path.join(tmp, "docs", "requirements.md"), "utf8");
+  for (const column of ["日期", "需求", "来源", "深度", "落地物", "状态", "证据或跳过", "更新日"]) {
+    if (!requirementsSkeleton.includes(column)) throw new Error(`self-test expected the requirements ledger to publish ${column}`);
+  }
+  const hotfixSkeleton = fs.readFileSync(path.join(tmp, "docs", "hotfix-log.md"), "utf8");
+  for (const column of ["日期", "症状", "根因", "改动点", "涉及模块", "关联学习卡", "验证命令", "是否已沉淀"]) {
+    if (!hotfixSkeleton.includes(column)) throw new Error(`self-test expected the hotfix log to publish ${column}`);
   }
   if (fs.existsSync(path.join(tmp, "src", "api", "ARCHITECTURE.md"))) {
     throw new Error("self-test expected no per-directory architecture file");
   }
   const generatedMap = fs.readFileSync(path.join(tmp, "docs", "INDEX.md"), "utf8");
   if (!generatedMap.includes("## 记录规范")) throw new Error("self-test expected the generated map to publish the record rules");
+  if (!generatedMap.includes("docs/requirements.md")) throw new Error("self-test expected the generated map to route requirement records");
   if (!generatedMap.includes("docs/hotfix-log.md")) throw new Error("self-test expected the record rules to route defect fixes to the hotfix log");
+  if (!generatedMap.includes("缺失时先建表头")) throw new Error("self-test expected the generated map to say a missing ledger is created, not skipped");
   if (generatedMap.includes("`../.copilot/LEARNING_INDEX.md`")) {
     throw new Error("self-test expected no learning index code span when .copilot is absent");
   }
@@ -594,9 +638,16 @@ function selfTest() {
   if (check(tmp).judgment !== "PASS") throw new Error("self-test expected --refresh to restore coverage");
 
   fs.writeFileSync(path.join(tmp, "PROGRESS.md"), "KEEP\n", "utf8");
+  fs.writeFileSync(path.join(tmp, "docs", "requirements.md"), "KEEP\n", "utf8");
+  fs.writeFileSync(path.join(tmp, "docs", "hotfix-log.md"), "KEEP\n", "utf8");
   init(tmp, false, false);
   if (fs.readFileSync(path.join(tmp, "PROGRESS.md"), "utf8") !== "KEEP\n") {
     throw new Error("self-test expected generated files to stay untouched on rerun");
+  }
+  for (const rel of ["docs/requirements.md", "docs/hotfix-log.md"]) {
+    if (fs.readFileSync(path.join(tmp, rel), "utf8") !== "KEEP\n") {
+      throw new Error(`self-test expected existing ${rel} to stay untouched on rerun`);
+    }
   }
 
   const dry = fs.mkdtempSync(path.join(os.tmpdir(), "devflow-docs-dry-"));
@@ -604,6 +655,16 @@ function selfTest() {
   const preview = init(dry, false, true);
   if (preview.written.length === 0 || fs.existsSync(path.join(dry, "PROGRESS.md"))) {
     throw new Error("self-test expected --dry-run to report without writing");
+  }
+
+  // An existing map is not regenerated, so ledgers stay with the record node instead of becoming unregistered root docs.
+  const existing = fs.mkdtempSync(path.join(os.tmpdir(), "devflow-docs-existing-"));
+  fs.mkdirSync(path.join(existing, "docs"), { recursive: true });
+  fs.writeFileSync(path.join(existing, "docs", "INDEX.md"), "# Map\n", "utf8");
+  const existingResult = init(existing, false, false);
+  if (existingResult.map !== "existing") throw new Error("self-test expected an existing map to be kept");
+  if (fs.existsSync(path.join(existing, "docs", "requirements.md")) || fs.existsSync(path.join(existing, "docs", "hotfix-log.md"))) {
+    throw new Error("self-test expected an existing map to leave ledger creation to the record node");
   }
 
   fs.writeFileSync(path.join(tmp, "docs", "UNREGISTERED.md"), "# new\n", "utf8");
@@ -617,7 +678,7 @@ function selfTest() {
   }
 
   console.log("DevFlow docs self-test passed");
-  console.log("Checked init, record rules, generated skeletons, dry-run, coverage failure, and dangling-path failure");
+  console.log("Checked init, ledger creation, record rules, generated skeletons, dry-run, existing-map behavior, coverage failure, and dangling-path failure");
 }
 
 function main() {

@@ -39,7 +39,7 @@ npm run onboard:target -- ../my-project            # runtime + docs map + checks
 npm run onboard:target -- ../my-project --dry-run  # preview only
 ```
 
-The shortcut installs the runtime, scaffolds `PROGRESS.md`, a `Makefile` command entry, a layered `docs/ARCHITECTURE.md` skeleton, and a derived `docs/specs/INDEX.md` when missing, then creates `docs/INDEX.md` and verifies the map and the installed indexes. It never overwrites existing files and is safe to rerun.
+The shortcut installs the runtime, scaffolds `PROGRESS.md`, a `Makefile` command entry, a layered `docs/ARCHITECTURE.md` skeleton, and a derived `docs/specs/INDEX.md` when missing, creates `docs/INDEX.md` plus the `docs/requirements.md` / `docs/hotfix-log.md` ledger skeletons when the map is new, then verifies the map and the installed indexes. It never overwrites existing files and is safe to rerun.
 
 Or run the steps individually:
 
@@ -99,12 +99,12 @@ When installed into a target project, only the target-runtime scripts are copied
 |---|---|
 | `node scripts/devflow-spec.js <spec-file>` | Check that a DevFlow spec has required sections, clear content, and the right `docs/specs/` landing path before planning. |
 | `node scripts/devflow-plan.js <plan-file>` | Check a Plan Pack. v2 plans need a slim header, a valid `Status`, six fields per task (`Task` / `Files` / `Change` / `Acceptance` / `Verify` / `Not doing`), a `Cut` line with a non-empty `Rejected`, and a `## Progress` table whose `done` rows carry evidence; Chinese or English Change/Verify wording is accepted. Legacy plans that still carry `Task type`, `Change mechanics`, `Steps`, and `Prewalk` keep validating under the legacy rules. The checker validates structure rather than generating plans or judging architecture. |
-| `node scripts/devflow-plan.js --index` | Check that `docs/plans/INDEX.md` and `docs/features/INDEX.md` match the filesystem: every plan has exactly one row, row status matches the file header, `done` rows carry landing evidence, and feature rows point at real files and plans. It also validates `docs/requirements.md` when present: status whitelist, terminal evidence, `opt-out` reasons, and artifact paths. |
+| `node scripts/devflow-plan.js --index` | Check that `docs/plans/INDEX.md` and `docs/features/INDEX.md` match the filesystem: every plan has exactly one row, row status matches the file header, `done` rows carry landing evidence, and feature rows point at real files and plans. It also validates the `docs/requirements.md` ledger created by `--init`: status whitelist, terminal evidence, `opt-out` reasons, and artifact paths. |
 | `node scripts/devflow-plan.js --loop` | Print a read-only loop report: requirement status counts, plan landing rate, feature rows, and learning-card promotion candidates. |
 | `node scripts/devflow-review.js <plan-or-diff-file>` | Check whether a plan or diff includes the required reuse, native, overbuild, diff, and scope gates before detailed review. |
 | `node scripts/devflow-debt.js .` | Harvest intentional `devflow:` simplification markers into a debt report. |
 | `node scripts/devflow-audit.js <target-directory>` | Run a repo-wide lean candidate scan for overengineering, missed reuse, stdlib/native replacements, and YAGNI abstractions. The full audit reads this as first-pass evidence and reports correctness, safety, load, and tests separately. |
-| `node scripts/devflow-docs.js --status` / `--init` / `--refresh` / `--check` | Inventory, scaffold, refresh the derived spec index, and verify. The master map stays a router (90-line limit); leaf specs live in the derived `docs/specs/INDEX.md`, rebuilt by `--refresh`. `--init` never overwrites existing files and marks unknown authority rows as `[待确认]`. |
+| `node scripts/devflow-docs.js --status` / `--init` / `--refresh` / `--check` | Inventory, scaffold, refresh the derived spec index, and verify. The master map stays a router (90-line limit); leaf specs live in the derived `docs/specs/INDEX.md`, rebuilt by `--refresh`. `--init` also creates the requirements and hotfix ledgers when it builds the map, never overwrites existing files, and marks unknown authority rows as `[待确认]`. |
 
 Saved specs should land in the current target project's `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` unless that project already documents another specs path. Saved implementation plans should land in the current target project's `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`. `docs/features/` is for feature ledgers and the capability index, not generated specs or task plans.
 
@@ -242,13 +242,13 @@ npm run install:target -- ../my-project --write
 node scripts/devflow-docs.js --init
 node scripts/devflow-docs.js --check
 
-# 4. Index and ledger checks (they validate only when the files exist)
+# 4. Index and ledger checks (--init creates the ledger skeletons)
 node scripts/devflow-plan.js --index
 ```
 
-The inventory covers eleven artifacts: `AGENTS.md`, `scripts/devflow-docs.js`, `skills/devflow-core/SKILL.md`, `docs/INDEX.md`, `PROGRESS.md`, `Makefile`, `docs/project-knowledge/AI-START-HERE.md`, `docs/requirements.md`, `docs/features/INDEX.md`, `docs/plans/INDEX.md`, and `.copilot/LEARNING_INDEX.md`. The first three may resolve at user level instead of project level.
+The inventory covers twelve artifacts: `AGENTS.md`, `scripts/devflow-docs.js`, `skills/devflow-core/SKILL.md`, `docs/INDEX.md`, `PROGRESS.md`, `Makefile`, `docs/project-knowledge/AI-START-HERE.md`, `docs/requirements.md`, `docs/hotfix-log.md`, `docs/features/INDEX.md`, `docs/plans/INDEX.md`, and `.copilot/LEARNING_INDEX.md`. The first three may resolve at user level instead of project level.
 
-`--init` generates the map from the detected tree and marks any authority row it cannot confirm as `[待确认]`; review those rows before relying on it. The knowledge pack, requirement ledger, both indexes, and the learning index are created by the lifecycle after the first landed requirement, not by a scaffold script.
+`--init` generates the map from the detected tree and marks any authority row it cannot confirm as `[待确认]`; review those rows before relying on it. When it builds the map, it also creates the `docs/requirements.md` and `docs/hotfix-log.md` ledger skeletons, so a later fix has a record target; an existing map leaves ledger creation to the record node on first use. The knowledge pack, both indexes, and the learning index are created by the lifecycle after the first landed requirement.
 
 ## Core Skills
 

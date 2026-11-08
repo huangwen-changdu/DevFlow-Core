@@ -72,12 +72,12 @@
 
 | 事件 | 落位 | 必填 | 机检 |
 |---|---|---|---|
-| 需求确认 → Spec → Plan → 构建 → 落地 | `docs/requirements.md` 同一行逐格推进 | 状态、落地物路径、终态证据（逐项摘要，非仅整体退出码）；`opt-out` 写原因 | index |
+| 需求确认 → Spec → Plan → 构建 → 落地 | `docs/requirements.md` 同一行逐格推进；缺失时先建表头 | 状态、落地物路径、终态证据（逐项摘要，非仅整体退出码）；`opt-out` 写原因 | index |
 | 计划新建或完成 | `docs/plans/INDEX.md` 一行 + 计划头 `Status` | Status 与文件头一致；done 有落地证据 | index |
 | 新增 spec | 跑 `--refresh` 重建 `docs/specs/INDEX.md` | 派生索引覆盖全部 spec，不手写 | check |
 | 能力或接口契约变化 | `docs/features/INDEX.md` 一行 | 触发词、入口、验证命令、关键文件、来源计划 | index |
 | 每次落地 | 项目根 PROGRESS.md 摘要；`docs/project-knowledge/` change-log | 日期、变更、涉及模块；业务语义待确认 | 无 |
-| 一次缺陷修复 | `docs/hotfix-log.md` 表尾追加一行 | 日期、症状、根因、改动点、涉及模块、验证命令；可复用则建卡并回填 | 无 |
+| 一次缺陷修复 | `docs/hotfix-log.md` 表尾追加一行；缺失时先建表头 | 日期、症状、根因、改动点、涉及模块、验证命令；可复用则建卡并回填 | 无 |
 | 新根文档 | 本页「根文档」区登记 | 路径真实存在 | check |
 | 可复用经验 | `.copilot/cards/*.md` + `../.copilot/LEARNING_INDEX.md` | Trigger、Lesson、Next action、Evidence | learn |
 

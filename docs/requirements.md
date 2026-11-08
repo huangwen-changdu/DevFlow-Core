@@ -1,6 +1,6 @@
 # 需求台账（Requirements）
 
-> 摘要: 用途=一条需求从确认到落地的唯一记录，补上 Spec/Plan/能力行之间缺失的那一环 | 维护=各生命周期节点推进状态，Prove 写终态 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-10-25
+> 摘要: 用途=一条需求从确认到落地的唯一记录，补上 Spec/Plan/能力行之间缺失的那一环 | 维护=各生命周期节点推进状态，Prove 写终态 | 机检=node scripts/devflow-plan.js --index | 更新日=2026-11-08
 
 ## 状态机
 
@@ -63,6 +63,7 @@ open -> designed -> planned -> built -> landed
 | 2026-11-04 | `devflow-audit` 按 ponytail-audit 原能力调整：审计范围从"只报过度工程"扩为六维（bug / 风险 / 规模 / 测试 / 速度 / lean，lean 排最后），补 assumed load、具体案例证据规则、Must fix / Should fix / Nice to have 三组编号与四要素 finding 报告，lean-only 保留为窄模式；同时写入能力边界：审计只报告、不设完成门（变更判定归 `devflow-prove`，plan/diff 删减评审归 `devflow-cut`）；`devflow-cut` 新增 `merge` / `split` 两类结构标签，并把变更评审的证据规则收进 `cut-methods.md` Method 9：只做删减维度（读调用方、具体案例、先 grep 再判未使用），correct / safe / load / tested / speed 明确交回 `devflow-prove` | 用户请求 | C | - | landed | `npm run verify:all` EXIT:0（链式 19 项全过，含 test / install / user / trigger + 资产对等 / budget / audit self-test）；`npm run index:verify` PASS `Problems: none`；`npm test` PASS（18 runtime 文件 / 34 卡）；源 + Codex 副本 + DSH 资产 md5：audit SKILL 5baedc21、full-quality-audit 3001cd53、cut SKILL 3ae45d94、cut-methods 9a7d728b；audit 6246/15360、cut 13085/15360；**Rejected**：`devflow-cut/references/diff-review-method.md`（在 Cut 重建整套变更评审报告，与 prove 的 Code Review Report 重复且违背 simplify-pass 的 "not a second Cut" 边界，已删；只保留证据规则折进 cut-methods） | 2026-11-04 |
 | 2026-11-05 | 修复写计划流程的说明/机检不一致：Recon 证据落点、执行模式与 Interfaces、中文 Change/Verify/External Skills 词、`abandoned` 状态、计划批准后的 plans/INDEX 回写 | 用户请求 | C | scripts/devflow-plan.js, skills/devflow-plan/SKILL.md, skills/devflow-prove/SKILL.md, commands/devflow-plan.toml, README.md | landed | `npm run verify:all` EXIT:0（链式 19 项）；`npm test` PASS（19 runtime 文件/34 卡）；`plan:verify` 新增中文动词/期望词、`abandoned`、中文 External Skills 用例；`index:verify` PASS `Problems: none`；完整中文计划 PASS（含 External Skills/期望词），`Status: abandoned` PASS；Codex/DSH 副本逐字节一致；plan 15188/15360、prove 15332/15360 | 2026-11-05 |
 | 2026-11-05 | 需求落地第一原理完整性基线：Confirmed request/Design-lite 携带行为/不变量/边界，Plan 用 Baseline/Coverage 机检覆盖，Prove 按 B 对账 | 用户请求 | B | docs/plans/2026-11-05-first-principles-completeness-baseline.md | landed | `npm run verify:all` exit 0（链式 19 项）；`plan:verify` 新增 Baseline/Coverage 正反用例；`verify-plugin` 14 skills/5 self-tests；三份副本逐字节一致 | 2026-11-05 |
+| 2026-11-08 | 修复其他项目缺少 `docs/requirements.md` / `docs/hotfix-log.md` 时跳过记录的问题：`--init` 建图时补建标准台账，AGENTS/learn 明确缺失即按表头创建并登记地图 | 用户请求 | C | scripts/devflow-docs.js, skills/devflow-learn/SKILL.md, AGENTS.md, scripts/validate-devflow.js, README.md, docs/INDEX.md | landed | `npm run verify:all` 19/19 PASS（test / learn / scenario / trigger / host / install / user / debt / review / spec / plan / index / audit / doctor / capability / budget / docs / route）；`docs:verify` 自测覆盖新项目建双台账、旧地图不单补文件、重跑不覆盖；`index:verify` PASS；AGENTS 8191/8192、learn 14958/15360；DSH sync-assets 幂等 + Codex 副本 sha256 一致 | 2026-11-08 |
 
 ## 维护机制
 

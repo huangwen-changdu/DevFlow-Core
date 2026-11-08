@@ -27,7 +27,7 @@ Extract only knowledge that can help a future task:
 | Review result | Action | Store |
 |---|---|---|
 | Reusable execution experience or proven work pattern | Create or update one focused card | `.copilot/cards/` |
-| A defect fix landed | Append one row: symptom, root cause, change points, modules, verify command, and the linked card or `no` | `docs/hotfix-log.md` |
+| A defect fix landed | Append one row (create the file with its standard header when missing): symptom, root cause, change points, modules, verify command, and the linked card or `no` | `docs/hotfix-log.md` |
 | User-visible capability or interface contract changed | Add or update one row: what it does, its trigger words, its entry point, its verify command, and its source plan | `docs/features/INDEX.md` |
 | The same how-to preference was corrected twice | Create or update one `Scope: global` preference card | `.copilot/cards/` |
 | Code-evidenced structure changed | Refresh the pack structure through `devflow-project-knowledge` without waiting for confirmation | `docs/project-knowledge/` |
@@ -52,7 +52,7 @@ Project-knowledge candidates include changed domain semantics, rules, boundaries
    - skip if it is ordinary narration, a one-off fact, already covered, or too context-specific
 6. Create `.copilot/LEARNING_INDEX.md`, `.copilot/cards/`, and one focused card only when the result belongs in project learning; do not create empty learning storage after a no-record review.
 7. Update `.copilot/LEARNING_INDEX.md` when a card changed.
-8. Append one `docs/hotfix-log.md` row when the task repaired a defect; `no` in the sediment column means this fix and any later occurrence of the same pattern must become a card.
+8. Append one `docs/hotfix-log.md` row when the task repaired a defect; when the file is missing, create it with the standard header (`日期`/`症状`/`根因`/`改动点`/`涉及模块`/`关联学习卡`/`验证命令`/`是否已沉淀`) and add it to `docs/INDEX.md` when the map does not name it, then append — absence is never a skip. `no` in the sediment column means this fix and any later occurrence of the same pattern must become a card.
 9. Report learning closure before completion.
 
 ## Repeat Correction Gate
@@ -193,6 +193,7 @@ The two branch lines are the closure receipt for the conditional post-PASS hando
 | "This was just a correction." | Corrections reveal future intercepts. Check if reusable. |
 | "The task passed, so there is nothing to learn." | PASS proves the work; proactively review its implementation, decision, proof, and business impact. |
 | "The user already told me where it goes." | Repeated placement corrections must become a card so the next run recalls them before acting. |
+| "The ledger file does not exist." | Create it with the standard header and append the row; a missing file is never a skip reason. |
 | "The user only complained about quality." | Repeated challenge is a reusable signal when the miss pattern can repeat. |
 | "I'll remember it." | Memory without an index is not recallable. |
 | "Let's store everything." | Too many cards become noise; record only repeatable or costly lessons. |
