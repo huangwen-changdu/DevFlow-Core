@@ -47,15 +47,15 @@ Start with:
 What this repo does: <two or three sentences>. Assumed load: <one line>.
 ```
 
-Then numbered findings in three groups, most important first; skip an empty group:
+Then numbered quality findings in three groups, most important first; skip an empty group:
 
 - **Must fix** — bug, security, data loss, breaks at the expected load.
-- **Should fix** — risky code without a test, real slowness, duplication, a function that mixes jobs, code that should not exist.
-- **Nice to have** — small speed-ups, shorter forms.
+- **Should fix** — risky code without a test, real slowness.
+- **Nice to have** — small speed-ups.
 
-Number findings across all groups so the user can say "fix 2 and 5". At most 20 findings; when smaller ones are left out, say how many.
+Number quality findings across all groups so the user can say "fix 2 and 5". At most 20 quality findings; when smaller quality findings are left out, say how many.
 
-Every finding has all four parts, one or two short sentences each. A lean finding carries its tag in the heading:
+Every quality finding has all four parts, one or two short sentences each:
 
 ```text
 2. **Orders land on the wrong day** (`billing/close_day.py:L40-52`)
@@ -64,12 +64,25 @@ Every finding has all four parts, one or two short sentences each. A lean findin
    - Fix: Compute the day once in the shop time zone: `datetime.now(ZoneInfo("Europe/Berlin")).date()`. Nothing else changes.
    - If we skip it: Late orders carry the wrong date and accounting fixes them by hand.
 
-7. **Hand-rolled email validator** (`stdlib`, `src/validator.js:L12-38`)
-   - What this is: A 27-line class that checks whether an address contains "@".
-   - Problem: The standard library and a confirmation mail already cover this.
-   - Fix: `"@" in email`, one line.
-   - If we skip it: Nothing breaks; the file grows.
+7. **Retry loop has no test** (`test`, `src/retry.js:L20-48`)
+   - What this is: The retry wrapper backs off three times, then gives up.
+   - Problem: Nothing fails when the third attempt stops retrying.
+   - Fix: One test with a fake clock that asserts three calls and the final error.
+   - If we skip it: The next refactor can break retries without a red test.
+
+Lean:
+src/validator.js:L12-38: stdlib: 27-line email validator. `"@" in email`, 1 line; the confirmation mail does the real check.
+utils/time.js:L4: native: moment.js for one format call. `Intl.DateTimeFormat`, 0 deps.
+src/report.js:L40-71: shrink: manual grouping loop. Replace with:
+    const byDay = Object.groupBy(rows, (row) => row.day);
+src/legacy-export.js:L1-120: delete: unused export path. Nothing replaces it.
+
+Apply next:
+- /devflow-simplify: src/validator.js:L12-38, src/report.js:L40-71.
+- devflow-core -> cut -> build -> prove: src/legacy-export.js:L1-120.
 ```
+
+The lean list is mandatory: every confirmed lean finding, one line each, no numeric cap, never reduced to a count. Every line carries a concrete replacement — inline, an indented block of at most six lines, or `Nothing replaces it.` After the list, `Apply next` groups every safe anchor under its handoff path, with no numeric cap; a cut that needs a behavior or contract decision stays out. Print `Lean: none` and skip `Apply next` when there is no lean finding. For a lean-only request, print the Lean list with replacements and `Apply next` without the quality groups.
 
 End with:
 
@@ -79,7 +92,9 @@ net: -<N> lines, -<M> dependencies possible.
 Not checked: <the parts you did not read or could not run>
 ```
 
-Nothing material found: still print `What this repo does` and the assumed load, then `Healthy. Nothing to fix.` and one line on what was checked.
+`net` counts only the lean findings printed above, never an omitted estimate.
+
+Nothing material found: still print `What this repo does` and the assumed load, then `Healthy. Nothing to fix.`, `Lean: none`, and one line on what was checked.
 
 ## Boundaries
 
@@ -89,6 +104,9 @@ Nothing material found: still print `What this repo does` and the assumed load, 
 - Do not flag tests, validation, accessibility, auth, permission, data-loss protection, or rollback safeguards as bloat.
 - Do not infer unused code from a single grep when dynamic entry points or exports may exist; mark it `candidate` or drop it.
 - Lean findings use one of the eight `SKILL.md` tags and name a replacement; a bug or risk finding never borrows a lean tag to look smaller.
+- The 20-finding cap applies to quality findings only; never hide a lean finding behind it or report a cut as a count.
+- `Apply next` recommends; it never approves. The user confirms the anchors and the named handoff path applies and re-proves.
+- A replacement snippet is code to review, not a blind paste; a cut that needs a behavior or contract decision stays in the lean list but out of `Apply next`.
 - If the user wants fixes, hand off to `devflow-core` with the selected findings as design input.
 
 ## Verification
@@ -96,6 +114,8 @@ Nothing material found: still print `What this repo does` and the assumed load, 
 - [ ] Scope and assumed load were stated.
 - [ ] Connected code was read; the parts not read are named.
 - [ ] Findings are numbered across the three groups and each has a concrete case.
-- [ ] Lean findings carry one of the eight tags and name a replacement.
-- [ ] `Verdict`, `net`, and `Not checked` are present.
+- [ ] The lean list printed every confirmed finding, or `Lean: none`.
+- [ ] Lean findings carry one of the eight tags and name a replacement or `Nothing replaces it.`.
+- [ ] `Apply next` marks every safe anchor under its handoff path, or says none.
+- [ ] `Verdict`, `net`, and `Not checked` are present, and `net` counts only the printed lean findings.
 - [ ] No file was changed.

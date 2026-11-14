@@ -562,6 +562,16 @@ assert(read("docs/features/INDEX.md").includes("触发词"), "docs/features/INDE
 assert(read("skills/devflow-learn/SKILL.md").includes("docs/features/INDEX.md"), "devflow-learn must own the capability index row");
 assert(read("skills/devflow-prove/SKILL.md").includes("Landed:"), "devflow-prove must write the landing record on PASS");
 
+// 审计输出契约：20 条上限只管质量 finding，lean 清单必须全量打印，不能折成计数。
+const auditSkill = read("skills/devflow-audit/SKILL.md");
+for (const marker of ["At most 20 quality findings", "Always print the lean list", "never reduced to a count", "Lean: none", "Apply next:", "Nothing replaces it.", "Route by blast radius"]) {
+  assert(auditSkill.includes(marker), `devflow-audit must publish the lean-list contract marker ${marker}`);
+}
+const auditCommand = read("commands/devflow-audit.toml");
+for (const marker of ["Always print every confirmed lean finding", "mark every safe cut", "Apply next:"]) {
+  assert(auditCommand.includes(marker), `devflow-audit command must publish the handoff marker ${marker}`);
+}
+
 // 需求闭环：台账、终态硬条件、循环报告与偏好应用必须同时存在，否则"需求落地"只剩声明。
 const requirementLedger = read("docs/requirements.md");
 for (const marker of ["证据或跳过", "opt-out", "landed"]) {

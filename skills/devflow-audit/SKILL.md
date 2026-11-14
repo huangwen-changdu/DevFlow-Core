@@ -1,6 +1,6 @@
 ---
 name: devflow-audit
-description: "Use when auditing a repository or named scope for quality and bloat: bugs, security holes, data loss, what breaks under real load, risky code without tests, slow paths, and code that should be deleted, merged, or split. Ranked findings in plain English, one-shot report, changes nothing. Trigger phrases: 'audit this codebase', 'review the whole repo', 'audit for over-engineering', 'what can I delete from this repo', 'what will break', 'find bloat', '/devflow-audit'."
+description: "Use when auditing a repository or named scope for quality and bloat: bugs, security holes, data loss, what breaks under real load, risky code without tests, slow paths, and code that should be deleted, merged, or split. Ranked findings in plain English, always lists every confirmed cut with its replacement, one-shot report, changes nothing. Not for one change's completion claim (use `devflow-adversarial` for whether it holds, `devflow-find-fault` for what is missing). Trigger phrases: 'audit this codebase', 'review the whole repo', 'audit for over-engineering', 'what can I delete from this repo', 'what will break', 'find bloat', '/devflow-audit'."
 ---
 
 # DevFlow Audit
@@ -9,7 +9,7 @@ Audit a repository or named scope like the senior developer who inherits it and 
 
 Order of importance: correct, safe, holds under load, tested, fast, lean.
 
-This is repo-wide audit, not diff review of a change, not implementation, and not a fix pass. It reports; it changes nothing.
+This is repo-wide audit, not diff review of a change, not implementation, and not a fix pass. It reports; it changes nothing. If the user asks whether one change or claim holds, use `devflow-adversarial`; if the user asks what is missing or unconfirmed, use `devflow-find-fault`.
 
 ## Process
 
@@ -35,19 +35,34 @@ When `scripts/devflow-audit.js` exists, use it as a first-pass candidate scan. I
 
 Start with `What this repo does:` in two or three sentences and `Assumed load:` in one line.
 
-Number findings across three groups, most important first, skipping an empty group:
+Number quality findings across three groups, most important first, skipping an empty group:
 
 - **Must fix**: bug, security, data loss, breaks at the expected load.
-- **Should fix**: risky code without a test, real slowness, duplication, a unit that mixes jobs, code that should not exist.
-- **Nice to have**: small speed-ups, shorter forms.
+- **Should fix**: risky code without a test, real slowness.
+- **Nice to have**: small speed-ups.
 
-At most 20 findings. When smaller ones are left out, say how many. Every finding has four parts: What this is, Problem, Fix, If we skip it.
+At most 20 quality findings. When smaller quality findings are left out, say how many. Every quality finding has four parts: What this is, Problem, Fix, If we skip it.
 
-For a lean-only request, one line per finding is enough:
+Always print the lean list after the groups: every confirmed lean finding, one line each, with no numeric cap and never reduced to a count. The 20-finding cap does not apply to it.
 
 ```text
+Lean:
 <file>:L<line>: <delete|reuse|stdlib|native|yagni|shrink|merge|split>: <what to cut>. <replacement>.
 ```
+
+`<replacement>` is concrete smaller code, not a promise: one line in backticks when it fits, up to six lines indented four spaces when it needs a block, or `Nothing replaces it.` when the cut has no replacement.
+
+After the list, mark every cut that is safe to apply, grouped by handoff path:
+
+```text
+Apply next:
+- /devflow-simplify: <file:Lline>, <file:Lline>.
+- devflow-core -> cut -> build -> prove: <file:Lline>.
+```
+
+Route by blast radius, not tag: a local, behavior-preserving cut (`reuse`, `stdlib`, `native`, `shrink`, inline `yagni`, a single-file `delete`) goes to `/devflow-simplify`; a cut that changes a public contract, spans files, or removes a subsystem (`merge`, `split`, broad `delete`) goes to `devflow-core -> cut -> build -> prove`. There is no numeric cap: list every safe anchor under its path. A cut that needs a behavior or contract decision stays in the lean list and out of `Apply next`. Audit still edits nothing; the user confirms the anchors, then the named path applies and re-proves. If no cut is safe to apply, write `Apply next: none — the cuts are optional.`
+
+If no lean finding exists, print `Lean: none` and skip `Apply next`. For a lean-only request, print the Lean list with replacements and `Apply next` without the quality groups.
 
 End with:
 
@@ -57,16 +72,21 @@ net: -<N> lines, -<M> deps possible.
 Not checked: <the parts you did not read or could not run>
 ```
 
-If nothing material should be fixed or cut: `What this repo does` and `Assumed load`, then `Healthy. Nothing to fix.` and one line on what was checked.
+`net` counts only the lean findings printed above, never an omitted estimate.
+
+If nothing material should be fixed or cut: `What this repo does` and `Assumed load`, then `Healthy. Nothing to fix.`, `Lean: none`, and one line on what was checked.
 
 ## Boundaries
 
 - This report is not a completion gate. `devflow-prove` proves a change and returns PASS/FAIL/BLOCKED; `devflow-cut` reviews a plan or diff for cuts. Audit neither replaces them nor blocks completion.
 - Do not change files during audit.
+- `Apply next` recommends; it never approves. The user confirms the anchors and the named handoff path applies and re-proves.
+- A replacement snippet is code to review, not a blind paste; keep a cut out of `Apply next` when it needs a behavior or contract decision.
 - Do not report style preference, "consider", or a vague worry as a finding.
 - Do not flag tests, small assertions, validation, accessibility, auth, permission, data-loss protection, or rollback safeguards as bloat.
 - Do not infer unused code only from one grep result when dynamic entry points or exports may exist; mark it `candidate` or skip.
 - A lean finding needs a smaller current replacement. Size alone is not a finding.
+- The 20-finding cap applies to quality findings only; never hide a lean finding behind it or report a cut as a count.
 
 ## Anti-Rationalization
 
@@ -76,6 +96,9 @@ If nothing material should be fixed or cut: `What this repo does` and `Assumed l
 | "Audit is about bloat, so the bug does not count." | Correct, safe, and load come before lean. Report the bug first. |
 | "This abstraction looks big." | Size is not enough. Flag only avoidable complexity with a smaller current replacement. |
 | "I can just clean it up now." | Audit reports findings only. Fixes require a separate Build route. |
+| "The cap is full, so a count of the cuts is enough." | The cap covers quality findings only. Lean findings print one line each, never a count. |
+| "The snippet is small, so I can apply it now." | Audit reports. `Apply next` names the handoff; the user confirms and the handoff re-proves. |
+| "The replacement snippet is already the fix." | A snippet is evidence for the decision; the handoff applies it and runs its own checks. |
 
 ## Handoff
 
@@ -88,6 +111,9 @@ Before leaving this skill, confirm:
 - [ ] Scope and assumed load were named.
 - [ ] Connected code was read or script output was confirmed with code reads.
 - [ ] Every finding has a concrete case and a smallest fix.
-- [ ] Lean findings use one of the eight tags and name a replacement.
+- [ ] The lean list printed every confirmed finding, or `Lean: none`.
+- [ ] Lean findings use one of the eight tags and name a replacement or `Nothing replaces it.`.
+- [ ] `Apply next` marks every safe anchor under its handoff path, or says none.
+- [ ] `net` counts only the printed lean findings.
 - [ ] Boundaries were respected.
 - [ ] No files were changed.

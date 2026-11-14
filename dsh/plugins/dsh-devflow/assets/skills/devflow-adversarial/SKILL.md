@@ -1,13 +1,13 @@
 ---
 name: devflow-adversarial
-description: "Use when a user explicitly asks for an independent deep adversarial review, upgraded adversarial review, red-team review, 对抗审查, 升级版对抗审查, 红队审查, 五角度挑战, or a five-angle challenge of current work. It can run at any task stage and does not read, require, modify, or hand off to devflow-prove, PUA, Build, Learn, or any completion state."
+description: "Use when a user explicitly asks for an independent deep adversarial review, upgraded adversarial review, red-team review, 对抗审查, 升级版对抗审查, 红队审查, 五角度挑战, or a five-angle challenge of current work. It can run at any task stage and does not read, require, modify, or hand off to devflow-prove, PUA, Build, Learn, or any completion state. Not for missing or unconfirmed requirements (use `devflow-find-fault`) or whole-repo quality (use `devflow-audit`)."
 ---
 
 # DevFlow Adversarial Review
 
 Run an independent, user-requested challenge of the current task materials. This skill does not declare global task status or perform work beyond review.
 
-Use this skill when the user asks to challenge whether the current result holds. When the user asks what is missing or uncertain instead, use `devflow-find-fault`.
+Use this skill when the user asks to challenge whether the current result holds. When the user asks what is missing or uncertain instead, use `devflow-find-fault`; when the target is a whole repository or file set, use `devflow-audit`. If the request is a bare review without an object or question, ask one selector question and do not start two review owners.
 
 ## Entry Gate
 

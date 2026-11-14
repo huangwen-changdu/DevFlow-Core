@@ -1,13 +1,13 @@
 ---
 name: devflow-find-fault
-description: "Use when a user explicitly asks to find faults, identify the biggest omission, surface blind spots, name uncertainty, run an unease check, 不安感检查, 找茬, 最大遗漏是什么, 我没有意识到什么, 需求细节是否确认, or 眼下你最没有把握的事情是什么. It can run at any task stage and does not read, require, modify, or hand off to devflow-prove, PUA, Build, Learn, or any completion state."
+description: "Use when a user explicitly asks to find faults, identify the biggest omission, surface blind spots, name uncertainty, run an unease check, 不安感检查, 找茬, 最大遗漏是什么, 我没有意识到什么, 需求细节是否确认, or 眼下你最没有把握的事情是什么. It can run at any task stage and does not read, require, modify, or hand off to devflow-prove, PUA, Build, Learn, or any completion state. Not for a five-angle challenge of whether the result holds (use `devflow-adversarial`) or whole-repo quality (use `devflow-audit`)."
 ---
 
 # DevFlow Find Fault
 
 Run an independent, user-requested critique of the current task materials. This skill identifies gaps and uncertainty without declaring global task status.
 
-Use this skill when the user asks what is missing, unrecognized, or uncertain. When the user asks a five-angle challenge of whether the result holds instead, use `devflow-adversarial`.
+Use this skill when the user asks what is missing, unrecognized, or uncertain. When the user asks a five-angle challenge of whether the result holds instead, use `devflow-adversarial`; when the target is a whole repository or file set, use `devflow-audit`. If the request is a bare review without an object or question, ask one selector question and do not start two review owners.
 
 ## Entry Gate
 

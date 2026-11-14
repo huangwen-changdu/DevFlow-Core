@@ -267,6 +267,17 @@ const scenarios = [
     ]
   },
   {
+    name: "review selector without double load",
+    route: "Independent review",
+    input: "帮我审查一下，看看有没有问题。",
+    evidence: [
+      ["skills/devflow-core/references/skill-guide.md", "## Review Selector"],
+      ["skills/devflow-core/references/skill-guide.md", "Do not start two owners by default"],
+      ["skills/devflow-adversarial/SKILL.md", "ask one selector question"],
+      ["skills/devflow-find-fault/SKILL.md", "ask one selector question"]
+    ]
+  },
+  {
     name: "find-fault necessary adjustments and fixes",
     route: "Independent manual",
     input: "Finish a find-fault review and ask which adjustments or fixes are required.",

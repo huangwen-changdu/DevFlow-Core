@@ -1,10 +1,11 @@
-description = "Run an independent manual adversarial review of current work."
+description = "Challenge whether current work holds with an independent manual five-angle review."
 prompt = '''
 Run DevFlow Adversarial Review.
 
 Load `skills/devflow-adversarial/SKILL.md` and begin the review when the user explicitly requests it.
 Identify the review target from the request and available task materials. Ask one smallest question only when the target is unclear.
 This command is manual and independent: it does not require, read, modify, or hand off to devflow-prove, PUA, Build, Learn, or any completion state.
+If the request is a bare review, ask one selector question first: does the result hold (this review), what is missing or unconfirmed (`/devflow-find-fault`), whole-repo quality (`/devflow-audit`), or overengineering in a diff/plan (`/devflow-review`). Do not run two review owners by default.
 Cover requirement coverage, reachability, boundaries and regressions, evidence strength, and user-visible outcome.
 Report only the skill's required findings, five-angle coverage, context limitations, and suggested manual next action.
 Run the review in bounded rounds, one review angle per round; report the round's findings and progress before starting the next angle, then assemble the final report after the last round.

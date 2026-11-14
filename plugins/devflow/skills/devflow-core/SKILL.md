@@ -61,7 +61,7 @@ Unknowns: <none or specific unknown>
 
 ## Routes
 
-Apply this precedence before choosing a route: explicit independent review -> investigation or pure inquiry -> approved scope -> risk gate -> lifecycle owner. Do not route from keywords alone.
+Apply this precedence before choosing a route: explicit independent review -> investigation or pure inquiry -> approved scope -> risk gate -> lifecycle owner. For an explicit independent review, pick one owner from the Review Selector in `skill-guide.md`; a bare review asks one selector question and does not load `devflow-adversarial` and `devflow-find-fault` together by default. Do not route from keywords alone.
 Investigation-only reports remain a Problem exception and do not enter Brainstorm.
 
 Brainstorm is required when any material risk or decision-impact uncertainty exists. A request may bypass Brainstorm only when all of these are true: clear goal, existing local behavior, one plausible path, local impact, reversible change, no security/data-loss/permission/contract risk, and quick proof. Any unknown or failed factor keeps Brainstorm. Skipping Brainstorm compresses analysis only; it never skips Cut or Prove. Unapproved edits never use Fast.

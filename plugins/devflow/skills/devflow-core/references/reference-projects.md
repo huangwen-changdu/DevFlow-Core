@@ -24,7 +24,7 @@ Absorbed into DevFlow-Core:
 - `devflow-build` allows intentional simplification markers with explicit ceiling and revisit trigger.
 - `commands/devflow-debt.toml` harvests `devflow:` markers into a shortcut ledger.
 - `commands/devflow-review.toml` exposes the change review.
-- `devflow-audit` runs the full quality audit — bug, risk, scale, test, speed, lean — with lean as the last dimension, and keeps a lean-only mode when the user asks only what can be cut. It stays a report: `devflow-prove` keeps the change-level completion gate and `devflow-cut` keeps the plan/diff cut review.
+- `devflow-audit` runs the full quality audit — bug, risk, scale, test, speed, lean — with lean as the last dimension and always printed as a one-line cut list after the quality groups, and keeps a lean-only mode when the user asks only what can be cut. It stays a report: `devflow-prove` keeps the change-level completion gate and `devflow-cut` keeps the plan/diff cut review.
 - `skills/devflow-audit/references/full-quality-audit.md` holds the audit method, per-dimension checklist, and report example.
 - `commands/devflow-audit.toml`, `skills/devflow-audit/SKILL.md`, and `scripts/devflow-audit.js` expose a repo-wide audit without applying fixes; the script scans lean candidates only.
 - `reuse` is a first-class overengineering tag for repeated helpers, utilities, types, or patterns that should use existing project code.

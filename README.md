@@ -89,7 +89,7 @@ If a host supports slash commands, use:
 /devflow-simplify simplify a change before review, behavior unchanged
 /devflow-pua      recover when a result is wrong, challenged, or repeatedly misses the target
 /devflow-learn    capture reusable corrections and pitfalls
-/devflow-audit    audit a repository or scope for bugs, risk, load failures, missing tests, slowness, and cuts
+/devflow-audit    audit a repository or scope for bugs, risk, load failures, missing tests, slowness, and every cut with its replacement
 /devflow-grill    stress-test / 拷问 a request or plan with one-question clarification
 ```
 
@@ -263,7 +263,7 @@ The inventory covers twelve artifacts: `AGENTS.md`, `scripts/devflow-docs.js`, `
 | `devflow-prove` | Run the proof command or scenario, including Skill Activation Check for rule/skill changes; run the simplify pass on code changes before the adversarial and quality reviews, then report command/result/judgment. |
 | `devflow-pua` | Stop wrong-path recovery when the same function, result, or requested capability is repeatedly reported as wrong, incomplete, or missing; re-ask or infer the desired result, switch approach, and return recovery facts plus any Brainstorm re-confirmation need to Core. |
 | `devflow-learn` | Capture reusable corrections and pitfalls into `.copilot` learning cards. |
-| `devflow-audit` | Run a repo-wide quality audit — bug, risk, scale, test, speed, lean — without applying fixes; lean-only when the user asks only what can be cut. |
+| `devflow-audit` | Run a repo-wide quality audit — bug, risk, scale, test, speed, lean — without applying fixes. Quality findings keep the 20-finding cap; every confirmed lean finding prints as a one-line cut with a concrete replacement, never as a count. The report adds `Apply next`: every safe anchor grouped by handoff path, with no cap — `/devflow-simplify` for behavior-preserving cuts, `devflow-core -> cut -> build -> prove` for structural cuts. The user confirms before anything is applied. Lean-only when the user asks only what can be cut. |
 
 ## DevFlow Brainstorm Interview Discipline
 
@@ -304,7 +304,7 @@ If verification is partial, say what is not covered. If verification cannot run,
 
 | Source Strength | DevFlow-Core Native Capability |
 |---|---|
-| Ponytail | Minimal Solution Ladder, platform-native checklist, root-cause fix check, overengineering review tags, cut intensity, debt markers, ledger command, and a repo-wide quality audit with lean as its last dimension. |
+| Ponytail | Minimal Solution Ladder, platform-native checklist, root-cause fix check, overengineering review tags, cut intensity, debt markers, ledger command, and a repo-wide quality audit that always prints the full lean cut list with replacements and a grouped `Apply next` handoff. |
 | Agent Skills | Skill anatomy, lifecycle commands, anti-rationalization tables, context/source discipline. |
 | Superpowers | Brainstorm-to-spec-to-plan-to-build handoff, `devflow-spec`, date-prefixed specs under `docs/specs/`, delivery-unit tasks, `Source` tracing with command-level evidence, and verification-before-completion gate. |
 | PUA-Driven Spec Engineering | Fast/Design/Recovery gating, project memory checks, skill activation evidence, Codex proof contract, and Method Lens routing. |
@@ -381,16 +381,23 @@ It also checks `--check` mode for matching, missing, and changed target runtime 
 
 `node scripts/devflow-doctor.js` checks every existing user-level runtime home (`~/.dsh`, `~/.codex`, `~/.claude`, `~/.codebuddy`, `~/.workbuddy`, `~/.zcode`) for missing or changed DevFlow files by reusing `install-devflow-user.js --check`. `npm run doctor:verify` runs its `--self-test`, which proves both the clean and the missing detection states against a temp home and prints `DevFlow doctor self-test passed`.
 
-## 独立审查怎么用（devflow-adversarial / devflow-find-fault）
+## 审查怎么选（audit / adversarial / find-fault / cut）
 
-两个可随时单独召唤的独立审查技能，只报告、不改代码、不宣告任务状态：
+先看对象，再看问题；一次只选一个 owner。`devflow-prove` 内置的 adversarial review 是完成门的一部分，不加载独立技能。
 
-| 技能 | 触发方式 | 审查什么 | 输出 |
-|---|---|---|---|
-| devflow-adversarial | 说 对抗审查 / 红队审查 / 升级版对抗审查 / 五角度挑战，或用命令 /devflow-adversarial | 五个固定角度攻击当前结论：需求覆盖、可达性、边界与回归、证据强度、用户可见结果 | 分级发现（Critical / Important / Observation）加五角度覆盖、上下文限制与建议 |
-| devflow-find-fault | 说 找茬 / 最大遗漏是什么 / 我没有意识到什么 / 需求细节是否确认 / 眼下你最没把握的事情是什么 / 不安感检查，或用命令 /devflow-find-fault | 最大遗漏、未意识到的盲点、最不确定的点，加实现后未确认的业务决定（不安感检查） | 每个答案分事实、推断、未知，带置信度与下一步，加分级发现 |
+| 入口 | 对象 | 回答的问题 | 输出 | 门禁 |
+|---|---|---|---|---|
+| `devflow-prove` 内置 adversarial review | 本次改动 | 最可能错在哪？ | 完成块里的 `Adversarial review:` 一行 | 是；真缺口 → FAIL |
+| `devflow-adversarial` | 当前结论 / 方案 / 改动 | 它还站得住吗？哪里会被打穿？ | 五角度覆盖 + 分级发现 + 证据 / 置信度 | 否 |
+| `devflow-find-fault` | 当前需求 / 实现 / 材料 | 我漏了什么？哪里没确认？ | 三问 + unease check + 必要调整清单 | 否 |
+| `devflow-audit` | 仓库 / 目录 / 文件集 | 哪里坏 / 哪里慢 / 哪里能删？ | 六维 finding + Lean 清单 | 否 |
+| `/devflow-review`（cut） | 当前 diff / plan | 有没有过度设计 / scope drift？ | 8 标签删减行 | 否 |
 
-两个技能都按轮执行：每轮只完成一个审查单元并先汇报该轮结果与进度，再进入下一轮（对抗审查一个角度一轮；找茬一个问题或不安感检查一轮），全部轮次后输出完整报告。
+一句话记忆：audit = 仓库体检；adversarial = 结论红队；find-fault = 需求找漏；prove 内置 = 完成门。
+
+说不清对象和问题时，只问一个四选一：A 整仓质量 / B 当前结果是否站得住 / C 当前需求漏了什么 / D diff/plan 过度设计。用户明确说两个都要时，先 adversarial 再 find-fault，报告分开，不合并输出。
+
+adversarial 和 find-fault 都按轮执行：每轮只完成一个审查单元并先汇报该轮结果与进度，再进入下一轮（对抗审查一个角度一轮；找茬一个问题或不安感检查一轮），全部轮次后输出完整报告。
 
 拿到审查结论后怎么修：Critical 或 High 发现带回 DevFlow 主流程按正常修复链处理；Medium 级未确认业务决定先按输出里的确认问题问用户再改；每条 next step 是最小的人工动作；Context limitations 说明缺材料时先补齐材料再动手。
 

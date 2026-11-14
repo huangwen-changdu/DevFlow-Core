@@ -1,9 +1,10 @@
-description = "Audit a repository or named scope for bugs, risk, load failures, missing tests, slowness, and code that can be deleted."
+description = "Audit a repository or named scope for bugs, risk, load failures, missing tests, slowness, and every code cut with its replacement and handoff recommendation. Not for one change's completion claim."
 prompt = '''
 Audit the repository or named scope like the senior developer who will be paged when it breaks.
 Load `skills/devflow-audit/SKILL.md`, then `skills/devflow-audit/references/full-quality-audit.md`.
 
 Order of importance: correct, safe, holds under load, tested, fast, lean. State the assumed load.
+This is a repo-wide audit, not a change review. If the user asks whether one change or claim holds, use `/devflow-adversarial`; if the user asks what is missing or unconfirmed, use `/devflow-find-fault`.
 
 When `scripts/devflow-audit.js` exists, run:
 
@@ -21,14 +22,26 @@ node ~/.claude/scripts/devflow-audit.js <target-directory>
 
 The script is a first-pass scan for lean candidates only. Read referenced code before reporting any finding.
 
-Report numbered findings in Must fix / Should fix / Nice to have, each with What this is, Problem, Fix, and If we skip it. End with:
+Report numbered quality findings in Must fix / Should fix / Nice to have, each with What this is, Problem, Fix, and If we skip it.
+
+Always print every confirmed lean finding after the groups, one line each, with no numeric cap and never reduced to a count. Each line carries a concrete replacement: inline code, up to six indented lines when it needs a block, or `Nothing replaces it.` when the cut has no replacement.
+Lean:
+<file>:L<line>: <delete|reuse|stdlib|native|yagni|shrink|merge|split>: <what to cut>. <replacement>.
+
+After the list, mark every safe cut grouped by handoff path, with no numeric cap:
+Apply next:
+- /devflow-simplify: <file:Lline>, <file:Lline>.
+- devflow-core -> cut -> build -> prove: <file:Lline>.
+Route by blast radius: a local behavior-preserving cut goes to `/devflow-simplify`; a cut that changes a public contract, spans files, or removes a subsystem goes to `devflow-core -> cut -> build -> prove`. Audit edits nothing; the user confirms the anchors and the handoff re-proves. A cut that needs a behavior or contract decision stays in the Lean list but out of `Apply next`.
+If no lean finding exists, print `Lean: none` and skip `Apply next`. When the user asks only what can be cut, print the Lean list with replacements and `Apply next` alone.
+
+End with:
 
 Verdict: ...
 net: -<N> lines, -<M> deps possible.
 Not checked: ...
 
-When the user asks only what can be cut, report the lean dimension alone, one line per finding:
-<file>:L<line>: <delete|reuse|stdlib|native|yagni|shrink|merge|split>: <what to cut>. <replacement>.
+`net` counts only the printed lean findings, never an omitted estimate.
 
 Change no files.
 '''
