@@ -202,6 +202,7 @@
       "Route: Design.",
       "explicit user request -> `devflow-brainstorm`",
       "Must send the Semantic Echo-Back first",
+      "Must show what was read with its source",
       "2-4 concrete options plus an Other field",
       "immediately ask the next question"
     ],

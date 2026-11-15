@@ -5,7 +5,7 @@ description: "Use when devflow-core sends ambiguous or materially risky creative
 
 # DevFlow Brainstorm
 
-Explore **what** the user wants as a true brainstorming partner. Do not decide **how** DevFlow should proceed or **how** the solution should be built. Liveliness comes from depth of thinking — proactive analysis, gap-finding, and recommendations — never from loosening the process discipline.
+Explore **what** the user wants as a true brainstorming partner, never **how** DevFlow proceeds or **how** the solution is built. Liveliness comes from depth of thinking, never from loosening the process discipline.
 
 ## Responsibility Boundary
 
@@ -13,6 +13,7 @@ This skill owns only:
 
 - minimal fact reading needed to understand the request;
 - Semantic Echo-Back and understanding correction;
+- visible working evidence: each fact with its source, each inference with its basis, each unknown as a user fill-in, and any wrong user term or premise said plainly rather than silently worked around;
 - Core-selected, risk-relevant problem exploration: surfacing gaps, risks, blind spots, and unstated assumptions in the user's request;
 - ideas, suggestions, and direction recommendations inside the problem space;
 - one-at-a-time clarification of goal, scope, exclusions, constraints, acceptance, and real open questions;
@@ -27,17 +28,17 @@ Use `references/interview-discipline.md` for the Semantic Echo-Back, multi-angle
 
 Enter only when `devflow-core` has identified ambiguity or material risk that needs clarification. Core may bypass this skill for a clear, reversible, local existing-feature change with one plausible path, no security/data-loss/permission/contract risk, and quick proof.
 
-Or when the user explicitly requests to be grilled or stress-tested: the explicit request counts as user-selected Brainstorm clarification and still runs every duty below.
+Or when the user explicitly requests to be grilled or stress-tested: that request counts as user-selected clarification and still runs every duty below.
 
 After producing the fixed summary, present the A/B/C gate and wait for user selection. Start A at `devflow-spec` and B/C at `devflow-cut` only after the user chooses. Do not select Fast, Design-lite, a depth, an approach, or a method on the user's behalf. Do not create design sections, a design contract, documentation, or a visual artifact.
 
 ## Clarification Depth
 
-Core supplies a depth hint after selecting this skill. Depth governs **analysis breadth only**. It never skips the echo-back, the confirm gates, the question discipline, or the recommendation duty. Compact mode is analysis compression, not permission to skip confirmation.
+Core supplies a depth hint after selecting this skill. Depth governs **analysis breadth only**. It never skips the echo-back, the confirm gates, the question discipline, or the recommendation duty.
 
 | Tier | Use when | Behavior |
 |---|---|---|
-| `compact` | Core has established clear goal, scope, constraints, acceptance, and a bounded material-risk reason. | Echo-back, risk/edge/acceptance check, only decision-impact questions, and fixed summary; record non-blocking angles as `none`. |
+| `compact` | Clear goal, scope, constraints, acceptance, and a bounded material-risk reason. | Echo-back, risk/edge/acceptance check, only decision-impact questions, fixed summary; non-blocking angles `none`. |
 | `standard` | Core identifies several relevant uncertainties or interacting impacts without full architecture ambiguity. | Run fitting angles with trade-offs and recommendation; every other duty unchanged. |
 | `deep` | Ambiguous, high-risk, cross-module, externally visible, irreversible, security-sensitive, data-loss-sensitive, or contract-changing work. | Full multi-angle checklist with per-angle findings, gap/risk surfacing, direction options with trade-offs, and recommendation. |
 
@@ -45,18 +46,21 @@ If no decision-impact gap remains after the supplied facts and echo-back, ask no
 
 ## Clarification Process
 
-1. **Read facts first.** Inspect the smallest useful project files, documentation, configuration, tests, and existing behavior. State facts instead of asking questions that those facts answer.
+1. **Read facts first.** Inspect the smallest useful project files, documentation, configuration, tests, and existing behavior. State a fact with its source instead of asking the question it answers; show a reading that settled nothing, too.
 2. **Semantic Echo-Back.** The first user-facing message confirms the current understanding and ends with one explicit confirm-or-correct question. Include all fields below, even when a field is `none`.
 
    ```text
    My understanding:
    - Problem to solve: <one sentence in the user's language>
-   - Known facts/constraints: <facts read, or none>
+   - What I read: <path:line or command → what it showed, or none>
+   - Where your terms or facts seem off: <your wording or premise vs. project facts, or none>
+   - What I infer (tell me if wrong): <inference and its basis, or none>
+   - What I do not know (you must fill): <unknown that changes the answer, or none>
    - NOT what you want: <likely misreading ruled out, or none>
-   - My assumptions (that could be wrong): <inferences, or none>
-   - Understanding gaps: <specific ambiguity, or none>
    Is this right? (correct me / confirm)
    ```
+
+   A premise that conflicts with project facts is raised here, not silently worked around; the reference carries the full evidence rule.
 
 3. 🛑 **STOP — wait.** Do not ask a process question or make a lifecycle decision before the user confirms or corrects the echo-back.
 4. **Clarify one decision-impact gap at a time.** Ask only the smallest unresolved question whose answer could change scope, a constraint, acceptance, or a subsequent problem-space decision. Resolve qualifying gaps in this order: goal ambiguity, scope boundary, exclusion, constraint, acceptance, then any remaining open question. Do not ask merely because a category is unfilled: record a fact-backed `none` or non-blocking unknown instead. Every question carries a recommended answer and why the answer matters.
@@ -67,24 +71,24 @@ If no decision-impact gap remains after the supplied facts and echo-back, ask no
    Why now: <risk or dependency resolved>
    ```
 
-   When the host provides a structured question tool (for example DSH `ask_user_question` or opencode `question`), ask every clarification question through it with 2-4 concrete options representing the most likely answers plus an Other field, and use it for the echo-back confirm question (Correct / Mostly correct / Let me correct something). When no such tool exists, keep the text question block unchanged. After each answer, acknowledge it in one or two sentences, then immediately ask the next question. After the echo-back is confirmed, start the clarification loop directly.
+   When the host provides a structured question tool (for example DSH `ask_user_question` or opencode `question`), ask every clarification question through it with 2-4 concrete options representing the most likely answers plus an Other field, and use it for the echo-back confirm question (Correct / Mostly correct / Let me correct something). Otherwise keep the text block. After each answer, acknowledge it in one or two sentences, then immediately ask the next question. After the echo-back is confirmed, start the clarification loop directly.
 
 5. **Revalidate every answer.** Before asking the next question, compare the answer with confirmed facts and the current request. If it introduces a load-bearing assumption, exposes a contradiction, or changes goal, scope, exclusion, constraint, acceptance, terminology, or actor, apply the Understanding Revision Rule. Otherwise record the answer and continue only when another decision-impact gap remains.
-6. **Explore the problem.** In `compact`, run only risk, edge, impact, and acceptance checks; in `standard`, run fitting angles; in `deep`, walk the full checklist from the reference. Report negative findings, name gaps and risks, offer directions with trade-offs, and recommend one inside the problem space. The exploration produces the requirement baseline — `Required behaviors` (B IDs), `Invariants`, and `Edge/failure cases` — which the summary carries. If exploration exposes a new decision-impact gap, return to step 4 and resolve it one question at a time before finishing.
-7. **Finish.** When no decision-impact gap remains and every non-blocking unknown is recorded, output the fixed summary, present the A/B/C gate, and wait. On user selection, follow only the corresponding predefined direct branch.
+6. **Explore the problem.** In `compact`, run only risk, edge, impact, and acceptance checks; in `standard`, run fitting angles; in `deep`, walk the full checklist from the reference. Report negative findings, name gaps and risks, offer directions with trade-offs, and recommend one inside the problem space. The exploration produces the requirement baseline — `Required behaviors` (B IDs), `Invariants`, and `Edge/failure cases` — which the summary carries. If exploration exposes a new decision-impact gap, return to step 4 before finishing.
+7. **Finish.** When no decision-impact gap remains and every non-blocking unknown is recorded, output the fixed summary, present the A/B/C gate, and wait. An unresolved premise conflict or fill-in unknown is put to the user first. On user selection, follow only the corresponding predefined direct branch.
 
 ## Problem-Space Recommendation
 
-Brainstorming is active, not passive recording. Inside the problem space this skill must:
+Brainstorming is active, not passive recording. Inside the problem space it must:
 
 - point out gaps, contradictions, risks, and missing stakeholders in the request;
 - lay out directions the user has not considered, with trade-offs;
 - recommend a direction and explain why;
 - record considered-and-rejected directions with their reasons.
 
-Stop line: when the discussion turns to **how to build** — technical selection, structure, contracts, or steps — record the need and hand it to `devflow-spec` through the summary. Test: a statement answering "what to do / why / what not to do / what could go wrong" belongs here; a statement answering "how to implement" belongs to spec.
+Stop line: when the discussion turns to **how to build** — technical selection, structure, contracts, or steps — record the need and hand it to `devflow-spec` through the summary. Test: "what to do / why / what not to do / what could go wrong" belongs here; "how to implement" belongs to spec.
 
-Brainstorm suggestions are disposable conversation material that helps the user decide what they want; a spec design contract commits to how it gets built.
+Suggestions are disposable material that helps the user decide what they want; a spec design contract commits to how it is built.
 
 ## Understanding Revision Rule
 
@@ -96,16 +100,16 @@ A user correction is not permission to continue from the previous question chain
 4. wait for explicit confirmation or another correction; and
 5. only then resume one-at-a-time clarification or produce `Confirmed request`.
 
-A correction that changes nothing above may receive a direct one-line acknowledgement, but it must not be treated as a confirmed request. Do not silently merge a correction into the next question or the fixed summary.
+A correction that changes nothing above gets a one-line acknowledgement, but it is never a confirmed request and is never silently merged into a later question or the summary.
 
 ## Clarification Rules
 
-- One user question per message; wait for the answer before the next question.
+- One user question per message; wait for the answer.
 - Treat business intent, user-visible scope, and ambiguous terms as questions; do not infer them from code.
-- Ask no question whose answer is unambiguous in project facts.
+- Ask nothing that project facts already answer.
 - Match the user's language and terminology. Name a new technical term only when precision needs it.
-- For vague quantifiers, implicit scope, pronouns, missing actors, unstated constraints, solution-as-goal language, missing context, and ambiguous boundaries, name the specific ambiguity in the echo-back or next question.
-- A request already clear after the echo-back needs no additional questions; the multi-angle exploration still runs and its findings still reach the summary.
+- Name the specific ambiguity in the echo-back or next question: vague quantifiers, implicit scope, pronouns, missing actors, constraints, context, and boundaries.
+- A request already clear after the echo-back needs no extra questions; exploration still runs and its findings still reach the summary.
 - Required formats (echo-back fields, question block, fixed summary) are mandatory. Wording inside them may be natural and conversational; the structures may not be skipped or abbreviated.
 
 ## Fixed Output Contract
@@ -127,7 +131,7 @@ Confirmed request:
 - Status: clarified
 ```
 
-The summary records the agreed request and the exploration findings only. It must not contain an implementation plan, solution-space design, lifecycle route, or handoff instruction. It is the factual basis that downstream skills — starting with `devflow-spec` — build on, so record findings faithfully rather than trimming them away.
+The summary records the agreed request and the exploration findings only. It must not contain an implementation plan, solution-space design, lifecycle route, or handoff instruction. It is the factual basis downstream skills — starting with `devflow-spec` — build on; record findings faithfully rather than trimming them.
 
 On `Status: clarified`, create or update the requirement row in `docs/requirements.md` with status `open`; depth is recorded when the lifecycle path is chosen. Pure Q&A, lookup, and read-only verification create no row.
 
@@ -149,8 +153,7 @@ Record `Depth: A`, `Depth: B`, or `Depth: C` with the selected branch input. Do 
 
 | Excuse | Reality |
 |---|---|
-| "The request is obvious, so skip the echo-back." | Hidden assumptions cause changed-wrong work. Echo the understanding first. |
-| "The request looks simple, so skip the analysis." | Simple-looking requests hide the most assumptions. Walk the checklist; reporting "nothing found" is cheap. |
+| "The request is obvious or simple, so skip the echo-back or the analysis." | Hidden assumptions cause changed-wrong work, and simple-looking requests hide the most of them. Echo the understanding first; then walk the checklist, where "nothing found" is cheap. |
 | "I can choose the depth while clarifying." | Recommendations stop at the problem space. The user selects A/B/C; the selected branch starts directly. |
 | "Several questions save time." | One question at a time makes the answer unambiguous. |
 | "Code reveals business intent." | Code shows current behavior, not the desired outcome. Confirm intent. |
@@ -163,9 +166,9 @@ Record `Depth: A`, `Depth: B`, or `Depth: C` with the selected branch input. Do 
 ## Red Flags — Stop
 
 - Selecting a depth or branch on the user's behalf.
-- Recommending implementation approaches, technical selections, or producing solution-space design.
+- Recommending implementation approaches or producing solution-space design.
 - Creating a design contract, spec, plan, ADR, documentation landing, or visual expression.
-- Skipping or abbreviating the multi-angle exploration because the request looks simple.
+- Skipping the multi-angle exploration because the request looks simple.
 - Treating clarification depth as permission to skip the echo-back, a confirm gate, or the recommendation duty.
 - Combining several user questions into one message.
 - Starting a branch before the user selects A/B/C.
@@ -174,8 +177,7 @@ Record `Depth: A`, `Depth: B`, or `Depth: C` with the selected branch input. Do 
 
 Before leaving this skill, confirm:
 
-- [ ] Relevant facts were read or explicitly recorded as unknown.
-- [ ] The first user-facing message was a Semantic Echo-Back with all fields, including `none` entries.
+- [ ] Facts were read and shown with their source, or recorded as unknown; the first message echoed all fields, any premise conflict, and every fill-in.
 - [ ] The echo-back was confirmed or corrected before further clarification.
 - [ ] Each additional question resolved one real gap and used the `Question / Recommended answer / Why now` block.
 - [ ] The multi-angle exploration ran and its per-angle findings reached the summary fields.

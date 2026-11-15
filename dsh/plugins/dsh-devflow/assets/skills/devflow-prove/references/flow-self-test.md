@@ -297,6 +297,7 @@ Expected behavior:
 - Skill path: explicit user request -> `devflow-brainstorm` (`AGENTS.md` declares the explicit grill/stress-test request, and `core-methods.md` records it as user-selected Brainstorm clarification).
 - Must enter clarification from the explicit request; the request is user intent, not a keyword-only route.
 - Must send the Semantic Echo-Back first, with all fields.
+- Must show what was read with its source, label inference as inference, and state unresolved unknowns and premise conflicts as user fill-ins.
 - Must ask exactly one question at a time; on a host with a structured question tool, every question uses it with 2-4 concrete options plus an Other field; otherwise the text block is used.
 - Must acknowledge each answer in one or two sentences, then immediately ask the next question.
 - Must keep the mandatory formats: the fixed `Confirmed request` summary and the user-selected A/B/C gate.
@@ -309,6 +310,7 @@ Pass check:
 ```text
 Grill entry: explicit request received
 Semantic Echo-Back: all fields sent and confirmed
+Visible reasoning: sources shown, inferences labelled, unknowns and premise conflicts handed to the user
 Questions: one at a time, structured options with Other (or text fallback)
 Momentum: each answer acknowledged, next question asked immediately
 Confirmed request: fixed summary

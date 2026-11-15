@@ -7,6 +7,7 @@ Use this reference only while `devflow-brainstorm` clarifies and explores a requ
 ```text
 User request
 -> read minimum relevant facts
+-> show what was read, what it implies, and what is still unknown
 -> Semantic Echo-Back (all fields, even when none)
 -> wait for confirm or correction
 -> one question at a time, each with a recommended answer
@@ -14,6 +15,7 @@ User request
 -> one-to-two-sentence acknowledgement, then immediately ask the next question
 -> mandatory multi-angle exploration and problem-space recommendation
 -> corrected echo-back when understanding changes
+-> unresolved fill-ins and premise conflicts put to the user
 -> fixed Confirmed request summary
 -> user-selected A/B/C gate
 -> A starts Spec; B/C start Cut; missing depth returns facts to Core
@@ -40,10 +42,11 @@ Start every Brainstorm pass with this understanding check:
 ```text
 My understanding:
 - Problem to solve: <one sentence in the user's domain language>
-- Known facts/constraints: <facts read, or none>
+- What I read: <path:line or command → what it showed, or none>
+- Where your terms or facts seem off: <your wording or premise vs. project facts, or none>
+- What I infer (tell me if wrong): <inference and its basis, or none>
+- What I do not know (you must fill): <unknown that changes the answer, or none>
 - NOT what you want: <likely misreading ruled out, or none>
-- My assumptions (that could be wrong): <inferences not stated by the user, or none>
-- Understanding gaps: <specific unclear points, or none>
 Is this right? (correct me / confirm)
 ```
 
@@ -55,7 +58,31 @@ Rules:
 - Facts from code, configuration, tests, or documentation are stated rather than asked.
 - Business intent and user-visible boundaries are confirmed rather than inferred.
 - If the user corrects the understanding, apply the Understanding Revision Rule below.
-- Ask the confirm-or-correct question through the structured question tool when the host provides one (Correct / Mostly correct / Let me correct something + Other); the five fields stay visible in the message.
+- Ask the confirm-or-correct question through the structured question tool when the host provides one (Correct / Mostly correct / Let me correct something + Other); the six fields stay visible in the message.
+
+## Visible Reasoning
+
+A conclusion the user cannot check is indistinguishable from a guess. Every user-facing turn in this skill shows the reasoning that produced it.
+
+| Item | Visible as | Example |
+|---|---|---|
+| What was read | `path:line` or the command, plus what it showed | `skills/devflow-cut/SKILL.md:41 → 第 4 步先问"这件事是否已经存在"` |
+| What it ruled out | the question this fact made unnecessary | "所以我不再问「要不要新建一套机制」" |
+| Inference | the inference, its basis, and what would overturn it | "我推断 A，依据 B；如果 C 成立则相反" |
+| Unknown | a concrete fill-in request, with why it changes the answer | "你还需确认 X，它决定 Y" |
+| Wrong term or premise | the user's words, the project fact, and which one governs | "你说有缓存层，但 `src/` 里没有；是记错，还是指另一套？" |
+
+Rules:
+
+- Show the reading that changed the request, and the reading that came back empty when its emptiness was load-bearing. Do not narrate every tool call; the visible reasoning is one screen of evidence, not a transcript.
+- A reading that arrives after the echo-back is shown with the next question: what was read, and what it changes.
+- A fact that suppressed a question is still shown. Silence about a fact reads as never having read it.
+- An inference is labelled as inference and never folded into the facts line.
+- An unknown is stated as something the user must fill, not as a rhetorical question and not as a silent default.
+- A wrong term or a misremembered premise is stated outright: the user's words, the project fact, the conflict, and which one governs. Never silently adopt a wrong premise to avoid friction, and never silently override it either — say which one you are using and why.
+- When the rest of the picture is confirmed, do not close on what is still unknown. Put every unresolved unknown that changes scope or acceptance, and every unresolved premise conflict, to the user as a direct fill-in request. When nothing remains, say so in one line.
+
+This section carries the evidence behind the request record. It is not a design review, a plan, or a log of actions.
 
 ## Multi-Angle Checklist
 
@@ -80,7 +107,7 @@ The exploration must produce a baseline, not only answers:
 - `Invariants`: conditions that must always hold; write `none — <reason>` when none.
 - `Edge/failure cases`: inputs, actors, or states that break the happy path; write `none — <reason>` when none.
 
-Derive it from Goal, Scope, Acceptance, and the multi-angle findings. A behavior is what must be true after the change, never an implementation step. If the user cannot confirm a behavior, record it under `Open questions`; do not invent it and do not silently drop it. The Plan Pack copies these B IDs into its `## Baseline`; a missing or renumbered ID returns the fact to `devflow-core`.
+Derive it from Goal, Scope, Acceptance, and the multi-angle findings. A behavior is what must be true after the change, never an implementation step. If the user cannot confirm a behavior, record it under `Open questions`; do not invent it and do not silently drop it. A premise conflict that stands goes to `Open questions` when it changes scope or acceptance and to `Identified gaps/risks` when it does not; a misremembered fact that changes nothing is corrected in one line. The Plan Pack copies these B IDs into its `## Baseline`; a missing or renumbered ID returns the fact to `devflow-core`.
 
 ## Problem-Space Recommendation
 
@@ -104,7 +131,7 @@ Recommendations are disposable conversation material that helps the user decide 
 When a user correction changes the goal, scope, exclusions, constraints, acceptance, terminology, actor, or a load-bearing assumption, it interrupts the current clarification chain:
 
 1. stop the pending question;
-2. update facts, assumptions, and understanding gaps;
+2. update facts, inferences, unknowns, and premise conflicts;
 3. send a complete corrected Semantic Echo-Back; and
 4. wait for confirmation before asking another question or producing `Confirmed request`.
 
@@ -163,6 +190,9 @@ Confirmed request:
 - Out of scope: <explicit exclusions>
 - Constraints: <must-not-change conditions, or none>
 - Acceptance: <observable proof of success>
+- Required behaviors: <B1..Bn observable outcomes, or none — reason>
+- Invariants: <conditions that must always hold, or none>
+- Edge/failure cases: <inputs, actors, or states that must be handled, or none>
 - Identified gaps/risks: <holes, risks, and blind spots surfaced during exploration, or none>
 - Directions considered: <directions discussed with trade-offs, including rejected ones, or none>
 - Recommended direction: <recommendation and rationale within the problem space, or none>
@@ -182,6 +212,9 @@ After the fixed summary, present A, B, and C and wait for the user's explicit de
 |---|---|
 | "A paraphrase is enough." | Surface assumptions and specific gaps. |
 | "Ask everything at once." | Ask one question, then wait. |
+| "I read the code, so the conclusion is enough." | The user cannot check a conclusion they cannot see. Show the source and what it showed. |
+| "The user said it, so it is a fact." | A recalled fact that conflicts with project facts is the cheapest error to catch now; say so and let the user decide. |
+| "Explaining the work is narration." | Show the evidence that changed the request. Tool-by-tool narration is not required; unexplained conclusions are. |
 | "The codebase answers user intent." | Code answers current facts, not desired behavior. |
 | "Clarification should pick the next skill." | The summary does not choose. Brainstorm presents A/B/C and starts only the user's selected branch. |
 | "A design or document belongs in the summary." | Record the request and exploration findings only. |
@@ -191,6 +224,8 @@ After the fixed summary, present A, B, and C and wait for the user's explicit de
 ## Verification
 
 - [ ] Semantic Echo-Back included all fields, with `none` where a field had no content.
+- [ ] Each load-bearing fact was shown with its source, and each inference was labelled as inference.
+- [ ] Unknowns were stated as fill-in requests, and unresolved premise conflicts were put to the user before the summary.
 - [ ] The echo-back was confirmed or corrected before further clarification.
 - [ ] Questions were one at a time, fact-backed, and each used the `Question / Recommended answer / Why now` shape.
 - [ ] The multi-angle checklist ran with per-angle findings, and those findings reached the summary.

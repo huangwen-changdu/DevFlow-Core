@@ -232,6 +232,19 @@ function assertBrainstormFollowUpContract(skill, discipline) {
   assert(discipline.includes("If an angle exposes a new decision-impact gap, return to One-Question Discipline"), "Interview discipline must return multi-angle gaps to one-question clarification");
 }
 
+/** Protects the visible-reasoning duty: conclusions carry their source, their inference label, and the user's fill-in. */
+function assertBrainstormReasoningContract(skill, discipline) {
+  for (const body of [skill, discipline]) {
+    for (const evidence of ["What I read", "Where your terms or facts seem off", "What I infer", "What I do not know"]) {
+      assert(body.includes(evidence), `Brainstorm visible-reasoning field missing: ${evidence}`);
+    }
+  }
+
+  assert(skill.includes("visible working evidence"), "Brainstorm must own visible working evidence");
+  assert(discipline.includes("## Visible Reasoning"), "Interview discipline must define the visible reasoning contract");
+  assert(discipline.includes("Never silently adopt a wrong premise"), "Discipline must forbid silently adopting a wrong premise");
+}
+
 /** Ensures Brainstorm never chooses depth but can follow its predefined success edge after explicit selection. */
 function assertBrainstormSelectionContract(skill) {
   const frontmatter = skill.slice(0, skill.indexOf("---", 3) + 3);
@@ -265,6 +278,7 @@ assert(brainstorm.includes("`compact`"), "Brainstorm must define compact clarifi
 assert(brainstorm.includes("ask no clarification question"), "Brainstorm must avoid questions when no decision-impact gap remains");
 assert(!brainstorm.includes("There is no fast lane"), "Brainstorm must not prohibit adaptive clarification");
 assertBrainstormFollowUpContract(brainstorm, interviewDiscipline);
+assertBrainstormReasoningContract(brainstorm, interviewDiscipline);
 assertBrainstormSelectionContract(brainstorm);
 assertGrillEntryContract();
 
