@@ -598,6 +598,10 @@ assert(read("skills/devflow-learn/SKILL.md").includes("global"), "devflow-learn 
 
 // 踩坑闭环：Prove 的对抗审查必须回看既往踩坑，缺陷修复的改动点必须有落点，否则知识只写不读。
 assert(read("skills/devflow-prove/SKILL.md").includes("Recall check"), "devflow-prove must consult prior pitfalls during adversarial review");
+assert(read("skills/devflow-prove/SKILL.md").includes("Recall evidence"), "devflow-prove must require read evidence for pitfall recall, not a keyword-only rule");
+assert(read("skills/devflow-prove/SKILL.md").includes("Method 15"), "devflow-prove must route mechanical pitfall recall from Process step 2");
+assert(read("skills/devflow-prove/references/proof-recovery-methods.md").includes("Method 15: Mechanical Pitfall Recall At Proof"), "devflow-prove must carry the mechanical pitfall recall method");
+assert(read("skills/devflow-prove/references/flow-self-test.md").includes("Recall Without Reading Is A Rubber-Stamp"), "flow self-test must carry the no-read reverse scenario");
 assert(read("skills/devflow-prove/SKILL.md").includes("docs/hotfix-log.md"), "devflow-prove must require the hotfix row on a defect fix");
 assert(read("skills/devflow-learn/SKILL.md").includes("docs/hotfix-log.md"), "devflow-learn must own the hotfix log row");
 assert(

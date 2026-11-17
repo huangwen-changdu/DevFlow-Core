@@ -25,7 +25,7 @@ When this skill activates, read only the references required by the changed surf
 Load `skills/devflow-prove/references/proof-recovery-methods.md` before selecting proof. It owns the shared proof and recovery method details used by Prove and PUA.
 
 1. Identify the command, test, build, lint, diff check, validation script, or manual scenario that proves the claim.
-2. Confirm the exact changed files, the approved plan's task anchors and `## Progress` evidence, and the `## Recon` record. Read task-local completion evidence plus only the nearest directly relevant code or contract.
+2. Confirm changed files, plan anchors, `## Progress`, `## Recon`. Read `.copilot/LEARNING_INDEX.md` + `docs/hotfix-log.md` for matched pitfalls (Method 15), task-local evidence, and only nearest relevant code or contract.
 3. Run the narrowest sufficient check now, then independently inspect the actual implementation diff before interpreting test results.
 4. Run the **Simplify Pass** (`simplify-pass.md`) on the approved diff, then re-run the narrowest sufficient check after any applied edit.
 5. Run adversarial review (对抗式审查) against the approved responsibility boundary, the plan's `## Recon` facts, direct contracts, nearby convention, and likely regressions.
@@ -56,7 +56,7 @@ After development work, adversarial review (对抗式审查) is mandatory before
 
 Adversarial review checklist for code changes:
 
-- **Recall check**: Before editing, name the learning cards and `docs/hotfix-log.md` rows whose trigger matched this task, each with a one-line outcome: prevented, considered and rejected, or not applicable. A matched card that would have prevented a defect this diff introduced is a Blocker; reporting no match without reading `.copilot/LEARNING_INDEX.md` and `docs/hotfix-log.md` is a rubber-stamp.
+- **Recall check**: At proof time, name trigger-matched learning cards and `docs/hotfix-log.md` rows with a one-line outcome: prevented, considered-and-rejected, or not-applicable. Emit `Recall evidence` with one `Read` line per file (Method 15); missing read = rubber-stamp. A card that would have prevented a defect this diff introduced is a Blocker.
 - **Correctness**: Does the code actually solve the stated goal? Are edge cases handled?
 - **Regression**: Could this change break sibling callers, shared state, or downstream consumers?
 - **Activation path**: Is the new code actually reachable? Can the user/trigger reach it?

@@ -366,6 +366,36 @@ Overbuild Check: new dependency rejected
 CUT_REDUCE or CUT_REUSE
 ```
 
+## Scenario 3Z: Recall Without Reading Is A Rubber-Stamp (Reverse Test)
+
+Input:
+
+```text
+Prove this defect fix. The agent says "no matching pitfall" without opening
+.copilot/LEARNING_INDEX.md or docs/hotfix-log.md.
+```
+
+Expected behavior:
+
+- Route: Build -> Prove; the no-read claim is the reverse case under test.
+- Process step 2 and Method 15 require both files to be read before interpreting test results.
+- `Recall evidence` must carry one `Read` line per file, each naming matched cards/rows or `none`.
+- A missing `Read` line is a rubber-stamp: report FAIL facts to `devflow-core`, never PASS.
+- A matched card/row whose lesson would have prevented this defect is a Blocker, not a considered-and-rejected note.
+- Re-running proof after a content change requires fresh Recall evidence.
+
+Pass check:
+
+```text
+Command: node scripts/validate-devflow.js
+Result: marker check exits 0; deleting `Recall evidence` from source + both
+        mirrors makes it exit 1 on the marker assertion; restore exits 0
+Recall evidence:
+- Read .copilot/LEARNING_INDEX.md -> <cards or none>
+- Read docs/hotfix-log.md -> <rows or none>
+Judgment: FAIL when a Read line is absent / PASS when both reads are cited
+```
+
 ## Scenario 4: Existing Capability
 
 Input:

@@ -36,3 +36,18 @@ A single ordinary correction — one user challenge, one failed proof, or one qu
 On an unexpected verification failure or repeated user challenge, re-read facts, restate the desired result, list three hypotheses, choose a materially different approach, and rerun proof. PUA additionally loads its methodology router, library, and display protocol before a recovery patch.
 
 Do not retry the same move with superficial wording changes. Reusable lessons go to `devflow-learn` after proof.
+
+## Method 15: Mechanical Pitfall Recall At Proof
+
+Recall is a Proof duty, not only an adversarial-review talking point. In Process step 2, before interpreting any test result, actually open `.copilot/LEARNING_INDEX.md` and `docs/hotfix-log.md`; match the task's Trigger/Scope and symptom keywords to cards and rows. Record the reads:
+
+```text
+Recall evidence:
+- Read .copilot/LEARNING_INDEX.md -> <matched card names or none>
+- Read docs/hotfix-log.md -> <matched rows by date or none>
+- Outcome per match: prevented / considered-and-rejected / not-applicable
+```
+
+A missing `Read` line means the file was not opened: that is a rubber-stamp, not a Recall check, and returns FAIL facts to `devflow-core`. A matched card or hotfix row whose lesson would have prevented a defect this diff introduced is a Blocker. Fresh proof after any content change needs fresh Recall evidence; earlier evidence does not carry over.
+
+Reverse test: delete the `Recall evidence` requirement from `skills/devflow-prove/SKILL.md` **and both mirrors** (`plugins/devflow/`, `dsh/.../assets/`) — a source-only edit trips the mirror guard first. `npm test` must then exit 1 on the marker assertion; restoring all three must exit 0.
