@@ -1,6 +1,6 @@
 # DevFlow Core
 
-Read `AGENTS.md`, then load `skills/devflow-core/SKILL.md` and `skills/devflow-core/references/core-methods.md`.
+Read `AGENTS.md`, then load the `devflow-core` skill from the skill root it names, and `core-methods.md` from that skill's `references/`.
 
 Core routes request entry and any artifact without a unique successor. Apply its precedence and risk gate: clear local reversible existing-feature changes with one plausible path, no security/data-loss/permission/contract risk, and quick proof may enter Cut directly; ambiguous or materially risky creative work loads `skills/devflow-brainstorm/SKILL.md` and `skills/devflow-brainstorm/references/interview-discipline.md`. After `Confirmed request`, the user selects A/B/C: A starts Spec, B/C start Cut, and named success edges proceed directly. `CUT_REDUCE`, `CUT_REUSE`, `CUT_BLOCKED`, scope drift, `BUILD_BLOCKED`, Proof failure, and recovery facts return to Core. Pure Q&A, lookup, verification, investigation-only reports, and already approved changes are exceptions.
 

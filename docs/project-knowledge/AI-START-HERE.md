@@ -79,7 +79,7 @@ DevFlow-Core 是一个可安装的 AI 编码代理工作流框架：把问题/�
 - `npm run verify:all`：19 项全矩阵（test、learn、scenario、trigger、host、install、user、debt、review、spec、plan、index、audit、doctor、capability:verify/eval、budget、docs、route）
 - `node scripts/devflow-docs.js --check`：`docs/INDEX.md` 的覆盖与路径校验（`npm run docs:verify` 跑自测）
 - `npm run install:user -- --home <home> --write --force` 后 `--check`：用户级同步（本机六个 home：`.dsh`、`.claude`、`.codebuddy`、`.codex`、`.workbuddy`、`.zcode`，见卡片 skill-sync-after-update）
-- `npm run install:target -- <project> --check`：项目级安装校验
+- `npm run install:target -- <project> --check`：项目级安装校验（技能落 `.agents/skills/`；旧 `skills/` 报 stale，需手动删）
 - `node scripts/devflow-doctor.js`：六个 home 完整性快检（失败时打印具体 missing/changed 文件）
 
 ## 启动就绪清单（新会话）

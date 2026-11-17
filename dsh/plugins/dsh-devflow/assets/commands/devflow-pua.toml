@@ -6,7 +6,8 @@ Use this when the user repeatedly points out that the same function, result, or 
 
 Stop the current approach before more edits. Re-read the request, correction, relevant files, and proof output.
 
-Read `skills/devflow-pua/references/methodology-router.md`, `skills/devflow-pua/references/methodology-library.md`, and `skills/devflow-pua/references/flavor-display.md` before selecting the recovery method. Do not link out to the original PUA project at runtime; use these local methodology files.
+Skill-root paths resolve under the skill root named in `AGENTS.md` (`.agents/skills/` in an installed project, `skills/` in this source repo).
+Read `devflow-pua/references/methodology-router.md`, `devflow-pua/references/methodology-library.md`, and `devflow-pua/references/flavor-display.md` before selecting the recovery method. Do not link out to the original PUA project at runtime; use these local methodology files.
 
 For repeated reports that the same function, result, or requested capability remains wrong, incomplete, or missing, record `Restart Brainstorm: re-confirmation required; Core selects whether to invoke it`, quarantine the previous wrong assumption/path/proof claim, keep only verified facts, diagnose why the user thinks that target is still wrong, and return recovery facts to `devflow-core` before more edits.
 

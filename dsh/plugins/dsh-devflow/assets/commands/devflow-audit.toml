@@ -1,7 +1,8 @@
 description = "Audit a repository or named scope for bugs, risk, load failures, missing tests, slowness, and every code cut with its replacement and handoff recommendation. Not for one change's completion claim."
 prompt = '''
 Audit the repository or named scope like the senior developer who will be paged when it breaks.
-Load `skills/devflow-audit/SKILL.md`, then `skills/devflow-audit/references/full-quality-audit.md`.
+Skill-root paths resolve under the skill root named in `AGENTS.md` (`.agents/skills/` in an installed project, `skills/` in this source repo).
+Load `devflow-audit/SKILL.md`, then `devflow-audit/references/full-quality-audit.md`.
 
 Order of importance: correct, safe, holds under load, tested, fast, lean. State the assumed load.
 This is a repo-wide audit, not a change review. If the user asks whether one change or claim holds, use `/devflow-adversarial`; if the user asks what is missing or unconfirmed, use `/devflow-find-fault`.

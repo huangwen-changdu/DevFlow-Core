@@ -75,6 +75,25 @@ const runtimeEntries = [
   "skills/skill-call-diagram.md"
 ];
 
+// Skills install under `.agents/skills/` so skill-scanning hosts discover them in the target project.
+// The source tree keeps `skills/` because plugin metadata, DSH assets, and the validators read it there.
+const skillsPrefix = "skills/";
+const installedSkillsPrefix = ".agents/skills/";
+
+/** Maps a source-relative runtime entry to the path the installer writes in a target project. */
+function destRel(rel) {
+  return rel.startsWith(skillsPrefix) ? `${installedSkillsPrefix}${rel.slice(skillsPrefix.length)}` : rel;
+}
+
+/** Reports shipped skill files an older installer left under `<target>/skills/`; it never deletes them. */
+function staleSkills(targetRoot) {
+  return runtimeEntries
+    .filter((rel) => rel.startsWith(skillsPrefix))
+    .map((rel) => rel.slice(skillsPrefix.length))
+    .filter((rest) => fs.existsSync(path.join(targetRoot, "skills", rest)))
+    .map((rest) => `skills/${rest}`);
+}
+
 const args = process.argv.slice(2);
 const write = args.includes("--write");
 const force = args.includes("--force");
@@ -86,6 +105,7 @@ function usage() {
   console.log("Usage: npm run install:target -- <target-project> [--write] [--force] [--check]");
   console.log("Default mode is dry-run. Add --write to copy files.");
   console.log("Existing files are skipped unless --force is passed.");
+  console.log("Skills install to .agents/skills/; --check also reports stale legacy skills/ files.");
   console.log("Add --check to verify the target runtime files match this package.");
   console.log("Write mode records .devflow-manifest.json (version + sha256); --check reports upstream version changes.");
 }
@@ -121,8 +141,9 @@ function mergeClaudeSettings(target) {
 }
 
 function copyFile(rel, targetRoot) {
+  const dest = destRel(rel);
   const source = path.join(root, rel);
-  const target = path.join(targetRoot, rel);
+  const target = path.join(targetRoot, dest);
 
   if (!fs.existsSync(source)) {
     throw new Error(`Missing source file: ${rel}`);
@@ -132,51 +153,52 @@ function copyFile(rel, targetRoot) {
 
   if (!write) {
     if (rel === claudeSettingsRel && exists && !force) {
-      return { rel, action: "would merge" };
+      return { rel: dest, action: "would merge" };
     }
     if (exists && force) {
-      return { rel, action: "would overwrite" };
+      return { rel: dest, action: "would overwrite" };
     }
-    return { rel, action: exists ? "would skip" : "would create" };
+    return { rel: dest, action: exists ? "would skip" : "would create" };
   }
 
   if (rel === claudeSettingsRel && exists && !force) {
-    return { rel, action: mergeClaudeSettings(target) };
+    return { rel: dest, action: mergeClaudeSettings(target) };
   }
 
   if (exists && !force) {
-    return { rel, action: "skipped existing" };
+    return { rel: dest, action: "skipped existing" };
   }
 
   fs.mkdirSync(path.dirname(target), { recursive: true });
   fs.copyFileSync(source, target);
-  return { rel, action: exists ? "overwrote" : "created" };
+  return { rel: dest, action: exists ? "overwrote" : "created" };
 }
 
 function checkFile(rel, targetRoot) {
+  const dest = destRel(rel);
   const source = path.join(root, rel);
-  const target = path.join(targetRoot, rel);
+  const target = path.join(targetRoot, dest);
 
   if (!fs.existsSync(source)) {
     throw new Error(`Missing source file: ${rel}`);
   }
 
   if (!fs.existsSync(target)) {
-    return { rel, action: "missing" };
+    return { rel: dest, action: "missing" };
   }
 
   if (rel === claudeSettingsRel) {
     try {
       const targetSettings = readJsonFile(target);
-      return { rel, action: hasDevflowSessionStart(targetSettings) ? "ok" : "changed" };
+      return { rel: dest, action: hasDevflowSessionStart(targetSettings) ? "ok" : "changed" };
     } catch {
-      return { rel, action: "changed" };
+      return { rel: dest, action: "changed" };
     }
   }
 
   const sourceBody = fs.readFileSync(source);
   const targetBody = fs.readFileSync(target);
-  return { rel, action: Buffer.compare(sourceBody, targetBody) === 0 ? "ok" : "changed" };
+  return { rel: dest, action: Buffer.compare(sourceBody, targetBody) === 0 ? "ok" : "changed" };
 }
 
 if (!targetArg) {
@@ -197,6 +219,7 @@ if (check) {
   const results = runtimeEntries.map((rel) => checkFile(rel, targetRoot));
   const missing = results.filter((result) => result.action === "missing");
   const changed = results.filter((result) => result.action === "changed");
+  const stale = staleSkills(targetRoot);
 
   // 上游版本差检测：manifest 缺失的旧安装视为兼容不失败；版本不一致时给出升级路径并计入失败。
   let versionChanged = false;
@@ -219,10 +242,20 @@ if (check) {
   for (const result of results) {
     console.log(`${result.action}: ${result.rel}`);
   }
+  for (const rel of stale) {
+    console.log(`stale: ${rel}`);
+  }
   console.log(`Total files: ${results.length}`);
 
-  if (missing.length > 0 || changed.length > 0 || versionChanged) {
-    console.log(`Check failed: ${missing.length} missing, ${changed.length} changed${versionChanged ? ", upstream version changed" : ""}`);
+  if (missing.length > 0 || changed.length > 0 || stale.length > 0 || versionChanged) {
+    if (stale.length > 0) {
+      console.log(
+        `Stale legacy skills/: ${stale.length} file(s) were installed under skills/ by an older version; nothing reads them now. Delete them after upgrading to ${installedSkillsPrefix}.`
+      );
+    }
+    console.log(
+      `Check failed: ${missing.length} missing, ${changed.length} changed${stale.length > 0 ? `, ${stale.length} stale legacy` : ""}${versionChanged ? ", upstream version changed" : ""}`
+    );
     process.exit(1);
   }
 
@@ -231,14 +264,15 @@ if (check) {
 }
 
 const results = runtimeEntries.map((rel) => copyFile(rel, targetRoot));
+const stale = staleSkills(targetRoot);
 
-// 安装 manifest：仅 write 模式写入，记录上游版本与文件哈希供后续 --check 使用。
+// 安装 manifest：仅 write 模式写入，记录上游版本与目标路径哈希供后续 --check 使用。
 if (write) {
   const manifest = {
     package: packageJson.name,
     version: packageJson.version,
     files: Object.fromEntries(
-      runtimeEntries.map((rel) => [rel, createHash("sha256").update(fs.readFileSync(path.join(root, rel))).digest("hex")])
+      runtimeEntries.map((rel) => [destRel(rel), createHash("sha256").update(fs.readFileSync(path.join(root, rel))).digest("hex")])
     )
   };
   fs.writeFileSync(path.join(targetRoot, manifestRel), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
@@ -248,9 +282,18 @@ console.log(`DevFlow install ${write ? "write" : "dry-run"}: ${targetRoot}`);
 for (const result of results) {
   console.log(`${result.action}: ${result.rel}`);
 }
+for (const rel of stale) {
+  console.log(`stale: ${rel}`);
+}
 console.log(`Total files: ${results.length}`);
 
 const skippedExisting = results.some((result) => result.action === "skipped existing");
+
+if (stale.length > 0) {
+  console.log(
+    `Stale legacy skills/: ${stale.length} file(s) remain under skills/ from an older install; delete them after confirming ${installedSkillsPrefix} matches.`
+  );
+}
 
 if (!write) {
   console.log("No files were changed. Re-run with --write to install.");

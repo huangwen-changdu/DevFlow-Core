@@ -1,12 +1,12 @@
 # DevFlow Harness
 
-This file is the harness contract for changing code: stages, gates, stop points, and output contracts. Not the agent's identity. Stays executable without skills. Method depth stays in `skills/*/references/`; do not move methods here.
+This file is the harness contract for changing code: stages, gates, stop points, and output contracts. Not the agent's identity. Stays executable without skills. Method depth stays in `skills/*/references/`.
 
 ## Process
 
 Run the seven stages in order. Each stage ends with an exit artifact; skip one only where the route table allows it.
 
-1. **Sense** — Read `README.md`, project rules, source, tests, and commands. Match the task against `docs/features/INDEX.md` and `docs/plans/INDEX.md` when present and open only the matched row; an index over 40 rows is filtered with `node scripts/devflow-plan.js --index --query 关键词`. Read only the learning cards whose trigger and scope match, global preference cards first, then the docs map `docs/INDEX.md` and project knowledge `docs/project-knowledge/AI-START-HERE.md`. Search callers before diagnosing a bug; when the cause, constraints, invariant, or smallest mechanism is unclear, give a first-principles explanation covering facts, constraints, the chosen mechanism, and verification. Missing sources are non-blocking. Exit: `Facts` and `Unknowns`.
+1. **Sense** — Read `README.md`, project rules, source, tests, and commands. Match the task against `docs/features/INDEX.md` and `docs/plans/INDEX.md` when present and open only the matched row; filter an index over 40 rows with `node scripts/devflow-plan.js --index --query 关键词`. Read only learning cards whose trigger and scope match, global preference cards first, then the docs map `docs/INDEX.md` and project knowledge `docs/project-knowledge/AI-START-HERE.md`. Search callers before diagnosing a bug; when cause, constraints, invariant, or smallest mechanism is unclear, give a first-principles explanation covering facts, constraints, mechanism, and verification. Missing sources are non-blocking. Exit: `Facts` and `Unknowns`.
 2. **Route** — Apply this precedence: explicit independent review (`devflow-adversarial`, `devflow-find-fault`) -> investigation-only problem report or pure inquiry -> approved scope -> risk gate -> lifecycle owner. Keywords never decide. Signals include clear low-risk existing behavior change, creative work with ambiguity, material risk, or explicit grill/stress-test request, unapproved problem-directed change (creative work, never Fast), `spec doc`, `plan`, `ready`, and repeated same-target miss. Exit: one route.
 3. **Gate** — Brainstorm is required for material risk, ambiguity, cross-module or external impact, an irreversible effect, security/data-loss/permission/contract risk, or a missing decision fact. Skip it only when the goal is clear, behavior exists locally, one plausible path exists, impact is local, the change is reversible, no protected risk exists, and proof is quick. Unapproved edits never use Fast. Exit: `Brainstorm required: yes/no` plus a depth hint; STOP for the Confirmed request and the user-selected A/B/C.
 4. **Contract** — Write the smallest contract the route needs: a Design-lite contract (goal, acceptance, exclusions, baseline), a Confirmed request, or an approved Spec or Plan. No contract, no change. Exit: the contract artifact.
@@ -39,7 +39,7 @@ CUT_REDUCE, CUT_REUSE, CUT_BLOCKED, scope drift, BUILD_BLOCKED,
 Proof FAIL or BLOCKED, and PUA recovery -> Core selects the next owner or stops.
 ```
 
-Core selects only after a non-unique artifact: the owner must return facts to Core. STOP for Brainstorm confirmation, Spec approval, Plan approval, `CUT_REDUCE`, and `CUT_REUSE`.
+Core selects only after a non-unique artifact: owners return facts to Core. STOP for Brainstorm confirmation, Spec approval, Plan approval, `CUT_REDUCE`, and `CUT_REUSE`.
 
 ## Receipt
 
@@ -47,9 +47,9 @@ Every node ends with one fenced receipt (执行回执), last, one line: `▸ dev
 
 ## Skills and Fallback
 
-Load `skills/devflow-core/SKILL.md` first, then only the lifecycle reference Core selects. Resolve skills and checker scripts in this order: the project, then `~/.claude`, `~/.codex`, `~/.dsh`. A matching environment skill may perform bounded specialist work and must return a result, not-applicable, or failure facts; it never selects a route, depth, approval, or final status, and DevFlow keeps route and node ownership. A missing skill, index, or checker is a non-blocking fact and never a reason to stop.
+Load `.agents/skills/devflow-core/SKILL.md` first (source `skills/`), then only the lifecycle reference Core selects; `skills/...` paths resolve there. Resolve skills and checkers from the project, then `~/.agents`, `~/.claude`, `~/.codex`, `~/.dsh`. A matching environment skill may perform bounded specialist work and must return a result, not-applicable, or failure facts; it never selects a route, depth, approval, or final status, and DevFlow keeps route and node ownership. A missing skill, index, or checker is a non-blocking fact and never a reason to stop.
 
-When skills are unavailable, this file is the whole procedure: the stages, routes, flow map, and contracts below. Do not invent lifecycle details or claim a specialization that cannot be loaded.
+When skills are unavailable, this file is the whole procedure: the stages, routes, flow map, and contracts below. Do not invent lifecycle details or claim an unloadable specialization.
 
 ## Always-On Rules
 

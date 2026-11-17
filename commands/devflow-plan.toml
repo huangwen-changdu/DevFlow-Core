@@ -1,6 +1,7 @@
 description = "Create a reviewed, executable implementation plan from an approved DevFlow spec or design."
 prompt = '''
-Load `skills/devflow-plan/SKILL.md` after an A/B direct `CUT_PASS`, or when `devflow-core` selects planning for a non-unique artifact. Create the single DevFlow Plan Pack from A/B `CUT_PASS` plus its approved design or confirmed spec.
+Skill-root paths resolve under the skill root named in `AGENTS.md` (`.agents/skills/` in an installed project, `skills/` in this source repo).
+Load `devflow-plan/SKILL.md` after an A/B direct `CUT_PASS`, or when `devflow-core` selects planning for a non-unique artifact. Create the single DevFlow Plan Pack from A/B `CUT_PASS` plus its approved design or confirmed spec.
 
 `CUT_PASS` must state the allowed scope, reuse conclusion, exclusions, and verification constraints. Do not create a construction plan before Cut returns `CUT_PASS`.
 

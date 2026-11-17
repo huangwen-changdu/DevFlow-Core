@@ -40,7 +40,8 @@ Verification:
 Code Documentation:
 Open Questions:
 
-When Cut returns `CUT_PASS`, the resulting plan cites its approved source and follows the plan contract in `skills/devflow-plan/SKILL.md`:
+Skill-root paths resolve under the skill root named in `AGENTS.md` (`.agents/skills/` in an installed project, `skills/` in this source repo).
+When Cut returns `CUT_PASS`, the resulting plan cites its approved source and follows the plan contract in `devflow-plan/SKILL.md`:
 
 Source: <confirmed spec path or approved design>
 

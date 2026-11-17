@@ -5,7 +5,7 @@ How to install and use DevFlow-Core on each supported agent platform. All comman
 Two install modes:
 
 - **Project-level** (`npm run install:target -- <project> --write`): copies the full runtime pack into a target repository. This is the recommended mode for real work — the pack is versioned with the project and shared with every teammate and agent that opens the repo.
-- **User-level** (`npm run install:user -- --write`): copies only `skills/`, `commands/`, and `scripts/devflow-*.js` into a personal runtime home (`~/.codex` by default, `~/.claude` with `--home`). Good for personal global access; does not install project rules.
+- **User-level** (`npm run install:user -- --write`): copies only `skills/`, `commands/`, and `scripts/devflow-*.js` into a personal runtime home (`~/.codex` by default, `~/.claude` with `--home`). Pass `--home ~/.agents` to write the shared `~/.agents/skills/` store that skill-scanning hosts read. User-level install never installs project rules.
 
 ## Sync Matrix
 
@@ -13,14 +13,16 @@ What each platform actually reads, and which synced files feed it:
 
 | Platform | Project entry it reads | User-level home | Skills | Slash commands |
 |---|---|---|---|---|
-| Codex / shared agents | `AGENTS.md` | `~/.codex` | `skills/` | `commands/*.toml` |
-| Claude Code | `CLAUDE.md` + `.claude/settings.json` (hook) | `~/.claude` | `skills/` | `.claude/commands/devflow-core.md` |
-| opencode | `AGENTS.md` | `~/.config/opencode` | not natively* | `.opencode/commands/*.md` (manual convert)* |
-| CodeBuddy IDE | `.codebuddy/rules/devflow-core/RULE.mdc` | `~/.codebuddy` | `skills/` | `commands/*.toml` |
+| Codex / shared agents | `AGENTS.md` | `~/.codex` | `.agents/skills/` | `commands/*.toml` |
+| Claude Code | `CLAUDE.md` + `.claude/settings.json` (hook) | `~/.claude` | `.agents/skills/` | `.claude/commands/devflow-core.md` |
+| opencode | `AGENTS.md` | `~/.config/opencode` | `.agents/skills/` | `.opencode/commands/*.md` (manual convert)* |
+| CodeBuddy IDE | `.codebuddy/rules/devflow-core/RULE.mdc` | `~/.codebuddy` | `.agents/skills/` | `commands/*.toml` |
 | WorkBuddy | none (GUI project instructions) | GUI personal skill library | `skills/` (imported via GUI) | n/a |
-| DeepSeek Harness (DSH) | `AGENTS.md` (workspace instructions) | `~/.dsh` | `skills/` | n/a |
+| DeepSeek Harness (DSH) | `AGENTS.md` (workspace instructions) | `~/.dsh` | `.agents/skills/` | n/a |
 
 \* opencode caveats are covered in its section below.
+
+Project skills install to `.agents/skills/`; the source repository keeps `skills/`. Hosts that scan a shared skill root discover them there, and every other host resolves the root through `AGENTS.md`.
 
 Files the project installer syncs (identical for every platform — you get one pack, each platform reads its own entry):
 
@@ -33,7 +35,7 @@ Files the project installer syncs (identical for every platform — you get one 
 | `.github/copilot-instructions.md`, `.github/instructions/`, `.github/prompts/` | GitHub Copilot / VS Code |
 | `hooks/hooks.json`, `hooks/devflow-session-start.js` | Claude SessionStart context injection |
 | `commands/devflow*.toml` | Command-capable hosts (Codex, CodeBuddy) |
-| `skills/devflow-*/` + `skills/*/references/` | All skill-capable hosts |
+| `.agents/skills/devflow-*/` + `.agents/skills/*/references/` | All skill-capable hosts, including `.agents/skills/` scanners |
 | `scripts/devflow-{spec,plan,review,debt,audit}.js` | Local checkers any agent can run |
 
 ## Codex
@@ -56,7 +58,7 @@ npm run install:user -- --write
 npm run install:user -- --check
 ```
 
-What gets synced for Codex: everything in the sync matrix above. The load-bearing files are `AGENTS.md`, `commands/devflow*.toml`, `skills/`, and `scripts/devflow-*.js`.
+What gets synced for Codex: everything in the sync matrix above. The load-bearing files are `AGENTS.md`, `commands/devflow*.toml`, `.agents/skills/`, and `scripts/devflow-*.js`.
 
 Daily use:
 
@@ -85,7 +87,7 @@ npm run install:user -- --home ~/.claude --write
 npm run install:user -- --home ~/.claude --check
 ```
 
-What gets synced for Claude Code: the full pack. The load-bearing files are `CLAUDE.md`, `.claude/settings.json`, `.claude/commands/devflow-core.md`, `hooks/`, `skills/`, and `scripts/devflow-*.js`.
+What gets synced for Claude Code: the full pack. The load-bearing files are `CLAUDE.md`, `.claude/settings.json`, `.claude/commands/devflow-core.md`, `hooks/`, `.agents/skills/`, and `scripts/devflow-*.js`.
 
 Daily use:
 
@@ -95,7 +97,7 @@ Daily use:
 
 ## opencode
 
-Entry surface: `AGENTS.md` at the project root (native) and `~/.config/opencode/AGENTS.md` (global). opencode has no native skill system; custom commands are markdown files with YAML frontmatter, not TOML.
+Entry surface: `AGENTS.md` at the project root (native) and `~/.config/opencode/AGENTS.md` (global). opencode discovers project skills under `.agents/skills/`; custom commands are markdown files with YAML frontmatter, not TOML.
 
 Project-level install:
 
@@ -103,9 +105,9 @@ Project-level install:
 npm run install:target -- <project> --write
 ```
 
-This gives opencode its primary entry (`AGENTS.md`) plus `skills/` and `scripts/devflow-*.js` as on-disk reference material. The entry routes to Core; Core and its selected lifecycle owner are read on demand.
+This gives opencode its primary entry (`AGENTS.md`) plus `.agents/skills/` and `scripts/devflow-*.js` as on-disk reference material. The entry routes to Core; Core and its selected lifecycle owner are read on demand.
 
-Two honest limitations:
+Two honest caveats:
 
 1. **`commands/*.toml` does not work in opencode.** opencode reads `.opencode/commands/*.md` (project) or `~/.config/opencode/commands/*.md` (user). To get slash commands, convert each TOML prompt into a markdown command. Minimal example:
 
@@ -120,15 +122,15 @@ Two honest limitations:
 
    Save as `<project>/.opencode/commands/devflow.md`; invoke with `/devflow`.
 
-2. **Skills are not auto-loaded.** `skills/` still earns its place: `AGENTS.md` identifies Core and its fallback, then the agent reads the matching `SKILL.md` and owner reference when the route calls for them (progressive disclosure by hand instead of by runtime).
+2. **Skills are discovered, not force-loaded.** `.agents/skills/` is the shared skill root opencode lists, and `AGENTS.md` names it; the agent still chooses the matching `SKILL.md` from the route and reads the owner reference on demand (progressive disclosure by hand instead of by runtime).
 
-What gets synced for opencode: the full pack, but the load-bearing files are `AGENTS.md`, `skills/`, and `scripts/devflow-*.js`. `.claude/`, `.codebuddy/`, and `.github/` surfaces are inert in opencode (harmless to keep; other teammates may use those platforms).
+What gets synced for opencode: the full pack, but the load-bearing files are `AGENTS.md`, `.agents/skills/`, and `scripts/devflow-*.js`. `.claude/`, `.codebuddy/`, and `.github/` surfaces are inert in opencode (harmless to keep; other teammates may use those platforms).
 
 User-level: there is no DevFlow user installer target for opencode. If you want global commands, place converted `.md` files in `~/.config/opencode/commands/` manually.
 
 ## CodeBuddy IDE
 
-Entry surface: `.codebuddy/rules/devflow-core/RULE.mdc` (`alwaysApply: true`, loaded every session), plus native skill support for `skills/devflow-*/SKILL.md`.
+Entry surface: `.codebuddy/rules/devflow-core/RULE.mdc` (`alwaysApply: true`, loaded every session), plus native skill support for `.agents/skills/devflow-*/SKILL.md`.
 
 Project-level install:
 
@@ -142,13 +144,13 @@ User-level install (personal skills/commands/scripts under `~/.codebuddy`):
 npm run install:user -- --home ~/.codebuddy --write
 ```
 
-What gets synced for CodeBuddy: the full pack. The load-bearing files are `.codebuddy/rules/devflow-core/RULE.mdc`, `skills/`, `commands/devflow*.toml`, and `scripts/devflow-*.js`.
+What gets synced for CodeBuddy: the full pack. The load-bearing files are `.codebuddy/rules/devflow-core/RULE.mdc`, `.agents/skills/`, `commands/devflow*.toml`, and `scripts/devflow-*.js`.
 
 Daily use:
 
 - The always-on rule routes automatically; skill-capable CodeBuddy loads `devflow-core` and the focused `devflow-*` skills.
 - Slash commands from `commands/*.toml` are available to command-capable CodeBuddy surfaces.
-- The rule file points at `devflow-core`; Core loads `skills/devflow-core/references/core-methods.md` first, then the selected owner's local reference. Keep the full `skills/` tree in the project.
+- The rule file points at `devflow-core`; Core loads `.agents/skills/devflow-core/references/core-methods.md` first, then the selected owner's local reference. Keep the full `.agents/skills/` tree in the project.
 
 ## WorkBuddy
 
@@ -171,7 +173,7 @@ Checker scripts (`scripts/devflow-*.js`) can still run anywhere Node is availabl
 
 ## DeepSeek Harness (DSH)
 
-Entry surfaces: `AGENTS.md` at the project root (auto-injected as workspace instructions) plus `skills/devflow-*/SKILL.md` discovered through DSH's skill filesystem. DSH is skill-capable, so Core and the focused lifecycle skills load on demand.
+Entry surfaces: `AGENTS.md` at the project root (auto-injected as workspace instructions) plus `.agents/skills/devflow-*/SKILL.md` discovered through DSH's skill filesystem. DSH is skill-capable, so Core and the focused lifecycle skills load on demand.
 
 User-level install (personal skills under `~/.dsh`):
 

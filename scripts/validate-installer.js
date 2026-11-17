@@ -36,11 +36,15 @@ function installerEntries() {
 
 /** Ensures an installed runtime resolves owner references and preserves hybrid direct/Core boundaries. */
 function assertInstalledRuntimeContract(target) {
-  const core = fs.readFileSync(path.join(target, "skills/devflow-core/SKILL.md"), "utf8");
+  const installedSkills = ".agents/skills/";
+  const core = fs.readFileSync(path.join(target, `${installedSkills}devflow-core/SKILL.md`), "utf8");
   for (const reference of ownerReferences) {
-    assert(fs.existsSync(path.join(target, reference)), `Installed runtime missing owner reference: ${reference}`);
+    const installedReference = reference.replace(/^skills\//, installedSkills);
+    assert(fs.existsSync(path.join(target, installedReference)), `Installed runtime missing owner reference: ${installedReference}`);
     assert(core.includes(path.basename(reference)), `Installed Core loading map missing ${path.basename(reference)}`);
   }
+
+  assert(!fs.existsSync(path.join(target, "skills")), "Fresh install must not create a legacy skills/ directory");
 
   for (const edge of [
     "A direct success: Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove",
@@ -56,6 +60,7 @@ function assertInstalledRuntimeContract(target) {
   const agents = fs.readFileSync(path.join(target, "AGENTS.md"), "utf8");
   assert(Buffer.byteLength(agents, "utf8") <= 8 * 1024, "Installed AGENTS.md exceeds the 8 KiB startup budget");
   assert(agents.includes("When skills are unavailable"), "Installed AGENTS.md missing portable fallback");
+  assert(agents.includes(".agents/skills/devflow-core/SKILL.md"), "Installed AGENTS.md must name the installed skill path");
 }
 
 const entries = installerEntries();
@@ -71,12 +76,38 @@ const dryTarget = makeTarget("dry");
 const dryOutput = runInstaller([dryTarget]);
 assert(dryOutput.includes("DevFlow install dry-run"), "Dry-run must identify target dry-run mode");
 assert(!fs.existsSync(path.join(dryTarget, "AGENTS.md")), "Dry-run must not write AGENTS.md");
+assert(!fs.existsSync(path.join(dryTarget, ".agents")), "Dry-run must not write .agents/");
 
 const createTarget = makeTarget("create");
 const createOutput = runInstaller([createTarget, "--write"]);
 assert(createOutput.includes("created: AGENTS.md"), "Write mode must create AGENTS.md");
+assert(createOutput.includes("created: .agents/skills/devflow-core/SKILL.md"), "Write mode must report the installed skill path");
 assertInstalledRuntimeContract(createTarget);
 assert(runInstaller([createTarget, "--check"]).includes("Check passed"), "Check mode must accept matching target runtime");
+
+const installedManifest = JSON.parse(fs.readFileSync(path.join(createTarget, ".devflow-manifest.json"), "utf8"));
+assert(installedManifest.files[".agents/skills/devflow-core/SKILL.md"], "Manifest must record the installed skill path");
+assert(
+  !Object.keys(installedManifest.files).some((key) => key.startsWith("skills/")),
+  "Manifest must not record the legacy skills/ layout"
+);
+
+const staleTarget = makeTarget("stale");
+runInstaller([staleTarget, "--write"]);
+fs.mkdirSync(path.join(staleTarget, "skills/devflow-core"), { recursive: true });
+fs.writeFileSync(path.join(staleTarget, "skills/devflow-core/SKILL.md"), "legacy", "utf8");
+const stale = spawnSync(process.execPath, [installer, staleTarget, "--check"], { cwd: root, encoding: "utf8" });
+const staleOutput = `${stale.stdout}${stale.stderr}`;
+assert(stale.status !== 0, "Check mode must fail on a stale legacy skills/ file");
+assert(staleOutput.includes("stale: skills/devflow-core/SKILL.md"), "Check mode must name the stale legacy path");
+assert(staleOutput.includes("Stale legacy skills/"), "Check mode must explain that legacy skills/ files are no longer read");
+
+const staleWriteOutput = runInstaller([staleTarget, "--write", "--force"]);
+assert(
+  fs.existsSync(path.join(staleTarget, "skills/devflow-core/SKILL.md")),
+  "Write mode must not delete a stale legacy skills/ tree"
+);
+assert(staleWriteOutput.includes("Stale legacy skills/"), "Write mode must report the stale legacy tree");
 
 const missingTarget = makeTarget("missing");
 const missing = spawnSync(process.execPath, [installer, missingTarget, "--check"], { cwd: root, encoding: "utf8" });
@@ -94,4 +125,4 @@ assert(forceOutput.includes("overwrote: AGENTS.md"), "Force mode must report AGE
 assert(fs.readFileSync(path.join(forceTarget, "AGENTS.md"), "utf8") !== "REPLACE_ME", "Force mode must replace AGENTS.md");
 
 console.log("Installer validation passed");
-console.log("Checked manifest coverage, owner-reference installation, dry-run, create, check, skip-existing, and force-overwrite");
+console.log("Checked manifest coverage, owner-reference installation, dry-run, create, check, skip-existing, force-overwrite, and legacy stale reporting");

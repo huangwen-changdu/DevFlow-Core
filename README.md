@@ -29,7 +29,7 @@ One runtime pack, every platform reads its own entry:
 | CodeBuddy IDE | `.codebuddy/rules/devflow-core/RULE.mdc` |
 | GitHub Copilot / VS Code | `.github/copilot-instructions.md` + `.github/instructions/` |
 | WorkBuddy | GUI project instructions + imported `skills/` (manual, see guide) |
-| Skill-capable hosts | `skills/devflow-*/SKILL.md` |
+| Skill-capable hosts | `.agents/skills/devflow-*/SKILL.md` |
 | Command-capable hosts | `commands/*.toml` |
 
 Install the pack into a target project with one command:
@@ -51,7 +51,7 @@ node scripts/devflow-docs.js --init
 node scripts/devflow-docs.js --check
 ```
 
-The installer copies runtime entry files, hook files, skills, commands, and the target-runtime checkers. It does not copy product docs or validation harness files. Existing files are skipped unless `--force` is passed; use `--check` later to detect drift.
+The installer copies runtime entry files, hook files, skills (to `.agents/skills/`), commands, and the target-runtime checkers. It does not copy product docs or validation harness files. Existing files are skipped unless `--force` is passed; use `--check` later to detect drift.
 
 For personal global access, install user-level skills, commands, and scripts:
 
@@ -75,7 +75,7 @@ Use user-level sync for reusable agent capabilities and project sync for reposit
 | `.github/`, `.claude/`, `.codebuddy/`, and `.codex/` rule surfaces | Target project | Merge the DevFlow rule block into the target's existing host rule. Preserve local rules and host-specific configuration; do not copy these directories into a global user home. |
 | `commands/`, `scripts/`, `hooks/`, `AGENTS.md`, and `CLAUDE.md` | Target project selected by the user | Run `npm run install:target -- <project>` first. Merge existing rule files and `AGENTS.md` manually before write mode; use `--write --force` only when the target explicitly intends to replace the file. |
 
-The current installer merges only the DevFlow SessionStart entry into an existing `.claude/settings.json`. It intentionally skips other existing rule files instead of attempting a generic text merge. When merging `AGENTS.md`, preserve the target project's existing constraints and add the DevFlow route, Cut, Prove, and recovery rules without duplicating or contradicting local instructions.
+The current installer merges only the DevFlow SessionStart entry into an existing `.claude/settings.json`. It intentionally skips other existing rule files instead of attempting a generic text merge. Project skills install to `.agents/skills/`, the skill root skill-scanning hosts read; `--check` reports a legacy `skills/` tree from an older install as stale and never deletes it. When merging `AGENTS.md`, preserve the target project's existing constraints and add the DevFlow route, Cut, Prove, and recovery rules without duplicating or contradicting local instructions.
 
 If a host supports slash commands, use:
 
@@ -126,7 +126,7 @@ First-time setup: create any page in the GitHub wiki UI so the wiki repository e
 
 Specs and plans may carry an optional `Status: draft | approved | in-progress | done | abandoned` header for cross-session lifecycle tracking; `node scripts/devflow-spec.js` and `node scripts/devflow-plan.js` validate the value and treat a missing field as legacy. Long-term iteration planning for DevFlow-Core itself lives in [docs/iteration-plan.md](docs/iteration-plan.md).
 
-All checker scripts accept `--json` for a single-line machine-readable summary. `npm run install:target -- <project> --write` records `.devflow-manifest.json` (package version + file hashes) in the target; `--check` then reports upstream version changes with an upgrade command.
+All checker scripts accept `--json` for a single-line machine-readable summary. `npm run install:target -- <project> --write` records `.devflow-manifest.json` (package version + installed paths and hashes) in the target; skills are recorded under `.agents/skills/`, and `--check` then reports upstream version changes with an upgrade command.
 
 Other `.js` files under `scripts/` are DevFlow-Core maintainer checks, installer tests, and coverage reports. They stay in this package and are not the daily runtime surface for target projects.
 

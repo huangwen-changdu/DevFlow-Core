@@ -42,7 +42,7 @@ const hosts = [
     capabilities: {
       route: ["AGENTS.md"],
       brainstorm: ["risk gate", "devflow-brainstorm"],
-      owner: ["skills/devflow-core/SKILL.md"],
+      owner: ["skill root"],
       loadOrFallback: ["selected lifecycle reference"],
       directSuccess: ["A/B/C", "directly"],
       coreReturn: ["return to Core"],
@@ -55,7 +55,7 @@ const hosts = [
     capabilities: {
       route: ["Core routes request entry"],
       brainstorm: ["ambiguous", "devflow-brainstorm"],
-      owner: ["skills/devflow-core/SKILL.md"],
+      owner: ["skill root"],
       loadOrFallback: ["AGENTS.md"],
       directSuccess: ["A/B/C", "directly"],
       coreReturn: ["return to Core"],
@@ -81,7 +81,7 @@ const hosts = [
     capabilities: {
       route: ["AGENTS.md"],
       brainstorm: ["risk gate", "devflow-brainstorm"],
-      owner: ["skills/devflow-core/SKILL.md"],
+      owner: ["skill root"],
       loadOrFallback: ["fallback"],
       directSuccess: ["A/B/C", "directly"],
       coreReturn: ["return to Core"],
@@ -94,7 +94,7 @@ const hosts = [
     capabilities: {
       route: ["AGENTS.md"],
       brainstorm: ["risk gate", "devflow-brainstorm"],
-      owner: ["skills/devflow-core/SKILL.md"],
+      owner: ["skill root"],
       loadOrFallback: ["host capability"],
       directSuccess: ["A/B/C", "direct"],
       coreReturn: ["return to Core"],
@@ -107,8 +107,8 @@ const hosts = [
     capabilities: {
       route: ["Problem, Fast, Design-lite, Design, Build, or Recovery"],
       brainstorm: ["risk gate", "devflow-brainstorm"],
-      owner: ["skills/devflow-core/SKILL.md"],
-      loadOrFallback: ["load `skills/devflow-core/SKILL.md`"],
+      owner: ["skill root"],
+      loadOrFallback: ["skill root"],
       directSuccess: ["A/B/C", "direct successes"],
       coreReturn: ["return to Core"],
       proof: ["devflow-prove"]
@@ -120,7 +120,7 @@ const hosts = [
     capabilities: {
       route: ["AGENTS.md"],
       brainstorm: ["risk gate", "devflow-brainstorm"],
-      owner: ["skills/devflow-core/SKILL.md"],
+      owner: ["skill root"],
       loadOrFallback: ["Without skills"],
       directSuccess: ["A/B/C", "directly"],
       coreReturn: ["return Core"],

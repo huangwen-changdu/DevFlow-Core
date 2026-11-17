@@ -214,7 +214,7 @@ Acceptance:
 
 - README links to this PRD as product direction.
 - README keeps quick-start commands.
-- `npm run install:target -- <path>` performs a safe dry-run install; `--write` copies missing runtime files; `--force` is required to overwrite existing files; `--check` verifies target runtime files still match the package.
+- `npm run install:target -- <path>` performs a safe dry-run install; `--write` copies missing runtime files with skills under `.agents/skills/`; `--force` is required to overwrite existing files; `--check` verifies target runtime files still match the package and reports a legacy `skills/` tree as stale.
 - `npm run install:verify` validates installer dry-run, write-skip, target runtime check, force-overwrite, manifest coverage, and installed runtime self-containment.
 - `npm run install:user -- [--write] [--force] [--check]` installs user-level `skills/`, `commands/`, and `scripts/devflow-*.js` into `CODEX_HOME` or `~/.codex`; `npm run user:verify` validates that behavior.
 - README contains 4 copyable workflows, including target install verification.
