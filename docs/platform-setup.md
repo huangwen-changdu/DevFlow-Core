@@ -38,6 +38,27 @@ Files the project installer syncs (identical for every platform — you get one 
 | `.agents/skills/devflow-*/` + `.agents/skills/*/references/` | All skill-capable hosts, including `.agents/skills/` scanners |
 | `scripts/devflow-{spec,plan,review,debt,audit}.js` | Local checkers any agent can run |
 
+### Legacy `skills/` Migration
+
+Older installs copied skills to `<project>/skills/`. Check and migrate:
+
+```bash
+npm run doctor:target -- <project>                        # .agents/skills coverage + legacy leftovers
+npm run install:target -- <project> --write --force --migrate
+npm run install:target -- <project> --check               # expect Check passed
+```
+
+Inside a project that already has the runtime, the shipped checker works without DevFlow-Core:
+
+```bash
+node scripts/devflow-skills.js                    # path check
+node scripts/devflow-skills.js --json             # machine-readable
+node scripts/devflow-skills.js --migrate          # remove verified legacy duplicates
+node scripts/devflow-skills.js --migrate --force  # remove every shipped legacy copy after review
+```
+
+`--migrate` removes a legacy file when its bytes match the installed `.agents/skills/` copy or the hash recorded by the previous manifest, comparing with line endings normalised. It stops without deleting while any installed file is missing or differs, so review the `changed:` list before adding `--force`; anything still unmatched is kept and listed as `kept legacy (differs)`, and project-owned skills under `skills/` are never touched.
+
 ## Codex
 
 Entry surface: `AGENTS.md` at the project root. Codex reads it as the runtime prompt, but does not automatically load skill bodies. `AGENTS.md` therefore provides the minimal hybrid-flow fallback: Brainstorm collects a user-selected A/B/C depth, named success edges flow directly, and Core selects only non-unique exceptions. Core then reads the shared method map and only the reference owned by the selected lifecycle skill.

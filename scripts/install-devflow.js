@@ -37,6 +37,7 @@ const runtimeEntries = [
   "scripts/devflow-plan.js",
   "scripts/devflow-audit.js",
   "scripts/devflow-docs.js",
+  "scripts/devflow-skills.js",
   "skills/devflow-core/SKILL.md",
   "skills/devflow-core/references/core-methods.md",
   "skills/devflow-core/references/skill-guide.md",
@@ -94,24 +95,87 @@ function staleSkills(targetRoot) {
     .map((rest) => `skills/${rest}`);
 }
 
+/**
+ * Removes legacy `<target>/skills/` copies when they are provably package copies: identical to the
+ * installed file, or matching the hash the previous manifest recorded. Line endings are normalised
+ * first, because a CRLF checkout still represents the LF package copy. Anything else stays for review.
+ */
+function migrateLegacySkills(targetRoot, previousManifest) {
+  const legacyRoot = path.join(targetRoot, "skills");
+  const normalize = (body) => body.toString("utf8").replace(/\r\n/g, "\n");
+  const migrated = [];
+  const kept = [];
+  const shippedDirs = new Set();
+
+  for (const rel of runtimeEntries) {
+    if (!rel.startsWith(skillsPrefix)) continue;
+    const rest = rel.slice(skillsPrefix.length);
+    const legacy = path.join(legacyRoot, rest);
+    const installed = path.join(targetRoot, installedSkillsPrefix, rest);
+    shippedDirs.add(path.dirname(legacy));
+    if (!fs.existsSync(legacy)) continue;
+    const legacyBody = normalize(fs.readFileSync(legacy));
+    const installedMatches = fs.existsSync(installed) && normalize(fs.readFileSync(installed)) === legacyBody;
+    const previousHash =
+      previousManifest?.files?.[`skills/${rest}`] || previousManifest?.files?.[`${installedSkillsPrefix}${rest}`];
+    const hashMatches = previousHash === createHash("sha256").update(legacyBody).digest("hex");
+    if (installedMatches || hashMatches) {
+      fs.rmSync(legacy);
+      migrated.push(`skills/${rest}`);
+    } else {
+      kept.push(`skills/${rest}`);
+    }
+  }
+
+  // Prune only empty directories inside the shipped skill trees, deepest first.
+  for (const dir of [...shippedDirs].sort((a, b) => b.length - a.length)) {
+    let current = dir;
+    while (current.startsWith(legacyRoot) && current !== legacyRoot) {
+      if (!fs.existsSync(current) || fs.readdirSync(current).length > 0) break;
+      fs.rmdirSync(current);
+      current = path.dirname(current);
+    }
+  }
+  if (fs.existsSync(legacyRoot) && fs.readdirSync(legacyRoot).length === 0) fs.rmdirSync(legacyRoot);
+
+  return { migrated, kept };
+}
+
 const args = process.argv.slice(2);
-const write = args.includes("--write");
+const migrate = args.includes("--migrate");
+const write = args.includes("--write") || migrate;
 const force = args.includes("--force");
 const check = args.includes("--check");
-const targetArg = args.find((arg) => arg !== "--write" && arg !== "--dry-run" && arg !== "--force" && arg !== "--check");
+const targetArg = args.find(
+  (arg) => arg !== "--write" && arg !== "--dry-run" && arg !== "--force" && arg !== "--check" && arg !== "--migrate"
+);
 const claudeSettingsRel = ".claude/settings.json";
 
 function usage() {
-  console.log("Usage: npm run install:target -- <target-project> [--write] [--force] [--check]");
+  console.log("Usage: npm run install:target -- <target-project> [--write] [--force] [--check] [--migrate]");
   console.log("Default mode is dry-run. Add --write to copy files.");
   console.log("Existing files are skipped unless --force is passed.");
   console.log("Skills install to .agents/skills/; --check also reports stale legacy skills/ files.");
+  console.log("Add --migrate to install missing files and remove legacy skills/ copies that match this package byte-for-byte.");
+  console.log("--migrate implies --write; it stops without deleting when an installed file is missing or differs (review, then use --force).");
+  console.log("A legacy file with different bytes stays and is listed for review.");
   console.log("Add --check to verify the target runtime files match this package.");
   console.log("Write mode records .devflow-manifest.json (version + sha256); --check reports upstream version changes.");
 }
 
 function readJsonFile(file) {
   return JSON.parse(fs.readFileSync(file, "utf8"));
+}
+
+/** Reads the target manifest before an upgrade overwrites it; a missing or broken file counts as absent. */
+function readManifest(targetRoot) {
+  const file = path.join(targetRoot, manifestRel);
+  if (!fs.existsSync(file)) return null;
+  try {
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch {
+    return null;
+  }
 }
 
 function devflowSessionStartEntries() {
@@ -207,7 +271,7 @@ if (!targetArg) {
 }
 
 if (check && write) {
-  throw new Error("--check cannot be combined with --write");
+  throw new Error("--check cannot be combined with --write or --migrate");
 }
 
 const targetRoot = path.resolve(process.cwd(), targetArg);
@@ -250,7 +314,7 @@ if (check) {
   if (missing.length > 0 || changed.length > 0 || stale.length > 0 || versionChanged) {
     if (stale.length > 0) {
       console.log(
-        `Stale legacy skills/: ${stale.length} file(s) were installed under skills/ by an older version; nothing reads them now. Delete them after upgrading to ${installedSkillsPrefix}.`
+        `Stale legacy skills/: ${stale.length} file(s) were installed under skills/ by an older version; nothing reads them now. Re-run with --write --force to upgrade, then --migrate to remove byte-identical copies.`
       );
     }
     console.log(
@@ -263,8 +327,8 @@ if (check) {
   process.exit(0);
 }
 
+const previousManifest = readManifest(targetRoot);
 const results = runtimeEntries.map((rel) => copyFile(rel, targetRoot));
-const stale = staleSkills(targetRoot);
 
 // 安装 manifest：仅 write 模式写入，记录上游版本与目标路径哈希供后续 --check 使用。
 if (write) {
@@ -278,6 +342,13 @@ if (write) {
   fs.writeFileSync(path.join(targetRoot, manifestRel), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 }
 
+const staleBefore = migrate ? staleSkills(targetRoot) : [];
+const migrationCheck =
+  staleBefore.length > 0 ? runtimeEntries.map((rel) => checkFile(rel, targetRoot)).filter((result) => result.action !== "ok") : [];
+const migration =
+  !migrate ? null : staleBefore.length > 0 && migrationCheck.length > 0 ? null : migrateLegacySkills(targetRoot, previousManifest);
+const stale = staleSkills(targetRoot);
+
 console.log(`DevFlow install ${write ? "write" : "dry-run"}: ${targetRoot}`);
 for (const result of results) {
   console.log(`${result.action}: ${result.rel}`);
@@ -287,15 +358,37 @@ for (const rel of stale) {
 }
 console.log(`Total files: ${results.length}`);
 
+if (staleBefore.length > 0 && migrationCheck.length > 0) {
+  console.log(
+    `Migration skipped: ${migrationCheck.length} installed file(s) are missing or differ. Review them, then re-run with --write --force --migrate.`
+  );
+  for (const result of migrationCheck.slice(0, 10)) {
+    console.log(`${result.action}: ${result.rel}`);
+  }
+}
+
+if (migration) {
+  console.log(`Migrated legacy skills/: ${migration.migrated.length} removed, ${migration.kept.length} kept.`);
+  for (const rel of migration.kept) {
+    console.log(`kept legacy (differs): ${rel}`);
+  }
+}
+
 const skippedExisting = results.some((result) => result.action === "skipped existing");
 
 if (stale.length > 0) {
-  console.log(
-    `Stale legacy skills/: ${stale.length} file(s) remain under skills/ from an older install; delete them after confirming ${installedSkillsPrefix} matches.`
-  );
+  if (staleBefore.length > 0 && !migration) {
+    console.log(`Stale legacy skills/: ${stale.length} file(s) kept because ${installedSkillsPrefix} is not fully in sync.`);
+  } else if (migration) {
+    console.log(`Stale legacy skills/: ${stale.length} file(s) kept because their bytes differ from ${installedSkillsPrefix}; review then delete them manually.`);
+  } else {
+    console.log(`Stale legacy skills/: ${stale.length} file(s) remain under skills/ from an older install; run --migrate to remove byte-identical copies.`);
+  }
 }
 
-if (!write) {
+if (staleBefore.length > 0 && migrationCheck.length > 0) {
+  process.exitCode = 1;
+} else if (!write) {
   console.log("No files were changed. Re-run with --write to install.");
 } else if (!force && skippedExisting) {
   console.log("Existing files were skipped. Re-run with --write --force to overwrite.");

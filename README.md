@@ -47,11 +47,13 @@ Or run the steps individually:
 npm run install:target -- ../my-project
 npm run install:target -- ../my-project --write
 npm run install:target -- ../my-project --check
+npm run install:target -- ../my-project --migrate   # upgrade an older skills/ layout (review changed files first)
+npm run doctor:target -- ../my-project               # check .agents/skills and legacy leftovers
 node scripts/devflow-docs.js --init
 node scripts/devflow-docs.js --check
 ```
 
-The installer copies runtime entry files, hook files, skills (to `.agents/skills/`), commands, and the target-runtime checkers. It does not copy product docs or validation harness files. Existing files are skipped unless `--force` is passed; use `--check` later to detect drift.
+The installer copies runtime entry files, hook files, skills (to `.agents/skills/`), commands, and the target-runtime checkers. It does not copy product docs or validation harness files. Existing files are skipped unless `--force` is passed; use `--check` later to detect drift. `--migrate` implies `--write` and removes only legacy `<project>/skills/` copies whose bytes match the installed pack; it stops without deleting while any installed file is missing or differs, and a legacy copy with different bytes stays for review.
 
 For personal global access, install user-level skills, commands, and scripts:
 
@@ -75,7 +77,7 @@ Use user-level sync for reusable agent capabilities and project sync for reposit
 | `.github/`, `.claude/`, `.codebuddy/`, and `.codex/` rule surfaces | Target project | Merge the DevFlow rule block into the target's existing host rule. Preserve local rules and host-specific configuration; do not copy these directories into a global user home. |
 | `commands/`, `scripts/`, `hooks/`, `AGENTS.md`, and `CLAUDE.md` | Target project selected by the user | Run `npm run install:target -- <project>` first. Merge existing rule files and `AGENTS.md` manually before write mode; use `--write --force` only when the target explicitly intends to replace the file. |
 
-The current installer merges only the DevFlow SessionStart entry into an existing `.claude/settings.json`. It intentionally skips other existing rule files instead of attempting a generic text merge. Project skills install to `.agents/skills/`, the skill root skill-scanning hosts read; `--check` reports a legacy `skills/` tree from an older install as stale and never deletes it. When merging `AGENTS.md`, preserve the target project's existing constraints and add the DevFlow route, Cut, Prove, and recovery rules without duplicating or contradicting local instructions.
+The current installer merges only the DevFlow SessionStart entry into an existing `.claude/settings.json`. It intentionally skips other existing rule files instead of attempting a generic text merge. Project skills install to `.agents/skills/`, the skill root skill-scanning hosts read; `--check` reports a legacy `skills/` tree from an older install as stale, and `--migrate` removes legacy copies whose bytes match the installed pack or the hash recorded by the previous manifest (line endings normalised), without touching differing files or project-owned skills. When merging `AGENTS.md`, preserve the target project's existing constraints and add the DevFlow route, Cut, Prove, and recovery rules without duplicating or contradicting local instructions.
 
 If a host supports slash commands, use:
 
@@ -104,6 +106,7 @@ When installed into a target project, only the target-runtime scripts are copied
 | `node scripts/devflow-review.js <plan-or-diff-file>` | Check whether a plan or diff includes the required reuse, native, overbuild, diff, and scope gates before detailed review. |
 | `node scripts/devflow-debt.js .` | Harvest intentional `devflow:` simplification markers into a debt report. |
 | `node scripts/devflow-audit.js <target-directory>` | Run a repo-wide lean candidate scan for overengineering, missed reuse, stdlib/native replacements, and YAGNI abstractions. The full audit reads this as first-pass evidence and reports correctness, safety, load, and tests separately. |
+| `node scripts/devflow-skills.js [--migrate] [--json]` | Check that project skills live under `.agents/skills/` and report legacy `skills/` copies; `--migrate` removes verified duplicates inside the project, without the DevFlow-Core package. |
 | `node scripts/devflow-docs.js --status` / `--init` / `--refresh` / `--check` | Inventory, scaffold, refresh the derived spec index, and verify. The master map stays a router (90-line limit); leaf specs live in the derived `docs/specs/INDEX.md`, rebuilt by `--refresh`. `--init` also creates the requirements and hotfix ledgers when it builds the map, never overwrites existing files, and marks unknown authority rows as `[待确认]`. |
 
 Saved specs should land in the current target project's `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` unless that project already documents another specs path. Saved implementation plans should land in the current target project's `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`. `docs/features/` is for feature ledgers and the capability index, not generated specs or task plans.

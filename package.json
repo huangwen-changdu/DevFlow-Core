@@ -1,6 +1,6 @@
 {
   "name": "DevFlow-Core-devflow",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "Lightweight practical development workflow skills for AI coding agents.",
   "license": "MIT",
   "scripts": {
@@ -25,6 +25,8 @@
     "wiki:write": "node scripts/devflow-wiki.js --write",
     "audit:verify": "node scripts/devflow-audit.js --self-test",
     "doctor:verify": "node scripts/devflow-doctor.js --self-test",
+    "doctor:target": "node scripts/devflow-doctor.js --project",
+    "skills:verify": "node scripts/devflow-skills.js --self-test",
     "verify:all": "npm test && npm run learn:verify && npm run scenario:coverage && npm run trigger:verify && npm run host:verify && npm run install:verify && npm run user:verify && npm run debt:verify && npm run review:verify && npm run spec:verify && npm run plan:verify && npm run index:verify && npm run audit:verify && npm run doctor:verify && npm run capability:verify && npm run capability:eval && npm run budget:verify && npm run docs:verify && npm run route:verify",
     "install:target": "node scripts/install-devflow.js",
     "onboard:target": "node scripts/onboard-devflow.js",

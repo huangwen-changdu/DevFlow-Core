@@ -79,7 +79,10 @@ DevFlow-Core 是一个可安装的 AI 编码代理工作流框架：把问题/�
 - `npm run verify:all`：19 项全矩阵（test、learn、scenario、trigger、host、install、user、debt、review、spec、plan、index、audit、doctor、capability:verify/eval、budget、docs、route）
 - `node scripts/devflow-docs.js --check`：`docs/INDEX.md` 的覆盖与路径校验（`npm run docs:verify` 跑自测）
 - `npm run install:user -- --home <home> --write --force` 后 `--check`：用户级同步（本机六个 home：`.dsh`、`.claude`、`.codebuddy`、`.codex`、`.workbuddy`、`.zcode`，见卡片 skill-sync-after-update）
-- `npm run install:target -- <project> --check`：项目级安装校验（技能落 `.agents/skills/`；旧 `skills/` 报 stale，需手动删）
+- `npm run install:target -- <project> --check`：项目级安装校验（技能落 `.agents/skills/`；旧 `skills/` 报 stale，用 `--migrate` 清理）
+- `npm run doctor:target -- <project>`：项目级完整性门（复用同一 `--check`，失败时打印 missing/changed/stale 与 `--migrate` 命令）
+- `npm run install:target -- <project> --migrate`：升级旧布局；隐含 `--write`，只删与安装包字节一致或与旧 manifest 哈希匹配的旧 `skills/` 文件（CRLF 归一化），新树不同步时拒绝迁移，其余保留并列出
+- `node scripts/devflow-skills.js [--migrate] [--json]`：项目内自跑（随运行时下发），查 `.agents/skills` 落位与旧 `skills/` 残留；`--migrate` 只删已验证副本，`--migrate --force` 才删全部旧副本
 - `node scripts/devflow-doctor.js`：六个 home 完整性快检（失败时打印具体 missing/changed 文件）
 
 ## 启动就绪清单（新会话）
