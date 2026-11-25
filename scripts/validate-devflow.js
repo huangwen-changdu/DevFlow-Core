@@ -49,6 +49,7 @@ const requiredFiles = [
   "gemini-extension.json",
   "skills/devflow-core/SKILL.md",
   "skills/devflow-core/references/core-methods.md",
+  "skills/devflow-core/references/depth-ledger.md",
   "skills/devflow-cut/references/cut-methods.md",
   "skills/devflow-audit/references/full-quality-audit.md",
   "skills/devflow-spec/references/spec-plan-methods.md",
@@ -296,8 +297,13 @@ assert(core.includes("NARROW_OK"), "devflow-core must require the mechanical Sma
 assert(prove.includes("NARROW_OK"), "devflow-prove must require the mechanical Small-fix checker");
 assert(prove.includes("devflow-smallfix.js"), "devflow-prove must name the Small-fix checker");
 assert(core.includes("Depth Ledger"), "devflow-core must publish the Depth Ledger");
+assert(core.includes("depth-ledger.md"), "devflow-core must point at the shared Depth Ledger");
+assert(read("skills/devflow-brainstorm/references/interview-discipline.md").includes("## Depth Ledger"), "Brainstorm must consume the Depth Ledger");
+assert(read("skills/devflow-plan/references/plan-methods.md").includes("## Depth Ledger"), "Plan must consume the Depth Ledger");
+assert(read("skills/devflow-cut/references/cut-methods.md").includes("## Depth Ledger"), "Cut must consume the Depth Ledger");
+assert(read("skills/devflow-build/references/build-methods.md").includes("## Depth Ledger"), "Build must consume the Depth Ledger");
 assert(prove.includes("Depth Ledger"), "devflow-prove must publish the Depth Ledger");
-assert(core.includes("Risk debt"), "devflow-core must publish risk debt");
+assert(read("skills/devflow-core/references/depth-ledger.md").includes("Risk debt"), "the shared Depth Ledger must publish risk debt");
 assert(prove.includes("risk_debt"), "devflow-prove must carry risk debt in the completion output");
 assert(prove.includes("do not maximize a score"), "devflow-prove must forbid score maximization");
 assert(prove.includes("only when the change touches DevFlow runtime rules"), "Prove must limit framework self-test loading");

@@ -28,20 +28,7 @@ A tier may be raised at any point; never lower it to finish faster. `narrow` is 
 
 ## Depth Ledger
 
-`narrow`, `standard`, and `full` are selected by the ledger, not by preference or line count. After diagnosis, record:
-
-```text
-Depth ledger:
-- Blast radius 0/1/2: files, modules, callers, contracts, data/state
-- Uncertainty 0/1/2: reproduced? hypotheses? missing test? open unknown
-- Irreversibility 0/1/2: revertible? migration/delete/external/security
-- History 0/1/2: prior hotfix rows, learning cards, repeated failures
-- Evidence: reads/tests behind the factors
-- Risk debt: open decision-impact unknowns; narrow blocked until 0
-- Depth: narrow / standard / full
-```
-
-All factors at most 1, no protected surface, debt 0 -> `narrow`; any 2 or total at least 3 -> `standard`; irreversibility 2 or security/data/permission/contract risk -> `full`. An open decision-impact unknown blocks narrow until resolved or promoted. Stop when no decision-impact unknown remains; do not maximize a score.
+Use `skills/devflow-core/references/depth-ledger.md` for any change, fix or feature. After diagnosis or discovery, record blast radius, uncertainty, irreversibility, history, and risk debt; the depth selects `narrow`, `standard`, or `full`. An open decision-impact unknown blocks narrow and Build. Include the ledger line in the completion output. Stop when no decision-impact unknown remains; do not maximize a score.
 
 ## Small-fix Gate
 

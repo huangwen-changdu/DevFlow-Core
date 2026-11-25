@@ -2,6 +2,10 @@
 
 Use this reference only while `devflow-brainstorm` clarifies and explores a request. It is not a route, design, planning, recovery, or documentation workflow.
 
+## Depth Ledger
+
+Read the shared `skills/devflow-core/references/depth-ledger.md` before fixing clarification depth. High uncertainty or risk debt keeps `standard`/`deep`; low depth permits `compact`, but new behavior still goes through Brainstorm. Stop when no decision-impact unknown remains; do not keep asking to raise a score.
+
 ## Clarification Loop
 
 ```text

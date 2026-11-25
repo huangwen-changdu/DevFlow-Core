@@ -2,6 +2,10 @@
 
 Use this reference after `skills/devflow-spec/references/spec-plan-methods.md` and before writing a Plan Pack. It defines the smallest handoff that lets another executor continue approved work without repeating broad repository discovery.
 
+## Depth Ledger
+
+Read the shared `skills/devflow-core/references/depth-ledger.md` before splitting tasks. `full` depth needs explicit anchors, migration/rollback, and coverage; a `narrow` feature can stay single-slice with one verification. An open decision-impact unknown returns to Brainstorm instead of becoming a plan task.
+
 ## Touch Set
 
 State the intended touch set once, before tasks: the files and the responsibility each one carries. Reuse the nearest owner when it already has the responsibility. If no target can hold the responsibility without a materially different concern, return the fact to Core instead of inventing a generic abstraction.

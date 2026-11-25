@@ -2,6 +2,10 @@
 
 Owner: `devflow-cut`. Load this reference after a user-selected A/B/C direct Cut entry or when Core selects Cut for a non-unique artifact.
 
+## Depth Ledger
+
+Use the shared `skills/devflow-core/references/depth-ledger.md` blast radius and irreversibility to size the cut. A `full` depth cut rejects options that add migration, public-contract, or cross-module surface without a plan; a `narrow` cut stays local. Do not cut below the smallest useful verification.
+
 ## Method 5: Minimal Solution Ladder
 
 The canonical Minimal Solution Ladder lives in `skills/devflow-cut/SKILL.md` (nine rungs, plus the `Ponytail` definition). Do not redefine the ladder here: read the SKILL.md ladder, stop at the first rung that meets the accepted goal, and record the selected rung.

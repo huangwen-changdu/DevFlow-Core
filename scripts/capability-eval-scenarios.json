@@ -82,6 +82,21 @@
     "negativeConstraints": ["narrow is blocked until it is resolved or promoted", "Lines are a scope warning, not the depth"]
   },
   {
+    "id": "depth-ledger-feature",
+    "scenario": "Scenario 2E: Depth Ledger for New Features",
+    "layers": ["Prompt Surface", "Context", "Eval/Verifier"],
+    "expectedRoute": "Design",
+    "command": "test",
+    "scenarioEvidence": [
+      "new behavior never uses Fast Small-fix",
+      "compact Brainstorm",
+      "open product decision",
+      "deep Brainstorm"
+    ],
+    "commandEvidence": ["Depth ledger contract"],
+    "negativeConstraints": ["new behavior never uses Fast Small-fix", "Build blocked: open product decision"]
+  },
+  {
     "id": "first-principles-cut",
     "scenario": "Scenario 1C-A: First Principles Cut",
     "layers": ["Harness/Validation", "Context"],

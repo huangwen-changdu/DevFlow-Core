@@ -75,20 +75,7 @@ Before writing `Proof tier: narrow`, run `node scripts/devflow-smallfix.js --che
 
 ### Depth Ledger
 
-After diagnosis, before choosing a lane, record:
-
-```text
-Depth ledger:
-- Blast radius 0/1/2: files, modules, callers, contracts, data/state
-- Uncertainty 0/1/2: reproduced? hypotheses? missing test? open unknown
-- Irreversibility 0/1/2: revertible? migration/delete/external/security
-- History 0/1/2: prior hotfix rows, learning cards, repeated failures
-- Evidence: reads/tests behind the factors
-- Risk debt: open decision-impact unknowns; narrow blocked until 0
-- Depth: narrow / standard / full
-```
-
-All factors at most 1, no protected surface, debt 0 -> `narrow`; any 2 or total at least 3 -> `standard`; irreversibility 2 or security/data/permission/contract risk -> `full`. `NARROW_OK` is necessary but not sufficient. Counts are a scope warning, not the depth.
+After discovery, read `skills/devflow-core/references/depth-ledger.md` and record its four factors plus risk debt. Depth drives route and proof for both fixes and features: `narrow` -> Fast Small-fix or compact Brainstorm + Cut C; `standard` -> Design-lite/Build; `full` -> Design/Spec/Plan/full. New behavior never uses Fast Small-fix. An open decision-impact unknown blocks narrow and Build; line counts are warnings.
 
 | Route | Use when | Core action |
 |---|---|---|

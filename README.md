@@ -152,7 +152,7 @@ Proof tiers: `narrow` (Fast Small-fix) runs the named check, one regression, and
 
 ### Depth Ledger
 
-After diagnosis, record four factors before choosing a tier: blast radius (files, modules, callers, contracts, data/state), uncertainty (reproduction, hypotheses, test gap, open unknown), irreversibility (revertible, migration/delete/external/security), and history (prior hotfix rows, cards, repeated failures). All factors at most 1 with no protected surface and no open decision-impact unknown -> `narrow`; any factor 2 or total at least 3 -> `standard`; irreversibility 2 or security/data/permission/contract risk -> `full`. An open decision-impact unknown blocks narrow until resolved or promoted. Lines are a scope warning, not the depth.
+After diagnosis or discovery, record four factors before choosing a tier: blast radius (files, modules, callers, contracts, data/state), uncertainty (reproduction, hypotheses, test gap, open unknown), irreversibility (revertible, migration/delete/external/security), and history (prior hotfix rows, cards, repeated failures). All factors at most 1 with no protected surface and no open decision-impact unknown -> `narrow`; any factor 2 or total at least 3 -> `standard`; irreversibility 2 or security/data/permission/contract risk -> `full`. An open decision-impact unknown blocks narrow and Build until resolved or promoted. For a new feature, low depth does not mean Fast Small-fix: new behavior always goes through Brainstorm; low depth -> compact Brainstorm + Cut C -> Build -> standard, high depth -> deep Brainstorm/Spec/Plan/full. Lines are a scope warning, not the depth.
 
 ## Copyable Workflows
 

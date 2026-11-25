@@ -445,6 +445,50 @@ Depth ledger: blast=1 uncertainty=0 irreversibility=2 history=1 risk_debt=0 dept
 Depth ledger: blast=1 uncertainty=1 irreversibility=0 history=0 risk_debt=1 depth=standard
 ```
 
+## Scenario 2E: Depth Ledger for New Features
+
+Input A:
+
+```text
+Add a CSV export button to the existing orders page; no schema or API change.
+```
+
+Input B:
+
+```text
+Add a new pricing rule; the product decision is still open.
+```
+
+Input C:
+
+```text
+Add a persisted customer tier column with a migration.
+```
+
+Expected behavior:
+
+- The agent records a Depth Ledger after discovery; the ledger applies to new features, not only fixes.
+- Input A is 1/0/0/0 -> feature narrow: compact Brainstorm -> Cut C -> Build -> Prove `standard`; new behavior never uses Fast Small-fix.
+- Input B has risk debt 1 (open product decision) -> Brainstorm, not Build.
+- Input C is 2/0/2/0 (public data + migration) -> full: deep Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove `full`.
+- Low depth compresses clarification; it does not skip Brainstorm for new behavior.
+- An open decision-impact unknown blocks Build, not just narrow.
+
+Pass check:
+
+```text
+Depth ledger: blast=1 uncertainty=0 irreversibility=0 history=0 risk_debt=0 depth=narrow
+Route: Brainstorm compact -> Cut C -> Build -> Prove standard
+```
+
+Reverse checks:
+
+```text
+Depth ledger: blast=1 uncertainty=2 irreversibility=0 history=1 risk_debt=1 depth=standard
+Build blocked: open product decision
+Depth ledger: blast=2 uncertainty=0 irreversibility=2 history=0 risk_debt=0 depth=full
+```
+
 ## Scenario 3: Dependency Proposal
 
 Input:

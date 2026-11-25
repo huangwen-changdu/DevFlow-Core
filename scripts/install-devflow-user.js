@@ -28,6 +28,7 @@ const userEntries = [
   "scripts/devflow-doctor.js",
   "skills/devflow-core/SKILL.md",
   "skills/devflow-core/references/core-methods.md",
+  "skills/devflow-core/references/depth-ledger.md",
   "skills/devflow-core/references/skill-guide.md",
   "skills/devflow-cut/references/cut-methods.md",
   "skills/devflow-spec/references/spec-plan-methods.md",

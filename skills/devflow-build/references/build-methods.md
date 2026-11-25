@@ -2,6 +2,10 @@
 
 Owner: `devflow-build`. Load this reference after C `CUT_PASS`, an approved A/B Plan, or Core selects Build for a non-unique artifact.
 
+## Depth Ledger
+
+Use the shared `skills/devflow-core/references/depth-ledger.md` to size slices. A `full` depth build needs independently verifiable slices and rollback; an open decision-impact unknown is `BUILD_BLOCKED`, not an invitation to guess. Do not add structure the ledger does not justify.
+
 ## Method 11: Karpathy Minimal Change
 
 Touch only files necessary for the approved goal. Match project style, preserve contracts, avoid one-caller helpers and speculative options, and remove only code introduced by the current change when it becomes unused.

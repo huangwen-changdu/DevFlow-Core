@@ -2,9 +2,9 @@
 
 ## Current State
 
-- Current Version: v66
+- Current Version: v67
 - Status: active
-- Last Change: depth-ledger
+- Last Change: depth-ledger-fixes-and-features
 - Product Area: runtime flow, plan contract, capability index, validation, learning loop
 
 ## Feature Background
@@ -32,7 +32,7 @@ This ledger exists so future changes do not lose why the runtime is shaped this 
 - `devflow-pua` retains pressure diagnosis, method switching, hypotheses, and new success-contract ownership when the user repeatedly reports that the same function, result, or requested capability is wrong, incomplete, or missing in one task lifecycle. It returns recovery facts to Core, which may select `devflow-brainstorm` only to re-confirm the request before routing again.
 - `devflow-prove` Skill Activation Chain Check for rule, command, prompt, entry, and skill changes; framework self-tests load conditionally while language checklists remain change-extension scoped.
 - Plan/Build handoff permits bounded current-anchor and directly changed-neighbor rereads for drift detection, while prohibiting broad repository rediscovery, silent plan repair, and scope expansion.
-- Fast Small-fix lane: a fix request starts with unbounded diagnosis (Problem read budget); after the cause is known the agent records a Depth Ledger (blast radius, uncertainty, irreversibility, history, risk debt), declares a files/lines budget, and only then may choose Fast Small-fix. An open decision-impact unknown blocks narrow; line counts are warnings. Explicit, local, reversible fixes with no protected surface and one-command proof skip Brainstorm, Cut, and Plan, prove at `narrow` only after `scripts/devflow-smallfix.js` returns `NARROW_OK` and the Depth Ledger is narrow, and create no requirements row; a defect fix still appends a hotfix row. The checker counts the actual diff, blocks protected paths, deletions, binaries, manifest changes, and its own policy/checker/runtime files, and runs the verification itself; a missing or failed check uses `standard`.
+- Depth Ledger applies to fixes and new features. A fix request starts with unbounded diagnosis; a feature starts with discovery. After either, the agent records blast radius, uncertainty, irreversibility, history, and risk debt; the depth drives route and proof. New behavior always goes through Brainstorm: low depth -> compact Brainstorm + Cut C -> Build -> `standard`; high depth -> deep Brainstorm + Spec/Cut/Plan -> `full`. An open decision-impact unknown blocks narrow and Build. Line counts are warnings. Explicit, local, reversible fixes with no protected surface and one-command proof skip Brainstorm, Cut, and Plan, prove at `narrow` only after `scripts/devflow-smallfix.js` returns `NARROW_OK` and the Depth Ledger is narrow, and create no requirements row; a defect fix still appends a hotfix row. The checker counts the actual diff, blocks protected paths, deletions, binaries, manifest changes, and its own policy/checker/runtime files, and runs the verification itself; a missing or failed check uses `standard`.
 - Small Request Boundary gates for Fast, Small-fix, and Design-lite: impact, risk, uncertainty, and proof.
 - Method Lens selection for Design, Recovery, problem solving (问题解决), bug fixing, architecture design (架构设计), and high-risk proof: Root Cause, Working Backwards, First Principles Cut (第一性原理), Data/Proof, and Operational Owner.
 - `devflow-prove` selects `narrow`, `standard`, or `full`; standard/full run adversarial review (对抗式审查) before completion for development work, checking whether the result is still wrong, incomplete, unreachable, over-broad, or under-verified before any done/fixed/ready claim.
