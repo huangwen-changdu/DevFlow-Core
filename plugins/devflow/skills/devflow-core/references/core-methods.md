@@ -43,7 +43,7 @@ Budget by route, counted in files read before `Change`:
 | Route | Reads before Change | Widen when |
 |---|---:|---|
 | Problem | 8 | the symptom has more than one candidate entry point, or the fact chain crosses a module boundary |
-| Fast | the file the question names, or the one file that answers it; a Small-fix adds the failing path, one caller, and the verify command (3 total) | the answer spans more than one file, or the fix crosses a module boundary |
+| Fast | the file the question names, or the one file that answers it; diagnosis uses the Problem budget (8), then a Small-fix adds 3 fix-phase reads | the answer spans more than one file, or diagnosis crosses a module boundary |
 | Design-lite | 3 | the touched flow crosses a module boundary |
 | Design | 8 | a contract, schema, or caller graph is involved |
 | Build | 8 | an approved plan names more anchors than the budget |
@@ -101,7 +101,7 @@ Brainstorm is required for new behavior, ambiguity, cross-module or externally v
 
 Unapproved edits never use Fast except through the Small-fix gate. A skip records `Brainstorm required: no` and `Depth hint: skip`, writes a Design-lite contract (goal, acceptance, exclusions, required behaviors with B IDs, invariants, edge cases), and enters Cut at Depth C. Compact is only for a Core-sent hint where goal, scope, and acceptance are already clear and one named residual risk remains that is not security, data-loss, permission, contract, or irreversible work. Core never lets Brainstorm choose skip or depth.
 
-Fast Small-fix: an explicit fix/change request for existing behavior, at most 20 lines and 2 files, reversible, local, no protected surface, no new structure, and one-command proof. It skips Brainstorm, Cut, and Plan, proves at `narrow`, and creates no requirements row; any miss promotes to Design-lite or Build.
+Fast Small-fix: after diagnosis, an explicit fix/change request for existing behavior, a declared files/lines budget with actual within it, reversible, local, no protected surface, no new structure, and one-command proof. It skips Brainstorm, Cut, and Plan, proves at `narrow`, and creates no requirements row; any miss promotes to Design-lite or Build.
 
 Low-risk autonomy compresses clarification; it does not authorize implementation. Cut still checks reuse, native options, overbuild, diff, and scope, and Prove still requires fresh evidence and adversarial review.
 

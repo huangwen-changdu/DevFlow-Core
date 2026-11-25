@@ -1,6 +1,6 @@
 {
-  "maxFiles": 2,
-  "maxLines": 20,
+  "warnFiles": 5,
+  "warnLines": 60,
   "protected": [
     "AGENTS.md",
     "CLAUDE.md",

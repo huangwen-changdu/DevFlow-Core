@@ -20,7 +20,7 @@ Context loading is conditional and selected by changed surface.
 
 | Tier | Use when | Required evidence |
 |---|---|---|
-| `narrow` | Fast Small-fix: local, reversible, at most 20 lines and 2 files, no protected surface, checker `NARROW_OK` | named check, one regression, diff review, one-line strongest challenge, hotfix row for a defect |
+| `narrow` | Fast Small-fix: local, reversible, declared post-diagnosis budget, no protected surface, checker `NARROW_OK` | named check, one regression, diff review, one-line strongest challenge, hotfix row for a defect |
 | `standard` | Design-lite or Build; local or module behavior | narrow evidence plus Simplify Pass, adversarial checklist, Code Review Report, Learn review |
 | `full` | Protected surface, cross-module contract, irreversible effect, security/data/permission risk, or explicit review | standard evidence plus Recall evidence, Coverage, plan and requirement writeback |
 
@@ -28,11 +28,11 @@ A tier may be raised at any point; never lower it to finish faster. `narrow` is 
 
 ## Small-fix Gate
 
-For a Fast Small-fix, run `node scripts/devflow-smallfix.js --check --verify "<command>"`. The checker counts actual changed files and lines, blocks protected paths, deletions, binaries, and manifest changes, and runs the verification itself. Record the pre-edit estimate and pass `--declared-files`/`--declared-lines`; actual above the declaration promotes. Only `NARROW_OK` permits `Proof tier: narrow`; `PROMOTE`, a missing checker, or a failed run returns standard facts to Core. A narrow claim without the checker receipt is FAIL. The agent never chooses narrow by assertion.
+After diagnosis, for a Fast Small-fix, run `node scripts/devflow-smallfix.js --check --verify "<command>"`. The checker counts actual changed files and lines, blocks protected paths, deletions, binaries, and manifest changes, and runs the verification itself. Record the post-diagnosis estimate and pass `--declared-files`/`--declared-lines`; actual above the declaration promotes. File and line counts are warnings, not hard caps. Only `NARROW_OK` permits `Proof tier: narrow`; `PROMOTE`, a missing checker, or a failed run returns standard facts to Core. A narrow claim without the checker receipt is FAIL. The agent never chooses narrow by assertion.
 
 ## Process
 
-1. Select the tier and the one command, test, build, lint, validation script, or manual scenario that proves the claim. For a Fast Small-fix, the checker's `--verify` run is the named check; do not select narrow without `NARROW_OK`.
+1. Select the tier and the one command, test, build, lint, validation script, or manual scenario that proves the claim. After diagnosis, for a Fast Small-fix, the checker's `--verify` run is the named check; do not select narrow without `NARROW_OK`.
 2. Confirm changed files and plan anchors. For `standard`/`full`, read `.copilot/LEARNING_INDEX.md` and `docs/hotfix-log.md` for matching pitfalls (Method 15) and record `Recall evidence`. For `narrow`, read a prior row only when the symptom directly matches one.
 3. Run the check now, then independently inspect the actual implementation diff before interpreting the result.
 4. For `standard`/`full` code, run the **Simplify Pass** (`simplify-pass.md`) on the approved diff, then re-run the check after any applied edit.
@@ -83,7 +83,7 @@ Check trigger, surface, runtime action, handoff evidence, and breakpoint. If act
 Command: <actual command run>
 Result: <key output summary>
 Proof tier: narrow / standard / full
-Small-fix gate: <NARROW_OK files=... lines=... declared=.../... protected=none verify=exit:0 | n/a>
+Small-fix gate: <NARROW_OK files=... lines=... declared=.../... protected=none verify=exit:0 warn=... | n/a>
 Adversarial review: <strongest challenge and disposition, or the one-line challenge for narrow>
 Judgment: PASS / FAIL / BLOCKED
 ```
@@ -147,7 +147,7 @@ A missing field means recovery did not run; return `FAIL` facts to Core.
 
 ## Evidence Rules
 
-- Never write "should work" as a result; never hide a skipped check. A self-reported "small" is not evidence; cite the checker `NARROW_OK` line.
+- Never write "should work" as a result; never hide a skipped check. A self-reported "small" is not evidence; cite the checker `NARROW_OK` line with declared and actual counts.
 - If verification is partial, say exactly what remains unverified.
 - Never reuse old output or a delegated claim without independent verification.
 - Running the same successful command twice without changes adds no evidence.

@@ -349,17 +349,17 @@ Judgment: PASS
 Input:
 
 ```text
-Fix the null check in OrderService; keep the diff under 20 lines.
+Fix the null check in OrderService.
 ```
 
 Expected behavior:
 
-- Route: Fast Small-fix; Core records `Brainstorm required: no`, `Depth hint: skip`, `Proof tier: narrow`.
-- The request is explicit, local, reversible, at most 20 lines and 2 files, with no protected surface, no new structure, and one command that verifies it.
+- Route: Fast Small-fix after diagnosis; the agent diagnoses first, then declares a post-diagnosis files/lines budget and runs the checker with it.
+- The request is explicit, local, reversible, has no protected surface, no new structure, and one command verifies it; the user is not asked to estimate the size.
 - No Brainstorm, Cut, Plan, or requirements row.
 - Narrow proof runs the named test, one regression, a diff review, and a one-line strongest challenge.
 - A defect fix appends one `docs/hotfix-log.md` row; no learning card by default.
-- If the diff grows, a protected surface appears, or verification fails, promote to Design-lite or Build.
+- If diagnosis shows a larger or protected fix, or the actual diff exceeds the declared budget, promote to Design-lite or Build.
 
 Pass check:
 
@@ -367,6 +367,7 @@ Pass check:
 Command: <targeted test>
 Result: PASS
 Proof tier: narrow
+Small-fix gate: NARROW_OK files=1 lines=6 declared=1/6 protected=none verify=exit:0
 Adversarial review: <one-line challenge and disposition>
 Judgment: PASS
 ```
@@ -376,28 +377,29 @@ Judgment: PASS
 Input:
 
 ```text
-Fix the null check in OrderService; keep the diff under 20 lines.
+Fix the null check in OrderService.
 ```
 
 Expected behavior:
 
-- The agent runs `node scripts/devflow-smallfix.js --check --verify "<command>"` before claiming narrow.
-- A 30-line change returns `PROMOTE` for `too-many-lines`; an auth change returns `PROMOTE` for `protected-path`.
+- The agent diagnoses first, then runs `node scripts/devflow-smallfix.js --check --declared-files <n> --declared-lines <n> --verify "<command>"` before claiming narrow.
+- A 30-line actual against a 1/10 declaration returns `PROMOTE` for `exceeds-declared-lines`; an auth change returns `PROMOTE` for `protected-path`; no declaration returns `PROMOTE` for `missing-declaration`.
 - `PROMOTE` promotes to Design-lite or Build and uses `Proof tier: standard`.
 - The agent must not claim `narrow` from self-report; a narrow claim without `NARROW_OK` is FAIL.
-- A genuine small change returns `NARROW_OK` with actual files and lines.
+- A genuine small change returns `NARROW_OK` with declared and actual files/lines; file/line counts are warnings, not hard caps.
 
 Pass check:
 
 ```text
-NARROW_OK files=1 lines=6 protected=none verify=exit:0
+NARROW_OK files=1 lines=6 declared=1/6 protected=none verify=exit:0
 ```
 
 Reverse cases:
 
 ```text
-PROMOTE reason=too-many-lines:30>20
+PROMOTE reason=exceeds-declared-lines:30>10
 PROMOTE reason=protected-path:auth/login.js (auth)
+PROMOTE reason=missing-declaration
 ```
 
 ## Scenario 3: Dependency Proposal

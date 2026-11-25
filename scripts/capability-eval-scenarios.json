@@ -59,12 +59,12 @@
     "scenarioEvidence": [
       "PROMOTE",
       "NARROW_OK",
-      "too-many-lines",
+      "exceeds-declared-lines",
       "protected-path",
       "Proof tier: standard"
     ],
     "commandEvidence": ["DevFlow small-fix self-test passed"],
-    "negativeConstraints": ["must not claim `narrow` from self-report", "`PROMOTE` for `too-many-lines`"]
+    "negativeConstraints": ["must not claim `narrow` from self-report", "`PROMOTE` for `exceeds-declared-lines`"]
   },
   {
     "id": "first-principles-cut",

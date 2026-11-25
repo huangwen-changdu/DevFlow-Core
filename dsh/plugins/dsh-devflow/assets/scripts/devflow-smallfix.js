@@ -12,8 +12,8 @@ const path = require("node:path");
 const { createHash } = require("node:crypto");
 const { spawnSync } = require("node:child_process");
 
-const DEFAULT_MAX_FILES = 2;
-const DEFAULT_MAX_LINES = 20;
+const DEFAULT_WARN_FILES = 5;
+const DEFAULT_WARN_LINES = 60;
 const PROTECTED_TOKENS = new Set([
   "auth", "authentication", "authorization", "permission", "permissions", "rbac", "acl",
   "payment", "payments", "billing", "invoice", "checkout",
@@ -29,10 +29,10 @@ const MANIFESTS = new Set([
 
 function usage() {
   console.log("Usage: node scripts/devflow-smallfix.js --check --verify \"<command>\" [--root <dir>] [--declared-files <n>] [--declared-lines <n>] [--audit] [--json]");
-  console.log("  --check            count the actual git diff and decide narrow vs promote");
+  console.log("  --check            count the actual git diff and decide narrow vs promote; requires both declared budgets");
   console.log("  --verify           command the checker runs itself; its exit code is the narrow proof");
-  console.log("  --declared-files   optional pre-edit declaration; exceeding it promotes");
-  console.log("  --declared-lines   optional pre-edit declaration; exceeding it promotes");
+  console.log("  --declared-files   required post-diagnosis estimate; actual above it promotes");
+  console.log("  --declared-lines   required post-diagnosis estimate; actual above it promotes");
   console.log("  --audit            force PROMOTE so this Small-fix gets standard proof");
   console.log("  --self-test        run reverse tests for oversized/protected/manifest/verify cases");
 }
@@ -59,13 +59,13 @@ function hasHead(root) {
 function readPolicy(root) {
   const file = path.join(root, ".devflow", "smallfix.json");
   if (!fs.existsSync(file)) {
-    return { maxFiles: DEFAULT_MAX_FILES, maxLines: DEFAULT_MAX_LINES, protected: [] };
+    return { warnFiles: DEFAULT_WARN_FILES, warnLines: DEFAULT_WARN_LINES, protected: [] };
   }
   try {
     const data = JSON.parse(fs.readFileSync(file, "utf8"));
     return {
-      maxFiles: Number.isInteger(data.maxFiles) && data.maxFiles > 0 ? data.maxFiles : DEFAULT_MAX_FILES,
-      maxLines: Number.isInteger(data.maxLines) && data.maxLines > 0 ? data.maxLines : DEFAULT_MAX_LINES,
+      warnFiles: Number.isInteger(data.warnFiles) && data.warnFiles > 0 ? data.warnFiles : DEFAULT_WARN_FILES,
+      warnLines: Number.isInteger(data.warnLines) && data.warnLines > 0 ? data.warnLines : DEFAULT_WARN_LINES,
       protected: Array.isArray(data.protected) ? data.protected.filter((item) => typeof item === "string" && item.trim()) : []
     };
   } catch {
@@ -160,8 +160,6 @@ function analyze(root, policy) {
 
   const files = [...changed.keys()];
   if (files.length === 0) reasons.push("no-diff");
-  if (files.length > policy.maxFiles) reasons.push(`too-many-files:${files.length}>${policy.maxFiles}`);
-  if (lines > policy.maxLines) reasons.push(`too-many-lines:${lines}>${policy.maxLines}`);
 
   // A verify command that rewrites tracked files must not launder the diff.
   const hash = createHash("sha1");
@@ -199,13 +197,16 @@ function check(root, options = {}) {
   if (options.audit) return { judgment: "PROMOTE", reasons: ["audit-required"], files: [], lines: 0, verify: null };
 
   const first = analyze(root, policy);
+  if (!options.declaredFiles || !options.declaredLines) {
+    return { judgment: "PROMOTE", reasons: ["missing-declaration", ...first.reasons], files: first.files, lines: first.lines, verify: null };
+  }
   if (first.reasons.length > 0) {
     return { judgment: "PROMOTE", reasons: first.reasons, files: first.files, lines: first.lines, verify: null };
   }
-  if (options.declaredFiles && first.files.length > options.declaredFiles) {
+  if (first.files.length > options.declaredFiles) {
     return { judgment: "PROMOTE", reasons: [`exceeds-declared-files:${first.files.length}>${options.declaredFiles}`], files: first.files, lines: first.lines, verify: null };
   }
-  if (options.declaredLines && first.lines > options.declaredLines) {
+  if (first.lines > options.declaredLines) {
     return { judgment: "PROMOTE", reasons: [`exceeds-declared-lines:${first.lines}>${options.declaredLines}`], files: first.files, lines: first.lines, verify: null };
   }
 
@@ -225,15 +226,20 @@ function check(root, options = {}) {
     };
   }
 
+  const warnings = [];
+  if (options.declaredFiles > policy.warnFiles) warnings.push(`large-declared-files:${options.declaredFiles}>${policy.warnFiles}`);
+  if (options.declaredLines > policy.warnLines) warnings.push(`large-declared-lines:${options.declaredLines}>${policy.warnLines}`);
+
   return {
     judgment: "NARROW_OK",
     reasons: [],
+    warnings,
     files: first.files,
     lines: first.lines,
     verify,
     declared: {
-      files: options.declaredFiles || null,
-      lines: options.declaredLines || null
+      files: options.declaredFiles,
+      lines: options.declaredLines
     }
   };
 }
@@ -244,10 +250,10 @@ function report(result, json) {
     return;
   }
   if (result.judgment === "NARROW_OK") {
-    const declared = result.declared?.files || result.declared?.lines
-      ? ` declared=${result.declared.files ?? "?"}/${result.declared.lines ?? "?"}`
-      : "";
-    console.log(`NARROW_OK files=${result.files.length} lines=${result.lines} protected=none verify=exit:0${declared}`);
+    const declared = ` declared=${result.declared.files}/${result.declared.lines}`;
+    const warn = result.warnings?.length ? ` warn=${result.warnings.join(",")}` : "";
+    console.log(`NARROW_OK files=${result.files.length} lines=${result.lines}${declared} protected=none verify=exit:0${warn}`);
+    if (result.warnings?.length) console.log(`WARN ${result.warnings.join("; ")}; prefer standard if this is not genuinely minimal.`);
     return;
   }
   const brief = (items, limit) => {
@@ -310,71 +316,89 @@ function selfTest() {
     roots.push(root);
     return root;
   };
+  const runCheck = (root, options = {}) => check(root, {
+    verify: "node -e 0",
+    declaredFiles: 1,
+    declaredLines: 10,
+    ...options
+  });
   try {
     const small = make();
     writeRepoFile(small, "src/app.js", "module.exports = 1;\nmodule.exports = 2;\nmodule.exports = 3;\nmodule.exports = 4;\nmodule.exports = 5;\nmodule.exports = 6;\n");
-    expect(check(small, { verify: "node -e 0" }), "NARROW_OK");
+    expect(runCheck(small), "NARROW_OK");
 
     const declared = make();
     writeRepoFile(declared, "src/app.js", "module.exports = 1;\nmodule.exports = 2;\nmodule.exports = 3;\n");
-    expect(check(declared, { verify: "node -e 0", declaredFiles: 1, declaredLines: 1 }), "PROMOTE", "exceeds-declared-lines");
+    expect(runCheck(declared, { declaredFiles: 1, declaredLines: 1 }), "PROMOTE", "exceeds-declared-lines");
 
     const big = make();
     writeRepoFile(big, "src/app.js", `module.exports = 1;\n${"// line\n".repeat(30)}`);
-    expect(check(big, { verify: "node -e 0" }), "PROMOTE", "too-many-lines");
+    expect(runCheck(big, { declaredFiles: 1, declaredLines: 10 }), "PROMOTE", "exceeds-declared-lines");
 
     const many = make();
     writeRepoFile(many, "src/a.js", "a\n");
     writeRepoFile(many, "src/b.js", "b\n");
     writeRepoFile(many, "src/c.js", "c\n");
-    expect(check(many, { verify: "node -e 0" }), "PROMOTE", "too-many-files");
+    expect(runCheck(many, { declaredFiles: 2, declaredLines: 10 }), "PROMOTE", "exceeds-declared-files");
+
+    const missing = make();
+    writeRepoFile(missing, "src/app.js", "module.exports = 2;\n");
+    expect(check(missing, { verify: "node -e 0" }), "PROMOTE", "missing-declaration");
+
+    const large = make();
+    writeRepoFile(large, "src/app.js", "module.exports = 1;\nmodule.exports = 2;\nmodule.exports = 3;\nmodule.exports = 4;\nmodule.exports = 5;\nmodule.exports = 6;\n");
+    const largeResult = runCheck(large, { declaredFiles: 6, declaredLines: 70 });
+    expect(largeResult, "NARROW_OK");
+    if (!largeResult.warnings.some((warning) => warning.includes("large-declared"))) {
+      throw new Error("expected a large-declared-budget warning");
+    }
 
     const protectedRepo = make({ ...baseFiles, "auth/login.js": "module.exports = true;\n" });
     writeRepoFile(protectedRepo, "auth/login.js", "module.exports = false;\n");
-    expect(check(protectedRepo, { verify: "node -e 0" }), "PROMOTE", "protected-path");
+    expect(runCheck(protectedRepo), "PROMOTE", "protected-path");
 
     const manifest = make();
     writeRepoFile(manifest, "package.json", JSON.stringify({ name: "demo", version: "1.0.1" }, null, 2));
-    expect(check(manifest, { verify: "node -e 0" }), "PROMOTE", "protected-path");
+    expect(runCheck(manifest), "PROMOTE", "protected-path");
 
     const deleted = make();
     fs.unlinkSync(path.join(deleted, "README.md"));
-    expect(check(deleted, { verify: "node -e 0" }), "PROMOTE", "deleted-file");
+    expect(runCheck(deleted), "PROMOTE", "deleted-file");
 
     const failed = make();
     writeRepoFile(failed, "src/app.js", "module.exports = 2;\n");
-    expect(check(failed, { verify: "node -e \"process.exit(1)\"" }), "PROMOTE", "verification-failed");
+    expect(runCheck(failed, { verify: "node -e \"process.exit(1)\"" }), "PROMOTE", "verification-failed");
 
     const audit = make();
     writeRepoFile(audit, "src/app.js", "module.exports = 2;\n");
-    expect(check(audit, { verify: "node -e 0", audit: true }), "PROMOTE", "audit-required");
+    expect(runCheck(audit, { audit: true }), "PROMOTE", "audit-required");
 
     const untracked = make();
     writeRepoFile(untracked, "src/new.js", "module.exports = 3;\n");
-    expect(check(untracked, { verify: "node -e 0" }), "NARROW_OK");
+    expect(runCheck(untracked), "NARROW_OK");
 
     const policy = make({ ...baseFiles, ".devflow/smallfix.json": JSON.stringify({ protected: ["src/"] }) });
     writeRepoFile(policy, "src/app.js", "module.exports = 2;\n");
-    expect(check(policy, { verify: "node -e 0" }), "PROMOTE", "protected-path");
+    expect(runCheck(policy), "PROMOTE", "protected-path");
 
     const policyTamper = make({ ...baseFiles, ".devflow/smallfix.json": JSON.stringify({ protected: [] }) });
-    writeRepoFile(policyTamper, ".devflow/smallfix.json", JSON.stringify({ protected: [], maxFiles: 99, maxLines: 999 }));
-    expect(check(policyTamper, { verify: "node -e 0" }), "PROMOTE", "protected-path");
+    writeRepoFile(policyTamper, ".devflow/smallfix.json", JSON.stringify({ protected: [], warnFiles: 99, warnLines: 999 }));
+    expect(runCheck(policyTamper), "PROMOTE", "protected-path");
 
     const runtime = make({ ...baseFiles, "skills/devflow-core/SKILL.md": "# core\n" });
     writeRepoFile(runtime, "skills/devflow-core/SKILL.md", "# core changed\n");
-    expect(check(runtime, { verify: "node -e 0" }), "PROMOTE", "protected-path");
+    expect(runCheck(runtime), "PROMOTE", "protected-path");
 
     const checker = make({ ...baseFiles, "scripts/devflow-smallfix.js": "// checker\n" });
     writeRepoFile(checker, "scripts/devflow-smallfix.js", "// weakened checker\n");
-    expect(check(checker, { verify: "node -e 0" }), "PROMOTE", "protected-path");
+    expect(runCheck(checker), "PROMOTE", "protected-path");
 
     const noGit = fs.mkdtempSync(path.join(os.tmpdir(), "devflow-smallfix-nogit-"));
     roots.push(noGit);
-    expect(check(noGit, { verify: "node -e 0" }), "PROMOTE", "not-a-git-repo");
+    expect(runCheck(noGit), "PROMOTE", "not-a-git-repo");
 
     console.log("DevFlow small-fix self-test passed");
-    console.log("Checked narrow, declared budget, oversized lines, too many files, protected path, manifest, deletion, failed verification, audit, untracked file, project policy, policy tamper, runtime file, checker tamper, and non-git cases");
+    console.log("Checked narrow, declared budget, missing declaration, large-budget warning, oversized diff, too many files, protected path, manifest, deletion, failed verification, audit, untracked file, project policy, policy tamper, runtime file, checker tamper, and non-git cases");
   } finally {
     for (const root of roots) fs.rmSync(root, { recursive: true, force: true });
   }
