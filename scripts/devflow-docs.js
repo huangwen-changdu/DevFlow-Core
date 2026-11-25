@@ -19,6 +19,7 @@ function usage() {
   console.log("  --check    verify the map routes, the spec index covers every spec, and the map stays within 90 lines");
   console.log("  --refresh  rebuild docs/specs/INDEX.md from the filesystem (derived, safe to rerun)");
   console.log("  --preview  with --init, print the generated file bodies without writing");
+  console.log("  --hotfix   append one hotfix-log row from --symptom/--cause/--files/--verify (creates the header when missing); optional --modules/--card/--sediment/--date");
   console.log("  --root     project root, default current directory");
   console.log("  --force    regenerate docs/INDEX.md; other generated files are never overwritten");
 }
@@ -33,7 +34,9 @@ function listMarkdown(dir) {
 }
 
 function today() {
-  return new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 10);
 }
 
 /** Derived index: one row per spec, newest first, grouped by year. Never hand-edited. */
@@ -591,6 +594,37 @@ function refreshSpecs(root) {
   return "docs/specs/INDEX.md";
 }
 
+/** Escapes a ledger cell so a symptom or path cannot break the markdown table. */
+function hotfixCell(value) {
+  const text = String(value ?? "").replace(/\r?\n/g, " ").replaceAll("|", "\\|").trim();
+  return text || "—";
+}
+
+/** Appends one defect-fix row; the thinking stays with the agent, the table formatting and header stay mechanical. */
+function appendHotfix(root, options) {
+  for (const key of ["symptom", "cause", "files", "verify"]) {
+    if (!options[key] || !String(options[key]).trim()) throw new Error(`--hotfix requires --${key}`);
+  }
+  const rel = path.join("docs", "hotfix-log.md");
+  const target = path.join(root, rel);
+  const date = options.date || today();
+  const row = `| ${hotfixCell(date)} | ${hotfixCell(options.symptom)} | ${hotfixCell(options.cause)} | ${hotfixCell(options.files)} | ${hotfixCell(options.modules || options.files)} | ${hotfixCell(options.card || "-")} | ${hotfixCell(options.verify)} | ${hotfixCell(options.sediment || "no")} |`;
+  if (options.dryRun) return { rel: rel.replaceAll("\\", "/"), row, created: false, dryRun: true };
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  let created = false;
+  if (!fs.existsSync(target)) {
+    fs.writeFileSync(target, HOTFIX_LOG_SKELETON, "utf8");
+    created = true;
+  }
+  const existing = fs.readFileSync(target, "utf8");
+  if (!existing.includes("| 日期 | 症状 | 根因 | 改动点 |")) {
+    throw new Error("docs/hotfix-log.md exists without the standard header; fix or create it with --init");
+  }
+  if (!existing.endsWith("\n")) fs.appendFileSync(target, "\n", "utf8");
+  fs.appendFileSync(target, `${row}\n`, "utf8");
+  return { rel: rel.replaceAll("\\", "/"), row, created, dryRun: false };
+}
+
 function selfTest() {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "devflow-docs-"));
   fs.mkdirSync(path.join(tmp, "docs", "specs"), { recursive: true });
@@ -616,6 +650,18 @@ function selfTest() {
   for (const column of ["日期", "症状", "根因", "改动点", "涉及模块", "关联学习卡", "验证命令", "是否已沉淀"]) {
     if (!hotfixSkeleton.includes(column)) throw new Error(`self-test expected the hotfix log to publish ${column}`);
   }
+  const hotfixResult = appendHotfix(tmp, {
+    date: "2026-01-02",
+    symptom: "null check | crash",
+    cause: "missing guard",
+    files: "src/a.js",
+    verify: "node -e 0"
+  });
+  if (!hotfixResult.row.includes("null check \\| crash")) throw new Error("self-test expected the hotfix row to escape pipes");
+  const hotfixBody = fs.readFileSync(path.join(tmp, "docs", "hotfix-log.md"), "utf8");
+  if (!hotfixBody.includes("2026-01-02") || !hotfixBody.includes("missing guard")) throw new Error("self-test expected the hotfix row to be appended");
+  const hotfixDry = appendHotfix(tmp, { symptom: "x", cause: "y", files: "z", verify: "v", dryRun: true });
+  if (!hotfixDry.dryRun || !hotfixDry.row.includes("| x |")) throw new Error("self-test expected --hotfix --dry-run to avoid writing");
   if (fs.existsSync(path.join(tmp, "src", "api", "ARCHITECTURE.md"))) {
     throw new Error("self-test expected no per-directory architecture file");
   }
@@ -714,6 +760,30 @@ function main() {
       }
       const refreshed = refreshSpecs(root);
       console.log(refreshed ? `Refreshed ${refreshed}` : "No specs found; nothing to refresh.");
+      return 0;
+    }
+
+    if (args.includes("--hotfix")) {
+      const flag = (name) => {
+        const index = args.indexOf(name);
+        return index >= 0 ? args[index + 1] : undefined;
+      };
+      const result = appendHotfix(root, {
+        date: flag("--date"),
+        symptom: flag("--symptom"),
+        cause: flag("--cause"),
+        files: flag("--files"),
+        modules: flag("--modules"),
+        verify: flag("--verify"),
+        card: flag("--card"),
+        sediment: flag("--sediment"),
+        dryRun
+      });
+      if (json) console.log(JSON.stringify(result));
+      else {
+        console.log(`${result.dryRun ? "Would append" : "Appended"} ${result.rel}${result.created ? " (created header)" : ""}`);
+        console.log(result.row);
+      }
       return 0;
     }
 

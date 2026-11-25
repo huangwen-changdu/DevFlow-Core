@@ -383,8 +383,21 @@ for (const [command, owner] of [
   assert(read(command).includes(owner), `${command} must identify ${owner}`);
 }
 
+for (const [rel, evidence] of [
+  ["AGENTS.md", "Fast Small-fix"],
+  ["skills/devflow-core/SKILL.md", "Fast Small-fix"],
+  ["skills/devflow-core/references/core-methods.md", "Fast Small-fix"],
+  ["skills/devflow-prove/SKILL.md", "Proof Tiers"],
+  ["skills/devflow-prove/SKILL.md", "No matching evidence"],
+  ["commands/devflow.toml", "Small-fix gate"],
+  ["commands/devflow-prove.toml", "Proof tier"]
+]) {
+  assert(read(rel).includes(evidence), `${rel} missing Small-fix/proof-tier evidence: ${evidence}`);
+}
+
 assertPackagedAssetParity();
 
+console.log("Fast Small-fix lane: Sense -> Fix -> Prove (narrow); promote on gate miss");
 console.log("Skill Trigger Verification Report");
 console.log(`Scenario cases: ${scenarios.length}`);
 console.log("Command cases: 6");

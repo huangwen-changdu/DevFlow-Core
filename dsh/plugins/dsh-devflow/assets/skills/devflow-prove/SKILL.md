@@ -1,69 +1,73 @@
 ---
 name: devflow-prove
-description: "Use before saying done, fixed, complete, working, passed, resolved, ready, or candidate_pass; use after builds, bug fixes, rule/docs/skill changes, tests, validation, and any PASS/FAIL/BLOCKED evidence claim. Runs the narrowest sufficient check, performs adversarial review for development work, and reports Command/Result/Adversarial review/Judgment."
+description: "Use before saying done, fixed, complete, working, passed, resolved, ready, or candidate_pass; after builds, bug fixes, rule/docs/skill changes, tests, validation, or any PASS/FAIL/BLOCKED claim. Selects a narrow, standard, or full proof tier, runs the narrowest sufficient check, and reports Command/Result/Proof tier/Adversarial review/Judgment."
 ---
 
 # DevFlow Prove
 
-No proof, no completion.
-
-**Violating the letter of the rules is violating the spirit of the rules.**
+No matching evidence, no completion.
 
 ## Methodology Assets
 
 Context loading is conditional and selected by changed surface.
 
-When this skill activates, read only the references required by the changed surface:
-
-- Always read `skills/devflow-prove/references/proof-recovery-methods.md` — shared proof and recovery method.
+- Always read `skills/devflow-prove/references/proof-recovery-methods.md`.
 - Read `skills/devflow-prove/references/flow-self-test.md` only when the change touches DevFlow runtime rules, skills, commands, host adapters, hooks, validators, scenarios, installers, or harness behavior.
-- For code, read `skills/devflow-prove/references/code-review-checklist.md` and apply only the matching language section (`.js/.jsx/.ts/.tsx`, `.py`, `.go`, `.java`, `.cs`, `.sql` — the checklist maps each to its section). Always apply General Engineering Review; unlisted extensions use it and record the missing checklist.
-- For code, run `skills/devflow-prove/references/simplify-pass.md` on the approved diff before the reviews; `不适用` needs a no-code scope.
+- For `standard` and `full` code changes, read `code-review-checklist.md` and apply General Engineering Review plus the matching language section; run `simplify-pass.md` before the reviews. A `narrow` Small-fix uses the diff review below instead.
+- Read `prose-quality-checklist.md` for completion, commit, and PR text; `ui-slop-checklist.md` only for UI output.
+
+## Proof Tiers
+
+| Tier | Use when | Required evidence |
+|---|---|---|
+| `narrow` | Fast Small-fix: local, reversible, at most 20 lines and 2 files, no protected surface, checker `NARROW_OK` | named check, one regression, diff review, one-line strongest challenge, hotfix row for a defect |
+| `standard` | Design-lite or Build; local or module behavior | narrow evidence plus Simplify Pass, adversarial checklist, Code Review Report, Learn review |
+| `full` | Protected surface, cross-module contract, irreversible effect, security/data/permission risk, or explicit review | standard evidence plus Recall evidence, Coverage, plan and requirement writeback |
+
+A tier may be raised at any point; never lower it to finish faster. `narrow` is unavailable once a protected surface or second module is touched.
+
+## Small-fix Gate
+
+For a Fast Small-fix, run `node scripts/devflow-smallfix.js --check --verify "<command>"`. The checker counts actual changed files and lines, blocks protected paths, deletions, binaries, and manifest changes, and runs the verification itself. Record the pre-edit estimate and pass `--declared-files`/`--declared-lines`; actual above the declaration promotes. Only `NARROW_OK` permits `Proof tier: narrow`; `PROMOTE`, a missing checker, or a failed run returns standard facts to Core. A narrow claim without the checker receipt is FAIL. The agent never chooses narrow by assertion.
 
 ## Process
 
-Load `skills/devflow-prove/references/proof-recovery-methods.md` before selecting proof. It owns the shared proof and recovery method details used by Prove and PUA.
-
-1. Identify the command, test, build, lint, diff check, validation script, or manual scenario that proves the claim.
-2. Confirm changed files, plan anchors, `## Progress`, `## Recon`. Read `.copilot/LEARNING_INDEX.md` + `docs/hotfix-log.md` for matched pitfalls (Method 15), task-local evidence, and only nearest relevant code or contract.
-3. Run the narrowest sufficient check now, then independently inspect the actual implementation diff before interpreting test results.
-4. Run the **Simplify Pass** (`simplify-pass.md`) on the approved diff, then re-run the narrowest sufficient check after any applied edit.
-5. Run adversarial review (对抗式审查) against the approved responsibility boundary, the plan's `## Recon` facts, direct contracts, nearby convention, and likely regressions.
-6. For code changes: run the **Code Quality Review** (`code-review-checklist.md`: General Engineering Review + matching language section), generate the **Code Review Report** below, and classify findings as Blocker, Warning, or Recommendation; an unresolved Blocker or Warning returns `FAIL` facts to Core.
+1. Select the tier and the one command, test, build, lint, validation script, or manual scenario that proves the claim. For a Fast Small-fix, the checker's `--verify` run is the named check; do not select narrow without `NARROW_OK`.
+2. Confirm changed files and plan anchors. For `standard`/`full`, read `.copilot/LEARNING_INDEX.md` and `docs/hotfix-log.md` for matching pitfalls (Method 15) and record `Recall evidence`. For `narrow`, read a prior row only when the symptom directly matches one.
+3. Run the check now, then independently inspect the actual implementation diff before interpreting the result.
+4. For `standard`/`full` code, run the **Simplify Pass** (`simplify-pass.md`) on the approved diff, then re-run the check after any applied edit.
+5. Run adversarial review: `standard`/`full` use the checklist below; `narrow` states the strongest plausible reason the fix is still wrong and disposes of it in one line.
+6. For `standard`/`full` code, run the **Code Quality Review** (`code-review-checklist.md`) and generate the **Code Review Report**. Classify findings as Blocker, Warning, or Recommendation; an unresolved Blocker or Warning returns `FAIL`.
 7. Read the real output and exit status.
-8. If it fails, report `FAIL` facts to `devflow-core`; Core selects Recovery or another owner (`devflow-pua` on user challenge, repeated miss, or changed-wrong behavior).
-9. If it cannot run, report `BLOCKED` facts to `devflow-core` and name the missing condition.
-10. On `PASS`, load `devflow-learn` for its mandatory proactive completion review before final completion reporting. The review may yield a learning card, a project-knowledge candidate pending user confirmation, or no useful record.
-11. Only then report completion or `candidate_pass`.
+8. If it fails, report `FAIL` facts to `devflow-core`; Core selects Recovery or another owner. If it cannot run, report `BLOCKED` and name the missing condition.
+9. On `PASS`, `standard`/`full` load `devflow-learn` for the completion review; `narrow` records the one-line Learning closure instead.
+10. On `PASS` with a plan, write `Status: done` and `Landed: <date> · <evidence>`, set the plan index row to `done`, and make the `docs/requirements.md` row terminal. `narrow` has no plan or requirements row; it still appends the hotfix row for a defect.
 
 ## Exception Return Boundary
 
-Prove is the terminal direct-success step. `PASS` completes only after the Learn review. `FAIL`, `BLOCKED`, an adversarial gap, an unresolved Code Review Blocker/Warning, or a missing recovery-proof field are non-unique facts and return to `devflow-core`; Prove does not select the repair, recovery, or re-clarification skill.
+Prove is the terminal direct-success step. `PASS` completes only after the tier's review. `FAIL`, `BLOCKED`, a real adversarial gap, an unresolved Blocker or Warning, or missing recovery evidence return facts to `devflow-core`; Prove does not select the repair or recovery skill.
 
 ## Proof Selection
 
 | Work type | Proof |
 |---|---|
 | Docs/rules/skills | File presence, frontmatter, required wording, command entries, path consistency, scenario checklist. |
-| Code | Targeted test, build, lint, typecheck, or runtime scenario. **Plus: inspect the actual implementation diff against the approved plan boundary, `## Recon` evidence, and nearest comparable code before interpreting test results; verify comment requirements and non-obvious boundaries; run the language-specific quality review from `code-review-checklist.md` and classify Blockers, Warnings, Recommendations.** |
-| Bug fix | Original symptom reproduction or regression check. **Plus: verify any documented fix rationale and any non-obvious failure condition that needs preservation.** |
+| Code | Targeted test, build, lint, typecheck, or runtime scenario; inspect the actual implementation diff against the approved boundary and nearest comparable code; standard/full also run the Code Quality Review. |
+| Bug fix | Original symptom reproduction or regression check; verify any documented fix rationale and non-obvious failure condition. |
 | Framework design | Native capability coverage, anti-pattern gates, skill behavior, and output contracts. |
 | Productized skill pack | `npm test` or equivalent package validation. |
 
 ## Adversarial Review
 
-After development work, adversarial review (对抗式审查) is mandatory before completion: check the strongest plausible reason the change is still wrong, incomplete, unreachable, over-broad, or under-verified. If the adversarial review finds a real gap, report `FAIL` facts to `devflow-core` before claiming completion.
+`standard`/`full`: after development work, check the strongest plausible reason the change is still wrong, incomplete, unreachable, over-broad, or under-verified. `narrow`: answer that question in one line and stop if the answer is real.
 
-Adversarial review checklist for code changes:
-
-- **Recall check**: At proof time, name trigger-matched learning cards and `docs/hotfix-log.md` rows with a one-line outcome: prevented, considered-and-rejected, or not-applicable. Emit `Recall evidence` with one `Read` line per file (Method 15); missing read = rubber-stamp. A card that would have prevented a defect this diff introduced is a Blocker.
-- **Correctness**: Does the code actually solve the stated goal? Are edge cases handled?
-- **Regression**: Could this change break sibling callers, shared state, or downstream consumers?
-- **Activation path**: Is the new code actually reachable? Can the user/trigger reach it?
-- **Scope creep**: Does the diff include unrequested behavior or drive-by refactors?
-- **Proof coverage**: Is the verification narrow enough to be meaningful, or is it a rubber-stamp?
-- **Code comments**: Are all Spec/Plan/local-convention requirements present? Are non-obvious decisions, business rules, security, or compatibility boundaries documented where needed? A missing triggered comment is an approved-contract gap; untriggered narration is not.
-- **Code Quality**: The items above cover functional correctness; then run the **General Engineering Review** from `code-review-checklist.md` (requirements understanding, readability/maintainability/testability, performance, security, error handling), apply the matching **Language-Specific Checklist**, and generate the diff-first **Code Review Report** below; unresolved Blockers or Warnings block PASS.
+- **Recall check**: for `standard`/`full`, name trigger-matched learning cards and `docs/hotfix-log.md` rows with one line each: prevented, considered-and-rejected, or not-applicable. Emit `Recall evidence` with one `Read` line per file (Method 15); a missing read is a rubber-stamp. A card that would have prevented a defect this diff introduced is a Blocker.
+- **Correctness**: does the code solve the stated goal and handle edge cases?
+- **Regression**: could it break sibling callers, shared state, or downstream consumers?
+- **Activation path**: is the new code reachable?
+- **Scope creep**: does the diff include unrequested behavior or drive-by refactors?
+- **Proof coverage**: is the check narrow enough to be meaningful?
+- **Comments**: are required or non-obvious boundaries documented?
 
 After agent rule, command, prompt, entry, or `SKILL.md` changes, run a Skill Activation Chain Check before completion:
 
@@ -71,82 +75,53 @@ After agent rule, command, prompt, entry, or `SKILL.md` changes, run a Skill Act
 Skill Activation Check: trigger <user words/command/upstream output>; surface <description/command/entry>; action <loads/calls target skill>; evidence <artifact/check/output>
 ```
 
-Check:
-
-- Trigger: natural user wording, explicit command, or upstream stage output can reach the target skill.
-- Surface: the target `description`, command prompt, or entry file contains real trigger wording.
-- Runtime action: the rule says to load/call the skill, not only "reference" it.
-- Handoff evidence: the downstream skill artifact, check, or output contract is required before completion.
-- Breakpoint: if activation is broken, fix the trigger chain before editing skill internals again.
+Check trigger, surface, runtime action, handoff evidence, and breakpoint. If activation is broken, fix the trigger chain before editing skill internals again.
 
 ## Required Output
 
 ```text
 Command: <actual command run>
 Result: <key output summary>
-Adversarial review: <strongest challenge and disposition, or not applicable for non-development verification>
+Proof tier: narrow / standard / full
+Small-fix gate: <NARROW_OK files=... lines=... declared=.../... protected=none verify=exit:0 | n/a>
+Adversarial review: <strongest challenge and disposition, or the one-line challenge for narrow>
 Judgment: PASS / FAIL / BLOCKED
 ```
 
-Add coverage when useful:
-
-```text
-Coverage: <B IDs → evidence; every baseline B mapped>
-Not covered: <missing B IDs or none>
-```
-
-When Build ran the prose or UI gates, cite their receipts: objects, findings or 无命中, six-axis scores; non-visual 不适用, post-revision unre-run 未执行. When code changed, cite the Simplify pass receipt: scope, applied count, kept guards, re-proof result.
-
-On `PASS` with a plan file, write back: header `Status: done` plus `Landed: <date> · <evidence>`; every `## Progress` row must already be `done` with evidence; set the plan's `docs/plans/INDEX.md` row to `done` with the landing evidence. `PASS` also requires the `docs/requirements.md` row terminal — write `landed` with evidence, or return the missing-row facts to Core. On `FAIL` / `BLOCKED`, leave `Status` unchanged and report facts to Core.
+Add `Coverage` when useful: `<B IDs → evidence; every baseline B mapped>` and `Not covered: <missing B IDs or none>`. `standard`/`full` cite the Simplify pass receipt and the Code Review Report; `narrow` cites the diff review line. When Build ran prose or UI gates, cite their receipts.
 
 ## Code Review Report
 
-For code changes, after running the Code Quality Review (General Engineering Review + Language-Specific Checklist), generate this report before claiming PASS or FAIL. Review the actual diff before relying on test results. A Blocker or unresolved Warning returns `FAIL` facts to Core; Recommendations remain visible but do not independently prevent PASS.
+`standard`/`full` only. Review the actual diff before relying on test results. A Blocker or unresolved Warning returns `FAIL`; Recommendations do not block.
 
 ```text
 Code Review Report:
-- Diff reviewed: [actual changed files/ranges].
-- Plan boundary: [approved task `Files` rows and verdict; legacy plans may cite `File Structure` rows].
-- Progress evidence: [Progress rows with their Status and recorded command/result; legacy plans may cite Prewalk evidence].
-- Comparable code: [nearest inspected file/symbol and observed convention].
-- Blockers: [count].
-  1. [Blocker] [file:line] — [changed-code evidence and concrete risk] → [smallest correction].
-- Warnings: [count].
-  1. [Warning] [file:line] — [evidence-backed issue] → [required closure].
-- Recommendations: [count].
-  1. [Recommendation] [file:line] — [contextual improvement] → [optional choice].
-- Boundary verdict: [within approved responsibility/touch set or drift facts returned to Core].
-- Judgment: PASS (no unresolved Blockers or Warnings) / FAIL (Blocker or Warning remains).
+- Diff reviewed: [changed files/ranges]
+- Plan boundary: [approved Files rows and verdict]
+- Progress evidence: [Progress rows and recorded command/result]
+- Comparable code: [nearest inspected file/symbol]
+- Blockers: [count]
+- Warnings: [count]
+- Recommendations: [count]
+- Boundary verdict: [within approved touch set or drift facts]
+- Judgment: PASS / FAIL
 ```
 
-Rules:
-- Every Blocker or Warning identifies an actual changed-code location, evidence, concrete risk, and smallest correction.
-- A pattern preference, function size, class name, dependency count, missing cache, or fixed architectural shape cannot block by itself.
-- Re-review the new diff after every quality repair and explicitly close or persist each prior Blocker/Warning.
-- **STOP gate**: when a Blocker or Warning remains, do not claim `PASS`; return the facts to Core for the next lifecycle decision. Recommendations remain visible but do not independently stop an otherwise proven result.
+Every Blocker or Warning names the changed location, evidence, risk, and smallest correction. A pattern preference or size alone cannot block. Re-review after every repair and close or persist each prior finding.
 
 ## Learning Check
 
-Every `PASS` loads `devflow-learn` before the final completion report. The review is mandatory; a card is conditional on useful future-task value. A code-backed business-semantic change stays a candidate until the user confirms it.
-
-When the change repaired a defect, also append one `docs/hotfix-log.md` row: symptom, root cause, change points, modules, verify command, and whether it earned a card. A defect fix without its row is an incomplete record, not a `PASS`.
-
-Report:
+`standard`/`full` PASS loads `devflow-learn`; `narrow` PASS records:
 
 ```text
-Learning closure:
-- Learning signal: PASS review/correction/pitfall/none
-- Recall record: none/index/card
-- Review result: learning card/project-knowledge candidate/no useful record
-- New sediment: none/card/rule/skill
-- Next intercept: next time <X>, first do <Y>, do not do <Z>
+Learning closure: narrow · card none · next intercept none
 ```
 
-## Pressure Recovery Check
+When the change repaired a defect, append one `docs/hotfix-log.md` row: symptom, root cause, change points, modules, verify command, card yes/no. A defect fix without its row is incomplete. A card is created only for reusable, evidence-backed experience; `narrow` defaults to none unless the same problem recurs.
 
-Apply `proof-recovery-methods.md` Method 13B: a single ordinary correction returns failure facts to `devflow-core`; only repeated same-target dissatisfaction in one lifecycle, or the explicit `/devflow-pua` command, is the automatic PUA entry.
+## Pressure Recovery
 
-If proof fails after repeated attempts, or the user says the result is wrong, changed wrong, not what they asked for, or hard to distinguish:
+A single ordinary correction returns failure facts to `devflow-core`; only repeated same-target dissatisfaction in one lifecycle, or the explicit `/devflow-pua` command, enters PUA.
 
 ```text
 Pressure check: user challenged result / repeated miss / failed proof
@@ -154,30 +129,29 @@ Single correction: failure facts -> devflow-core; no automatic PUA
 Repeated same target or explicit command: devflow-core -> devflow-pua
 ```
 
-Do not continue with only minor wording, parameter, or nearby-file tweaks. `devflow-pua` must stop, restate the goal, list 3 hypotheses, and choose a materially different approach before the next proof.
+Do not continue with only wording, parameter, or nearby-file tweaks. PUA must restate the goal, list 3 hypotheses, and choose a materially different approach before the next proof.
 
 ## Recovery Proof Contract
 
-After a `devflow-pua` recovery, the first Prove pass must cite the PUA recovery output as evidence that recovery actually ran — triggering the skill alone is not proof. Quote these fields from the PUA output:
+After a PUA recovery, the first Prove pass cites:
 
 ```text
 Recovery evidence:
-- METHOD / SWITCH: <flavor/method and any switch line>
+- METHOD / SWITCH: <flavor/method and switch line>
 - User-view miss: <classification>
 - New success contract: <expected result + verification>
 - Changed approach: <old path abandoned; new path>
 ```
 
-If any field is missing or empty, recovery was not executed. Report `FAIL` facts to `devflow-core`, which may select `devflow-pua`; a bare `METHOD:` line without diagnosis, quarantine, and a changed approach is not recovery, and ordinary single-correction facts are not recovery evidence.
+A missing field means recovery did not run; return `FAIL` facts to Core.
 
 ## Evidence Rules
 
-- Do not write "should work" as a result.
-- Do not hide skipped checks.
+- Never write "should work" as a result; never hide a skipped check. A self-reported "small" is not evidence; cite the checker `NARROW_OK` line.
 - If verification is partial, say exactly what remains unverified.
-- Never use old output, "looks good", or a delegated claim without independent verification.
+- Never reuse old output or a delegated claim without independent verification.
 - Running the same successful command twice without changes adds no evidence.
-- On DeepSeek Harness (DSH), oversized tool results are pruned (default threshold 8192 chars, keeping the head 4096 and tail 1024). Preserve the key command, result excerpt, and judgment rationale in your own context — the completion report or `todo_write` — before a long output is truncated; do not rely on a pruned tool result still holding the evidence.
+- On DSH, oversized tool results are pruned; keep the command, result excerpt, and judgment in context before truncation.
 
 ## Failure Loop
 
@@ -193,31 +167,24 @@ Next step: devflow-core Recovery route; use devflow-pua for user challenge, chan
 
 | Excuse | Reality |
 |---|---|
-| "This is only documentation." | Documentation can still be broken, stale, or uncallable. Validate it. |
+| "This is only documentation." | Documentation can be broken, stale, or uncallable. Validate it. |
 | "A partial check is enough." | Partial proof must be labeled partial. |
-| "The tool said success." | Tool claims are data. Verify the actual artifact/output. |
+| "The tool said success." | Tool claims are data; verify the artifact. |
 | "I am confident." | Confidence is not evidence. |
-| "Comments are optional, the code works." | Comments required by the Spec, Plan, project convention, or a non-obvious boundary are implementation requirements; verify them. |
-| "The code is self-explanatory." | Clear code can avoid redundant narration, but it cannot waive an approved documentation requirement or an important non-obvious reason. |
 
 ## Red Flags — STOP
 
 - About to say "done", "fixed", "complete", or "passed" without running verification
-- Using "should work", "probably", or "seems to"
+- "Should work", "probably", or "seems to"
 - Trusting a delegated claim without independent verification
 - Reusing old output as proof
-- Expressing satisfaction before verification runs
-- Skipping the Skill Activation Chain Check after rule/skill/command changes
-- Claiming PASS when an approved documentation requirement or an important non-obvious boundary is unaddressed
-
-**All of these mean: run the command, read the output, then claim.**
+- Claiming PASS when a tier requirement or documented boundary is unresolved
 
 ## Verification
 
-Before leaving this skill, confirm:
-
 - [ ] Actual command or manual scenario was run.
-- [ ] Result summary cites real output.
+- [ ] Result cites real output.
+- [ ] Proof tier is stated and its evidence is complete; a narrow claim cites checker `NARROW_OK`.
 - [ ] Judgment is `PASS`, `FAIL`, or `BLOCKED`.
 - [ ] Coverage and gaps are clear when relevant.
-- [ ] After a `devflow-pua` recovery, the Prove pass cites the Recovery Proof Contract fields (METHOD/SWITCH, User-view miss, New success contract, Changed approach).
+- [ ] After PUA, the Recovery Proof Contract fields are cited.

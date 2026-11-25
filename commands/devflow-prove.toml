@@ -2,19 +2,21 @@ description = "Verify a DevFlow change before claiming completion."
 prompt = '''
 Run DevFlow Prove.
 
+Select the proof tier: `narrow` for Fast Small-fix, `standard` for Design-lite/Build, `full` for protected, cross-module, irreversible, or explicitly reviewed work. For a Fast Small-fix, run `node scripts/devflow-smallfix.js --check --verify "<command>"`; only `NARROW_OK` permits narrow, and its output is the `Small-fix gate` line. `PROMOTE` uses standard.
 Identify the narrowest sufficient command, test, build, lint, validation script, or manual scenario.
 Run it now if tools are available.
 Skill-root paths resolve under the skill root named in `AGENTS.md` (`.agents/skills/` in an installed project, `skills/` in this source repo).
-Load `devflow-prove/references/proof-recovery-methods.md` always. Load `devflow-prove/references/flow-self-test.md` only for DevFlow runtime, skill, command, host, hook, validator, scenario, installer, or harness changes. For code, load `devflow-prove/references/code-review-checklist.md`, always apply General Engineering Review, and apply only language sections matching changed extensions.
+Load `devflow-prove/references/proof-recovery-methods.md` always. Load `devflow-prove/references/flow-self-test.md` only for DevFlow runtime, skill, command, host, hook, validator, scenario, installer, or harness changes. For `standard`/`full` code, load `devflow-prove/references/code-review-checklist.md`, always apply General Engineering Review, and apply only language sections matching changed extensions; a `narrow` Small-fix uses the diff review only.
 Read the actual diff and the current task's named anchors; reread at most one already-listed neighbor needed to detect drift; do not restart broad repository discovery.
-For development work, run adversarial review before completion: state the strongest plausible reason the result is still wrong, incomplete, unreachable, over-broad, or under-verified, then check it against the acceptance criteria, touched files, likely regressions, activation path, and proof coverage.
-If adversarial review finds a real gap, report FAIL or continue the appropriate DevFlow route before any completion claim.
+For `narrow`, run the named check, one regression, inspect the diff, and answer the strongest challenge in one line; skip the Simplify Pass, Code Review Report, and Learn skill. For `standard`, add the Simplify Pass, the adversarial checklist, a Code Review Report, and the Learn review. For `full`, add Recall evidence, Coverage, and plan/requirement writeback. If adversarial review finds a real gap, report FAIL or continue the appropriate DevFlow route before any completion claim.
 Read the real output and exit status.
 Report only:
 
 Command: <actual command run>
 Result: <key output summary>
-Adversarial review: <strongest challenge and disposition, or not applicable for non-development verification>
+Proof tier: narrow / standard / full
+Small-fix gate: <NARROW_OK files=... lines=... declared=.../... protected=none verify=exit:0 | n/a>
+Adversarial review: <strongest challenge and disposition, or the one-line challenge for narrow>
 Judgment: PASS / FAIL / BLOCKED
 
 If the check is partial, include coverage and explicit gaps.

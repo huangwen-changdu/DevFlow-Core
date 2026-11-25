@@ -14,6 +14,7 @@ graph TD
     EXT["External Skills"]
 
     CORE -->|"risk gate: Brainstorm when ambiguous/material"| BRAIN
+    CORE -->|"Fast Small-fix: fix then narrow proof"| PROVE
     CORE -->|"skip Brainstorm Design-lite Depth C"| CUT
     BRAIN -->|"A confirmed"| SPEC
     BRAIN -->|"B/C confirmed"| CUT
@@ -37,7 +38,7 @@ graph TD
 ## Runtime Chain
 
 ```text
-Core handles entry and artifact states without one determined successor. It evaluates explicit review, inquiry, approved scope, then risk before selecting an owner; keywords alone do not route work. Clear low-risk existing behavior may skip Brainstorm only when goal, path, impact, reversibility, risk, and proof are all small. Skip-Brainstorm Design-lite success: Cut -> Build -> Prove. Unapproved edits never use Fast. Cut and Prove still remain required.
+Core handles entry and artifact states without one determined successor. It evaluates explicit review, inquiry, approved scope, then risk before selecting an owner; keywords alone do not route work. Clear low-risk existing behavior may skip Brainstorm only when goal, path, impact, reversibility, risk, and proof are all small. Fast Small-fix success: Sense -> Fix -> Prove (narrow). Skip-Brainstorm Design-lite success: Cut -> Build -> Prove. Unapproved edits never use Fast except through the Small-fix gate. A Small-fix skips Cut and Plan; any gate miss promotes to Design-lite or Build. Cut and Prove still remain required for Design-lite and Build.
 Brainstorm confirms intent, then the user selects A/B/C.
 A: Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove.
 B: Brainstorm -> Cut -> Plan -> Build -> Prove.
@@ -54,6 +55,6 @@ Proof FAIL/BLOCKED, and PUA recovery return facts to Core.
 - External Skills: Cut declares the specialist, Plan inherits the declaration, Build loads it; the returned result / not-applicable / failure facts travel with the single Prove handoff. A loaded skill without returned facts is 已加载, not 已执行.
 - Core decides every non-unique, blocked, failed, recovery, or changed-intent transition.
 - Any completion claim enters Prove. PASS enters Learn; FAIL or BLOCKED returns facts to Core.
-- Prove runs the simplify pass (`simplify-pass.md`) on code changes before its reviews; applied simplifications make earlier evidence stale and require a re-run.
+- Prove selects `narrow`, `standard`, or `full`; the simplify pass (`simplify-pass.md`) runs on standard/full code changes before their reviews, and applied simplifications make earlier evidence stale and require a re-run.
 - Only after a verified feature implementation with source-behavior or interface-contract change may Learn hand off to `devflow-docs-followup` for an optional documentation inquiry.
 - Independent adversarial and find-fault reviews remain outside the lifecycle.

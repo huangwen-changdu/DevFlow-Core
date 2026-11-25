@@ -25,6 +25,7 @@ const checkerScripts = [
   'devflow-doctor.js',
   'devflow-plan.js',
   'devflow-review.js',
+  'devflow-smallfix.js',
   'devflow-spec.js',
 ]
 

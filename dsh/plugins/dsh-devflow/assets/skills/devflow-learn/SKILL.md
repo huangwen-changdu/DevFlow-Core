@@ -9,7 +9,7 @@ Turn verified work, corrections, and pitfalls into reusable intercept rules with
 
 ## Completion Review
 
-Every `devflow-prove` judgment of `PASS` must enter this lightweight review before final completion reporting. Review both successful and failed paths from the completed task; do not wait for a correction or pitfall signal.
+Every `devflow-prove` `PASS` enters this lightweight review before final reporting. Review successful and failed paths; do not wait for a correction or pitfall signal. For a Fast Small-fix, the review is one line and creates no requirements row and no learning card by default; a defect fix still appends the hotfix row.
 
 Extract only knowledge that can help a future task:
 
@@ -26,6 +26,7 @@ Extract only knowledge that can help a future task:
 
 | Review result | Action | Store |
 |---|---|---|
+| Fast Small-fix defect | Append one hotfix row; no requirements row; no card by default | `docs/hotfix-log.md` |
 | Reusable execution experience or proven work pattern | Create or update one focused card | `.copilot/cards/` |
 | A defect fix landed | Append one row (create the file with its standard header when missing): symptom, root cause, change points, modules, verify command, and the linked card or `no` | `docs/hotfix-log.md` |
 | User-visible capability or interface contract changed | Add or update one row: what it does, its trigger words, its entry point, its verify command, and its source plan | `docs/features/INDEX.md` |
@@ -34,9 +35,9 @@ Extract only knowledge that can help a future task:
 | Business semantics changed | Report a project-knowledge candidate and wait for user confirmation | `docs/project-knowledge/` after confirmation via `devflow-project-knowledge` |
 | Ordinary detail, one-off fact, already-covered lesson, or pure refactor without insight | Report no useful record | none |
 
-The capability row is a mechanical duty, not a documentation inquiry: a verified change that alters what a user can do, or an interface contract others depend on, must be findable from one index on the next session. Writing a longer document still needs explicit user confirmation through `devflow-docs-followup`.
+The capability row is mechanical: a verified change that alters user-visible behavior or an interface contract must be findable from one index next session. A longer document needs explicit confirmation through `devflow-docs-followup`.
 
-Project-knowledge candidates include changed domain semantics, rules, boundaries, entity/DTO/enum meaning, API or table boundaries, module responsibility, job behavior, and task entry points. Structural facts — paths, module responsibility, runnable commands — may be refreshed from code evidence; `devflow-learn` must not infer business facts without evidence or update them without confirmation.
+Project-knowledge candidates include changed domain semantics, rules, boundaries, entity/DTO/enum meaning, API/table boundaries, module responsibility, and task entry points. Structural facts — paths, module responsibility, runnable commands — may be refreshed from code evidence; `devflow-learn` must not infer business facts without evidence or update them without confirmation.
 
 ## Process
 
@@ -52,7 +53,7 @@ Project-knowledge candidates include changed domain semantics, rules, boundaries
    - skip if it is ordinary narration, a one-off fact, already covered, or too context-specific
 6. Create `.copilot/LEARNING_INDEX.md`, `.copilot/cards/`, and one focused card only when the result belongs in project learning; do not create empty learning storage after a no-record review.
 7. Update `.copilot/LEARNING_INDEX.md` when a card changed.
-8. Append one `docs/hotfix-log.md` row when the task repaired a defect; when the file is missing, create it with the standard header (`日期`/`症状`/`根因`/`改动点`/`涉及模块`/`关联学习卡`/`验证命令`/`是否已沉淀`) and add it to `docs/INDEX.md` when the map does not name it, then append — absence is never a skip. `no` in the sediment column means this fix and any later occurrence of the same pattern must become a card.
+8. Append one `docs/hotfix-log.md` row when the task repaired a defect; when the file is missing, create it with the standard header (`日期`/`症状`/`根因`/`改动点`/`涉及模块`/`关联学习卡`/`验证命令`/`是否已沉淀`) and add it to `docs/INDEX.md` when the map does not name it, then append — absence is never a skip. Draft it with `node scripts/devflow-docs.js --hotfix --symptom ... --cause ... --files ... --verify ...` when available. `no` in the sediment column means this fix and any later occurrence of the same pattern must become a card.
 9. Report learning closure before completion.
 
 ## Repeat Correction Gate
@@ -61,7 +62,7 @@ Project-knowledge candidates include changed domain semantics, rules, boundaries
 
 Repeated challenge is also not optional learning. If the user says the result was wrong, changed wrong, missed the target, missing pieces, or not what they wanted twice in one task lifecycle, record the next-time intercept after `devflow-pua` identifies the reusable mistake pattern.
 
-Repeated missing-piece feedback is also not optional learning when the same task already went through recovery. If the user says "少了这个/少个那个/缺漏/遗漏/漏了" after a prior attempt or after a method switch, record the missing coverage pattern and the next method switch rule.
+Repeated missing-piece feedback is mandatory after a prior recovery. If the user says "少了这个/少个那个/缺漏/遗漏/漏了" after a prior attempt or after a method switch, record the missing coverage pattern and the next method switch rule.
 
 Required pressure-recovery card action:
 
@@ -71,7 +72,7 @@ Required pressure-recovery card action:
 - Next action: Next time encountering <X>, first stop the current path, classify the user-view miss, build a Coverage Map for missing pieces, restate the desired result, ask or infer the pointed result questions, then switch to a different/opposite method before editing.
 ```
 
-Misplaced content counts as a reusable pitfall when a rule, prompt, method detail, plan, or explanation was put in the wrong artifact, such as:
+Misplaced content is a reusable pitfall when a rule, prompt, method, plan, or explanation sits in the wrong artifact:
 
 - README-style explanation inside `AGENTS.md`
 - runtime method details under `docs/` instead of `skills/*/references/*`

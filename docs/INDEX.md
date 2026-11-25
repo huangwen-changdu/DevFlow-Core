@@ -24,6 +24,7 @@
 | `project-knowledge/AI-START-HERE.md` | 项目执行心智、启动就绪 | 活 | 结构、命令数、技能数变化 |
 | `requirements.md` | 需求台账与状态机（唯一进度真相） | 活 | 每次需求推进 |
 | `hotfix-log.md` | 缺陷修复的改动点台账 | 活 | 每次缺陷修复 |
+| `rule-health.md` | 规则拦截记录与季度淘汰 | 活 | 规则新增、降级或季度复核 |
 | `features/INDEX.md` | 能力现状与触发词 | 活 | 能力新增或行为变化 |
 | `plans/INDEX.md` | 计划状态与落地率 | 活 | 计划新建或落地 |
 | `specs/` | 设计契约快照 | 快照 | 由 `specs/INDEX.md` 维护 |
@@ -78,6 +79,7 @@
 | 能力或接口契约变化 | `docs/features/INDEX.md` 一行 | 触发词、入口、验证命令、关键文件、来源计划 | index |
 | 每次落地 | 项目根 PROGRESS.md 摘要；`docs/project-knowledge/` change-log | 日期、变更、涉及模块；业务语义待确认 | 无 |
 | 一次缺陷修复 | `docs/hotfix-log.md` 表尾追加一行；缺失时先建表头 | 日期、症状、根因、改动点、涉及模块、验证命令；可复用则建卡并回填 | 无 |
+| 规则新增或降级 | `docs/rule-health.md` 一行 | 最近拦截、复核日、决定与替代证据 | 无（季度人工复核） |
 | 新根文档 | 本页「根文档」区登记 | 路径真实存在 | check |
 | 可复用经验 | `.copilot/cards/*.md` + `../.copilot/LEARNING_INDEX.md` | Trigger、Lesson、Next action、Evidence | learn |
 

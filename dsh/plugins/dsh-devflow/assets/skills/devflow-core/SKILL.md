@@ -9,6 +9,8 @@ Route work through the smallest reliable lifecycle. Core owns next-step selectio
 
 ## Activation Evidence
 
+Emit the full block when the route is disputed, the task is Design or Build, or the user asks; otherwise emit one line: `Route: <route> · proof tier: <tier>`.
+
 ```text
 Skill Activation: devflow-core
 Trigger: <user words or task shape>
@@ -16,6 +18,7 @@ Route: Problem / Fast / Design-lite / Design / Build / Recovery
 Route basis: <why this route; a skipped Brainstorm, gate, or competing route names its reason>
 Brainstorm required: yes/no
 Depth hint: skip / compact / standard / deep / none
+Proof tier: narrow / standard / full
 Preferences applied: <count of global preference cards matched this turn>
 Next skill: <skill name or none>
 Status: none | ▸ devflow · <node> → <next> · awaiting approval
@@ -64,22 +67,27 @@ Unknowns: <none or specific unknown>
 Apply this precedence before choosing a route: explicit independent review -> investigation or pure inquiry -> approved scope -> risk gate -> lifecycle owner. For an explicit independent review, pick one owner from the Review Selector in `skill-guide.md`; a bare review asks one selector question and does not load `devflow-adversarial` and `devflow-find-fault` together by default. Do not route from keywords alone.
 Investigation-only reports remain a Problem exception and do not enter Brainstorm.
 
-Brainstorm is required when any material risk or decision-impact uncertainty exists. A request may bypass Brainstorm only when all of these are true: clear goal, existing local behavior, one plausible path, local impact, reversible change, no security/data-loss/permission/contract risk, and quick proof. Any unknown or failed factor keeps Brainstorm. Skipping Brainstorm compresses analysis only; it never skips Cut or Prove. Unapproved edits never use Fast.
+Brainstorm is required when any material risk or decision-impact uncertainty exists. A request may bypass Brainstorm only when all of these are true: clear goal, existing local behavior, one plausible path, local impact, reversible change, no security/data-loss/permission/contract risk, and quick proof. Any unknown or failed factor keeps Brainstorm. Skipping Brainstorm compresses analysis only; it never skips Cut or Prove. Unapproved edits never use Fast except through the Small-fix gate.
+
+A Fast Small-fix bypasses Brainstorm, Cut, and Plan only when all hold: an explicit fix/change request for existing behavior; expected diff at most 20 lines and 2 files; reversible worktree or trivial revert; local impact; no protected surface (auth, permissions, payments, data migration/deletion, public API/contract, security, irreversible operations); no new dependency, abstraction, configuration surface, directory, or framework layer; one command or manual scenario verifies it. Any miss promotes to Design-lite or Build. The two-line intent and the diff are the approval boundary; a passing Small-fix has no STOP.
+
+Before writing `Proof tier: narrow`, run `node scripts/devflow-smallfix.js --check --verify "<command>"`. Only `NARROW_OK` permits narrow; `PROMOTE`, a missing checker, or a failed run uses `standard`. Record expected files and lines in the two-line intent, then pass them as `--declared-files` and `--declared-lines`; actual above the declaration promotes. The checker counts the actual diff, blocks protected paths, deletions, binaries, and manifest changes, and runs the verification itself. A self-reported "small" is not evidence.
 
 | Route | Use when | Core action |
 |---|---|---|
 | Problem | A reported problem has no explicit fix request. | Prove facts first, then select later work only if a change is known. |
-| Fast | Pure answer, lookup, verification, or an already approved trivial change. | Sense, then narrow proof. |
-| Design-lite | Existing feature, all seven low-risk conditions hold. | Record `Brainstorm required: no` and `Depth hint: skip`; state goal, acceptance, exclusions, and the requirement baseline (B IDs, invariants, edge cases); select Cut with Depth C, then Build. |
-| Design | New requirement, behavior or architecture change, ambiguity, or multiple options. | Select Brainstorm; after confirmation its user-selected A/B/C path directly starts Spec or Cut. |
-| Build | User asks to implement, fix, build, or land an approved change. | Select Cut, then Plan when construction needs several steps, then Build and Prove. |
+| Fast | Pure answer, lookup, or verification; or a Small-fix that passes the gate. | Sense, then Fix and Prove at `narrow` only with checker `NARROW_OK`; otherwise `standard`. No Cut, Plan, or requirements row; promote when the estimate, protected surface, or verification fails. |
+| Design-lite | Existing feature, all seven low-risk conditions hold, not a Small-fix. | Record `Brainstorm required: no` and `Depth hint: skip`; state goal, acceptance, exclusions, and the requirement baseline (B IDs, invariants, edge cases); select Cut with Depth C, then Build and Prove at `standard`. |
+| Design | New requirement, behavior or architecture change, ambiguity, or multiple options. | Select Brainstorm; after confirmation its user-selected A/B/C path directly starts Spec or Cut; Prove at `standard` or `full`. |
+| Build | User asks to implement, fix, build, or land an approved change. | Select Cut, then Plan when construction needs several steps, then Build and Prove at `standard` or `full`. |
 | Recovery | Same target remains wrong after correction or proof failure. | Select PUA, consume recovery facts, then choose a different path. |
 
-Every creative or problem-directed change creates or updates one row in `docs/requirements.md`: Brainstorm writes `open` after `Confirmed request`, and Design-lite writes `open` with depth `C` when Brainstorm is skipped. Pure Q&A, lookup, read-only verification, and explicit independent reviews create no row.
+Every creative or problem-directed change outside Fast Small-fix creates or updates one row in `docs/requirements.md`: Brainstorm writes `open` after `Confirmed request`, and Design-lite writes `open` with depth `C` when Brainstorm is skipped. Fast Small-fix creates no requirements row; a defect fix still appends one `docs/hotfix-log.md` row. Pure Q&A, lookup, read-only verification, and explicit independent reviews create no row.
 
 ## Core Flow Map
 
 ```text
+Fast Small-fix success: Sense -> Fix -> Prove (narrow)
 Skip-Brainstorm Design-lite success: Cut -> Build -> Prove
 A direct success: Brainstorm -> Spec -> Cut -> Plan -> Build -> Prove
 B direct success: Brainstorm -> Cut -> Plan -> Build -> Prove
@@ -87,6 +95,7 @@ C direct success: Brainstorm -> Cut -> Build -> Prove
 
 CUT_REDUCE, CUT_REUSE, CUT_BLOCKED, scope drift, BUILD_BLOCKED,
 Proof FAIL or BLOCKED, and PUA recovery -> Core selects the next owner or stop.
+Small-fix estimate exceeded, protected surface, or verification failure -> promote to Design-lite or Build.
 ```
 
 ## Core Return Boundaries
@@ -97,24 +106,26 @@ Proof FAIL or BLOCKED, and PUA recovery -> Core selects the next owner or stop.
 - Plan directly sends an approved A/B Plan to Build; scope-drift facts return to Core.
 - Build returns `BUILD_BLOCKED` facts when its Plan Review or execution is blocked.
 - PUA returns recovery facts after its method switch.
-- Prove returns PASS, FAIL, or BLOCKED and invokes Learn after PASS.
+- Small-fix returns promotion facts to Core when its estimate, protected surface, or verification fails, or when `devflow-smallfix.js` returns `PROMOTE`; Core selects Design-lite or Build.
+- Prove returns PASS, FAIL, or BLOCKED for the selected tier and invokes Learn after a standard or full PASS; narrow records a one-line closure.
 
 Core selects only after a returned non-unique artifact. 🔴 CHECKPOINT — `CUT_REDUCE` and `CUT_REUSE` stop for user confirmation. Independent `devflow-adversarial` and `devflow-find-fault` review current material only and do not enter lifecycle routing.
 
 ## Capability Dispatch
 
+- Small-fix: clear local reversible fix with one-command proof: record `Brainstorm required: no`, `Depth hint: skip`; state the two-line intent, fix, run `devflow-smallfix.js` with the verification command, and select `devflow-prove` directly only on `NARROW_OK`. No Cut, Plan, or requirements row; `PROMOTE` or any gate miss uses `standard` and Design-lite/Build.
 - Clear low-risk existing behavior with one plausible local path and quick proof: record skip depth, select `devflow-cut` directly with a Design-lite contract and Depth C; `CUT_PASS` enters Build. Keep the Cut and Prove gates.
 - An unapproved problem-directed change enters the risk gate; material risk or ambiguity selects `devflow-brainstorm`.
 - Unclear requirement, new feature, materially risky behavior change, cross-module impact, or multiple options: select `devflow-brainstorm` for Semantic Echo-Back and a fixed Confirmed request. Record `Brainstorm required: yes` and a depth hint: `compact` when goal, scope, and acceptance are already clear and one named residual risk remains that is not security, data-loss, permission, contract, or irreversible; `deep` for ambiguity or those protected risks; otherwise `standard`.
 - Explicit spec or design document: select `devflow-spec` after confirmed request.
 - New structure, dependency, abstraction, configuration, folder, or generic capability: select `devflow-cut`.
 - Approved construction work: select `devflow-build` when Core receives a non-unique construction artifact; A/B approved Plans and C `CUT_PASS` enter Build directly.
-- Completion claim: select `devflow-prove` and require fresh evidence plus adversarial review.
+- Completion claim: select `devflow-prove` and require evidence matching the selected tier: `narrow` check plus diff review, `standard` with adversarial review and Code Review Report, or `full` with recall evidence and coverage.
 - Ordinary single correction: failure facts return to Core for normal repair routing; Core re-reads facts and selects the owner. Repeated same-target dissatisfaction in one task lifecycle, or the explicit `/devflow-pua` command, selects `devflow-pua` (`proof-recovery-methods.md` Method 13B owns the boundary), then re-read facts and switch approach.
-- Reusable correction or verified PASS: select `devflow-learn` for a selective review.
+- Reusable correction or standard/full PASS: select `devflow-learn` for a selective review; a narrow PASS records a one-line closure and creates no card by default.
 - Matched external specialist: perform bounded work inside the current owner's node and return result, not-applicable, or failure facts; a specialist never selects a lifecycle owner, depth, or final status.
 - Explicit grill/stress-test request: select `devflow-brainstorm` directly; the explicit request is user intent, not keyword-only routing. The Semantic Echo-Back, the fixed Confirmed request, and the user-selected A/B/C gate all still apply.
 
 ## Verification
 
-Before leaving Core, confirm that shared methods were read, only needed owner references were loaded, the route matches facts, and every selected skill has a return artifact or stop condition.
+Before leaving Core, confirm that shared methods were read, only needed owner references were loaded, the route matches facts, the proof tier is selected, a narrow claim cites checker `NARROW_OK`, and every selected skill has a return artifact or stop condition.

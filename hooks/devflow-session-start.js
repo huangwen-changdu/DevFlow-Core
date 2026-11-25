@@ -6,22 +6,34 @@ const path = require("node:path");
 
 // 本地可观测性：仅当 DEVFLOW_OBSERVE=1 时在项目根追加一行会话日志，默认关闭、无网络上报。
 // 写入失败静默，绝不阻断会话注入。
+const observeOnly = process.argv.includes("--observe");
+
+// JSONL events: session start by default, or a completion event when the agent
+// calls this file with --observe and DEVFLOW_EVENT=complete plus route/tier fields.
 if (process.env.DEVFLOW_OBSERVE === "1") {
   try {
-    fs.appendFileSync(
-      path.join(process.cwd(), ".devflow-observe.log"),
-      `${new Date().toISOString()} session-start\n`,
-      "utf8"
-    );
+    const event = process.env.DEVFLOW_EVENT || "session-start";
+    const number = (name) => (process.env[name] ? Number(process.env[name]) : null);
+    const line = JSON.stringify({
+      ts: new Date().toISOString(),
+      event,
+      route: process.env.DEVFLOW_ROUTE || null,
+      tier: process.env.DEVFLOW_TIER || null,
+      stops: number("DEVFLOW_STOPS"),
+      duration_ms: number("DEVFLOW_DURATION_MS")
+    });
+    fs.appendFileSync(path.join(process.cwd(), ".devflow-observe.log"), `${line}\n`, "utf8");
   } catch {}
 }
+
+if (observeOnly) process.exit(0);
 
 // Keep session injection small; skills own execution, Core owns only non-unique routing.
 const context = [
   "[DevFlow Core active]",
   "Read AGENTS.md, then load devflow-core for development work.",
   "Core selects only non-unique lifecycle work and loads the selected lifecycle reference.",
-  "Core applies its risk gate: a clear local reversible existing-feature change with one plausible path, no security/data-loss/permission/contract risk, and quick proof may enter Cut directly at Depth C, then Build. Unapproved edits never use Fast. Ambiguous or materially risky creative work enters Brainstorm for a Confirmed request and user-selected A/B/C. Defined success edges are direct; other artifacts return Core. Investigation-only reports, pure Q&A, lookup, verification, and approved changes are exceptions.",
+  "Core applies its risk gate: a clear local reversible existing-feature change with one plausible path, no security/data-loss/permission/contract risk, and quick proof may enter Cut directly at Depth C, then Build. Unapproved edits never use Fast except through the Small-fix gate: explicit, local, reversible, at most 20 lines and 2 files, no protected surface, one-command proof; it skips Cut and proves at narrow only with `devflow-smallfix.js` NARROW_OK; otherwise standard. Ambiguous or materially risky creative work enters Brainstorm for a Confirmed request and user-selected A/B/C. Defined success edges are direct; other artifacts return Core. Investigation-only reports, pure Q&A, lookup, verification, and approved changes are exceptions.",
   "Use independent adversarial or find-fault review only when explicitly requested. Completion requires Prove evidence and adversarial review.",
   "At Sense, recall only index-matched learning or project-knowledge records; missing stores are non-blocking."
 ].join("\n");

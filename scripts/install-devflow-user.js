@@ -24,6 +24,7 @@ const userEntries = [
   "scripts/devflow-plan.js",
   "scripts/devflow-audit.js",
   "scripts/devflow-docs.js",
+  "scripts/devflow-smallfix.js",
   "scripts/devflow-doctor.js",
   "skills/devflow-core/SKILL.md",
   "skills/devflow-core/references/core-methods.md",

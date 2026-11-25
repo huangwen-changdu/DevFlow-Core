@@ -201,7 +201,7 @@ Expected behavior:
 - Route: Fast verification
 - Skill path: `devflow-core -> devflow-prove`
 - Must check `AGENTS.md`, `CLAUDE.md`, Copilot instructions, VS Code instruction/prompt, CodeBuddy rule, plugin metadata, and Gemini metadata.
-- Must confirm platform adapters preserve the risk gate: skip-Brainstorm Design-lite is Cut -> Build -> Prove; ambiguous or material-risk work is Sense -> Brainstorm clarification -> user-selected A/B/C -> direct success edges -> devflow-prove, with Core routing non-unique exceptions. Unapproved edits never use Fast.
+- Must confirm platform adapters preserve the risk gate: skip-Brainstorm Design-lite is Cut -> Build -> Prove; ambiguous or material-risk work is Sense -> Brainstorm clarification -> user-selected A/B/C -> direct success edges -> devflow-prove, with Core routing non-unique exceptions. Unapproved edits never use Fast except through the Small-fix gate.
 - Must confirm plugin metadata includes all shipped skills and commands.
 - Must not rewrite adapter rules unless drift is proven.
 
@@ -330,7 +330,7 @@ Expected behavior:
 - Route: Design-lite because implementation is requested and the low-risk gate passes.
 - This is a clear low-risk existing behavior change; Core records `Brainstorm required: no` and `Depth hint: skip`, then select `devflow-cut` directly with a Design-lite contract and Depth C.
 - Core may bypass Brainstorm only after the low-risk gate passes.
-- `CUT_PASS` enters Build, then Prove. Cut and Prove remain mandatory. Unapproved edits never use Fast.
+- `CUT_PASS` enters Build, then Prove. Cut and Prove remain mandatory. Unapproved edits never use Fast except through the Small-fix gate.
 - Touch only the requested file.
 - Verify with text search.
 
@@ -342,6 +342,62 @@ Diff Check: README only
 Command: <search command>
 Result: old phrase absent/new phrase present
 Judgment: PASS
+```
+
+## Scenario 2B: Fast Small-fix
+
+Input:
+
+```text
+Fix the null check in OrderService; keep the diff under 20 lines.
+```
+
+Expected behavior:
+
+- Route: Fast Small-fix; Core records `Brainstorm required: no`, `Depth hint: skip`, `Proof tier: narrow`.
+- The request is explicit, local, reversible, at most 20 lines and 2 files, with no protected surface, no new structure, and one command that verifies it.
+- No Brainstorm, Cut, Plan, or requirements row.
+- Narrow proof runs the named test, one regression, a diff review, and a one-line strongest challenge.
+- A defect fix appends one `docs/hotfix-log.md` row; no learning card by default.
+- If the diff grows, a protected surface appears, or verification fails, promote to Design-lite or Build.
+
+Pass check:
+
+```text
+Command: <targeted test>
+Result: PASS
+Proof tier: narrow
+Adversarial review: <one-line challenge and disposition>
+Judgment: PASS
+```
+
+## Scenario 2C: Mechanical Small-fix Gate
+
+Input:
+
+```text
+Fix the null check in OrderService; keep the diff under 20 lines.
+```
+
+Expected behavior:
+
+- The agent runs `node scripts/devflow-smallfix.js --check --verify "<command>"` before claiming narrow.
+- A 30-line change returns `PROMOTE` for `too-many-lines`; an auth change returns `PROMOTE` for `protected-path`.
+- `PROMOTE` promotes to Design-lite or Build and uses `Proof tier: standard`.
+- The agent must not claim `narrow` from self-report; a narrow claim without `NARROW_OK` is FAIL.
+- A genuine small change returns `NARROW_OK` with actual files and lines.
+
+Pass check:
+
+```text
+NARROW_OK files=1 lines=6 protected=none verify=exit:0
+```
+
+Reverse cases:
+
+```text
+PROMOTE reason=too-many-lines:30>20
+PROMOTE reason=protected-path:auth/login.js (auth)
 ```
 
 ## Scenario 3: Dependency Proposal

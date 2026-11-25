@@ -1,0 +1,18 @@
+{
+  "maxFiles": 2,
+  "maxLines": 20,
+  "protected": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "skills/",
+    "commands/",
+    "hooks/",
+    "scripts/",
+    "plugins/",
+    "dsh/",
+    ".github/",
+    ".codebuddy/",
+    ".claude/",
+    ".devflow/"
+  ]
+}

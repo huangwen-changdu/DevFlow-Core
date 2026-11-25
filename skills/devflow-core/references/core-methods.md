@@ -43,7 +43,7 @@ Budget by route, counted in files read before `Change`:
 | Route | Reads before Change | Widen when |
 |---|---:|---|
 | Problem | 8 | the symptom has more than one candidate entry point, or the fact chain crosses a module boundary |
-| Fast | the file the question names, or the one file that answers it | the answer spans more than one file |
+| Fast | the file the question names, or the one file that answers it; a Small-fix adds the failing path, one caller, and the verify command (3 total) | the answer spans more than one file, or the fix crosses a module boundary |
 | Design-lite | 3 | the touched flow crosses a module boundary |
 | Design | 8 | a contract, schema, or caller graph is involved |
 | Build | 8 | an approved plan names more anchors than the budget |
@@ -99,7 +99,9 @@ Evaluate in this order: explicit independent review or explicit grill/stress-tes
 
 Brainstorm is required for new behavior, ambiguity, cross-module or externally visible impact, irreversible work, security/data-loss/permission/contract risk, or any missing fact that could change the plan. A clear existing-feature change may enter Cut directly only when every low-risk condition holds: clear goal, existing local behavior, one plausible path, local impact, reversible change, no security/data-loss/permission/contract risk, and quick proof. The absence of one condition is enough to keep Brainstorm controlled.
 
-Unapproved edits never use Fast. A skip records `Brainstorm required: no` and `Depth hint: skip`, writes a Design-lite contract (goal, acceptance, exclusions, required behaviors with B IDs, invariants, edge cases), and enters Cut at Depth C. Compact is only for a Core-sent hint where goal, scope, and acceptance are already clear and one named residual risk remains that is not security, data-loss, permission, contract, or irreversible work. Core never lets Brainstorm choose skip or depth.
+Unapproved edits never use Fast except through the Small-fix gate. A skip records `Brainstorm required: no` and `Depth hint: skip`, writes a Design-lite contract (goal, acceptance, exclusions, required behaviors with B IDs, invariants, edge cases), and enters Cut at Depth C. Compact is only for a Core-sent hint where goal, scope, and acceptance are already clear and one named residual risk remains that is not security, data-loss, permission, contract, or irreversible work. Core never lets Brainstorm choose skip or depth.
+
+Fast Small-fix: an explicit fix/change request for existing behavior, at most 20 lines and 2 files, reversible, local, no protected surface, no new structure, and one-command proof. It skips Brainstorm, Cut, and Plan, proves at `narrow`, and creates no requirements row; any miss promotes to Design-lite or Build.
 
 Low-risk autonomy compresses clarification; it does not authorize implementation. Cut still checks reuse, native options, overbuild, diff, and scope, and Prove still requires fresh evidence and adversarial review.
 
@@ -124,7 +126,7 @@ After the fixed summary, Brainstorm presents A/B/C for an explicit user selectio
 
 ## Method 3: Small Request Boundary
 
-Use Fast only for inquiry, verification, or already approved trivial changes; unapproved edits are not Fast. Design-lite is the skip-Brainstorm path for an existing feature after the seven-factor gate passes. Choose full Design when behavior, options, contracts, modules, compatibility, or rollback are unclear. Ask the user to choose when facts cannot distinguish the route.
+Use Fast for inquiry, verification, or a Small-fix that passes the gate; unapproved edits enter Fast only through that gate. Design-lite is the skip-Brainstorm path for an existing feature after the seven-factor gate passes. Choose full Design when behavior, options, contracts, modules, compatibility, or rollback are unclear. Ask the user to choose when facts cannot distinguish the route.
 
 ## Method 4: Method Lens
 
@@ -180,7 +182,7 @@ Receipt rules:
 - Reading a file or loading a skill is only 已加载; 已执行 requires an actual action with a result. Execution完成 is not business acceptance; judgment stays with the original owner.
 - 不适用 must name the trigger condition that was not met. When a trigger condition was met but the action did not run, record 未执行 or 受阻 — never relabel it 不适用.
 - With a command, record that run's output and exit code; a manual check records the inspected object, the observation, and its basis, marked as human judgment rather than mechanical proof.
-- A node may show only the first line plus the trigger basis at start and complete the receipt at handoff, on exceptions, or at key decisions; ordinary intermediate reads are not re-announced. Small tasks run 1-3 receipt lines per relevant node, never a full per-capability checklist.
+- A task may use one consolidated receipt at handoff; a node emits its own only on stop, failure, or route change. Ordinary intermediate reads are not re-announced. Small tasks run 1-3 receipt lines total, never a full per-capability checklist.
 - Fully existing outputs — the Cut Decision, `METHOD`/`SWITCH`, the Code Review Report, a Learning closure, the six-axis UI scores in proof evidence — are themselves receipts: the summary cites them instead of duplicating a form.
 - Receipt content stays in the session receipt, existing `## Progress`, or proof evidence; commit text, product UI, and document bodies keep describing the final result. The receipt itself has no verdict power over approvals, depth, or lifecycle routing.
 - In the completion summary, list the applicable capabilities that materially acted with their evidence, plus blocked or not-executed items; request-driven reviews, Audit, and Loop are not re-listed as untriggered.

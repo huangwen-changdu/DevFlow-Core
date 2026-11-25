@@ -35,6 +35,38 @@
     "negativeConstraints": ["Cut and Prove remain mandatory", "Unapproved edits never use Fast"]
   },
   {
+    "id": "fast-small-fix",
+    "scenario": "Scenario 2B: Fast Small-fix",
+    "layers": ["Prompt Surface", "Context", "Eval/Verifier"],
+    "expectedRoute": "Fast",
+    "command": "trigger:verify",
+    "scenarioEvidence": [
+      "Route: Fast Small-fix",
+      "Proof tier: narrow",
+      "No Brainstorm, Cut, Plan, or requirements row",
+      "one-line strongest challenge",
+      "promote to Design-lite or Build"
+    ],
+    "commandEvidence": ["Fast Small-fix lane"],
+    "negativeConstraints": ["No Brainstorm, Cut, Plan, or requirements row", "promote to Design-lite or Build"]
+  },
+  {
+    "id": "smallfix-gate",
+    "scenario": "Scenario 2C: Mechanical Small-fix Gate",
+    "layers": ["Harness/Validation", "Context", "Eval/Verifier"],
+    "expectedRoute": "Fast",
+    "command": "smallfix:verify",
+    "scenarioEvidence": [
+      "PROMOTE",
+      "NARROW_OK",
+      "too-many-lines",
+      "protected-path",
+      "Proof tier: standard"
+    ],
+    "commandEvidence": ["DevFlow small-fix self-test passed"],
+    "negativeConstraints": ["must not claim `narrow` from self-report", "`PROMOTE` for `too-many-lines`"]
+  },
+  {
     "id": "first-principles-cut",
     "scenario": "Scenario 1C-A: First Principles Cut",
     "layers": ["Harness/Validation", "Context"],

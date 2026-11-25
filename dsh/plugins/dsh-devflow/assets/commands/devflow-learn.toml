@@ -8,9 +8,10 @@ Process:
 1. Detect the learning signal and decide whether it is reusable.
 2. Probe `.copilot/LEARNING_INDEX.md`; when present, match the task against Trigger and Scope, then read only matched cards. Do not load all cards.
 3. If a reusable execution lesson qualifies, lazily create or update one focused card and `.copilot/LEARNING_INDEX.md`; do not create empty learning storage after a no-record review.
-4. If code-backed business semantics changed, report a project-knowledge candidate and wait for user confirmation before loading `devflow-project-knowledge` to lazily maintain `docs/project-knowledge/`.
-5. Update `.copilot/LEARNING_INDEX.md` when a card is created, renamed, or its trigger changes.
-6. Report the learning closure before claiming completion.
+4. If the task repaired a defect, append one `docs/hotfix-log.md` row; draft it with `node scripts/devflow-docs.js --hotfix --symptom ... --cause ... --files ... --verify ...` when available. A Fast Small-fix creates no requirements row and no card by default.
+5. If code-backed business semantics changed, report a project-knowledge candidate and wait for user confirmation before loading `devflow-project-knowledge` to lazily maintain `docs/project-knowledge/`.
+6. Update `.copilot/LEARNING_INDEX.md` when a card is created, renamed, or its trigger changes.
+7. Report the learning closure before claiming completion.
 
 Learning closure:
 - Learning signal: none / present

@@ -58,7 +58,8 @@ const requiredFiles = [
   "scripts/validate-skill-triggers.js",
   "scripts/validate-learning-loop.js",
   "scripts/install-devflow.js",
-  "scripts/install-devflow-user.js"
+  "scripts/install-devflow-user.js",
+  "scripts/devflow-smallfix.js"
 ];
 
 for (const rel of requiredFiles) assert(fs.existsSync(path.join(root, rel)), `missing required runtime file: ${rel}`);
@@ -285,6 +286,15 @@ assertGrillEntryContract();
 const prove = read("skills/devflow-prove/SKILL.md");
 const proofMethods = read("skills/devflow-prove/references/proof-recovery-methods.md");
 assert(prove.includes("Context loading is conditional"), "Prove must define conditional context loading");
+assert(agents.includes("Fast Small-fix"), "AGENTS.md must publish the Fast Small-fix lane");
+assert(core.includes("Fast Small-fix"), "devflow-core must publish the Fast Small-fix lane");
+assert(prove.includes("Proof Tiers"), "devflow-prove must publish proof tiers");
+assert(prove.includes("No matching evidence, no completion"), "devflow-prove must replace absolute proof with matching evidence");
+assert(prove.includes("`narrow`") && prove.includes("`standard`") && prove.includes("`full`"), "devflow-prove must expose all three proof tiers");
+assert(agents.includes("NARROW_OK"), "AGENTS.md must require the mechanical Small-fix checker");
+assert(core.includes("NARROW_OK"), "devflow-core must require the mechanical Small-fix checker");
+assert(prove.includes("NARROW_OK"), "devflow-prove must require the mechanical Small-fix checker");
+assert(prove.includes("devflow-smallfix.js"), "devflow-prove must name the Small-fix checker");
 assert(prove.includes("only when the change touches DevFlow runtime rules"), "Prove must limit framework self-test loading");
 assert(proofMethods.includes("## Proof Context Selection"), "Proof methods must define context selection");
 assert(proofMethods.includes("Narrow context does not weaken diff review"), "Proof methods must retain proof safeguards");
@@ -509,7 +519,7 @@ for (const directory of fs.readdirSync(path.join(root, "skills"), { withFileType
 }
 
 const packageJson = JSON.parse(read("package.json"));
-for (const script of ["test", "learn:verify", "trigger:verify", "host:verify", "install:verify", "user:verify", "verify:all"]) {
+for (const script of ["test", "smallfix:verify", "learn:verify", "trigger:verify", "host:verify", "install:verify", "user:verify", "verify:all"]) {
   assert(packageJson.scripts?.[script], `package.json missing ${script} script`);
 }
 

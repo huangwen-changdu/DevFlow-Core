@@ -107,9 +107,12 @@ When installed into a target project, only the target-runtime scripts are copied
 | `node scripts/devflow-debt.js .` | Harvest intentional `devflow:` simplification markers into a debt report. |
 | `node scripts/devflow-audit.js <target-directory>` | Run a repo-wide lean candidate scan for overengineering, missed reuse, stdlib/native replacements, and YAGNI abstractions. The full audit reads this as first-pass evidence and reports correctness, safety, load, and tests separately. |
 | `node scripts/devflow-skills.js [--migrate] [--json]` | Check that project skills live under `.agents/skills/` and report legacy `skills/` copies; `--migrate` removes verified duplicates inside the project, without the DevFlow-Core package. |
-| `node scripts/devflow-docs.js --status` / `--init` / `--refresh` / `--check` | Inventory, scaffold, refresh the derived spec index, and verify. The master map stays a router (90-line limit); leaf specs live in the derived `docs/specs/INDEX.md`, rebuilt by `--refresh`. `--init` also creates the requirements and hotfix ledgers when it builds the map, never overwrites existing files, and marks unknown authority rows as `[待确认]`. |
+| `node scripts/devflow-smallfix.js --check --verify "npm test"` | Mechanically gate a Fast Small-fix: count actual changed files/lines, block protected paths, deletions, binaries, manifest changes, and run the verification itself. `NARROW_OK` permits narrow; `PROMOTE` uses `standard`. Projects can add protected substrings in `.devflow/smallfix.json`. |
+| `node scripts/devflow-docs.js --status` / `--init` / `--refresh` / `--check` / `--hotfix` | Inventory, scaffold, refresh the derived spec index, and verify. The master map stays a router (90-line limit); leaf specs live in the derived `docs/specs/INDEX.md`, rebuilt by `--refresh`. `--init` also creates the requirements and hotfix ledgers when it builds the map, never overwrites existing files, and marks unknown authority rows as `[待确认]`. `--hotfix` appends one formatted defect-fix row from `--symptom`/`--cause`/`--files`/`--verify` and creates the header when missing. |
 
 Saved specs should land in the current target project's `docs/specs/YYYY-MM-DD-<short-kebab-name>.md` unless that project already documents another specs path. Saved implementation plans should land in the current target project's `docs/plans/YYYY-MM-DD-<short-kebab-name>.md`. `docs/features/` is for feature ledgers and the capability index, not generated specs or task plans.
+
+`docs/rule-health.md` records each standing rule or check with its last real interception and a quarterly `keep`/`downgrade`/`remove` decision; a rule with no case for 90 days is downgraded or removed instead of accumulating.
 
 `docs/features/INDEX.md` and `docs/plans/INDEX.md` are the one-hop entry for a new session: the feature index says what exists, where its entry point is, and how to verify it; the plan index says which plans are approved, in progress, or landed. Both are machine-checked by `node scripts/devflow-plan.js --index` and `npm run index:verify`. `docs/requirements.md` records one row per confirmed requirement from `open` to `landed`, keeps an explicit user skip as `opt-out` with a reason, and is validated by the same command; `node scripts/devflow-plan.js --loop` reports the loop state.
 
@@ -137,13 +140,27 @@ Other `.js` files under `scripts/` are DevFlow-Core maintainer checks, installer
 
 | Route | Use When | Flow |
 |---|---|---|
-| Fast | Pure Q&A, fact lookup, verification, or already approved trivial code change | Sense -> Prove |
-| Design-lite | Clear low-risk existing-feature change that passes the risk gate | Sense -> Cut -> Build -> Prove (skip Brainstorm; Depth C) |
+| Fast | Pure Q&A, fact lookup, verification, or a Small-fix (explicit, at most 20 lines and 2 files, reversible, local, no protected surface, one-command proof) | Sense -> Fix -> Prove (`narrow`); promote to Design-lite/Build when the gate misses |
+| Design-lite | Clear low-risk existing-feature change that passes the risk gate, not eligible for Small-fix | Sense -> Cut -> Build -> Prove (skip Brainstorm; Depth C; `standard`) |
 | Design | Requirement, behavior change, feature, architecture change, unclear ask, or multi-solution decision | Sense -> Brainstorm clarification -> user-selected A/B/C: A `Spec -> Cut -> Plan -> Build -> Prove`; B `Cut -> Plan -> Build -> Prove`; C `Cut -> Build -> Prove` |
-| Build | User asks to implement, fix, land, or execute a change | Approved work enters Cut; A/B `CUT_PASS` directly enters Plan, C `CUT_PASS` directly enters Build, and completed Build directly enters Prove. Core routes only missing depth, non-success, scope drift, blocked, recovery, or changed-intent facts. |
+| Build | User asks to implement, fix, land, or execute a change | Approved work enters Cut; A/B `CUT_PASS` directly enters Plan, C `CUT_PASS` directly enters Build, and completed Build directly enters Prove (`standard` or `full`). Core routes only missing depth, non-success, scope drift, blocked, recovery, or changed-intent facts. |
 | Recovery | The user repeatedly points out that the same function, result, or requested capability remains wrong, incomplete, or missing in one task lifecycle; tests fail unexpectedly; edits go wrong; or the agent is about to give up | `devflow-pua` diagnoses recovery -> recovery facts return to Core -> Brainstorm re-confirms only when Core selects it -> Core re-routes |
 
+Before claiming `narrow`, run `node scripts/devflow-smallfix.js --check --verify "npm test"`. Pass the pre-edit estimate as `--declared-files`/`--declared-lines`; actual above it promotes. The checker counts the actual diff, blocks protected paths, deletions, binaries, and manifest changes, and runs the verification itself; only `NARROW_OK` permits narrow, and a missing checker or `PROMOTE` uses `standard`.
+
+Proof tiers: `narrow` (Fast Small-fix) runs the named check, one regression, and a diff review; `standard` (Design-lite/Build) adds the Simplify Pass, adversarial checklist, Code Review Report, and Learn review; `full` (protected, cross-module, irreversible, or explicitly reviewed) adds Recall evidence, Coverage, and plan/requirement writeback. No matching evidence, no completion.
+
 ## Copyable Workflows
+
+### Small-fix Workflow
+
+Use when the request is a local reversible fix with one-command proof:
+
+```text
+Fix the null check in OrderService; keep the diff under 20 lines.
+```
+
+Expected route: `Fast -> Sense -> Fix -> Prove (narrow)` only after `node scripts/devflow-smallfix.js --check --verify "<command>"` returns `NARROW_OK`. If the checker returns `PROMOTE`, the estimate, protected surface, or verification grows, the agent promotes to Design-lite or Build.
 
 ### Problem Investigation Workflow
 
