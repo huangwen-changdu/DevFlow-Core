@@ -21,6 +21,7 @@
 | Prove tier gate | `devflow-prove` | baseline 2026-11-25 | 2027-02-23 | observe |
 | Small-fix diff checker | `scripts/devflow-smallfix.js` | baseline 2026-11-25 | 2027-02-23 | observe |
 | Small-fix audit mode | `devflow-core` | baseline 2026-11-25 | 2027-02-23 | observe |
+| Depth Ledger gate | `devflow-core` / `devflow-prove` | baseline 2026-11-25 | 2027-02-23 | observe |
 | Recall check（踩坑召回） | `devflow-prove` | 2026-11-17（Recall evidence 修复） | 2027-02-23 | keep |
 | Hotfix ledger row | `devflow-learn` | baseline 2026-11-25 | 2027-02-23 | observe |
 | Requirements ledger terminal | `devflow-prove` | baseline 2026-11-25 | 2027-02-23 | observe |

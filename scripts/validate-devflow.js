@@ -295,6 +295,11 @@ assert(agents.includes("NARROW_OK"), "AGENTS.md must require the mechanical Smal
 assert(core.includes("NARROW_OK"), "devflow-core must require the mechanical Small-fix checker");
 assert(prove.includes("NARROW_OK"), "devflow-prove must require the mechanical Small-fix checker");
 assert(prove.includes("devflow-smallfix.js"), "devflow-prove must name the Small-fix checker");
+assert(core.includes("Depth Ledger"), "devflow-core must publish the Depth Ledger");
+assert(prove.includes("Depth Ledger"), "devflow-prove must publish the Depth Ledger");
+assert(core.includes("Risk debt"), "devflow-core must publish risk debt");
+assert(prove.includes("risk_debt"), "devflow-prove must carry risk debt in the completion output");
+assert(prove.includes("do not maximize a score"), "devflow-prove must forbid score maximization");
 assert(prove.includes("only when the change touches DevFlow runtime rules"), "Prove must limit framework self-test loading");
 assert(proofMethods.includes("## Proof Context Selection"), "Proof methods must define context selection");
 assert(proofMethods.includes("Narrow context does not weaken diff review"), "Proof methods must retain proof safeguards");
@@ -625,5 +630,6 @@ for (const column of ["日期", "症状", "根因", "改动点", "涉及模块",
 assert(docsMap.includes("hotfix-log.md"), "docs/INDEX.md must route defect fixes to the hotfix log");
 assert(docsMap.includes("缺失时先建表头"), "docs/INDEX.md must say a missing ledger is created before appending");
 
+console.log("Depth ledger contract: PASS");
 console.log("DevFlow validation passed");
 console.log(`Checked ${requiredFiles.length} runtime files, ${cards.length} learning cards, and selected host and trigger contracts`);

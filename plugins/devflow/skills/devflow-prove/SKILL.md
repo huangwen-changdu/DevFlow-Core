@@ -26,9 +26,26 @@ Context loading is conditional and selected by changed surface.
 
 A tier may be raised at any point; never lower it to finish faster. `narrow` is unavailable once a protected surface or second module is touched.
 
+## Depth Ledger
+
+`narrow`, `standard`, and `full` are selected by the ledger, not by preference or line count. After diagnosis, record:
+
+```text
+Depth ledger:
+- Blast radius 0/1/2: files, modules, callers, contracts, data/state
+- Uncertainty 0/1/2: reproduced? hypotheses? missing test? open unknown
+- Irreversibility 0/1/2: revertible? migration/delete/external/security
+- History 0/1/2: prior hotfix rows, learning cards, repeated failures
+- Evidence: reads/tests behind the factors
+- Risk debt: open decision-impact unknowns; narrow blocked until 0
+- Depth: narrow / standard / full
+```
+
+All factors at most 1, no protected surface, debt 0 -> `narrow`; any 2 or total at least 3 -> `standard`; irreversibility 2 or security/data/permission/contract risk -> `full`. An open decision-impact unknown blocks narrow until resolved or promoted. Stop when no decision-impact unknown remains; do not maximize a score.
+
 ## Small-fix Gate
 
-After diagnosis, for a Fast Small-fix, run `node scripts/devflow-smallfix.js --check --verify "<command>"`. The checker counts actual changed files and lines, blocks protected paths, deletions, binaries, and manifest changes, and runs the verification itself. Record the post-diagnosis estimate and pass `--declared-files`/`--declared-lines`; actual above the declaration promotes. File and line counts are warnings, not hard caps. Only `NARROW_OK` permits `Proof tier: narrow`; `PROMOTE`, a missing checker, or a failed run returns standard facts to Core. A narrow claim without the checker receipt is FAIL. The agent never chooses narrow by assertion.
+After diagnosis, for a Fast Small-fix, run `node scripts/devflow-smallfix.js --check --verify "<command>"`. The checker counts actual changed files and lines, blocks protected paths, deletions, binaries, and manifest changes, and runs the verification itself. Record the post-diagnosis estimate and pass `--declared-files`/`--declared-lines`; actual above the declaration promotes. File and line counts are warnings, not hard caps. Only `NARROW_OK` plus a narrow Depth Ledger permits `Proof tier: narrow`; `PROMOTE`, a missing checker, or a failed run returns standard facts to Core. A narrow claim without the checker receipt is FAIL. The agent never chooses narrow by assertion.
 
 ## Process
 
@@ -83,6 +100,7 @@ Check trigger, surface, runtime action, handoff evidence, and breakpoint. If act
 Command: <actual command run>
 Result: <key output summary>
 Proof tier: narrow / standard / full
+Depth ledger: blast=... uncertainty=... irreversibility=... history=... risk_debt=... depth=...
 Small-fix gate: <NARROW_OK files=... lines=... declared=.../... protected=none verify=exit:0 warn=... | n/a>
 Adversarial review: <strongest challenge and disposition, or the one-line challenge for narrow>
 Judgment: PASS / FAIL / BLOCKED
@@ -147,7 +165,7 @@ A missing field means recovery did not run; return `FAIL` facts to Core.
 
 ## Evidence Rules
 
-- Never write "should work" as a result; never hide a skipped check. A self-reported "small" is not evidence; cite the checker `NARROW_OK` line with declared and actual counts.
+- Never write "should work" as a result; never hide a skipped check. A self-reported "small" is not evidence; cite the checker `NARROW_OK` line with declared and actual counts and the Depth Ledger factors. Do not maximize a score; stop when no decision-impact unknown remains.
 - If verification is partial, say exactly what remains unverified.
 - Never reuse old output or a delegated claim without independent verification.
 - Running the same successful command twice without changes adds no evidence.

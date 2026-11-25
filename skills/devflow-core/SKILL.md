@@ -71,7 +71,24 @@ Brainstorm is required when any material risk or decision-impact uncertainty exi
 
 A fix request starts with diagnosis; the Small-fix budget applies to the fix, not the problem, and is declared after the cause is known. A Fast Small-fix bypasses Brainstorm, Cut, and Plan only when all hold: an explicit fix/change request for existing behavior; a post-diagnosis declared budget with actual within it; reversible worktree or trivial revert; local impact; no protected surface (auth, permissions, payments, data migration/deletion, public API/contract, security, irreversible operations); no new dependency, abstraction, configuration surface, directory, or framework layer; one command or manual scenario verifies it. Any miss promotes to Design-lite or Build. The two-line intent and the diff are the approval boundary; a passing Small-fix has no STOP.
 
-Before writing `Proof tier: narrow`, run `node scripts/devflow-smallfix.js --check --verify "<command>"`. Only `NARROW_OK` permits narrow; `PROMOTE`, a missing checker, or a failed run uses `standard`. After diagnosis, declare expected files and lines in the two-line intent, then pass them as `--declared-files` and `--declared-lines`; actual above the declaration promotes, while file and line counts are warnings rather than hard caps. The checker counts the actual diff, blocks protected paths, deletions, binaries, and manifest changes, and runs the verification itself. A self-reported "small" is not evidence.
+Before writing `Proof tier: narrow`, run `node scripts/devflow-smallfix.js --check --verify "<command>"`. Only `NARROW_OK` plus a narrow Depth Ledger permits narrow; `PROMOTE`, a missing checker, or a failed run uses `standard`. After diagnosis, declare expected files and lines in the two-line intent, then pass them as `--declared-files` and `--declared-lines`; actual above the declaration promotes, while file and line counts are warnings rather than hard caps. The checker counts the actual diff, blocks protected paths, deletions, binaries, and manifest changes, and runs the verification itself. A self-reported "small" is not evidence.
+
+### Depth Ledger
+
+After diagnosis, before choosing a lane, record:
+
+```text
+Depth ledger:
+- Blast radius 0/1/2: files, modules, callers, contracts, data/state
+- Uncertainty 0/1/2: reproduced? hypotheses? missing test? open unknown
+- Irreversibility 0/1/2: revertible? migration/delete/external/security
+- History 0/1/2: prior hotfix rows, learning cards, repeated failures
+- Evidence: reads/tests behind the factors
+- Risk debt: open decision-impact unknowns; narrow blocked until 0
+- Depth: narrow / standard / full
+```
+
+All factors at most 1, no protected surface, debt 0 -> `narrow`; any 2 or total at least 3 -> `standard`; irreversibility 2 or security/data/permission/contract risk -> `full`. `NARROW_OK` is necessary but not sufficient. Counts are a scope warning, not the depth.
 
 | Route | Use when | Core action |
 |---|---|---|

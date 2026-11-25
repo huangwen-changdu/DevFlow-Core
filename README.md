@@ -140,7 +140,7 @@ Other `.js` files under `scripts/` are DevFlow-Core maintainer checks, installer
 
 | Route | Use When | Flow |
 |---|---|---|
-| Fast | Pure Q&A, fact lookup, verification, or a Small-fix (explicit, post-diagnosis declared budget, reversible, local, no protected surface, one-command proof) | Sense/Diagnose -> Fix -> Prove (`narrow`); promote to Design-lite/Build when the gate misses |
+| Fast | Pure Q&A, fact lookup, verification, or a Small-fix (explicit, post-diagnosis declared budget, reversible, local, no protected surface, one-command proof) | Sense/Diagnose -> Depth Ledger -> Fix -> Prove (`narrow`); promote to Design-lite/Build when the gate misses |
 | Design-lite | Clear low-risk existing-feature change that passes the risk gate, not eligible for Small-fix | Sense -> Cut -> Build -> Prove (skip Brainstorm; Depth C; `standard`) |
 | Design | Requirement, behavior change, feature, architecture change, unclear ask, or multi-solution decision | Sense -> Brainstorm clarification -> user-selected A/B/C: A `Spec -> Cut -> Plan -> Build -> Prove`; B `Cut -> Plan -> Build -> Prove`; C `Cut -> Build -> Prove` |
 | Build | User asks to implement, fix, land, or execute a change | Approved work enters Cut; A/B `CUT_PASS` directly enters Plan, C `CUT_PASS` directly enters Build, and completed Build directly enters Prove (`standard` or `full`). Core routes only missing depth, non-success, scope drift, blocked, recovery, or changed-intent facts. |
@@ -149,6 +149,10 @@ Other `.js` files under `scripts/` are DevFlow-Core maintainer checks, installer
 After diagnosis, before claiming `narrow`, run `node scripts/devflow-smallfix.js --check --declared-files <n> --declared-lines <n> --verify "npm test"`. Pass the post-diagnosis estimate; actual above it promotes, and file/line counts are warnings rather than hard caps. The checker counts the actual diff, blocks protected paths, deletions, binaries, manifest changes, and its own policy/checker/runtime files, and runs the verification itself; only `NARROW_OK` permits narrow, and a missing checker or `PROMOTE` uses `standard`.
 
 Proof tiers: `narrow` (Fast Small-fix) runs the named check, one regression, and a diff review; `standard` (Design-lite/Build) adds the Simplify Pass, adversarial checklist, Code Review Report, and Learn review; `full` (protected, cross-module, irreversible, or explicitly reviewed) adds Recall evidence, Coverage, and plan/requirement writeback. No matching evidence, no completion.
+
+### Depth Ledger
+
+After diagnosis, record four factors before choosing a tier: blast radius (files, modules, callers, contracts, data/state), uncertainty (reproduction, hypotheses, test gap, open unknown), irreversibility (revertible, migration/delete/external/security), and history (prior hotfix rows, cards, repeated failures). All factors at most 1 with no protected surface and no open decision-impact unknown -> `narrow`; any factor 2 or total at least 3 -> `standard`; irreversibility 2 or security/data/permission/contract risk -> `full`. An open decision-impact unknown blocks narrow until resolved or promoted. Lines are a scope warning, not the depth.
 
 ## Copyable Workflows
 
@@ -160,7 +164,7 @@ Use when a fix request arrives; the agent diagnoses first, then declares a files
 Fix the null check in OrderService.
 ```
 
-Expected route: `Fast -> Sense/Diagnose -> estimate (files/lines) -> Fix -> Prove (narrow)` only after `node scripts/devflow-smallfix.js --check --declared-files <n> --declared-lines <n> --verify "<command>"` returns `NARROW_OK`. If diagnosis shows a larger or protected fix, or the checker returns `PROMOTE`, the agent promotes to Design-lite or Build. The user does not need to estimate the size.
+Expected route: `Fast -> Sense/Diagnose -> Depth Ledger -> estimate (files/lines) -> Fix -> Prove (narrow)` only after `node scripts/devflow-smallfix.js --check --declared-files <n> --declared-lines <n> --verify "<command>"` returns `NARROW_OK`. If diagnosis shows a larger or protected fix, or the checker returns `PROMOTE`, the agent promotes to Design-lite or Build. The user does not need to estimate the size.
 
 ### Problem Investigation Workflow
 

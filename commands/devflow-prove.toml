@@ -2,7 +2,7 @@ description = "Verify a DevFlow change before claiming completion."
 prompt = '''
 Run DevFlow Prove.
 
-Select the proof tier: `narrow` for Fast Small-fix, `standard` for Design-lite/Build, `full` for protected, cross-module, irreversible, or explicitly reviewed work. After diagnosis, for a Fast Small-fix, run `node scripts/devflow-smallfix.js --check --verify "<command>"`; actual above the declared budget promotes, file/line counts are warnings, and only `NARROW_OK` permits narrow. `PROMOTE` uses standard.
+Select the proof tier: `narrow` for Fast Small-fix, `standard` for Design-lite/Build, `full` for protected, cross-module, irreversible, or explicitly reviewed work. After diagnosis, record a Depth Ledger (blast radius/uncertainty/irreversibility/history); an open decision-impact unknown blocks narrow. Use the ledger to select `narrow`/`standard`/`full`. For a Fast Small-fix, run `node scripts/devflow-smallfix.js --check --verify "<command>"`; actual above the declared budget promotes, file/line counts are warnings, and only `NARROW_OK` plus a narrow ledger permits narrow. `PROMOTE` uses standard.
 Identify the narrowest sufficient command, test, build, lint, validation script, or manual scenario.
 Run it now if tools are available.
 Skill-root paths resolve under the skill root named in `AGENTS.md` (`.agents/skills/` in an installed project, `skills/` in this source repo).
@@ -15,6 +15,7 @@ Report only:
 Command: <actual command run>
 Result: <key output summary>
 Proof tier: narrow / standard / full
+Depth ledger: blast=... uncertainty=... irreversibility=... history=... risk_debt=... depth=...
 Small-fix gate: <NARROW_OK files=... lines=... declared=.../... protected=none verify=exit:0 warn=... | n/a>
 Adversarial review: <strongest challenge and disposition, or the one-line challenge for narrow>
 Judgment: PASS / FAIL / BLOCKED

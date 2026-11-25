@@ -402,6 +402,49 @@ PROMOTE reason=protected-path:auth/login.js (auth)
 PROMOTE reason=missing-declaration
 ```
 
+## Scenario 2D: Depth Ledger
+
+Input A:
+
+```text
+Fix the permission check in auth/login.
+```
+
+Input B:
+
+```text
+Refactor the local helper; about 40 lines, one module, no external callers.
+```
+
+Input C:
+
+```text
+Fix the cache refresh issue; the invalidation path is still unknown.
+```
+
+Expected behavior:
+
+- The agent writes a Depth Ledger after diagnosis and before selecting a tier.
+- Input A is a small diff but irreversibility 2 and protected surface -> `full`; it is not narrow despite the small diff.
+- Input B is a 40-line diff but blast radius 1, uncertainty 0, irreversibility 0, history 0 -> `narrow` if the checker returns `NARROW_OK`; line count alone does not force standard.
+- Input C has risk debt 1 because the invalidation path is an open decision-impact unknown -> narrow is blocked until it is resolved or promoted.
+- `NARROW_OK` is necessary but not sufficient for narrow.
+- Lines are a scope warning, not the depth.
+
+Pass check:
+
+```text
+Depth ledger: blast=1 uncertainty=0 irreversibility=0 history=0 risk_debt=0 depth=narrow
+Small-fix gate: NARROW_OK files=1 lines=8 declared=1/8 protected=none verify=exit:0
+```
+
+Reverse checks:
+
+```text
+Depth ledger: blast=1 uncertainty=0 irreversibility=2 history=1 risk_debt=0 depth=full
+Depth ledger: blast=1 uncertainty=1 irreversibility=0 history=0 risk_debt=1 depth=standard
+```
+
 ## Scenario 3: Dependency Proposal
 
 Input:

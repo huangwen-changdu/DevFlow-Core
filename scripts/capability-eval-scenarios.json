@@ -67,6 +67,21 @@
     "negativeConstraints": ["must not claim `narrow` from self-report", "`PROMOTE` for `exceeds-declared-lines`"]
   },
   {
+    "id": "depth-ledger",
+    "scenario": "Scenario 2D: Depth Ledger",
+    "layers": ["Prompt Surface", "Context", "Eval/Verifier"],
+    "expectedRoute": "Fast",
+    "command": "test",
+    "scenarioEvidence": [
+      "Depth Ledger",
+      "`NARROW_OK` is necessary but not sufficient",
+      "risk debt 1",
+      "Lines are a scope warning, not the depth"
+    ],
+    "commandEvidence": ["Depth ledger contract"],
+    "negativeConstraints": ["narrow is blocked until it is resolved or promoted", "Lines are a scope warning, not the depth"]
+  },
+  {
     "id": "first-principles-cut",
     "scenario": "Scenario 1C-A: First Principles Cut",
     "layers": ["Harness/Validation", "Context"],
