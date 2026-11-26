@@ -1,6 +1,6 @@
 # Hotfix 记录（Hotfix Log）
 
-> 摘要: 用途=一行一次记录缺陷修复的改动点，让"这次到底动了什么"可被下一次会话检索 | 维护=每次缺陷修复由 devflow-learn 追加一行，是否已沉淀列是通向学习卡的钩子 | 机检=node scripts/validate-devflow.js、node scripts/devflow-docs.js --check | 更新日=2026-11-17
+> 摘要: 用途=一行一次记录缺陷修复的改动点，让"这次到底动了什么"可被下一次会话检索 | 维护=每次缺陷修复由 devflow-learn 追加一行，是否已沉淀列是通向学习卡的钩子 | 机检=node scripts/validate-devflow.js、node scripts/devflow-docs.js --check | 更新日=2026-11-26
 
 ## 用途与边界
 
@@ -32,3 +32,4 @@
 | 2026-11-25 | 小改动也要半天：流程固定成本与改动大小脱钩 | 路由按是否已批准而非爆炸半径分级；Prove 无分档；Cut、回执、台账、学习卡按次收费；规则只增不减 | AGENTS.md, skills/devflow-core/, skills/devflow-prove/, skills/devflow-learn/, scripts/devflow-docs.js, docs/rule-health.md | devflow-core, devflow-prove, devflow-learn, devflow-docs, rule-health | - | npm run verify:all | no |
 | 2026-11-25 | Small-fix 的 gate/tier 由 AI 自评，可能偷偷走窄通道 | 没有脚本数实际 diff、拦保护面、跑验证；narrow 可由 agent 自己选 | scripts/devflow-smallfix.js, AGENTS.md, skills/devflow-core/SKILL.md, skills/devflow-prove/SKILL.md, commands/devflow.toml, commands/devflow-prove.toml, hooks/devflow-session-start.js, scripts/install-devflow.js, scripts/install-devflow-user.js | devflow-core, devflow-prove, smallfix-checker, installers, dsh-assets | - | npm run verify:all | no |
 | 2026-11-25 | Small-fix 入口把 20 行/2 文件写成用户前置条件，诊断前无法知道问题大小 | 把修复预算当成问题分类；诊断被 Small-fix 的 3 个读取卡住；固定行数上限会逼出压行数而不是升级 | AGENTS.md, skills/devflow-core/, skills/devflow-prove/, scripts/devflow-smallfix.js, README.md, commands/, .devflow/smallfix.json, skills/devflow-prove/references/flow-self-test.md | devflow-core, devflow-prove, smallfix-checker, docs | - | npm run verify:all | no |
+| 2026-11-26 | requirements 台账被空行切成三段：--index/--loop 只读第一段 17 行，36 行从未校验；另有一行乱码、6 行落地物写成改动点 | 追加式写入无结构校验；旧解析只取第一张表且过滤单行表；历史行把改动点填进落地物列 | devflow-plan 改为按行读取全表并检测表外行；合并表格、按日期归位、恢复乱码行、6 行落地物归一；docs/INDEX 与台账维护段补写入位置/连续性/列语义；补自测/负例；同步插件与 DSH 副本 | scripts/devflow-plan.js, docs/INDEX.md, docs/requirements.md, README.md, plugins/devflow/scripts/devflow-plan.js, dsh/plugins/dsh-devflow/assets/scripts/devflow-plan.js | - | npm run verify:all exit 0；负例：单行落在空行后 → exit 1 命中 requirement rows outside the ledger table；node scripts/devflow-plan.js --index PASS | no |

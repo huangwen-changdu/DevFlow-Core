@@ -73,7 +73,7 @@
 
 | 事件 | 落位 | 必填 | 机检 |
 |---|---|---|---|
-| 需求确认 → Spec → Plan → 构建 → 落地 | `docs/requirements.md` 同一行逐格推进；缺失时先建表头 | 状态、落地物路径、终态证据（逐项摘要，非仅整体退出码）；`opt-out` 写原因 | index |
+| 需求确认 → Spec → Plan → 构建 → 落地 | `docs/requirements.md` 同一行逐格推进；新行接在台账表最后一行之后、`## 维护机制` 之前，表内不留空行；缺失时先建表头 | 状态、落地物路径、终态证据（逐项摘要，非仅整体退出码）；`落地物` 只填 spec/plan 路径或 `-`；`opt-out` 写原因 | index |
 | 计划新建或完成 | `docs/plans/INDEX.md` 一行 + 计划头 `Status` | Status 与文件头一致；done 有落地证据 | index |
 | 新增 spec | 跑 `--refresh` 重建 `docs/specs/INDEX.md` | 派生索引覆盖全部 spec，不手写 | check |
 | 能力或接口契约变化 | `docs/features/INDEX.md` 一行 | 触发词、入口、验证命令、关键文件、来源计划 | index |

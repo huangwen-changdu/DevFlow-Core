@@ -1,4 +1,5 @@
 const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
 
 const requiredGlobalFields = ["Goal", "Architecture", "Tech Stack", "Source", "Spec coverage", "External Skills"];
@@ -759,7 +760,12 @@ function checkIndexes(root) {
   }
   const requirementTable = readRequirementTable(root);
   problems.push(
-    ...checkRequirementTable(requirementTable.header, requirementTable.rows, (rel) => fs.existsSync(path.join(root, rel)))
+    ...checkRequirementTable(
+      requirementTable.header,
+      requirementTable.rows,
+      (rel) => fs.existsSync(path.join(root, rel)),
+      requirementTable.orphans
+    )
   );
   return problems;
 }
@@ -807,14 +813,20 @@ function runIndexCheck(json, query, rootArg) {
   return problems.length === 0 ? 0 : 1;
 }
 
-/** Validate the requirement ledger table: status whitelist, terminal evidence, opt-out reason, artifact paths. */
-function checkRequirementTable(header, rows, exists) {
+/** Validate the requirement ledger table: continuity, status whitelist, terminal evidence, opt-out reason, artifact paths. */
+function checkRequirementTable(header, rows, exists, orphans = []) {
   const problems = [];
   if (header.length === 0) return problems;
   const cols = columnIndexes(header, ["需求", "日期", "落地物", "状态", "证据或跳过"]);
   if (cols["状态"] < 0 || cols["证据或跳过"] < 0) {
     problems.push("docs/requirements.md header must contain 状态 and 证据或跳过 columns");
     return problems;
+  }
+  if (orphans.length > 0) {
+    const first = orphans[0];
+    const date = (first[0] || "").trim();
+    const text = (first[1] || "").trim().slice(0, 40);
+    problems.push(`requirement rows outside the ledger table: ${orphans.length} (first: ${date} ${text})`);
   }
   for (const cells of rows) {
     const requirement = (cells[cols["需求"]] || "").trim();
@@ -841,15 +853,32 @@ function checkRequirementTable(header, rows, exists) {
   return problems;
 }
 
-/** Read the requirement ledger table, selecting the table that carries the ledger columns. */
+/** Read the requirement ledger directly by lines so a single row appended after a blank line is still visible. */
 function readRequirementTable(root) {
   const filePath = path.join(root, ...requirementPath.split("/"));
-  if (!fs.existsSync(filePath)) return { header: [], rows: [] };
-  const tables = readMarkdownTables(filePath);
-  const ledger = tables.find(
-    (table) => table.header.some((cell) => cell.includes("状态")) && table.header.some((cell) => cell.includes("证据或跳过"))
+  if (!fs.existsSync(filePath)) return { header: [], rows: [], orphans: [] };
+  const lines = fs.readFileSync(filePath, "utf8").split(/\r?\n/);
+  const splitCells = (line) => line.split("|").slice(1, -1).map((cell) => cell.trim());
+  const headerIndex = lines.findIndex(
+    (line) => /^\s*\|/.test(line) && line.includes("状态") && line.includes("证据或跳过")
   );
-  return ledger || tables[0] || { header: [], rows: [] };
+  if (headerIndex < 0) {
+    const fallback = readMarkdownTables(filePath)[0] || { header: [], rows: [] };
+    return { header: fallback.header, rows: fallback.rows, orphans: [] };
+  }
+  const header = splitCells(lines[headerIndex]);
+  const rows = [];
+  let index = headerIndex + 1;
+  if (index < lines.length && /^\s*\|[\s:|-]+\|\s*$/.test(lines[index])) index += 1;
+  while (index < lines.length && /^\s*\|/.test(lines[index])) {
+    rows.push(splitCells(lines[index]));
+    index += 1;
+  }
+  const orphans = [];
+  for (let i = index; i < lines.length; i += 1) {
+    if (/^\s*\|\s*\d{4}-\d{2}-\d{2}\s*\|/.test(lines[i])) orphans.push(splitCells(lines[i]));
+  }
+  return { header, rows, orphans };
 }
 
 /** Count requirement statuses and promotion candidates for the read-only loop report. */
@@ -1420,8 +1449,44 @@ function selfTest() {
   const missingArtifact = checkRequirementTable(requirementHeader, [["2026-09-10", "落地物不存在", "用户请求", "A", "docs/specs/nope.md", "planned", "-", "2026-09-10"]], () => false);
   if (missingArtifact.length === 0) throw new Error("Self-test expected a missing requirement artifact to fail");
 
+  const requirementRoot = fs.mkdtempSync(path.join(os.tmpdir(), "devflow-requirements-"));
+  try {
+    fs.mkdirSync(path.join(requirementRoot, "docs"), { recursive: true });
+    const requirementFile = path.join(requirementRoot, "docs", "requirements.md");
+    fs.writeFileSync(
+      requirementFile,
+      [
+        "# Requirements",
+        "",
+        "| 日期 | 需求 | 来源 | 深度 | 落地物 | 状态 | 证据或跳过 | 更新日 |",
+        "|---|---|---|---|---|---|---|---|",
+        "| 2026-01-01 | first | 用户请求 | C | - | landed | ok | 2026-01-01 |",
+        ""
+      ].join("\n")
+    );
+    if (readRequirementTable(requirementRoot).orphans.length !== 0) {
+      throw new Error("Self-test expected a contiguous requirement ledger to report no orphan rows");
+    }
+    fs.appendFileSync(requirementFile, "\n| 2026-01-02 | orphan | 用户请求 | C | - | landed | ok | 2026-01-02 |\n");
+    const splitRequirementTable = readRequirementTable(requirementRoot);
+    if (splitRequirementTable.orphans.length !== 1) {
+      throw new Error("Self-test expected a requirement row after a blank line to be reported as an orphan");
+    }
+    const splitRequirementProblems = checkRequirementTable(
+      splitRequirementTable.header,
+      splitRequirementTable.rows,
+      () => true,
+      splitRequirementTable.orphans
+    );
+    if (!splitRequirementProblems.some((problem) => problem.includes("outside the ledger table"))) {
+      throw new Error("Self-test expected a split requirement ledger to fail the continuity check");
+    }
+  } finally {
+    fs.rmSync(requirementRoot, { recursive: true, force: true });
+  }
+
   console.log("DevFlow plan self-test passed");
-  console.log("Checked v2 and legacy plan contracts, Chinese and English Change/Verify wording, Status values including abandoned, Progress evidence, Baseline/Coverage trace, Cut Rejected, single-result Acceptance granularity, code-level fields, precise file locations, verification expectations, documentation-only exception, external-skill declaration, and plan landing guidance");
+  console.log("Checked v2 and legacy plan contracts, Chinese and English Change/Verify wording, Status values including abandoned, Progress evidence, Baseline/Coverage trace, Cut Rejected, single-result Acceptance granularity, code-level fields, precise file locations, verification expectations, documentation-only exception, external-skill declaration, requirement table continuity, and plan landing guidance");
 }
 
 const args = process.argv.slice(2);
